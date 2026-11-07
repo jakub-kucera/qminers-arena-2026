@@ -4,6 +4,10 @@ DEPLETE_LOTS / DEPL_FRAC / DYING_BACK: when our side's market touch holds fewer 
 shrunk below DEPL_FRAC of its peak lots since it became the touch, a quote at or inside that touch moves to
 DYING_BACK ticks behind it (DYING_BACK < 0: withdrawn). MOM_LOTS / MOM_MS: after an aggressive market order of
 MOM_LOTS+ lots, nothing new is posted on the side it hit for MOM_MS ms. DEPLETE_LOTS 0 and MOM_LOTS 0 are C1 exactly.
+Grids on round1.csv (qgrid --holdout 0.25; C1 = 554,347 full, 417,711 in, 136,636 out): every guard cell is below C1
+on the first 75%: DEPLETE_LOTS 30/60/100/200 (DEPL_FRAC 0.12, back 1) in 415,292 / 413,245 / 409,160 / 398,349; DEPLETE_LOTS
+100 with DEPL_FRAC 0.03/0.06 in 414,945 / 412,964; DEPLETE_LOTS 30 with DYING_BACK -1/2 in 415,456 / 415,378; MOM_LOTS
+200/400/800 in 414,914 / 416,624 / 417,095. Kept off: the ridge's queue features already price a dying touch.
 
 C1's notes follow.
 
