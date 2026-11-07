@@ -10,6 +10,9 @@
 - `round2_historical_characterization.json`, produced by the preparation tool,
   compares the predeclared candidates on historical tapes. It is not a round-2
   result or selection. The report records source, dataset and engine hashes.
+- [round2_preparation_checks.json](round2_preparation_checks.json) records the
+  preparation checks, 66-test suite, 18 historical replays, exact native matches
+  and preservation of the frozen round-1 source.
 
 Raw replay curves, source snapshots and per-run logs live under `logs/` and
 are ignored by Git. Compact provenance and promoted source files are tracked.

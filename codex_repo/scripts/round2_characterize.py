@@ -22,6 +22,7 @@ def main():
         c['file']=str(REPO/c['file'])
         assert digest(c['file'])==c['source_sha256']
     protocol=native_stamp();fingerprints={p.stem:digest(p) for p in data}
+    preserved=json.loads((REPO/'results/round1_624076.json').read_text())
     output=args.output;output.mkdir(parents=True,exist_ok=True);report_path=output/'report.json'
     report={'native':protocol,'registry_sha256':digest(REGISTRY),'datasets':fingerprints,
         'results':{},'limitation':'All tapes are historical/previously inspected. These are transfer and execution checks, not round-2 validation or a candidate selection.'}
@@ -36,8 +37,8 @@ def main():
         for job in as_completed(jobs):
             dataset,name=jobs[job];r=job.result()
             report['results'].setdefault(dataset,{})[name]=r
-            if dataset=='round1' and name=='round2_transfer':
-                expected=json.loads((REPO/'results/round1_624076.json').read_text())['result']['result']
+            if name=='round2_transfer' and r['data_sha256']==preserved['data_sha256']:
+                expected=preserved['result']['result']
                 assert r['result']==expected,'Transfer source no longer reproduces the preserved round-1 result'
             write_json(report_path,report)
             print(dataset,name,'NET',r['result']['pnl'],'fee',r['result']['breach_penalty'],flush=True)

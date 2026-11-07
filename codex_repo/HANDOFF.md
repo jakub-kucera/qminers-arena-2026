@@ -136,6 +136,11 @@ The workflow has a synthetic end-to-end smoke test and a forced paid-breach
 integration test. The latter checks exact native equality and exact-split
 penalty accounting; modifying a frozen source is rejected. The test suite has
 **66 passing tests** at this preparation checkpoint.
+The recorded checks are in `results/round2_preparation_checks.json`.
+Preparation checkpoint tag: `round2-preparation-20261107`.
+The final preparation history is also backed up in the workspace parent at
+`backups/qminers-arena-round2-preparation.bundle`; older checkpoint bundles
+remain at their original paths.
 
 Historical characterization completed all 18 candidate/tape combinations; see
 `results/round2_historical_characterization.json`. The transfer reproduced

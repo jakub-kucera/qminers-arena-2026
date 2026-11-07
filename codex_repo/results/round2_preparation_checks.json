@@ -1,0 +1,43 @@
+{
+  "prepared_at_utc": "2026-11-07T17:33:27.444648+00:00",
+  "round2_data_available": false,
+  "round2_winner_selected": false,
+  "round1_source_preserved": true,
+  "round1_source_sha256": "0aaff6caee4c8708afb0f3bc54a8f1d3beaa5a641477db192be09cfeb6993b45",
+  "unit_tests_passed": 66,
+  "test_command": ".venv/bin/python -m unittest discover -s tests -q",
+  "test_source_sha256": "ed8f0234cd238d308981dad8abe787b5b98f9b44f9dddd46e4c561895c34d320",
+  "candidate_registry_sha256": "d1c592e5438ffff916da96e3693399258903e01aeea33daaee1f126706b86412",
+  "candidate_count": 6,
+  "generated_source_checks_passed": true,
+  "historical_replays_completed": 18,
+  "historical_strict_contracts_passed": true,
+  "historical_transfer_matches_frozen_round1_exactly": true,
+  "synthetic_full_workflow_cli_match": true,
+  "paid_workflow_integration_test": "tests/test_round2.py::Round2WorkbenchTests.test_paid_workflow_freezes_and_matches_unmodified_cli",
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "88bc868a6d8c6a062fe9c70ff66bcf0985c7b3066a37cf80bbe0fc6e0fd61d09",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
+  },
+  "limitations": [
+    "Historical tapes are previously consumed. No fresh round-2 performance is known.",
+    "The local submission checker is conservative; it is not the unavailable competition-server checker."
+  ]
+}
