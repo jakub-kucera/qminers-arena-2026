@@ -1,5 +1,9 @@
 # Qminers trading hackathon starter
 
+**Round 1: submit `strategies/round1_best.py`.** Verified local score on the
+provided `round1.csv`: **476,052**, with zero position penalties. See the
+round-1 evaluation notes at the end of this README.
+
 ```
 strategies/   template_strategy.py, an empty strategy to copy and fill in; trend_follower.py, a simple working one
 data/         sample.csv.gz, a synthetic hour of trending prices to start on; the rounds downloaded from the website go here too (git-ignored)
@@ -91,3 +95,374 @@ $$\text{penalty} = 10{,}000 \cdot \int \mathbb{1}\big[|I(t)| > 100\big] dt \quad
 $$\text{PnL} = \text{cash} + \text{markout}(I) - \text{penalty}$$
 
 $\text{markout}(I)$ is the cash from liquidating $I$ against the resting *market* orders on the opposite side, best price outwards (volume beyond the book at the last swept price, or at the last traded price if that side is empty). It is computed at the end and every second for `pnl.csv` and `pnl_se`.
+
+## Current submission candidate
+
+Submit **`strategies/arena_strategy.py`** as the single strategy file. Its
+`ArenaStrategy` constructor needs no arguments. The file uses only `math`,
+`collections`, and the permitted simulator imports. No fitted weights, external
+files, sample prices, order IDs, or known session-end time are embedded.
+
+It learns a two-second midpoint forecast online from market trade flow, price
+momentum, and top-of-book imbalance. Training observations mature only after
+their prediction horizon; stale observations across long gaps are discarded.
+The model starts trading after 200 matured observations and uses a rolling,
+regularized fit. It continues learning from already-observed outcomes throughout
+the run, including during evaluation segments.
+
+The entry threshold budgets for both sides of an IOC round trip, using the
+current spread as the estimated exit spread, plus a small buffer. Predictions
+control a target inventory between -80 and +80. Execution sends at most 20 lots
+at the market touch, with one IOC outstanding at a time. Partial fills update
+inventory immediately; unfilled quantities remain reserved until the terminal
+response. Own taker trades do not contribute to the trade-flow signal. Brief
+one-sided quote transitions are ignored; persistent one-sided books permit
+inventory reduction only. Stale trade flow causes a target of zero when a usable
+book is available.
+
+The original trend follower also includes the cancellation fix shown on page 49
+of the Getting Started slides.
+
+### Run and verify
+
+From the repository root, after setup:
+
+```bash
+uv run python -m simulator.main --strategy strategies/arena_strategy.py --backtest data/sample.csv --log-dir logs/arena --no-logs
+uv run python -m unittest discover -s tests -v
+uv run python -m scripts.check_submission strategies/arena_strategy.py
+uv run python -m scripts.benchmark --backtest data/sample.csv --compare-flow --output logs/validation
+uv run python -m scripts.stress --output logs/stress
+```
+
+In the existing local environment, `.venv/bin/python` can replace `uv run python`
+to run without triggering dependency synchronization. The strategy itself does
+not need numpy/pandas/scipy/sklearn. The local submission check is conservative
+and covers documented restrictions used here; it does not replace the server's
+unavailable checker.
+
+The benchmark uses the official CLI limits, checks the strategy's cash and
+inventory against the engine on every private event, records maximum actual
+and submitted potential inventory, and saves input/source hashes. Its 15-minute
+PnL blocks come from one continuous replay, preserving both book and model state.
+Drawdown is measured on the simulator's one-second PnL curve.
+
+### Measured results and limits
+
+The first 2,700 seconds were used for development. The final segment was evaluated
+after the current strategy settings were fixed; it was not used to select those
+settings. All segments belong to the same synthetic sample, not separate market
+datasets.
+
+| Strategy | Full sample PnL | Final ~15 min PnL increment | Maximum absolute inventory | Penalty |
+| --- | ---: | ---: | ---: | ---: |
+| No trading | 0 | 0 | 0 | 0 |
+| Corrected starter | 1,878 | 415 | 1 | 0 |
+| Fixed flow reference, same execution and 80-lot cap | 148,441 | 36,653 | 80 | 0 |
+| ArenaStrategy | 225,926 | 56,000 | 80 | 0 |
+
+The fixed-flow reference is one untuned comparator, not an optimized competitor.
+The starter comparison also changes position size substantially. ArenaStrategy
+ended flat; its sampled maximum drawdown was 617. Reproduce these figures using
+the benchmark rather than relying on the table after making changes.
+
+The 11 trading unit/integration tests include 10,000 randomized partial-fill/cancel
+sequences, inventory reservations, ledger agreement, matured-label timing,
+stale-label rejection, and the starter cancellation regression. Fifteen additional
+synthetic stress runs cover flat markets, noise, persistent trends, trade flow
+opposing the trend, and a switch from trend to noise. All respected the exposure
+cap and incurred zero penalties. Noise runs returned 0, -66, and -6. After a
+trend-to-noise change, the strategy lost 1,765–2,232 in the second half while the
+model adapted. The inventory cap is not a bound on financial drawdown.
+
+The user-reported server playground evaluation matches these local results at
+the displayed precision, including fills, volume, inventory, cash, mark-out,
+penalty, standard error, and inventory quantiles. The matching local candidate
+and reported metrics are archived in `logs/submissions/playground_verified/`.
+This verifies that the reported submission ran successfully; later source edits
+still need server validation.
+
+**Unseen recorded-market performance remains unverified.** The bundled sample is
+expressly synthetic; high sample PnL is not evidence of a competition-winning
+strategy. Use actual round data in `--backtest` when it becomes available, retain
+chronological evaluation, and verify round aggregation, deadlines, and runtime
+limits.
+
+### When round data arrives
+
+Start with market diagnostics and an unchanged baseline:
+
+```bash
+uv run python -m scripts.profile_round --backtest data/round1.csv --output logs/round1/profile
+uv run python -m scripts.benchmark --backtest data/round1.csv --compare-flow --output logs/round1/baseline
+```
+
+The profiler sends no orders. It measures event frequency, time-weighted spreads
+and touch quantities, sampled visible depth, and the behavior of trade flow,
+momentum, and queue imbalance over 5 ms, 20 ms, 100 ms, 500 ms, 2 s, and 5 s.
+It reports these by chronological block. Pending observations are bounded by
+the longest horizon and sampling interval rather than total file size.
+
+Entry quotes are evaluated at decision time + 5 ms, using the book **before**
+any market row at that exact timestamp. Original-touch IOC orders that would
+miss are excluded from conditional quote-edge means and counted separately.
+The one-lot round-trip estimates include both spreads. They are screening
+statistics, not executable strategy PnL: they omit impact, the ability to schedule
+an exit from actual callbacks, and latency after that exit decision. Use the
+simulator for final decisions. Overlapping labels also make naive statistical
+significance claims inappropriate.
+
+Nine diagnostic tests cover timing, missed IOC entries, EOF censoring,
+chronological-block boundaries, time weighting, memory bounds, round-trip costs,
+and timestamp validation. Together with the trading checks, there are 20 tests.
+
+For context, the playground has about 14.94 events/second, a constant two-tick
+spread whenever both sides exist, and one resting market order per side. These
+conditions are especially simple. The current strategy starts each run with
+zero model weights and learns anew, but its two-second horizon, five-minute
+model memory, execution sizing, and risk cap still require assessment on round
+data. Preserve a chronological validation segment before changing them.
+
+## Experimental alternatives for round data
+
+The server-tested baseline remains `strategies/arena_strategy.py`. Two additional
+single-file candidates are ready for comparison:
+
+- `strategies/guarded_strategy.py` adds a recent-edge gate to the same causal
+  prediction and IOC execution. It scores matured virtual opportunities even
+  while exposure is paused, so learning and recovery do not require live trades.
+  A negative recent score reduces the permitted inventory to zero; positive
+  scores gradually restore the cap. The score uses a midpoint/spread proxy,
+  rather than actual latency-adjusted fill PnL, and is not a confidence interval.
+- `strategies/passive_strategy.py` posts five-lot limit orders with a 60-lot
+  inventory cap, inventory-skewed prices and withdrawal of quotes vulnerable to
+  aggressive flow. It measures visible quantity ahead of its orders, preserves
+  stable quote priority, and waits for cancellation acknowledgement before
+  replacement. Pending cancels reserve their remaining quantity. It uses neither
+  IOC exits nor a learned adverse-selection model; those are potential extensions
+  if round data supports passive trading.
+
+Both candidates pass the local documented-restriction checker. They have not
+been submitted to the competition server. Their code is self-contained because
+submission files cannot import other strategy modules; shared changes to the
+baseline and guarded implementation must therefore be reviewed in both files.
+
+```bash
+uv run python -m scripts.compare_candidates --output logs/candidates/final_stress
+uv run python -m scripts.benchmark --backtest data/round1.csv \
+  --strategy strategies/arena_strategy.py \
+  --strategy strategies/guarded_strategy.py \
+  --strategy strategies/passive_strategy.py --output logs/round1/candidates
+uv run python -m scripts.perf_check --rows 1000000 --output logs/performance_final
+```
+
+Candidate evaluation covers six artificial regimes (flat, noise, continuation,
+flow opposing the trend, trend-to-noise, and trend-to-noise-to-trend) across six
+seeds. Seeds 11/29/47 overlap earlier stress work; 101/211/307 were additional
+cases. All 108 strategy runs respected their respective exposure caps and had
+zero inventory penalties. These are artificial validation scenarios, not
+recorded market data.
+
+In the noisy halves after trends disappeared, the guard reduced the combined
+loss from 9,574 to 3,384, about 65%. On the three additional seeds the reduction
+was about 76%. The guard also gave up profits during favorable periods: total
+PnL over the six complete trend-to-noise tapes fell from 88,452 to 76,321.
+Recovery tests demonstrate that the guard can resume when virtual outcomes
+improve, while some weak regimes remain paused. It should be compared as a
+risk/return alternative, not treated as an unconditional improvement.
+
+The passive candidate earned 16,838 summed over the six flat tapes and 6,204
+on the six noise tapes, but lost 66,981 on the continuation tapes. On the
+playground it returned -3,329, versus 225,926 for the baseline and 225,487 for
+the guarded candidate. These results show strong dependence on market regime;
+choose a family using chronological round-data validation.
+
+The performance test builds one million events over a 100-second simulated
+session, with 100 price levels and ten market orders per level on each side,
+plus sustained IOC flow and cancellations/replenishment. Each candidate runs
+in a fresh process and reports throughput, peak RSS, exposure, fills and ledger
+agreement in `performance.json`. The directional candidates may correctly stay
+flat on this stationary tape; passive matching exercises actual resting fills.
+Speed figures depend on hardware and book shape and do not establish compliance
+with the organizer's still-unspecified runtime limits.
+
+There are now 28 tests. Additional coverage includes pausing and recovery from
+virtual labels, stable exposure caps, cancel/fill races, partial residuals,
+queue priority, and sustained aggression in the performance generator.
+
+The supplied slides still leave cross-round aggregation, hidden-data splits,
+submission quotas/deadlines, and enforced runtime/memory limits unspecified.
+Those facts need to be obtained from competition announcements or organizers.
+
+## Best tested candidates on sample_v2
+
+Nineteen passive configurations were screened on the first 30% of v2. Six were
+compared over the first 60%, then a three-file shortlist was frozen before
+examining the reserved tail. Full-file validation replays preserved queue and
+inventory state across that split. No candidate was changed after validation.
+
+| Submission file | Quote size | Inventory cap | Full v2 PnL | Sampled maximum drawdown | Maximum observed inventory |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `strategies/passive_v2_q60.py` | 60 | 90 | 191,958 | 218 | 90 |
+| `strategies/passive_v2_q90.py` | 90 | 90 | 190,953 | 180 | 90 |
+| `strategies/passive_v2_q20.py` | 20 | 60 | 74,953 | 66 | 55 |
+| Original `strategies/passive_strategy.py` | 5 | 60 | 18,562 | 31 | 19 |
+
+All had zero position penalties. Q60 ranked first on development data and kept
+its lead on the reserved tail; it is the primary v2 candidate. Q90 is close in
+PnL with lower observed one-second drawdown. Q20 provides a smaller exposure cap.
+Much of the gain comes from larger quotes and increased inventory utilization.
+The finalists also disable the trade-flow veto; that filter discarded profitable
+fills on development data. Improving inside the spread did not beat the stronger
+join-at-touch configurations in this search.
+
+Approximate PnL increments on the reserved tail were 74,788 (Q60), 74,396 (Q90),
+29,325 (Q20), and 7,114 (original). These increments start at the last one-second
+PnL sample before the split, at most one second early. Full-file PnL figures
+above are exact simulator outputs. Q60 was also replayed through the unmodified
+CLI and its entire result matched the audited search exactly.
+
+Each file is a standalone submission and passes the local documented checks.
+The server has not evaluated these new candidates. Thirty tests now pass,
+including exhaustive inventory-envelope checks at every integer inventory state
+for each finalist, with both sides reserved and cancellations still in flight.
+Search definitions, frozen source hashes, block results and validation outputs
+are saved under `logs/sample_v2/search/`; `final_report.json` summarizes them.
+
+```bash
+uv run python -m simulator.main --strategy strategies/passive_v2_q60.py \
+  --backtest data/sample_v2.csv --log-dir logs/v2_q60 --no-logs
+```
+
+The finalists remain regime-dependent: on the original trending playground,
+Q60 returned -1,332, Q90 -4,465, and Q20 -9,684. These losses and the different
+inventory usage matter when comparing candidates for round 1. The v2 tail has
+now been used for validation; further tuning needs a fresh validation period or
+new data. The search script refuses to repeat selection after its shortlist is
+frozen, to avoid silently reusing the reserved data.
+
+## Current highest-scoring v2 submission
+
+**`strategies/passive_v2_champion.py` returns 283,959 on the full sample_v2 file.**
+It exceeds the reported 263,000 reference by 20,959 (about 8%). The unmodified
+simulator CLI reproduces the audited search result exactly. Source/data hashes
+and full metrics are in `logs/sample_v2/champion_report.json`.
+
+The strategy can maintain up to four orders per side. When an opposite-side fill
+frees inventory capacity, it replenishes that capacity without canceling an older
+order at the same price. This preserves the older order's queue priority. All
+resting orders, pending submissions and pending cancels reserve their remaining
+exposure. The net inventory envelope stays within -100 to +100. A neutral band
+around the estimated fair price avoids shifting a quote back a full tick for
+small signals. Quotes can replenish after 5 ms. No session-end timing, input-file
+access, future rows or fitted sample weights are used.
+
+Measured v2 metrics: 4,300 filled orders, 391,649 lots traded, end inventory +1,
+zero position penalties, and maximum drawdown 300 on the one-second curve. All
+inventory quantiles from 50% through 99.7% are 100: the strategy uses the full
+position allowance frequently. This is substantially more exposure than the
+initial candidate. It returned +689 on the original trending playground, which
+is another synthetic diagnostic rather than independent market validation.
+
+Thirty-three tests pass. New tests check that replenishment preserves the older
+order, and exercise 10,000 randomized layered fill/cancel transitions with exact
+ledger agreement and both exposure bounds enforced. The file passes the local
+checker for documented submission restrictions; the competition server has not
+yet evaluated this new file.
+
+This improvement was further tuned on the already evaluated v2 sample. The
+original reserved tail is no longer an independent validation set. Round-1
+performance remains unverified.
+
+```bash
+uv run python -m simulator.main --strategy strategies/passive_v2_champion.py \
+  --backtest data/sample_v2.csv --log-dir logs/champion --no-logs
+```
+
+## Round-1 submission and evaluation
+
+**Submit `strategies/round1_best.py` as the single strategy file.** The model
+returns **476,052** on the supplied full `data/round1.csv`, exceeding the reported
+430,000 reference by 46,052. The unmodified simulator CLI reproduces the entire
+result from the audited replay exactly. The new model has not yet been evaluated
+by the competition server.
+
+| Metric | Result |
+| --- | ---: |
+| PnL | 476,052 |
+| Filled orders | 22,245 |
+| Traded lots | 2,309,320 |
+| End inventory | +100 |
+| Position penalty | 0 |
+| Maximum actual/potential inventory | 100 / 100 |
+| Maximum drawdown on the 1-second curve | 890 |
+| PnL standard error | 10,442.37 |
+
+The data has 4,411,336 events over 12,000 seconds. Initial profiling and model
+screening used only earlier chronological segments. Eighteen model definitions
+were screened on the first 30%, and five were developed on the first 60%.
+Three candidates were frozen and compared over the next 20%. The chosen model
+was then frozen before its only evaluation on the final 20%.
+
+Exact PnL increments were 280,322 on development, 98,121 on the selection
+validation segment, and **97,609 on the previously untouched final segment**.
+Every ten-minute block of the full replay was profitable. Boundary PnL was
+recorded inside the engine at exact simulation times; it does not use rounded
+one-second samples or reset inventory/queue state. Selection validation ends
+just before the last row of its prefix to exclude artificial EOF order draining.
+Online coefficients continue updating causally during all segments; model
+selection and algorithm definitions stay fixed during final evaluation.
+
+The five features are signed trade flow, short-term momentum, bid/ask queue
+imbalance, normalized order-flow imbalance from changes at the touch, and
+spread-scaled imbalance. Regularized online regression predicts 100 ms midpoint
+responses. Outcomes only become training labels once their horizon has passed.
+The model starts each run with zero fitted weights and a bounded observation
+buffer; it uses no external files or precomputed round-specific trading path.
+
+Passive execution can maintain up to eight orders per side. Replenishment keeps
+older orders' queue priority. Pending submissions and pending cancels retain
+all remaining exposure until confirmed. Individual orders can reach 200 lots
+when moving between -100 and +100; the signed inventory plus all outstanding
+same-side reservations still remains within the 100-lot bound. The strategy
+frequently uses that full allowance: absolute-inventory quantiles are
+86 / 100 / 100 / 100.
+
+Thirty-nine tests pass. They cover the five-dimensional solver, mature-label
+timing, order-flow sign, inventory reservation at every integer state, exact
+boundary valuation without changing simulator results, and existing fill/cancel
+and execution regressions. The final file passes the local documented-rule
+checker. Source and input hashes, selected candidates, and complete metrics are
+saved in `logs/round1/submission_report.json`; a copy of the exact verified
+submission is archived under `logs/round1/submission/`.
+
+```bash
+uv run python -m simulator.main --strategy strategies/round1_best.py \
+  --backtest data/round1.csv --log-dir logs/round1/reproduce --no-logs
+```
+
+The user-provided submission deadline is 18:00 Europe/Prague. Results apply to
+this supplied round file. A separate hidden scoring file may behave differently.
+The final segment is now consumed; further tuning requires a fresh validation
+period or explicit treatment as tuning on already evaluated data.
+
+## Preserved round-1 tuning candidate: 498,056
+
+`strategies/round1_nonlinear_498k.py` preserves the exact source that scored
+**498,056** in the audited full round-1 replay, with zero position penalty and
+maximum actual/potential inventory of 100 / 100. Its SHA-256 is
+`dcb0e143ab0d2d324f01162b4dd935356f492c7434b716ab324c4d2f983ffb64`.
+It adds three signed nonlinear transformations to the five original features,
+uses ridge strength 0.001, and reduces inventory skew to 0.05. The original
+476,052 candidate remains available as `strategies/round1_best.py`.
+
+Tracked result manifests live in `results/`, including the 498,056, 476,052,
+and playground 283,959 versions. The 498,056 result comes from further tuning
+on already evaluated round-1 data; it has no fresh independent holdout. See
+`results/round1_498056.json` for metrics and verification status. The preserved
+source is intentionally byte-identical to the experiment, including its older
+five-feature module description; its actual feature count is eight.
+
+Research code, strategy milestones, tests and result manifests are versioned
+in Git. Raw competition data, detailed replay logs and the local environment
+remain excluded by `.gitignore`.

@@ -65,4 +65,5 @@ class TrendFollowerStrategy(BaseStrategy):
         if event.status == OrderStatus.FILLED:
             self._order_in_flight = False
         elif event.status == OrderStatus.REJECTED or event.status == OrderStatus.CANCELED:
+            self._order_in_flight = False
             self._current_order_side = Side.BUY if self._current_order_side == Side.SELL else Side.SELL

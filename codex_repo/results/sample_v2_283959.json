@@ -1,0 +1,82 @@
+{
+  "source": "strategies/passive_v2_champion.py",
+  "source_sha256": "07e40e28fb1d3f072ece1e21f352fd704faf35eee29591b4fd9202b735d7f13c",
+  "data_sha256": "dd4e00e281abe50c9a19e16c147ccbc0b5b69835fee567f00136402ef1e01d08",
+  "reported_target": 263000,
+  "improvement": 20959.0,
+  "result": {
+    "fills": 4300,
+    "traded_volume": 391649,
+    "inventory": 1,
+    "cash": 273956.0,
+    "mark_price": 10003.0,
+    "breach_penalty": 0.0,
+    "pnl": 283959.0,
+    "pnl_se": 5776.732482074121,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "max_abs_inventory": 100,
+  "max_potential_inventory": 100,
+  "sampled_max_drawdown": 300.0,
+  "blocks": [
+    {
+      "start_s": 0.0,
+      "end_s": 600.0,
+      "pnl_increment": 32056.0
+    },
+    {
+      "start_s": 600.0,
+      "end_s": 1200.0,
+      "pnl_increment": 30557.0
+    },
+    {
+      "start_s": 1200.0,
+      "end_s": 1800.0,
+      "pnl_increment": 28301.0
+    },
+    {
+      "start_s": 1800.0,
+      "end_s": 2400.0,
+      "pnl_increment": 28735.0
+    },
+    {
+      "start_s": 2400.0,
+      "end_s": 3000.0,
+      "pnl_increment": 30012.0
+    },
+    {
+      "start_s": 3000.0,
+      "end_s": 3600.0,
+      "pnl_increment": 31506.0
+    },
+    {
+      "start_s": 3600.0,
+      "end_s": 4200.0,
+      "pnl_increment": 27444.0
+    },
+    {
+      "start_s": 4200.0,
+      "end_s": 4800.0,
+      "pnl_increment": 27577.0
+    },
+    {
+      "start_s": 4800.0,
+      "end_s": 5400.0,
+      "pnl_increment": 30411.0
+    },
+    {
+      "start_s": 5400.0,
+      "end_s": 5749.868964,
+      "pnl_increment": 17360.0
+    }
+  ],
+  "verification": "Unmodified simulator CLI matches audited replay exactly; 33 tests pass; local documented submission checks pass.",
+  "limitations": [
+    "Further tuned on the already evaluated v2 sample; no independent holdout remains.",
+    "Uses the full 100-lot cap and spends substantial time at that cap.",
+    "New file has not been run on the competition server."
+  ]
+}
