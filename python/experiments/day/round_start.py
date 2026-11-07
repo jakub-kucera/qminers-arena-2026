@@ -60,6 +60,11 @@ CANDIDATES = {
     "tmpl_mom": (TEMPLATE, "SESSION_US", {"PARAMS.ASSET": MOMENTUM_PARAMS}),
     "A0": (TEMPLATE, "SESSION_US", {"PARAMS.ASSET": A0_PARAMS}),
     # Round 1's makers (7 Nov): their files never wind down (SESSION_S 1e9), whatever the private tape's length, so no session is set
+    # Round 1's learned makers (the online ridge line; R1-C11 the uploaded final)
+    "R1_C11": (CANDIDATE_DIR / "r1_C11_codex_v5_29feat.py", None, {}),
+    "R1_C5": (CANDIDATE_DIR / "r1_C5_long_horizon.py", None, {}),
+    "R1_C1": (CANDIDATE_DIR / "r1_C1_codex_ridge.py", None, {}),
+    "R1_F8": (CANDIDATE_DIR / "r1_F8_take_join.py", None, {}),
     "R1_F7": (CANDIDATE_DIR / "r1_F7_signal.py", None, {}),
     "R1_F6b": (CANDIDATE_DIR / "r1_F6b_alloc.py", None, {}),
     "R1_F6": (CANDIDATE_DIR / "r1_F6_two_levels.py", None, {}),
@@ -70,6 +75,10 @@ CANDIDATES = {
 # The shrink-maker family's grids run on the Rust port (arena.qsim_rust, byte-identical, ~0.5 s a run on 4.4M rows)
 RUST_GRIDS = {"R1_F6", "R1_F5", "R1_F3", "R1_F7", "R1_F6b"}
 RUST_FAMILY = {"R1_F7": "signal_maker.py", "R1_F6b": "alloc_maker.py"}  # the rest: shrink_maker.py
+# The ridge line's grids run on ridge_maker, the Rust twin of R1-C1 whose knobs reproduce R1-C5 (and C1b, C3, C4, C7)
+RIDGE_C5 = ("--set POSITION_LIMIT=1000 --set EXPOSURE=100 --set CANCEL_FREE=1.0 --set HEDGE=1"
+            " --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000 --set DEAD_ZONE=0.18")
+RUST_RIDGE = {"R1_C11": RIDGE_C5, "R1_C5": RIDGE_C5, "R1_C1": ""}
 
 
 # ---------------------------------------------------------------------------- profile
@@ -338,6 +347,10 @@ def next_grids(table: list[dict], p: dict | None, data: Path, length_us: int, jo
     for name in ("R1_F6", "R1_F5", "R1_F3"):
         axes[name] = shrink
     axes["R1_F6b"] = ["--grid ALLOC_K=-0.75,-0.5,-0.25,0 --grid SIZE_TOUCH=65,100,115 --grid DEPLETE_LOTS=70,100"]
+    ridge = ["--grid HORIZON_US=100000,250000,400000,600000 --grid DEAD_ZONE=0.1,0.14,0.18,0.22,0.26 --grid INSIDE_TH=0.2,0.3,0.4"]
+    for name in RUST_RIDGE:
+        axes[name] = ridge
+    axes["R1_F8"] = ["--grid TAKE_LOTS=0,30,60 --grid TAKE_OWN=400,800 --grid JOIN_OWN=0,400 --grid ALLOC_K=-0.5,0"]
     axes["R1_F7"] = ["--grid MOM_JOIN=0,1 --grid MOM_LOTS=200,400,800 --grid MOM_MS=20,50,200 --grid DYING_DEEP=0,80 --grid DEPL_FRAC=0.06,0.12"]
     lines = ["== next grids (the top two by PnL)"]
     chosen, seen = [], set()
@@ -350,7 +363,11 @@ def next_grids(table: list[dict], p: dict | None, data: Path, length_us: int, jo
         name = r["candidate"]
         sets = " ".join(f"--set '{k}={json.dumps(v) if isinstance(v, dict) else v}'" for k, v in candidate_overrides(name, length_us).items())
         for grid in axes[name]:
-            if name in RUST_GRIDS:  # the Rust port of the shrink maker, the same results ~70x faster
+            if name in RUST_RIDGE:  # ridge_maker: R1-C5's knobs (R1-C11's extra features are not in the twin)
+                lines.append(f"uv run python -m arena.qsim_rust ridge_maker {data} {RUST_RIDGE[name]} {grid} --holdout 0.25 --threads {jobs} --sort holdout")
+            elif name == "R1_F8":  # take_maker, R1-F8's twin
+                lines.append(f"uv run python -m arena.qsim_rust {r['bot']} {data} {grid} --holdout 0.25 --threads {jobs} --sort holdout")
+            elif name in RUST_GRIDS:  # the Rust port of the shrink maker, the same results ~70x faster
                 family = RUST_FAMILY.get(name, "shrink_maker.py")
                 lines.append(f"uv run python -m arena.qsim_rust python/bots/qminers/families/{family} {data} --set SESSION_S=1000000000 {grid} --holdout 0.25 --threads {jobs} --sort holdout")
             else:

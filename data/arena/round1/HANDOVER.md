@@ -9,6 +9,11 @@ run's results and `leaderboard.json` go in this folder too.
 - 13:16, `python/bots/qminers/candidates/r1_F3_full_room.py` (A0: F3 with SESSION_S 1e9), round_start's best on round1.csv. Expected on the public data: pnl 425,553.00, fills 30,452, traded volume 2,645,992, end position +100, cash -577,347.00, mark price 10,029.00, breach 0, pnl_se 11,263.42, |inv| q50/68/95/99.7 98/100/100/100; exchange-simulator 26 s here.
 - Next: `python/bots/qminers/candidates/r1_F5_shrink_react.py` (R1-F5). Expected on the public data: pnl 455,822.00, fills 37,847, traded volume 2,481,742, end position +100, cash -547,078.00, mark price 10,029.00, breach 0, pnl_se 11,038.79, |inv| q50/68/95/99.7 95/100/100/100.
 
+- About 16:25, R1-C1 (`python/bots/qminers/candidates/r1_C1_codex_ridge.py`, the codex session's online ridge maker): expected 554,347.00 (37,087 fills, breach 0).
+- About 17:07, R1-C5 (`r1_C5_long_horizon.py`, C1b with a 400-ms horizon, infinite memory, dead zone 0.18): expected 595,441.83 (21,120 fills, breach 1,720.17).
+- About 17:44, **the final**: R1-C11 (`r1_C11_codex_v5_29feat.py`, the codex session's v5, 29 features): expected 619,281.99 (21,460 fills, breach 1,610.01, end inventory +100, ~3 min a run). R1-C10 (616,534.83) was the recommendation; the two differ by noise (6 of 12 segments). R1-C12 (v6, 622,920.99) came at 17:47 and was not uploaded (+3.6k in 5 of 12 segments).
+- After 18:00: check which upload the portal marks as final; save the leaderboard to this folder's leaderboard.json when it is published, then `experiments.day.leaderboard_curves` and `experiments.day.standings`.
+
 ## Portal against local
 <!-- the portal's figures against our backtest of the same file on the same days; the ratio (T); which fill mode and mark fit -->
 Before the round (the playground, 7 Nov): the portal's results folder is byte-identical to a local `exchange-simulator` run of the same file on the same data (A0: -7,598, 394 fills; the trend follower +1,878), so `T` = 0 on the public data; only the private data differs (ON_THE_DAY.md, "From the playground"). Check it again on round 1's first upload.
