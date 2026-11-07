@@ -350,3 +350,15 @@ def test_a_gray_area_bot_fails_unless_allowed_and_compact_warns(check, tmp_path,
     path.write_text(gray)
     assert compact.main([str(path), str(tmp_path / "out.py")]) == 0
     assert "!!! GRAY AREA BOT: spoofs Kelp's book" in capsys.readouterr().out
+
+
+def test_a_format_without_a_loader_gets_the_source_checks_only(tmp_path, capsys):
+    bot = tmp_path / "bot.py"
+    bot.write_text("from simulator.strategy import BaseStrategy\n\nclass Bot(BaseStrategy):\n    pass\n")
+    assert validate.main([str(bot), "all", "--format", "qminers"]) == 0  # no --data: nothing is loaded
+    out = capsys.readouterr().out
+    assert "source checks only" in out and "replay: run exchange-simulator" in out and "Result: OK" in out
+    bot.write_text("import os\n\nclass Bot:\n    pass\n")
+    assert validate.main([str(bot), "all", "--format", "qminers", "--data", "anything"]) == 1
+    out = capsys.readouterr().out
+    assert "no top-level class subclassing BaseStrategy" in out and "the sandbox rejects import os" in out

@@ -47,7 +47,7 @@ What the day runs on, in the order a round uses it (since 7 Nov; everything afte
 | `python -m arena.qgrid BOT DATA` | A parameter grid on their simulator ([below](#grid-on-the-arenas-simulator)) |
 | `python -m arena.qsim_rust STRATEGY DATA` | The same grid on `rust/arena_sim`, their simulator ported to Rust: the same numbers to the bit, 50-100 times faster |
 | `python -m experiments.day.run_review LOG_DIR` | A full-logs run (ours or the portal's results folder): our fills' edge and the mid's move after them |
-| `python -m arena.validate BOT all --format qminers` | The sandbox's source checks before an upload ([below](#validate-before-submitting)) |
+| `python -m arena.validate BOT all --format qminers` | The source checks before an upload, no `--data`, no replay ([below](#validate-before-submitting)) |
 | [`RUNBOOK.md`](RUNBOOK.md), `data/arena/round*/` | The day's one page, and each round's `HANDOVER.md` and `CANDIDATES.md` |
 
 ## Setup
@@ -123,6 +123,14 @@ It fails (exit code 1) on:
 - a traded product with no `limit` in PARAMS (the template refuses it: DEFAULTS' is a placeholder)
 - a gray-area bot: one that sets `GRAY_AREA = "<what it does>"` at module level because it games the exchange or other teams (spoofing, moving the mark, an exchange bug) rather than trading. It can be built and backtested, but validate FAILs it in capitals (and `arena.compact` warns), so it can't go up by accident; `--allow-gray-area` turns that into a WARN, only after an organiser has said it's allowed
 - errors or breaches when the first day is replayed with every order a step late (`--late 1`, the default while the run's own `--delay` is 0; `--late 0` where the rules say orders arrive at once): a bot that doesn't count what it sent and can't see listed yet re-posts it into the caps and its limits, as both 2026-10-30 rehearsal bots did after passing. The template passes once its `DELAY` (and `ORDERS_REST`) are set; race ticks are printed, not failed
+
+**The Arena bot** (`--format qminers`) needs no `--data`: `uv run python -m arena.validate
+python/bots/qminers/candidates/r0_M2_runner_safe.py all --format qminers [--max-size 1MiB]` runs the file and source
+checks only (the size; exactly one `BaseStrategy` subclass, 0 or 2+ FAIL; imports; the sandbox; the environment; a
+gray-area mark), prints `replay: run exchange-simulator` and exits 0 on a clean file. The format has no loader here
+(`REPLAY = False` in `python/arena/formats/qminers.py`; `--data`, if given, is not read): the replay is a full
+`uv run exchange-simulator --strategy BOT --backtest D/<file>.csv --log-dir logs/<run> --no-logs`. The replay checks
+listed above apply to the Prosperity-format plug-ins.
 
 Over the cap, `arena.compact` writes a copy without comments or docstrings (the template's 49 KB become about 26 KB) and checks that it parses back to the same code; it trades exactly as the original (`python/tests/test_compact.py`). Validate and upload the copy, and keep editing the original. Delete the probe bot's RISKY PROBES block before compacting it, since its markers are comments.
 
