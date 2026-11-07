@@ -2,8 +2,11 @@
 
 Round-2 public data is now at `data/round2_public.csv`. Read the
 [initial findings](ROUND2_INITIAL_FINDINGS.md): all active reference candidates
-lost on its first 60%, and volatility changed materially. The later public
-segments remain unreplayed. Historical results do not establish next-round profitability.
+lost on its first 60%, and volatility changed materially. The first frozen selection and final public check have completed: 144,580.19 net
+with exact organizer CLI agreement. All public segments are now consumed. See
+[the volatility research report](ROUND2_VOLATILITY_RESEARCH.md). No server or
+private score exists. The workflow below documents the chronological procedure;
+reusing public data does not create a fresh holdout.
 The [structural research backlog](ROUND2_STRUCTURAL_IDEAS.md) prioritizes new
 mechanisms beyond the six prepared reference/adaptation candidates.
 The [round-1 curve evidence](ROUND1_CHART_EVIDENCE.md) is a prior only. Reassess

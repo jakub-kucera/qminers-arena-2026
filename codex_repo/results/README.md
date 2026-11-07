@@ -1,5 +1,11 @@
 # Result manifests
 
+`round2_submission.json` and immutable `round2_144580.json` identify the first
+verified full-public checkpoint: 144,580.19 net, with exact organizer CLI match.
+`round2_selection_v1.json` records six-candidate chronological selection;
+`round2_volatility_attribution.json` checks actual exposure versus volatility.
+There is no server/private result yet. All public segments are now consumed.
+
 `round2_development_progress.json` records later first-60% tuning studies;
 `round2_development_31840.json` preserves a positive inventory-policy checkpoint.
 Neither is a selected submission or a later-public/server result.
@@ -39,4 +45,5 @@ Raw replay curves, source snapshots and per-run logs live under `logs/` and
 are ignored by Git. Compact provenance and promoted source files are tracked.
 The actual next-round workflow writes its state under `logs/round2`; copy its
 verified final report and frozen source to tracked round-2 paths when that
-round has been evaluated. No such round-2 submission has been selected yet.
+round has been evaluated. The first such checkpoint is now `round2_submission.json`, with a matching
+standalone source and immutable `round2_144580.json` evidence.

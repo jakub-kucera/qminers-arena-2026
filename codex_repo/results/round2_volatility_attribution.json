@@ -1,0 +1,307 @@
+{
+  "source": "strategies/round2_research/round2_absolute_variance_112379.py",
+  "source_sha256": "4080cb3fc553d91a2849b6434e6dc563081b42d710b74c5bbcf2d0c4e1e62cba",
+  "data": "logs/round2/development.csv",
+  "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+  "native_result": {
+    "fills": 7668,
+    "traded_volume": 599145,
+    "inventory": 85,
+    "cash": -732646.0,
+    "mark_price": 9945.0,
+    "breach_penalty": 300.00000000000006,
+    "pnl": 112379.0,
+    "pnl_se": 11844.905793144635,
+    "abs_inventory_q50": 75,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "instrumentation_verified_against_reference": true,
+  "attribution": {
+    "execution_edge_at_previous_mid": 328099.5,
+    "inventory_pnl_mid_changes_below2": -210268.0,
+    "inventory_pnl_mid_changes_at_least2": -5110.0,
+    "native_breach_penalty": 300.00000000000006,
+    "final_native_liquidation_adjustment": -42.5,
+    "identity_net_pnl": 112379.0,
+    "worst_jump_contributions": [
+      [
+        3208887683,
+        29.0,
+        -100,
+        -2900.0
+      ],
+      [
+        3423171335,
+        -26.5,
+        100,
+        -2650.0
+      ],
+      [
+        3423178429,
+        -26.5,
+        100,
+        -2650.0
+      ],
+      [
+        2468112838,
+        -22.0,
+        100,
+        -2200.0
+      ],
+      [
+        2468225782,
+        -18.5,
+        100,
+        -1850.0
+      ],
+      [
+        2468116097,
+        -18.0,
+        100,
+        -1800.0
+      ],
+      [
+        2264194170,
+        -14.5,
+        100,
+        -1450.0
+      ],
+      [
+        2264225894,
+        -14.5,
+        100,
+        -1450.0
+      ],
+      [
+        1793837382,
+        8.5,
+        -100,
+        -850.0
+      ],
+      [
+        2468245490,
+        -5.5,
+        100,
+        -550.0
+      ],
+      [
+        1814657346,
+        -3.5,
+        100,
+        -350.0
+      ],
+      [
+        2468217198,
+        -3.5,
+        100,
+        -350.0
+      ],
+      [
+        2468267459,
+        -3.5,
+        100,
+        -350.0
+      ],
+      [
+        3019405442,
+        -5.0,
+        67,
+        -335.0
+      ],
+      [
+        47227112,
+        -3.0,
+        100,
+        -300.0
+      ],
+      [
+        2466174442,
+        -3.0,
+        100,
+        -300.0
+      ],
+      [
+        1559923083,
+        -27.0,
+        10,
+        -270.0
+      ],
+      [
+        1560220604,
+        26.0,
+        -10,
+        -260.0
+      ],
+      [
+        273979911,
+        3.5,
+        -74,
+        -259.0
+      ],
+      [
+        274004294,
+        3.5,
+        -74,
+        -259.0
+      ]
+    ],
+    "fill_markouts": {
+      "0": {
+        "all": {
+          "lots": 599145,
+          "weighted_edge": 328099.5,
+          "ticks_per_lot": 0.54761284830884,
+          "fill_events": 11144
+        },
+        "maker": {
+          "lots": 599130,
+          "weighted_edge": 328111.5,
+          "ticks_per_lot": 0.5476465875519503,
+          "fill_events": 11141
+        },
+        "hedge": {
+          "lots": 15,
+          "weighted_edge": -12.0,
+          "ticks_per_lot": -0.8,
+          "fill_events": 3
+        }
+      },
+      "5000": {
+        "all": {
+          "lots": 599145,
+          "weighted_edge": 254141.0,
+          "ticks_per_lot": 0.4241727795441838,
+          "fill_events": 11144
+        },
+        "maker": {
+          "lots": 599130,
+          "weighted_edge": 254150.5,
+          "ticks_per_lot": 0.42419925558726823,
+          "fill_events": 11141
+        },
+        "hedge": {
+          "lots": 15,
+          "weighted_edge": -9.5,
+          "ticks_per_lot": -0.6333333333333333,
+          "fill_events": 3
+        }
+      },
+      "100000": {
+        "all": {
+          "lots": 599145,
+          "weighted_edge": 213840.0,
+          "ticks_per_lot": 0.3569085947475152,
+          "fill_events": 11144
+        },
+        "maker": {
+          "lots": 599130,
+          "weighted_edge": 213847.5,
+          "ticks_per_lot": 0.3569300485704271,
+          "fill_events": 11141
+        },
+        "hedge": {
+          "lots": 15,
+          "weighted_edge": -7.5,
+          "ticks_per_lot": -0.5,
+          "fill_events": 3
+        }
+      },
+      "400000": {
+        "all": {
+          "lots": 598960,
+          "weighted_edge": 143619.5,
+          "ticks_per_lot": 0.23978145452117003,
+          "fill_events": 11143
+        },
+        "maker": {
+          "lots": 598945,
+          "weighted_edge": 143623.0,
+          "ticks_per_lot": 0.239793303224837,
+          "fill_events": 11140
+        },
+        "hedge": {
+          "lots": 15,
+          "weighted_edge": -3.5,
+          "ticks_per_lot": -0.23333333333333334,
+          "fill_events": 3
+        }
+      },
+      "2000000": {
+        "all": {
+          "lots": 598672,
+          "weighted_edge": 101811.5,
+          "ticks_per_lot": 0.17006223775289306,
+          "fill_events": 11138
+        },
+        "maker": {
+          "lots": 598657,
+          "weighted_edge": 101815.0,
+          "ticks_per_lot": 0.17007234526615408,
+          "fill_events": 11135
+        },
+        "hedge": {
+          "lots": 15,
+          "weighted_edge": -3.5,
+          "ticks_per_lot": -0.23333333333333334,
+          "fill_events": 3
+        }
+      },
+      "25000000": {
+        "all": {
+          "lots": 594299,
+          "weighted_edge": 103893.5,
+          "ticks_per_lot": 0.17481688510328977,
+          "fill_events": 11075
+        },
+        "maker": {
+          "lots": 594284,
+          "weighted_edge": 103895.0,
+          "ticks_per_lot": 0.17482382160717772,
+          "fill_events": 11072
+        },
+        "hedge": {
+          "lots": 15,
+          "weighted_edge": -1.5,
+          "ticks_per_lot": -0.1,
+          "fill_events": 3
+        }
+      }
+    },
+    "volatility_exposure": {
+      "sigma<= 1": {
+        "seconds": 1676.787438,
+        "mean_absolute_actual_inventory": 71.79831331250706,
+        "mean_planned_cap": 99.99929051830122
+      },
+      "sigma<= 2": {
+        "seconds": 1385.895185,
+        "mean_absolute_actual_inventory": 71.80815208619113,
+        "mean_planned_cap": 96.58278589805477
+      },
+      "sigma<= 4": {
+        "seconds": 248.78461,
+        "mean_absolute_actual_inventory": 21.191723893210277,
+        "mean_planned_cap": 22.292205132785345
+      },
+      "sigma<= 8": {
+        "seconds": 198.322614,
+        "mean_absolute_actual_inventory": 10.662119767138607,
+        "mean_planned_cap": 10.155156158843287
+      },
+      "sigma<= 0.5": {
+        "seconds": 41.13318,
+        "mean_absolute_actual_inventory": 74.8550157804478,
+        "mean_planned_cap": 100.0
+      },
+      "sigma>8": {
+        "seconds": 49.074505,
+        "mean_absolute_actual_inventory": 12.722358136877794,
+        "mean_planned_cap": 10.591829810611436
+      }
+    },
+    "limitation": "Descriptive post-run markouts at the last valid midpoint strictly before the horizon. Includes fills already closed before that horizon. Hedge classification uses the strategy hedge ID; marketable LIMIT orders are in maker group."
+  },
+  "volatility_exposure_bin_semantics": "Disjoint bins in increasing upper bound: [0,.5],(.5,1],(1,2],(2,4],(4,8],(8,infinity). Labels denote upper bounds, not cumulative groups."
+}

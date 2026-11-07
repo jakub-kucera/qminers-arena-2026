@@ -26,10 +26,19 @@ later tuning results are sample-tuned, not independent holdouts.
 
 ## Round-2 preparation
 
+The first verified public checkpoint scores **144,580.19 net**, including
+636.81 in penalties. Use [round2_submission.py](strategies/round2_submission.py).
+The separate organizer CLI replay matched all fields; the selected source
+earned +19,052.19 on the middle public 20% and +13,149 on the final public 20%.
+It uses the user's absolute-volatility exposure idea with native queue-preserving
+shrinks. Read [the research report](docs/ROUND2_VOLATILITY_RESEARCH.md) and
+[the result manifest](results/round2_submission.json).
+All public segments have now been inspected. No server or private score exists.
+
 Six standalone candidates are prepared under [strategies/round2/](strategies/round2/):
 direct transfer, strict-100 maker, faster adaptation, dual-memory maker,
-guarded IOC trend, and a no-trade control. They are hypotheses for new data;
-**no round-2 winner has been selected**.
+guarded IOC trend, and a no-trade control. These are the original preparation
+controls; the current selected source is linked above.
 
 The public tape has arrived at `data/round2_public.csv` (100 minutes, 2.19M
 events). Its first-hour diagnostics show about **3.65x** the old 25-second
@@ -43,10 +52,10 @@ for the corresponding fixed-50-lot jump-aware maker. This is first-60%
 sample tuning, not a selected submission or a server result. The source is
 [round2_absolute_vol_93679.py](strategies/round2_research/round2_absolute_vol_93679.py);
 its evidence is [round2_development_93679.json](results/round2_development_93679.json).
-The current development best is **112,379** with inverse-variance sizing
-and three-second adaptation. Six candidates were frozen before selection on
-the middle public20% at `logs/round2_selection_v1`; that comparison is now
-running. The last public20% remains untouched.
+The selected checkpoint's development result was **112,379** with inverse-variance
+sizing and three-second adaptation. Six candidates were frozen before the
+completed middle-public 20% selection at `logs/round2_selection_v1`; only the
+selected source then received the frozen final-public 20% check.
 
 The reference workflow below is for a fresh study directory. The default
 `logs/round2` intake, profile and screen have already completed; do not overwrite

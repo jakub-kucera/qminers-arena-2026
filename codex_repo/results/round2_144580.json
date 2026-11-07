@@ -1,0 +1,143 @@
+{
+  "selection": {
+    "name": "absolute_variance_tau3_risk200",
+    "frozen_file": "logs/round2_selection_v1/frozen_submission.py",
+    "source_sha256": "4080cb3fc553d91a2849b6434e6dc563081b42d710b74c5bbcf2d0c4e1e62cba",
+    "evaluation_scope": "local_public_only",
+    "organizer_private_evaluated": false,
+    "risk": "native",
+    "criterion": "Highest next-20% net PnL increment; lower sampled drawdown breaks ties.",
+    "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+    "final_segment_inspected": false
+  },
+  "result": {
+    "result": {
+      "fills": 13117,
+      "traded_volume": 950692,
+      "inventory": -100,
+      "cash": 1114217.0,
+      "mark_price": 9690.0,
+      "breach_penalty": 636.8100000000001,
+      "pnl": 144580.19,
+      "pnl_se": 18642.81889761581,
+      "abs_inventory_q50": 68,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 83.25667895795777,
+    "max_abs_inventory": 162,
+    "max_potential_inventory_at_submission": 300,
+    "max_drawdown_1s": 14179.0,
+    "submissions": 48009,
+    "order_status_counts": {
+      "accepted": 48009,
+      "canceled": 37713,
+      "filled": 10295,
+      "partially_filled": 8273,
+      "modified": 193,
+      "rejected": 184
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 600.0,
+        "pnl_increment": 11102.0
+      },
+      {
+        "start_s": 600.0,
+        "end_s": 1200.0,
+        "pnl_increment": 25341.0
+      },
+      {
+        "start_s": 1200.0,
+        "end_s": 1800.0,
+        "pnl_increment": 24042.0
+      },
+      {
+        "start_s": 1800.0,
+        "end_s": 2400.0,
+        "pnl_increment": 10879.0
+      },
+      {
+        "start_s": 2400.0,
+        "end_s": 3000.0,
+        "pnl_increment": 25045.0
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 3600.0,
+        "pnl_increment": 15970.0
+      },
+      {
+        "start_s": 3600.0,
+        "end_s": 4200.0,
+        "pnl_increment": 2746.0
+      },
+      {
+        "start_s": 4200.0,
+        "end_s": 4800.0,
+        "pnl_increment": 16306.190000000002
+      },
+      {
+        "start_s": 4800.0,
+        "end_s": 5400.0,
+        "pnl_increment": 5424.0
+      },
+      {
+        "start_s": 5400.0,
+        "end_s": 5999.995946,
+        "pnl_increment": 7725.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "boundary_pnl": {
+      "3599997635": 112379.0,
+      "4799996824": 131431.19
+    },
+    "source": "logs/round2_selection_v1/frozen_submission.py",
+    "source_sha256": "4080cb3fc553d91a2849b6434e6dc563081b42d710b74c5bbcf2d0c4e1e62cba",
+    "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+    "strategy_state": {
+      "_labels": 260603,
+      "_mass": 252940.53023103616
+    },
+    "rates": {
+      "observed_duration_seconds": 5999.995946,
+      "net_pnl_per_minute": 1445.8028768808106,
+      "volume_per_minute": 9506.926423513287,
+      "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+    }
+  },
+  "official_cli_match": true,
+  "evaluation_scope": "local_public_only",
+  "organizer_private_evaluated": false,
+  "final_segment_evaluated": true,
+  "source_sha256": "4080cb3fc553d91a2849b6434e6dc563081b42d710b74c5bbcf2d0c4e1e62cba",
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "final_segment_pnl_increment": 13149.0,
+  "limitation": "This is only the PUBLIC tape. Its last 20% is an internal chronological check if not previously inspected. It is not the organizer private backtest; server validation feedback and post-deadline private scoring are separate.",
+  "submission_source": "strategies/round2_submission.py",
+  "immutable_source": "strategies/round2_volatility_144580.py",
+  "status": "Verified local PUBLIC checkpoint; organizer server-validation/private scores unknown.",
+  "training_and_evaluation_scope": "Source chosen from first60% development and six-candidate next20% selection. Frozen final20% check passed; later research must not call public data untouched.",
+  "development_candidates_evaluated_before_selection": 56,
+  "full_public_period_pnl": {
+    "first60": 112379.0,
+    "next20": 19052.190000000002,
+    "last20": 13149.0
+  }
+}

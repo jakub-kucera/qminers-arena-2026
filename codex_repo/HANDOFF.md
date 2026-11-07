@@ -1,60 +1,67 @@
 # Handoff for the next session
 
-Prepared 7 November 2026 after round 1. Team: **ThatsMyQuant**. The user expects
-the next session about an hour after round 1. Round-2 public data has now arrived
-and is at `data/round2_public.csv`. Read
-[ROUND2_INITIAL_FINDINGS.md](docs/ROUND2_INITIAL_FINDINGS.md) before doing more work.
-Only the first public 60% has been replayed; all six active/control references
-and four development diagnostics have completed. Every active policy lost on
-that prefix. Four further inventory/entry prototypes also lost; their naive
-resizing caused large queue churn and does not isolate the effect of smaller
-positions. See the findings and source hashes before reusing these prototypes.
-The user's absolute-volatility exposure idea improved the DEVELOPMENT best to
-**112,379 net** (`strategies/round2_research/round2_absolute_variance_112379.py`).
-The current development leader uses a three-second variance decay and
-planned cap floor-to-five(200/sigma_squared), bounded 10..100. Six sources
-were frozen before the next public20% evaluation at `logs/round2_selection_v1`;
-that middle segment is now being consumed for selection. The last public20%
-remains untouched. No server or private result exists.
-The earlier 93,679 checkpoint (`round2_absolute_vol_93679.py`) uses:
-Volatility is EW 100 ms preceding-midpoint returns in ticks/sqrt(second),
-10-second decay; planned exposure is 100/sigma, rounded down to 5-lot steps
-and bounded 10..100. It keeps the jump-aware quote logic and native
-priority-preserving shrinks. Slower 60-second volatility scored 63,992.
-See `results/round2_development_93679.json`; remaining variants are running.
-The 93,679 result was recorded before any later public evaluation.
-Follow-up research has also found positive DEVELOPMENT candidates: native
-queue-preserving sizing with planned bounds +/-50 scored 31,840 net without
-penalty (`strategies/round2_research/round2_queue_fixed50_31840.py`), and a
-500 ms jump-pause maker scored 34,388. These are first-60% tuning results,
-not selected submissions or later-segment checks. New study scripts and
-`results/round2_development_progress.json` preserve provenance. Further queue/jump
-combinations and conditional-fill studies are in progress; inspect their logs.
-The transfer attribution exactly reproduced all native fields: 394,111 of
-execution edge at the preceding midpoint was offset by -431,202 of inventory
-midpoint changes, 1,063.33 fees and a -50 final liquidation adjustment.
-This decomposition depends on the policy's visible book and carried valid
-midpoint; components are not independent causes. Post-run fill markouts are
-research diagnostics only, never exposed to the trading policy.
-No round-2 winner or server score is established. The provisional
-deadline is Sunday **00:15 CET** with a planned ready-by time of **23:45 CET**.
-The organizer has announced three separate datasets: downloadable public,
-server validation with PnL-only feedback, and private scoring after the deadline.
-Public is roughly half the size of either hidden dataset; the size metric is
-unspecified. Internal public splits are not those organizer datasets.
-The user emphasized that round 2 could differ substantially. The later
-[round-1 chart summary](docs/ROUND1_CHART_EVIDENCE.md) strengthens steady-making
-hypotheses for round 1, but does not establish the next regime or a target
-inventory size. Preserve the maker and trend/taker alternatives and let new
-public evidence decide. Raw leaderboard curves/private log are not in this repo.
+Updated 7 November 2026 after the first verified round-2 public checkpoint.
+Team: **ThatsMyQuant**.
+
+Current round-2 source: **strategies/round2_submission.py**, byte-identical to
+`strategies/round2_volatility_144580.py`. It earns **144,580.19 net on the full
+PUBLIC tape**, including **636.81** native position penalties. All native
+fields matched a separate unmodified organizer CLI replay. Source SHA-256:
+`4080cb3fc553d91a2849b6434e6dc563081b42d710b74c5bbcf2d0c4e1e62cba`.
+
+Read [the volatility research report](docs/ROUND2_VOLATILITY_RESEARCH.md) and
+`results/round2_submission.json`. Public data is `data/round2_public.csv`:
+100 minutes, 2,193,064 rows, SHA-256
+`88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4`.
+The first investigation showed much higher volatility and every initial active
+reference lost. Its historical evidence remains in
+[ROUND2_INITIAL_FINDINGS.md](docs/ROUND2_INITIAL_FINDINGS.md).
+
+The user's absolute-volatility sizing idea produced the main improvement.
+Regular 100 ms preceding-midpoint returns estimate absolute variance with a
+three-second decay. Planned cap is floor-to-five(200/sigma_squared), bounded
+10..100. Native priority-preserving shrinks retain real reservations until ACK;
+100 ms jump pauses and immediate cancellation of invalid books remain active.
+These are planned bounds: full-run actual exposure reached 162, potential 300;
+all native fees were paid. Time-weighted development actual exposure fell from
+about 72 lots below sigma 2 to about 11–13 above sigma 4.
+
+There were 56 development replays before six sources were frozen at
+`logs/round2_selection_v1`. The selected inverse-variance source made
+**+19,052.19** on the middle public 20% and **+13,149** on the frozen last 20%.
+The fixed-cap alternative lost 36,742 on the middle segment; the signal-target
+alternative lost 18,551. All public segments have now been consumed. The
+selection file's `final_segment_inspected=false` is a historical selection-time
+flag; `final_report.json` records the completed check. Future public outcomes
+are sample tuning, not fresh validation.
+
+Three post-freeze alpha ablations and three risk-weighted/adaptive learners
+completed on development only. Best development gain was 113,837 versus the
+checkpoint's 112,379; these small gains have not replaced the verified source.
+A further development-only passive-exit quote batch is running under
+`logs/round2/inventory_exit_quotes`; its sources do not change the submission.
+There are now 62 development replays and 87 passing tests. Exact study sources,
+native hashes and results are in `results/round2_development_progress.json`;
+the first frozen shortlist is tracked under `strategies/round2_shortlist_v1`.
+
+No organizer server-validation or private score exists yet. A question asking
+for server PnL and submission ID is pending; associate any reply with the exact
+uploaded source. The organizer uses downloadable public, separate PnL-only
+server validation, and private scoring after the deadline. Local public splits
+are not either hidden dataset. The provisional shifted deadline is Sunday
+**00:15 CET**, with a ready-by target of **23:45 CET**.
+
+The user emphasized round 2 could differ substantially. The round-1 chart
+analysis is a prior only; the new public tape confirmed a different regime.
+No raw leaderboard curves/private user log have been supplied here.
 
 ## Start here
 
 1. Check `git status` and read this file plus [the round-2 plan](docs/ROUND2_PLAN.md).
-2. Preserve the final round-1 files and locate/fingerprint the new dataset.
+2. Preserve both verified submissions and named archives; match source/data fingerprints.
 3. Check whether the organizer changed rules or simulator interfaces.
-4. Prepare a new experiment with the workbench, then profile only its development prefix.
-5. Evaluate the predeclared candidates before beginning a large parameter search.
+4. Develop new hypotheses on the existing development prefix; label any subsequent public checks as sample tuning.
+5. Record server feedback against exact files; compare materially different policies before large searches.
 
 All commands below assume the `qminers-algo-arena` repository root. Use
 `.venv/bin/python`; it is Python 3.13.16 and already works. Offline dependency
@@ -200,7 +207,7 @@ Historical characterization completed all 18 candidate/tape combinations; see
 the dual-memory maker scored 622,789.99, and guarded trend scored 225,487 on the
 thin original sample. These are historical checks, not fresh round-2 evidence. The
 `logs/round2` experiment has since been prepared; see the
-initial findings for current status. No round-2 submission is selected.
+volatility research report for the current verified selection.
 If an experiment has `final_report.json`, its final segment has been evaluated;
 the selection file's flag records the state at selection time, not current freshness.
 This segment is internal to the PUBLIC tape. Organizer private scoring happens
