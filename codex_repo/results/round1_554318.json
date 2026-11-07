@@ -154,6 +154,6 @@
   },
   "data_file": "data/round1.csv",
   "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
-  "verification": "Audited full replay; separate CLI verification pending.",
+  "verification": "Unmodified simulator CLI matches every result field from audited replay; local documented-rule checks and cache boundary tests pass.",
   "limitation": "Further tuning on already evaluated round-1 data; no fresh holdout."
 }

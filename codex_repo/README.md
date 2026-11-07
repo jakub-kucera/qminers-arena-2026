@@ -1,11 +1,14 @@
 # Qminers trading hackathon starter
 
-**Round 1: strongest separately CLI-verified candidate is currently
-`strategies/round1_depth_nonlinear_534k.py` (534,332).** It has zero position
-penalty on the supplied `round1.csv`. Earlier 498,056 and 523,999 versions are
-preserved separately. Scores above 476,052 use further tuning on already
-evaluated data; no fresh independent holdout remains. See `results/` for
-versioned metrics and the evaluation notes below.
+**Round 1: submit `strategies/round1_submission.py`.** The unmodified
+simulator CLI verifies **554,347** on the supplied `data/round1.csv`, with zero
+position penalty and maximum actual/potential inventory 100 / 100. Final
+metrics and source/input hashes are tracked in `results/round1_submission.json`.
+Earlier 498,056 and 523,999 versions remain separately preserved.
+
+These later scores use repeated tuning on the supplied file; no fresh
+independent holdout remains. The new submission has not been scored by the
+competition server.
 
 ```
 strategies/   template_strategy.py, an empty strategy to copy and fill in; trend_follower.py, a simple working one
@@ -515,3 +518,49 @@ older than 5 ms. Partial-fill notifications update inventory and cash without
 triggering that cached replenishment. Invalid public books clear the cache.
 Actual/potential inventory remain bounded by 100, with zero penalty. Metrics
 and verification status are in `results/round1_554318.json`.
+
+## Latest round-1 submission: 554,347
+
+Use the single standalone file `strategies/round1_submission.py`. Its executable
+AST matches the exact scored experiment; only the module description was
+updated. The canonical file was separately replayed through the unmodified CLI,
+and every result field matches its audited replay.
+
+| Metric | Result |
+| --- | ---: |
+| PnL | 554,347 |
+| Position penalty | 0 |
+| Maximum actual/potential inventory | 100 / 100 |
+| Filled orders | 37,087 |
+| Traded lots | 2,192,606 |
+| End inventory | +100 |
+| Cash | -448,553 |
+| Mark-out price | 10,029 |
+| PnL standard error | 11,205.47 |
+| Maximum drawdown on the 1-second curve | 834 |
+
+The model uses fifteen causal features, 100 ms matured return labels sampled
+every 20 ms, and one-second regression refits. Per-order quantities are capped
+at 20 lots for robust imbalance features. Inventory skew is 0.025 and the
+neutral fair-price band is 0.10 ticks. Selective one-tick inside quotes require
+a spread of at least two ticks and predicted edge after skew above 0.30 ticks.
+Confirmed cancellations replenish from desired quotes at most 5 ms old;
+invalid books clear this cache. All pending exposure remains reserved.
+
+The final 0.30 inside threshold scored only 29 more than 0.25 (554,318), so
+that difference provides little evidence of an improvement on another file.
+The exact 0.25 version is preserved as `strategies/round1_private_554k.py`, and
+the byte-identical 554,347 experiment as `strategies/round1_private_554347.py`.
+All ten-minute PnL increments are positive. Forty-seven tests pass, including
+inside-quote thresholds, non-crossing prices, mature-label timing, randomized
+order races, exact exposure reservations, and stale/invalid cache behavior.
+
+```bash
+.venv/bin/python -m simulator.main --strategy strategies/round1_submission.py \
+  --backtest data/round1.csv --log-dir logs/round1/reproduce_final --no-logs
+```
+
+This exceeds the 550,000 comparison threshold by 4,347. The other team's exact
+current score is unknown. The final result is sample-tuned, has no new holdout,
+and has not yet been evaluated on the competition server. Earlier model files
+and their metrics remain preserved; Git tags identify the score milestones.

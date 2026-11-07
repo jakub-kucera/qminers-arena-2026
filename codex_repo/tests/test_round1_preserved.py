@@ -9,12 +9,13 @@ from strategies.round1_nonlinear_498k import PassiveStrategy as NonlinearStrateg
 from strategies.round1_queue_545k import PassiveStrategy as QueueStrategy
 from strategies.round1_inside_551k import PassiveStrategy as InsideStrategy
 from strategies.round1_private_554k import PassiveStrategy as PrivateStrategy
+from strategies.round1_submission import PassiveStrategy as SubmissionStrategy
 from test_strategy import Gateway
 
 
 class PreservedRound1Tests(unittest.TestCase):
     def test_mature_labels_and_solver_for_expanded_models(self):
-        for cls in (NonlinearStrategy, DepthStrategy, NonlinearDepthStrategy, QueueStrategy, InsideStrategy, PrivateStrategy):
+        for cls in (NonlinearStrategy, DepthStrategy, NonlinearDepthStrategy, QueueStrategy, InsideStrategy, PrivateStrategy, SubmissionStrategy):
             with self.subTest(model=cls.__name__, dimensions=cls.FEATURE_COUNT):
                 s = cls()
                 features = (1,) + (0,) * (s.FEATURE_COUNT - 1)
@@ -57,6 +58,8 @@ class PreservedRound1Tests(unittest.TestCase):
             ('strategies/round1_queue_545k.py', QueueStrategy),
             ('strategies/round1_inside_551k.py', InsideStrategy),
             ('strategies/round1_private_554k.py', PrivateStrategy),
+            ('strategies/round1_submission.py', SubmissionStrategy),
+            ('strategies/round1_private_554347.py', SubmissionStrategy),
         ):
             self.assertEqual(check(path), [])
             for inventory in range(-100, 101):
@@ -104,7 +107,7 @@ class PreservedRound1Tests(unittest.TestCase):
         for canceled_at, invalidate, expected_orders in (
             (15000, False, 3), (15001, False, 2), (12000, True, 2),
         ):
-            s = PrivateStrategy()
+            s = SubmissionStrategy()
             gateway = Gateway(s)
             s._ctx.cancel_order = lambda oid: None
             s._quote(0, 1, 99)
@@ -124,7 +127,7 @@ class PreservedRound1Tests(unittest.TestCase):
             self.assertLessEqual(s.inventory+sum(r[2] for r in s._orders.values() if r[0] > 0), 100)
 
     def test_private_partial_fill_updates_ledger_without_using_cached_quotes(self):
-        s = PrivateStrategy()
+        s = SubmissionStrategy()
         gateway = Gateway(s)
         s._quote(0, 1, 99)
         oid = next(iter(s._orders))
@@ -135,6 +138,22 @@ class PreservedRound1Tests(unittest.TestCase):
             status=OrderStatus.PARTIALLY_FILLED, filled_quantity=40, remaining_quantity=60, fill_price=99))
         self.assertEqual((s.inventory, s.cash), (40, -3960))
         self.assertEqual(len(gateway.sent), 1)
+
+    def test_selected_submission_inside_threshold_is_strict_in_both_directions(self):
+        for weight, expected_buy, expected_sell in (
+            (0.6, 100, 102), (0.60002, 101, 102),
+            (-0.6, 100, 102), (-0.60002, 100, 101),
+        ):
+            s = SubmissionStrategy()
+            gateway = Gateway(s)
+            s._labels = s.MIN_LABELS
+            s._last_fit_us = 0
+            s._weights[2] = weight
+            s.on_order_book_change(OrderBookSnapshot(1,
+                [BookOrderView('b', Side.BUY, 100, 300, 'market')],
+                [BookOrderView('a', Side.SELL, 102, 100, 'market')]), [])
+            self.assertEqual(next(r.price for r in gateway.sent if r.side == Side.BUY), expected_buy)
+            self.assertEqual(next(r.price for r in gateway.sent if r.side == Side.SELL), expected_sell)
 
     def test_overlapping_replacements_reserve_pending_cancels_and_survive_fill_races(self):
         s = QueueStrategy()
