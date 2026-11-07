@@ -20,13 +20,13 @@ The current `strategies/round2_submission.py` is byte-identical to `strategies/r
 
 ## Mechanisms and review targets
 
-- **Fill value + fresh quotes:** Same fill-value trees plus four100ms fresh-quote alpha features; risk sizing unchanged.
-- **Fill value, +0.1 edge margin:** Require predicted fill edge at least0.1 tick for opening/reversing exposure; unchanged pretrained trees.
-- **Fill value, zero edge margin:** Current submission. Conditional fill value from public first 60%,5ms latency-aligned features,400ms future markout.
+- **Fill value + fresh quotes:** Same fill-value trees plus four 100 ms fresh-quote alpha features; risk sizing unchanged.
+- **Fill value, +0.1 edge margin:** Require predicted fill edge at least 0.1 tick for opening/reversing exposure; unchanged pretrained trees.
+- **Fill value, zero edge margin:** Current submission. Conditional fill value from public first 60%,5 ms latency-aligned features,400 ms future markout.
 - **Fill value, fast refresh:** Refresh fill-value forecast at 5 ms rather than 20 ms; same weights and risk sizing.
-- **Fill value, -0.1 edge margin:** Looser conditional fill-value gate, allowing predicted edge down to-0.1 tick.
+- **Fill value, -0.1 edge margin:** Looser conditional fill-value gate, allowing predicted edge down to -0.1 tick.
 - **Fresh quote alpha only:** Online learner with four extra 100 ms fresh-quote features; no pretrained fill-value gate.
-- **Volatility-sized baseline:** Earlier verified checkpoint: online29-feature forecast, fixed saved inverse-variance sizing; no offline pretraining.
+- **Volatility-sized baseline:** Earlier verified checkpoint: online 29-feature forecast, fixed saved inverse-variance sizing; no offline pretraining.
 
 The four leading fill-value variants share the same pretrained 18-feature tree model. The fresh-quote variant adds four online alpha features; it does not recalibrate volatility sizing. All risk parameters remain fixed as requested.
 

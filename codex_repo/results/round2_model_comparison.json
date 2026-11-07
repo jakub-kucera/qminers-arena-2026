@@ -50,7 +50,7 @@
       "offline_fit_first60": true,
       "native_ledger_audit_passed": true,
       "independent_organizer_cli_match": false,
-      "description": "Same fill-value trees plus four100ms fresh-quote alpha features; risk sizing unchanged.",
+      "description": "Same fill-value trees plus four 100 ms fresh-quote alpha features; risk sizing unchanged.",
       "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4"
     },
     {
@@ -73,7 +73,7 @@
       "offline_fit_first60": true,
       "native_ledger_audit_passed": true,
       "independent_organizer_cli_match": false,
-      "description": "Require predicted fill edge at least0.1 tick for opening/reversing exposure; unchanged pretrained trees.",
+      "description": "Require predicted fill edge at least 0.1 tick for opening/reversing exposure; unchanged pretrained trees.",
       "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4"
     },
     {
@@ -96,7 +96,7 @@
       "offline_fit_first60": true,
       "native_ledger_audit_passed": true,
       "independent_organizer_cli_match": true,
-      "description": "Current submission. Conditional fill value from public first60%,5ms latency-aligned features,400ms future markout.",
+      "description": "Current submission. Conditional fill value from public first 60%,5 ms latency-aligned features,400 ms future markout.",
       "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4"
     },
     {
@@ -119,7 +119,7 @@
       "offline_fit_first60": true,
       "native_ledger_audit_passed": true,
       "independent_organizer_cli_match": false,
-      "description": "Refresh fill-value forecast at5ms rather than20ms; same weights and risk sizing.",
+      "description": "Refresh fill-value forecast at 5 ms rather than 20 ms; same weights and risk sizing.",
       "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4"
     },
     {
@@ -142,7 +142,7 @@
       "offline_fit_first60": true,
       "native_ledger_audit_passed": true,
       "independent_organizer_cli_match": false,
-      "description": "Looser conditional fill-value gate, allowing predicted edge down to-0.1 tick.",
+      "description": "Looser conditional fill-value gate, allowing predicted edge down to -0.1 tick.",
       "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4"
     },
     {
@@ -165,7 +165,7 @@
       "offline_fit_first60": false,
       "native_ledger_audit_passed": true,
       "independent_organizer_cli_match": false,
-      "description": "Online learner with four extra100ms fresh-quote features; no pretrained fill-value gate.",
+      "description": "Online learner with four extra 100 ms fresh-quote features; no pretrained fill-value gate.",
       "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4"
     },
     {
@@ -188,7 +188,7 @@
       "offline_fit_first60": false,
       "native_ledger_audit_passed": true,
       "independent_organizer_cli_match": true,
-      "description": "Earlier verified checkpoint: online29-feature forecast, fixed saved inverse-variance sizing; no offline pretraining.",
+      "description": "Earlier verified checkpoint: online 29-feature forecast, fixed saved inverse-variance sizing; no offline pretraining.",
       "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4"
     }
   ]
