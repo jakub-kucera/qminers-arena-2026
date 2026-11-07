@@ -10,6 +10,12 @@ turnover, sizing or a combination could explain the gap. Our local final model
 paid only 1,700 in penalties; eliminating that fee alone cannot explain a gap
 of this size. Do not claim the winner used a particular method without evidence.
 
+The subsequent [round-1 curve analysis](ROUND1_CHART_EVIDENCE.md) strengthens
+the steady execution/fill-quality hypothesis for that tape. Its inventory
+estimates require qualifications. These priorities remain conditional on the
+new round-2 public tape: a different spread, depth or flow regime can favor
+another family. No fixed 60–80 lot target follows from the old leaderboard.
+
 The six prepared candidates are useful controls and adaptation alternatives.
 They do not yet implement the queue-value or latent-flow architectures below.
 

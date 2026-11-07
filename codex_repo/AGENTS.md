@@ -7,6 +7,9 @@ PnL-only feedback, and post-deadline private scoring. Local public splits are
 only internal diagnostics. Do not call a local `public-check` private evaluation.
 Record server feedback separately, tied to exact source snapshots; validation
 feedback used for tuning is not an untouched final assessment.
+The round-1 chart analysis is a prior about round 1 only. The user explicitly
+expects round 2 may differ. Reassess the new tape before choosing a strategy
+family or exposure target; retain both maker and trend/taker hypotheses.
 
 Preserve the round-1 submission, immutable named strategies, result manifests,
 Git history, and data. Its final verified source is

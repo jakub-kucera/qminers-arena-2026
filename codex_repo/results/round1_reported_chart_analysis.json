@@ -1,0 +1,62 @@
+{
+  "recorded_at_utc": "2026-11-07T18:06:26.800775+00:00",
+  "scope": "Round 1 only; do not assume round-2 regime or target inventory.",
+  "source": "User-supplied processed leaderboard chart summary; raw curves/private log not supplied in this workspace.",
+  "user_reports_private_log_match": true,
+  "teams": 61,
+  "points_per_curve": 481,
+  "interval_seconds": 25,
+  "interval_count": 480,
+  "span_seconds": 12000,
+  "reported_price_change_scale_ticks": 4.83,
+  "reported_our_private_median_absolute_inventory": 99,
+  "statistics": [
+    {
+      "team": "Team 2",
+      "rank": 1,
+      "mean_pnl_per_interval_rounded": 1651,
+      "sd_pnl_per_interval": 392,
+      "conditional_sd_ratio_lots": 81.16
+    },
+    {
+      "team": "Team 5",
+      "rank": 2,
+      "mean_pnl_per_interval_rounded": 1461,
+      "sd_pnl_per_interval": 446,
+      "conditional_sd_ratio_lots": 92.34
+    },
+    {
+      "team": "Team 4",
+      "rank": 3,
+      "mean_pnl_per_interval_rounded": 1390,
+      "sd_pnl_per_interval": 394,
+      "conditional_sd_ratio_lots": 81.57
+    },
+    {
+      "team": "Team 3",
+      "rank": 5,
+      "mean_pnl_per_interval_rounded": 1366,
+      "sd_pnl_per_interval": 310,
+      "conditional_sd_ratio_lots": 64.18
+    },
+    {
+      "team": "ThatsMyQuant",
+      "rank": 8,
+      "mean_pnl_per_interval_rounded": 1255,
+      "sd_pnl_per_interval": 461,
+      "conditional_sd_ratio_lots": 95.45
+    }
+  ],
+  "user_observations": [
+    "Near-linear PnL across teams; approximately equal quarter contributions.",
+    "No large drawdowns visible at 25-second sampling.",
+    "Team increment correlations reported at 0.35–0.65; correlations with price changes near zero."
+  ],
+  "interpretation": [
+    "Consistent with sustained high-turnover profit; increases the plausibility of execution/fill-quality explanations for round 1.",
+    "Sampled curves cannot rule out sub-25-second drawdowns or frequent directional trading.",
+    "SD(PnL)/SD(price) is not an inventory estimator without assumptions about turnover, covariance, other PnL components and the definition of the price-change scale.",
+    "Even that conditional ratio is about 92 lots for second place, not 60–80 lots for every leader.",
+    "Round-2 family selection must start from new public-tape evidence; preserve maker and trend/taker alternatives."
+  ]
+}

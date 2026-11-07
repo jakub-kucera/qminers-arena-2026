@@ -5,6 +5,9 @@ rank 8/61, with no source/dataset attribution. It must not be silently attached
 to the 624,076 local replay. `round2_competition_protocol.json` records the
 three-dataset announcement. `round2_server_results.json` is the separate server
 feedback ledger; it is currently empty. Local public checks are not private scores.
+`round1_reported_chart_analysis.json` records the later user-supplied curve
+summary and qualified exposure proxies. Its scope is round 1; raw curves and
+the user's private log have not been supplied here.
 
 - [round1_submission.json](round1_submission.json) identifies the frozen current
   round-1 source, exact native result, hashes and verification.

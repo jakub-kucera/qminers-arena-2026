@@ -4,6 +4,9 @@ No round-2 data has arrived yet. These candidates are prepared hypotheses;
 historical results do not establish performance in the next round.
 The [structural research backlog](ROUND2_STRUCTURAL_IDEAS.md) prioritizes new
 mechanisms beyond the six prepared reference/adaptation candidates.
+The [round-1 curve evidence](ROUND1_CHART_EVIDENCE.md) is a prior only. Reassess
+the new public tape before prioritizing a family; retain the trend/taker and
+maker alternatives rather than assuming the previous leaderboard regime repeats.
 
 ## Organizer protocol: three different backtests
 

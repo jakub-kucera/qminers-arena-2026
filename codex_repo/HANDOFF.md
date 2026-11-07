@@ -6,6 +6,11 @@ The organizer has announced three separate datasets: downloadable public,
 server validation with PnL-only feedback, and private scoring after the deadline.
 Public is roughly half the size of either hidden dataset; the size metric is
 unspecified. Internal public splits are not those organizer datasets.
+The user emphasized that round 2 could differ substantially. The later
+[round-1 chart summary](docs/ROUND1_CHART_EVIDENCE.md) strengthens steady-making
+hypotheses for round 1, but does not establish the next regime or a target
+inventory size. Preserve the maker and trend/taker alternatives and let new
+public evidence decide. Raw leaderboard curves/private log are not in this repo.
 
 ## Start here
 
