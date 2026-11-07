@@ -28,7 +28,7 @@ class AugmentationTests(unittest.TestCase):
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()
         cls.folder = Path(cls.temp.name)
-        cls.sources = generate(Path('strategies/round1_submission.py').read_text())
+        cls.sources = generate(Path('research/robust_augmentation_20261107/sources/original_554347.py').read_text())
         for name, text in cls.sources.items():
             (cls.folder/(name+'.py')).write_text(text)
 

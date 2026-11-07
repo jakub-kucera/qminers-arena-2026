@@ -1,0 +1,69 @@
+{
+  "scope": "Development first 60% only; no final selection.",
+  "hypotheses": [
+    "Clipped response limits jump influence",
+    "Smaller child orders replenish without canceling equal-price orders",
+    "Rich-feature longer-horizon IOC entry with explicit spread hurdle"
+  ],
+  "candidates": [
+    {
+      "name": "robust_labels_1",
+      "file": "logs\\round2_structural_batch\\sources\\robust_labels_1.py",
+      "source_sha256": "76742a0ca0b303982e09a7a5519826b0ae7b3e3f701b4516caab7b1d6240111c",
+      "risk": "strict100"
+    },
+    {
+      "name": "robust_labels_3",
+      "file": "logs\\round2_structural_batch\\sources\\robust_labels_3.py",
+      "source_sha256": "56152dc8f79f7bfb68ff458ac53af0e807a65b7d8350d96162f81a8d5ed4af3b",
+      "risk": "strict100"
+    },
+    {
+      "name": "replenish_10",
+      "file": "logs\\round2_structural_batch\\sources\\replenish_10.py",
+      "source_sha256": "462ea8e967042de59ebdb63a2b63681d78d0efa9a4204166aeaad8d6c8cc8289",
+      "risk": "strict100"
+    },
+    {
+      "name": "replenish_25",
+      "file": "logs\\round2_structural_batch\\sources\\replenish_25.py",
+      "source_sha256": "23b0cccf665fcc96f6fca8f9b3879a91f96575300e942f98b2327b09c311938d",
+      "risk": "strict100"
+    },
+    {
+      "name": "selective_ioc_2s",
+      "file": "logs\\round2_structural_batch\\sources\\selective_ioc_2s.py",
+      "source_sha256": "ee7ab509d70f8456881b341984e36717158f32b1a8dd53a2235aa3f65f5038dd",
+      "risk": "strict100"
+    },
+    {
+      "name": "selective_ioc_5s",
+      "file": "logs\\round2_structural_batch\\sources\\selective_ioc_5s.py",
+      "source_sha256": "8d956d24eca739d9242262aef08ea5b57a84fe932223358e54bcf2437e53d033",
+      "risk": "strict100"
+    }
+  ],
+  "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "target_full_public_net": 100000
+}
