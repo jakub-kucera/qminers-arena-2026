@@ -157,5 +157,5 @@
   "source_sha256": "d1bd047d4c9d924f67dc3873587f66eca0939f87ee12cc99953672b3da2300fe",
   "data_file": "data/round1.csv",
   "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
-  "verification": "Audited full replay; separate unmodified CLI verification pending."
+  "verification": "Unmodified simulator CLI matches every metric from the audited full replay; 42 tests and local documented-rule checks pass."
 }
