@@ -6,6 +6,61 @@ authorized. Emailing the model was a separately authorized one-time action.
 All public data is consumed; subsequent experiments are sample-tuned research,
 not fresh holdouts. Native latency, matching and penalty rules stay unchanged.
 
+## Current checkpoint: H1 refinement, 230,611
+
+The exact supplied H1 reproduced223,794 in audit and native CLI. It incurred
+50 in fees, reached actual101 and potential104, and had sampled drawdown6,529.
+ROOM_RESERVED fixed IOC reservations but passive quote admission still freed
+cancel-pending reservations. A symmetric regression test now covers this gap.
+
+Six cases were frozen before prefix evaluation. All use strict100 with full
+pending reservations; differences below are one at a time from supplied H1.
+
+|Case|First80 PnL|30–60 gain|60–80 gain|
+|---|---:|---:|---:|
+|Strict baseline|171579|46580|84595|
+|Label clip3|163111|41750|83835|
+|Label clip6|169049|45761|86166|
+|Price horizon200ms|167154|43525|78298|
+|Take edge0.05|148913|39587|79348|
+|Flow bias0.2|179883|47862|87284|
+
+Bias0.2 wins the declared combined later-period criterion. Frozen before full
+replay, it achieved **230611**, zero fee, actual/potential100, drawdown6444,
+final20 gain50728. Native CLI matches every audit result field. Source:
+`strategies/round2/round2_local_230611.py`; SHA256
+`21ce75eb06000e908667813324c870c208e615940406ce4c9f63045bc5a4fb32`.
+Audit/protocol/source archive: `research/round2_h1_refine_20261107`.
+The improvement over previous222966 is exactly7645; improvement
+over supplied223794 is6817. Target250000 remains unmet by19389.
+
+The architecture is H1's online29-feature ridge predicting400ms mid movement,
+label clip20, one-second fits and near-cumulative memory. IOC entries use
+spread<=1 and50ms pacing; the250ms/500lot RA signal, cumulative shadow gate10
+and stop3 reduce the same-direction threshold by0.2. Maker quotes remain1lot.
+No embedded fixed tree or fill-residual calibration is used in this winner.
+
+### Failed combinations preserved
+
+Four H1 strict-baseline hybrids reused the222966 calibrated maker with quote
+sizes25/100, either only at wide spreads or whenever forecast take was inactive.
+All used one shared100lot budget; IOC fills were excluded from maker labels.
+Prefix results: maker25_wide38579, maker100_wide31892,
+maker25_inactive23402, maker100_inactive31678. Later60–80 gains were5869,
+-1922,-7599,-10969 respectively. None warranted a full replay or promotion.
+Archive: `research/round2_h1_maker_20261107`. This disproves simple additive
+benefit for these specific implementations, not every possible hybrid.
+
+The earlier200ms fill-label/residual-ridge combination also completed. Later
+30–80 gains for ridge5 blend25/50/75% and ridge25 blend50% were136259,144716,
+146848,138133, all below222966's150423. No full replay promoted. Archive:
+`research/round2_residual_horizon_combo_20261107`.
+
+All132 tests pass, including cancel-pending reservation symmetry, shared maker
+and IOC room, and excluding taker fills from maker calibration. All data has
+been repeatedly consumed; no unseen superiority, fresh holdout, or organizer
+server result is claimed. No new email or competition submission was made.
+
 ## Supplied R2-RA reference
 
 Exact supplied RA reproduced 165,459 in both an audit and the unmodified CLI.

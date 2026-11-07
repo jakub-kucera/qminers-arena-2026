@@ -1,0 +1,11 @@
+{
+  "candidate": {
+    "name": "bias020",
+    "file": "logs\\round2_h1_refine\\sources\\bias020.py",
+    "source_sha256": "21ce75eb06000e908667813324c870c208e615940406ce4c9f63045bc5a4fb32",
+    "risk": "strict100"
+  },
+  "selection_rule": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "goal": 250000,
+  "scope": "Consumed public first80%; no new holdout and no server access."
+}

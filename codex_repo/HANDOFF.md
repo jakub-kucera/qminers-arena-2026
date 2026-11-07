@@ -8,25 +8,32 @@ sent to Jakub at the user's explicit request; do not send further models without
 another instruction. See [250k research](docs/ROUND2_250K_RESEARCH.md) for new
 experiments. The sections below describe the completed earlier 150k objective.
 
-Current verified best: **222,966**, exact standalone file
-`strategies/round2/round2_local_222966.py`, SHA256
-`85a53b3f77b71d1b642c796fb67f17b61c7263031a5763967fbac5e4aada4c67`.
-Native CLI and audit agree; exposure <=100, fees0, final20 gain33,077,
-sampled drawdown10,262. All128 tests pass. All scheduled replays finished.
-This model changes fill-calibration label maturity to200ms (stale cutoff1.2s),
-while the price learner and fixed tree remain400ms. Direction/spread calibration
-uses rate0.01,300s decay and0.5 correction cap. It does not include the new
-residual ridge model. Separately, ridge5/blend50% at400ms scored212,912 with
-native parity; full replacement and stronger ridge were worse. Tail-label
-variants failed to beat the reference's later-prefix score and were not promoted.
+Current verified best: **230,611**, exact standalone file
+`strategies/round2/round2_local_230611.py`, SHA256
+`21ce75eb06000e908667813324c870c208e615940406ce4c9f63045bc5a4fb32`.
+Native CLI and audit match every result field. Actual/potential<=100, fees0,
+first80=179,883, final20=50,728, sampled drawdown6,444. All132 tests pass.
+All scheduled replays finished. The250k goal remains unmet by19,389.
 
-The250k target remains unmet by27,034. All public data is consumed. Next useful
-experiment: combine the independently tested200ms target with the residual
-model in a small predeclared set; do not assume their gains add. Another
-hypothesis is price-aware deeper quotes instead of withdrawing a blocked side,
-with actual quote-price offsets included in calibration labels. Preserve
-pending reservations and causal feature snapshots. No hardcoded time regimes,
-native scoring changes, new emails or competition submissions are authorized.
+This is supplied H1 with strict pending-order reservations and BIAS_AGREE0.2.
+It retains online29-feature ridge,400ms price target, clipped labels20,50ms
+IOC pacing, spread1 gate, one-lot maker quotes, RA250ms flow500/stop3 and
+cumulative shadow gate10. No fixed tree or maker residual calibration.
+Unmodified supplied H1 scored223,794 with fees50, actual101,potential104;
+exact source and audit archived in research/round2_h1_supplied_20261107.
+Six-case refinement selected bias020 by later30-80 profit135,146 before full.
+
+Four H1+calibrated-maker variants failed badly (prefix23,402–38,579), none
+promoted or run on full. Four200ms+residual-ridge combinations also failed
+reference later-prefix criterion. Protocols, sources and results preserved.
+Previous222,966 maker/follower remains unchanged, and outperformed H1 early
+but not over full tape. Do not claim H1 superiority on unseen tapes.
+
+All public data is consumed. Next useful research: causal calibration of
+forecast-taker edge, or a small execution-pacing sensitivity study. Avoid
+blindly enlarging passive quotes: that already failed. Preserve pending
+reservations, native fees/latency and frozen candidate selection. No new
+emails or competition server use/submissions are authorized.
 
 ## Historical checkpoint: 167,412 local result, no server access
 
