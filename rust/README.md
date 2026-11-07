@@ -133,19 +133,36 @@ uv run python -m arena.qsim_rust fallback_maker data/sample.csv.gz --grid QUOTE=
 | `src/data.rs` | `iter_backtest`: `Time` to µs as `int(round(float(t) * 1_000_000))`, `Insert`/`Cancel`, `B`/`A`, `Lifespan` `F` an IOC (else resting); the tape is read once and shared by a grid's runs. Plain CSV only, as theirs (`arena.qsim_rust` unpacks a `.gz`) |
 | `src/sim.rs` | `OrderBook` and `ExchangeSimulator`: per row, our pending sends, cancels and modifies due by its time in ready order at their ready time (what the strategy queues meanwhile waits for the next row, as theirs does), the penalty integral and 1-s PnL samples, the row (every insert a taker first, then resting if `G`), then `on_book`. Price-time FIFO, our orders at the back, our takers skip our own resting orders, a modify shrinks in place, a tape cancel of an order already consumed is ignored; the private events in the same order with the same fields, during matching; the cap `\|I + s(R+q)\| > 1000`; the markout, `mark_price`, the quantiles, `fills`, `traded_volume`, `pnl_curve`. The run and CSV logs are not ported (a `--no-logs` run) |
 | `src/py.rs` | `repr(float)`, `f"{x:.2f}"`, and `statistics.stdev`, which is exact: the variance of the floats as fractions (a small big-integer), its square root correctly rounded, as CPython's `_float_sqrt_of_frac` |
-| `src/strategies/` | `trend_follower.rs` (`strategies/trend_follower.py`; Rust-only `QUANTITY`, `MIN_NET`), `fallback_maker.rs` (`python/bots/qminers/candidates/r0_F1_fallback.py`: `QUOTE`, `LIMIT`, `SKEW`, `WIND_DOWN_S`, `SESSION_S`, Rust-only `INSIDE_SPREAD`), `probe.rs` (`python/tests/fixtures/qsim_probe.py`, the parity test's random orders, cancels and modifies). Parameters are a flat JSON object named as the Python file's globals; an unknown key is an error |
+| `src/strategies/` | `trend_follower.rs` (`strategies/trend_follower.py`; Rust-only `QUANTITY`, `MIN_NET`), `fallback_maker.rs` (`python/bots/qminers/candidates/r0_F1_fallback.py`: `QUOTE`, `LIMIT`, `SKEW`, `WIND_DOWN_S`, `SESSION_S`, Rust-only `INSIDE_SPREAD`), `room_maker.rs` (`python/bots/qminers/families/room_maker.py`, family 7, its defaults F3: all 24 globals, `LEVELS` to `FLAT_S`; it reads the touch with `Snapshot::market_touch`, the Python loop's answer without the iterator chain, checked against that loop in debug builds), `probe.rs` (`python/tests/fixtures/qsim_probe.py`, the parity test's random orders, cancels and modifies). Parameters are a flat JSON object named as the Python file's globals; an unknown key is an error |
 | `src/main.rs` | `arena-sim` (one run, their CLI's lines) and `arena-sim batch` (parameter sets × files on N threads, a JSON line per run with its curve and reject counts, which `python/arena/qsim_rust.py` reads into `arena.qgrid`'s table) |
 
 **Parity** (`python/tests/test_arena_rust.py`, on `data/sample.csv.gz`): trend_follower and F1 as written give
 their CLI's lines and `result.json` and `pnl.csv` byte for byte (pnl 1878.00, 305 fills; -5877.00, 303 fills); F1
 with 60-lot quotes (the penalty and the cap), F1 winding down from half time, and three probe settings (modifies
 valid and not, cancels that lose the race, orders sent mid-activation, over 6,000 fills and a 30M penalty) give
-every result field, the whole PnL curve and both reject counts identical.
+every result field, the whole PnL curve and both reject counts identical. The room maker, against
+`uv run exchange-simulator --strategy <room_maker.py with the globals set> --backtest DATA --no-logs` (7 Nov): the
+CLI's lines, `result.json` and `pnl.csv` byte for byte on `data/arena/playground/sample_v2.csv` (2.0M rows; F3 as
+written: pnl 263282.00, 7,764 fills) and `data/arena/round1/round1.csv` (4.4M rows; `SESSION_S` 1e9: 425553.00,
+30,452 fills, volume 2,645,992), for the defaults and nine settings each (`LEVELS` 2 / `SIZE_DEEP` 30 /
+`KEEP_DEPTH` 2; `DEPLETE_LOTS` 20; `DEPLETE_LOTS` 30 / `DEPLETE_SIZE` 40; `BACK_POS` 95; `SIZE_NARROW` 150 /
+`SHRINK_NARROW` 1; `UNWIND` 100 / `UNWIND_TO` 90, a no-op, and 60 / 30; `FLAT_S` 30 with `SESSION_S` 5700; and one
+setting of every other knob: `IMB`, `MIN_QUEUE`, `REBALANCE`, `LEVELS` 3, `CANCEL_ALONE` 0, `SKEW_CANCEL` 0,
+`INSIDE_POS`, `TOPUP` 0, `WIND_DOWN_S`): 20 of 20 identical. The test keeps ten settings on a 900-s synthetic tape
+with one- and two-tick spreads (always on, 1 s) and nine of the real-tape cases behind `ARENA_SIM_FULL=1` (with
+`ARENA_SIM_DATA` pointing at `data/arena/` from a worktree; about 30 s a Python run).
 
 **Speed** (the sample, 53,758 rows, one core, measured 7 Nov): trend_follower 151 ms a run in Python, 1.7 ms in
 Rust (90x); F1 274 ms, 3.9 ms (70x); parsing the CSV once is 5 ms more. On 4 threads, F1's 16-cell grid
 (plus the baseline) takes 1.6 s in `arena.qgrid --jobs 4` and 0.2 s in `arena.qsim_rust`, the same table to the
-character; 100 cells take 0.4 s, most of it reading the runs' PnL curves back into Python.
+character; 100 cells take 0.4 s, most of it reading the runs' PnL curves back into Python. The room maker on
+round 1 (4.4M rows, F3 with `SESSION_S` 1e9, 7 Nov, a loaded machine): 0.55 s a run in Rust (parsing the CSV 0.4 s
+more, once a grid) against 26-40 s in Python (`exchange-simulator`), 50-70x; a 6-cell grid on 8 threads takes 1.4 s:
+
+```sh
+uv run python -m arena.qsim_rust python/bots/qminers/families/room_maker.py data/arena/round1/round1.csv \
+    --set SESSION_S=1000000000 --grid DEPLETE_LOTS=0,10,20 --grid BACK_POS=95,1000 --threads 8 --holdout 0.25
+```
 
 **A new strategy**: a `Strategy` impl in `src/strategies/`, a name in `strategies::make`, its Python file in
 `arena.qsim_rust.STRATEGIES`, and a case in `python/tests/test_arena_rust.py` comparing it with the Python one.
