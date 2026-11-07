@@ -60,6 +60,7 @@ SIZE_NARROW = 200  # lots at the touch while the spread is one tick (200: as SIZ
 SHRINK_NARROW = 0  # 1: shrink resting touch orders to SIZE_NARROW (modify keeps the place) while the spread is one tick
 DEPLETE_LOTS = 0  # a touch whose market queue holds fewer lots than this is about to clear (0: off)
 DEPLETE_SIZE = 0  # ... our lots kept there (shrunk with modify_order; 0: cancelled)
+REACT_CANCEL = 0  # 1: re-quote from the last snapshot as soon as one of our cancels lands (the queue maker's knob)
 DEPL_FRAC = 0.0  # >0: the depletion guard fires only on a touch that has shrunk below this share of its peak since it became the touch (a new level never fires)
 BACK_POS = 1000  # beyond this |position|, the side that adds to it quotes one tick behind the touch (1000: never)
 FLAT_S = 0  # this many seconds before the end, one IOC at the touch flattens the position (0: never)
@@ -73,12 +74,14 @@ class LadderMakerStrategy(BaseStrategy):
         self._position: int = 0
         self._orders: dict[str, list] = {}  # id -> [side, price, quantity left, cancelling, is_ioc, modify target]
         self._start_us: None | int = None
+        self._snap: None | OrderBookSnapshot = None
         self._peak: dict = {}  # side -> [touch price, the market lots there at their most since it became the touch]
         self._ioc_pending: bool = False
         self._flattened: bool = False
 
     def on_order_book_change(self, snapshot: OrderBookSnapshot, trades: list[Trade]) -> None:
         """Keep the ladder on each side."""
+        self._snap = snapshot
         if self._start_us is None:
             self._start_us = snapshot.timestamp_us
         best_bid = None
@@ -254,3 +257,5 @@ class LadderMakerStrategy(BaseStrategy):
             self._orders.pop(event.order_id, None)
             if order[4]:
                 self._ioc_pending = False
+            if REACT_CANCEL and event.status == OrderStatus.CANCELED and self._snap is not None:
+                self.on_order_book_change(self._snap, [])
