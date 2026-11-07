@@ -85,3 +85,5 @@ Trials (15:10): 11 experiments, 103 cells, every choice by `in 75%` (F7 368,589)
 PASS.
 
 Paired block bootstrap, 15:35 (logs/r1_F8_full and logs/r1_F7_full pnl.csv, 1-s PnL steps resampled in blocks, 2,000 draws, seed 7): F8 p5 507,068 / 509,182 / 511,765 with 60 / 300 / 1,000-s blocks (F7's p5 484.5k); F8 minus F7 mean +22.2k to +23.1k, p5 +17.0k to +18.2k, no draw below 0. The gain is not one lucky stretch.
+
+Wide Rust grid around R1-F8, 16:30 (`uv run python -m arena.qsim_rust python/bots/qminers/candidates/r1_F8_take_join.py data/arena/round1/round1.csv --grid SIZE_NARROW=60,115,200 --grid SIZE_TOUCH=40,65,120 --grid SIZE_DEEP=40,80,150 --grid DEPLETE_LOTS=50,100,200 --grid DEPL_FRAC=0.06,0.12,0.25 --grid MOM_MS=25,50,150 --threads 6 --holdout 0.25`, 729 cells, 2.7 min): the best in 75% is 387,033 (SIZE_DEEP 40), +69 over R1-F8; R1-F8 sits on top of a flat plateau and no distant optimum exists along these axes.
