@@ -474,3 +474,10 @@ order-count imbalance, per-order quantities capped at 100 lots, and liquidity
 within two ticks of each touch. This extends the eight-feature 498,056 model;
 it does not replace that archived source. Full metrics and source/input hashes
 are tracked in `results/round1_523999.json`. It also uses already consumed data.
+
+`strategies/round1_depth_nonlinear_534k.py` preserves a later **534,332**
+audited round-1 replay with zero penalty. It adds signed nonlinear transforms
+of touch order-count imbalance and capped-quantity imbalance, for fifteen
+features in total. Metrics and verification status are tracked in
+`results/round1_534332.json`. This is another sample-tuned version; the earlier
+498,056 and 523,999 files remain separately preserved.

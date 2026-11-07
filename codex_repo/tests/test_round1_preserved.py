@@ -3,13 +3,14 @@ import unittest
 from scripts.check_submission import check
 from simulator.models import BookOrderView, OrderBookSnapshot, Side
 from strategies.round1_depth_524k import PassiveStrategy as DepthStrategy
+from strategies.round1_depth_nonlinear_534k import PassiveStrategy as NonlinearDepthStrategy
 from strategies.round1_nonlinear_498k import PassiveStrategy as NonlinearStrategy
 from test_strategy import Gateway
 
 
 class PreservedRound1Tests(unittest.TestCase):
     def test_mature_labels_and_solver_for_expanded_models(self):
-        for cls in (NonlinearStrategy, DepthStrategy):
+        for cls in (NonlinearStrategy, DepthStrategy, NonlinearDepthStrategy):
             with self.subTest(model=cls.__name__, dimensions=cls.FEATURE_COUNT):
                 s = cls()
                 features = (1,) + (0,) * (s.FEATURE_COUNT - 1)
@@ -48,6 +49,7 @@ class PreservedRound1Tests(unittest.TestCase):
         for path, cls in (
             ('strategies/round1_nonlinear_498k.py', NonlinearStrategy),
             ('strategies/round1_depth_524k.py', DepthStrategy),
+            ('strategies/round1_depth_nonlinear_534k.py', NonlinearDepthStrategy),
         ):
             self.assertEqual(check(path), [])
             for inventory in range(-100, 101):
