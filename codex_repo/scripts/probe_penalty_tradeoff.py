@@ -138,6 +138,59 @@ def generate(source):
     return variants, specs
 
 
+def activation_variants(source):
+    variants, specs = {}, {}
+    for cap, hold, edge in [(500,0,0.0),(1000,0,0.0),(500,20000,0.0),
+                            (1000,20000,0.0),(1000,100000,0.3)]:
+        name=f'active_{cap}_hold{hold//1000}_edge{str(edge).replace(".","p")}'
+        text=guarded(source,cap,hold,edge)
+        text=replace_once(text,'sign*self.inventory >= 80','sign*self.inventory >= 0')
+        variants[name]=text
+        specs[name]={'kind':'burst_active','cap':cap,'hold_us':hold,'edge':edge,'minimum_aligned_inventory':0}
+    return variants,specs
+
+
+def prepare_activation(root):
+    path=root/'activation_protocol.json'
+    if path.exists() or (root/'selection.json').exists():
+        raise FileExistsError('Activation cohort is already frozen or selection has occurred')
+    original=json.loads((root/'protocol.json').read_text())
+    source=Path(original['sources']['baseline']['source']).read_text()
+    variants,specs=activation_variants(source)
+    for name,text in variants.items():
+        file=root/'sources'/(name+'.py')
+        assert not file.exists()
+        file.write_text(text,encoding='utf-8',newline='\n')
+        assert not check(file),check(file)
+        specs[name].update(source=str(file),sha256=digest(file))
+    amendment={'created_utc':time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),
+               'original_protocol_sha256':digest(root/'protocol.json'),'sources':specs,
+               'reason':('Initial guarded variants posted only a few extra orders and incurred no '
+                         'breaches in the first completed screens. Their unchanged PnL cannot '
+                         'evaluate the economics of paying a fee. Add five activation probes, '
+                         'lowering the admission threshold and allowing aligned inventory from zero; '
+                         'also include a 100ms hold aligned with the forecasting horizon.'),
+               'selection_amendment':('Keep all original numerical gates, but correct over all '
+                                      'fourteen candidates together. Freeze this extra cohort before '
+                                      'its replays. No further additions. If no model passes, choose '
+                                      'the best-lower-bound guarded variant with realized breaches '
+                                      'for diagnostic confirmation only; inactive variants are not '
+                                      'evidence for a profitable penalty tradeoff.'),
+               'limitation':'Adaptive exploratory extension on already consumed data; no fresh holdout.'}
+    path.write_text(json.dumps(amendment,indent=2)+'\n')
+    print('FROZEN five activation probes; combined family = fourteen trials',flush=True)
+
+
+def load_protocol(root):
+    original=json.loads((root/'protocol.json').read_text())
+    extra=root/'activation_protocol.json'
+    if extra.exists():
+        amendment=json.loads(extra.read_text())
+        assert digest(root/'protocol.json')==amendment['original_protocol_sha256']
+        original['sources'].update(amendment['sources'])
+    return original
+
+
 class PenaltyAudit(ExchangeSimulator):
     """Observe cash, independent reservations, exact fee time and boundary PnL."""
     def __init__(self, strategy, config, boundaries=()):
@@ -324,8 +377,10 @@ def select(root):
     path = root/'selection.json'
     if path.exists():
         raise FileExistsError(path)
-    protocol = json.loads((root/'protocol.json').read_text())
+    protocol = load_protocol(root)
     screen = json.loads((root/'screen.json').read_text())
+    if (root/'activation_protocol.json').exists():
+        screen.update(json.loads((root/'activation_screen.json').read_text()))
     baseline = screen['baseline']
     for key in ('result','boundary_pnl','curve_sha256'):
         assert baseline[key] == screen['guard_disabled'][key], ('disabled controller differs',key)
@@ -345,7 +400,9 @@ def select(root):
                         'bootstrap_error':float(errors[i]),'block_gains':d.tolist()}
     ranking = sorted(names,key=lambda n:(-scores[n]['lower_bound'],protocol['sources'][n]['cap'],n))
     selected = next((n for n in ranking if scores[n]['eligible']),None)
-    diagnostic = selected or next(n for n in ranking if protocol['sources'][n]['kind']=='burst')
+    diagnostic = selected or next(n for n in ranking
+                                  if protocol['sources'][n]['kind'].startswith('burst')
+                                  and screen[n]['breach_seconds']>0)
     result = {'selected':selected,'confirmation_candidate':diagnostic,
               'diagnostic_only':selected is None,'scores':scores,'bootstrap_critical':critical,
               'source':protocol['sources'][diagnostic],
@@ -355,7 +412,7 @@ def select(root):
 
 
 def batch(root,data,names,stage,workers,delay):
-    protocol = json.loads((root/'protocol.json').read_text())
+    protocol = load_protocol(root)
     boundaries = list(range(300000000,5700000001,300000000))+[5990000000]
     expected = protocol['prefix_sha256']
     if stage.startswith('full'):
@@ -387,12 +444,14 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--root',type=Path,default=Path('logs/penalty_tradeoff'))
     p.add_argument('--prepare',action='store_true');p.add_argument('--select',action='store_true')
+    p.add_argument('--prepare-activation',action='store_true')
     p.add_argument('--source',type=Path,default=Path('strategies/round1_robust_candidate.py'))
     p.add_argument('--data',type=Path);p.add_argument('--prefix',type=Path);p.add_argument('--transfer',type=Path)
     p.add_argument('--stage',default='screen');p.add_argument('--names',nargs='+')
     p.add_argument('--workers',type=int,default=8);p.add_argument('--delay',type=int,default=5)
     a=p.parse_args()
     if a.prepare:prepare(a.root,a.source,a.data,a.prefix,a.transfer)
+    elif a.prepare_activation:prepare_activation(a.root)
     elif a.select:select(a.root)
     else:batch(a.root,a.data,a.names or list(json.loads((a.root/'protocol.json').read_text())['sources']),a.stage,a.workers,a.delay)
 

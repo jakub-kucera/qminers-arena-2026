@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 
 from scripts.check_submission import check
-from scripts.probe_penalty_tradeoff import PenaltyAudit, generate
+from scripts.probe_penalty_tradeoff import PenaltyAudit, activation_variants, generate
 from simulator.main import load_strategy_from_file
 from simulator.models import OrderStatus, OrderType, PrivateOrderEvent, Side
 from simulator.simulator import ExchangeSimulator, SimulationConfig
@@ -29,6 +29,8 @@ class PenaltyTests(unittest.TestCase):
         cls.temp = tempfile.TemporaryDirectory()
         cls.folder = Path(cls.temp.name)
         cls.sources, cls.specs = generate(Path('strategies/round1_robust_candidate.py').read_text())
+        more, specs = activation_variants(Path('strategies/round1_robust_candidate.py').read_text())
+        cls.sources.update(more);cls.specs.update(specs)
         for name, text in cls.sources.items():
             (cls.folder/(name+'.py')).write_text(text)
 
@@ -78,6 +80,13 @@ class PenaltyTests(unittest.TestCase):
             s._quote(0, 1, 99)
             self.assertEqual(g.sent[-1].quantity, expected)
             self.assertLessEqual(s.inventory+sum(r[2] for r in s._orders.values() if r[0]>0), 500)
+
+    def test_activation_probe_exercises_budget_from_flat_inventory(self):
+        s=self.bot('active_1000_hold0_edge0p0');g=Gateway(s)
+        s._signal_edge=.1
+        s._quote(0,1,99)
+        self.assertEqual(g.sent[-1].quantity,1000)
+        self.assertEqual(sum(r[2] for r in s._orders.values()),1000)
 
     def test_pending_cancel_does_not_release_extra_budget(self):
         s = self.bot();g = Gateway(s)
