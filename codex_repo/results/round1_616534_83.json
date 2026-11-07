@@ -1,0 +1,156 @@
+{
+  "name": "event_cap_100_tau_500000",
+  "file": "strategies/round1_flow_616535.py",
+  "source_sha256": "fcc5d5da272936336f78f7a6bc542e1c2d094f47b045e51bf941db030443c573",
+  "result": {
+    "result": {
+      "fills": 21436,
+      "traded_volume": 2119380,
+      "inventory": 100,
+      "cash": -384945.0,
+      "mark_price": 10029.0,
+      "breach_penalty": 1420.1699999999998,
+      "pnl": 616534.83,
+      "pnl_se": 11097.039242750561,
+      "abs_inventory_q50": 96,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 175.99144604196772,
+    "max_abs_inventory": 250,
+    "max_potential_inventory_at_submission": 300,
+    "max_drawdown_1s": 861.0,
+    "submissions": 74100,
+    "order_status_counts": {
+      "accepted": 74100,
+      "partially_filled": 17845,
+      "canceled": 58552,
+      "filled": 15547,
+      "rejected": 117
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 600.0,
+        "pnl_increment": 27445.0
+      },
+      {
+        "start_s": 600.0,
+        "end_s": 1200.0,
+        "pnl_increment": 30500.0
+      },
+      {
+        "start_s": 1200.0,
+        "end_s": 1800.0,
+        "pnl_increment": 26965.0
+      },
+      {
+        "start_s": 1800.0,
+        "end_s": 2400.0,
+        "pnl_increment": 31340.0
+      },
+      {
+        "start_s": 2400.0,
+        "end_s": 3000.0,
+        "pnl_increment": 27913.0
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 3600.0,
+        "pnl_increment": 34314.0
+      },
+      {
+        "start_s": 3600.0,
+        "end_s": 4200.0,
+        "pnl_increment": 32472.0
+      },
+      {
+        "start_s": 4200.0,
+        "end_s": 4800.0,
+        "pnl_increment": 30539.829999999987
+      },
+      {
+        "start_s": 4800.0,
+        "end_s": 5400.0,
+        "pnl_increment": 33356.00000000003
+      },
+      {
+        "start_s": 5400.0,
+        "end_s": 6000.0,
+        "pnl_increment": 30653.0
+      },
+      {
+        "start_s": 6000.0,
+        "end_s": 6600.0,
+        "pnl_increment": 30026.0
+      },
+      {
+        "start_s": 6600.0,
+        "end_s": 7200.0,
+        "pnl_increment": 34450.0
+      },
+      {
+        "start_s": 7200.0,
+        "end_s": 7800.0,
+        "pnl_increment": 30577.0
+      },
+      {
+        "start_s": 7800.0,
+        "end_s": 8400.0,
+        "pnl_increment": 33127.0
+      },
+      {
+        "start_s": 8400.0,
+        "end_s": 9000.0,
+        "pnl_increment": 32056.0
+      },
+      {
+        "start_s": 9000.0,
+        "end_s": 9600.0,
+        "pnl_increment": 28409.0
+      },
+      {
+        "start_s": 9600.0,
+        "end_s": 10200.0,
+        "pnl_increment": 29896.0
+      },
+      {
+        "start_s": 10200.0,
+        "end_s": 10800.0,
+        "pnl_increment": 32598.99999999994
+      },
+      {
+        "start_s": 10800.0,
+        "end_s": 11400.0,
+        "pnl_increment": 29987.0
+      },
+      {
+        "start_s": 11400.0,
+        "end_s": 11999.990364,
+        "pnl_increment": 29910.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "source": "logs/round1/claude_flow_anchors/sources/event_cap_100_tau_500000.py",
+    "source_sha256": "608a25d074cffadd705ac3eda532cbc3908508655a3e6986bf71e89cf4c204ec",
+    "gross_pnl_before_penalty": 617955.0
+  },
+  "ast_equivalent_except_module_docstring": true,
+  "official_cli_match": false,
+  "verification": "Full native audited replay passed all private-event ledger checks; separate CLI verification pending.",
+  "limitation": "Sample tuning on consumed round1.csv, using causal inputs and unchanged native latency and penalties."
+}

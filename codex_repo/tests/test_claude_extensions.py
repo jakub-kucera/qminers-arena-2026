@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 from scripts.round1_claude_combo import second_group
+from scripts.round1_claude_capped_flow import source as capped_source
 from scripts.round1_claude_improvements import transfer_features
 from scripts.round1_aggressor_groups import source_for
 from scripts.round1_size_cohorts import bucket_source
@@ -59,6 +60,19 @@ class ClaudeExtensionTests(unittest.TestCase):
         self.assertEqual(len(s._observations[-1][2]),31)
         self.assertAlmostEqual(s._group_net[0],65*math.exp(-1))
         self.assertAlmostEqual(s._second_group_net[0],65*math.exp(-0.2))
+
+    def test_size_cap_applies_once_to_whole_aggressive_order(self):
+        s=self.load(capped_source(500000,20))
+        s.on_order_book_change(OrderBookSnapshot(0,self.bids,self.asks),self.trades())
+        self.assertEqual(s._group_volume,[20,7,15])
+        self.assertEqual(s._group_net,[20,-7,15])
+        self.assertEqual(s._group_price,[2000,693,1500])
+
+    def test_count_flow_counts_orders_instead_of_execution_fragments(self):
+        s=self.load(capped_source(1000000,1))
+        s.on_order_book_change(OrderBookSnapshot(0,self.bids,self.asks),self.trades())
+        self.assertEqual(s._group_volume,[1,1,1])
+        self.assertEqual(s._group_net,[1,-1,1])
 
 
 if __name__=='__main__':
