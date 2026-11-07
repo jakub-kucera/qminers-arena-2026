@@ -91,3 +91,9 @@ Trials so far: 0 experiments, 0 cells.
 - R2-E1 with a confidence-dependent exposure: EXPOSURE 50, but a side's quoting may reach only CONF_EXP 10 lots unless the forecast its way is at least CONF_TH 0.05 ticks; the take, the skew and the hedge keep the 50. DEAD_ZONE 0.3 (E1's). No queue-keeping.
 - round2_public.csv 58,360.74 (first 75% 37,695 / last 25% 20,665), penalty 1,515, 15,301 fills; the Python file equals Rust to the cent; validate OK. Round 1 public 333,542, rebuilt private 330,245 (E1 287,058 / 281,395).
 - Not yet combined with R2-E2's queue-keeping (E1 + KEEP: +19k on round 2).
+
+### R2-V1, 20:40 (`python/bots/qminers/candidates/r2_V1_vol_exposure.py`, the trend agent's): the front-runner for the final
+- R2-E2 (E1 + queue-keeping) plus TREND (the mid against its 2-s and 60-s averages, 31 features) and an exposure set by the absolute price speed: exposure = clip(100 x (VOL_REF 2.5 / the decayed |mid change| ticks a second over VOL_US 5 s)^VOL_EXP 2, 10, 100); VOL_NOHEDGE 1 (a shrinking exposure only stops adding; the hedge still waits at 100). DEAD_ZONE 0.3.
+- round2_public.csv 169,262.76 (first 75% 127,172 / last 25% 42,091), breach 5.2k, 19,249 fills; byte-identical to Rust; validate OK; 112 s here (about 225 s on 12,000 s). Against E1 + KEEP (47,311): ahead in 6 of 6 1,000-s segments, mean +20,325, t 8.03, worst +9,927.
+- Round 1 (Rust): public 670,462, rebuilt private 660,398 (the fixed-exposure version of the same cell 670,358 / 659,575): the scaling costs nothing there. Round 1's price speed is 1.23 ticks a second (flat), round 2's 3.22 (1.56-7.43 per 600 s).
+- Open: DEAD_ZONE 0.18 gives 164,752 on round 2 and likely more on round 1 (being gridded with TREND on all three tapes).
