@@ -68,7 +68,8 @@ CANDIDATES = {
     "M2": (CANDIDATE_DIR / "r0_M2_runner_safe.py", "SESSION_S", {}),
 }
 # The shrink-maker family's grids run on the Rust port (arena.qsim_rust, byte-identical, ~0.5 s a run on 4.4M rows)
-RUST_GRIDS = {"R1_F6", "R1_F5", "R1_F3"}
+RUST_GRIDS = {"R1_F6", "R1_F5", "R1_F3", "R1_F7", "R1_F6b"}
+RUST_FAMILY = {"R1_F7": "signal_maker.py", "R1_F6b": "alloc_maker.py"}  # the rest: shrink_maker.py
 
 
 # ---------------------------------------------------------------------------- profile
@@ -350,7 +351,8 @@ def next_grids(table: list[dict], p: dict | None, data: Path, length_us: int, jo
         sets = " ".join(f"--set '{k}={json.dumps(v) if isinstance(v, dict) else v}'" for k, v in candidate_overrides(name, length_us).items())
         for grid in axes[name]:
             if name in RUST_GRIDS:  # the Rust port of the shrink maker, the same results ~70x faster
-                lines.append(f"uv run python -m arena.qsim_rust python/bots/qminers/families/shrink_maker.py {data} --set SESSION_S=1000000000 {grid} --holdout 0.25 --threads {jobs} --sort holdout")
+                family = RUST_FAMILY.get(name, "shrink_maker.py")
+                lines.append(f"uv run python -m arena.qsim_rust python/bots/qminers/families/{family} {data} --set SESSION_S=1000000000 {grid} --holdout 0.25 --threads {jobs} --sort holdout")
             else:
                 lines.append(f"uv run python -m arena.qgrid {r['bot']} {data} {sets} {grid} --holdout 0.25 --jobs {jobs} --sort holdout")
     return "\n".join(lines)
