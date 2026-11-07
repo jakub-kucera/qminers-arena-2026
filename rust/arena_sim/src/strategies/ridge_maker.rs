@@ -62,6 +62,15 @@
 //!       --set FLOWGRP_CAP=1
 //!   C12 (r1_C12_codex_v6.py, 622920.99, 21,462): C5's and --set QUOTEFEAT=1 --set FLOWGRP=2 --set FLOWGRP_CAP=20
 //!       --set FLOWGRP_US=1000000
+//! Queue preservation (R2-Q, 7 Nov), off by default: an accepted order resting at the market's touch that the
+//! quoting would cancel (its price no longer the desired one) keeps its queue place: whole while the market lots
+//! ahead of it are at most `FRONT_LOTS` (-1: off) and the forecast toward its side (fair before the dead zone
+//! minus the mid, signed) is at least -`FRONT_TH` (99); else shrunk by modify_order to `KEEP_LOTS` (0: off) while
+//! that forecast is at least -`KEEP_TH` (99), its target lots counting toward EXPOSURE while the modify is in flight;
+//! `FRONT_NONE` (0) applies it when the side is withdrawn too; `LADDER_LOTS` (0) keeps an order one tick behind the
+//! desired price, shrunk to that; `SLICE_LOTS` (0) caps each new order, `SLICE_US` (0) between new orders at a price
+//! that already holds one. QP_STATS=file appends, per run, the maker lots by the market lots ahead at the last book.
+//!   R2-Q1 (r2_Q1_keep_slice.py): C12's and --set KEEP_LOTS=20 --set KEEP_TH=0.3
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -81,6 +90,8 @@ struct Record {
     cancelling: bool,
     /// a take order: not cancelled by the quoting before this time
     exempt_until: i64,
+    /// a modify in flight to these lots (0: none)
+    target: i64,
 }
 
 /// CPython 3.12's `sum()` of floats, start 0 (rust/src/support/py.rs `sum`).
@@ -263,9 +274,51 @@ pub struct RidgeMaker {
     cancel_net: f64,
     cancel_mass: f64,
     new_quote_time: Option<i64>,
+    /// queue preservation (R2-Q): KEEP_LOTS, KEEP_TH, FRONT_LOTS, FRONT_TH, FRONT_NONE, SLICE_LOTS, SLICE_US
+    keep_lots: i64,
+    keep_th: f64,
+    front_lots: i64,
+    front_th: f64,
+    front_none: bool,
+    slice_lots: i64,
+    slice_us: i64,
+    ladder_lots: i64,
+    qp: bool,
+    /// our orders at the market's touch: id -> the market lots ahead of it
+    ahead: HashMap<u64, i64>,
+    qp_touch: [i64; 2],
+    qp_d: f64,
+    /// diagnostics (env QP_STATS=file, appended on drop): maker lots by the lots ahead at the last book
+    /// [front 0, 1-100, 101-300, 300+, not at the touch], sum of |inventory| over books, books
+    stats: Option<String>,
+    stat_lots: [i64; 5],
+    stat_inv: (f64, f64),
+    stat_tag: String,
 }
 
-pub const KEYS: [&str; 59] = [
+impl Drop for RidgeMaker {
+    fn drop(&mut self) {
+        let Some(path) = &self.stats else { return };
+        use std::io::Write;
+        let total: i64 = self.stat_lots.iter().sum();
+        let line = format!(
+            "{}\tmaker_lots={}\tfront={:.3}\t1-100={:.3}\t101-300={:.3}\t300+={:.3}\toff={:.3}\tmean_abs_inv={:.1}\n",
+            self.stat_tag,
+            total,
+            self.stat_lots[0] as f64 / total.max(1) as f64,
+            self.stat_lots[1] as f64 / total.max(1) as f64,
+            self.stat_lots[2] as f64 / total.max(1) as f64,
+            self.stat_lots[3] as f64 / total.max(1) as f64,
+            self.stat_lots[4] as f64 / total.max(1) as f64,
+            self.stat_inv.0 / self.stat_inv.1.max(1.0),
+        );
+        if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+            let _ = f.write_all(line.as_bytes());
+        }
+    }
+}
+
+pub const KEYS: [&str; 67] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -275,6 +328,7 @@ pub const KEYS: [&str; 59] = [
     "FILL_LEARN", "FILL_H_US", "FILL_MIN", "FILL_WARM", "FILL_MEM_US", "FILL_BIN", "FILL_Q",
     "LABEL_MODE", "LABEL_K", "LABEL_CAP_US", "PRED_SCALE",
     "FLOWGRP", "FLOWGRP_CAP", "FLOWGRP_US", "QUOTEFEAT", "QUOTEFEAT_US",
+    "KEEP_LOTS", "KEEP_TH", "FRONT_LOTS", "FRONT_TH", "FRONT_NONE", "SLICE_LOTS", "SLICE_US", "LADDER_LOTS",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -405,6 +459,27 @@ impl RidgeMaker {
             cancel_net: 0.0,
             cancel_mass: 0.0,
             new_quote_time: None,
+            keep_lots: params.int("KEEP_LOTS", 0)?,
+            keep_th: params.float("KEEP_TH", 99.0)?,
+            front_lots: params.int("FRONT_LOTS", -1)?,
+            front_th: params.float("FRONT_TH", 99.0)?,
+            front_none: params.int("FRONT_NONE", 0)? != 0,
+            slice_lots: params.int("SLICE_LOTS", 0)?,
+            slice_us: params.int("SLICE_US", 0)?,
+            ladder_lots: params.int("LADDER_LOTS", 0)?,
+            qp: params.int("KEEP_LOTS", 0)? > 0 || params.int("FRONT_LOTS", -1)? >= 0 || params.int("LADDER_LOTS", 0)? > 0,
+            ahead: HashMap::new(),
+            qp_touch: [0, 0],
+            qp_d: 0.0,
+            stats: std::env::var("QP_STATS").ok(),
+            stat_lots: [0; 5],
+            stat_inv: (0.0, 0.0),
+            stat_tag: format!(
+                "LADDER={} KEEP_LOTS={} KEEP_TH={} FRONT_LOTS={} FRONT_TH={} FRONT_NONE={} SLICE_LOTS={} SLICE_US={} DEAD_ZONE={} EXPOSURE={}",
+                params.int("LADDER_LOTS", 0)?, params.int("KEEP_LOTS", 0)?, params.float("KEEP_TH", 99.0)?, params.int("FRONT_LOTS", -1)?,
+                params.float("FRONT_TH", 99.0)?, params.int("FRONT_NONE", 0)?, params.int("SLICE_LOTS", 0)?,
+                params.int("SLICE_US", 0)?, params.float("DEAD_ZONE", 0.1)?, params.int("EXPOSURE", 0)?
+            ),
         })
     }
 
@@ -726,6 +801,44 @@ impl RidgeMaker {
         }
     }
 
+    /// R2-Q: whether an order the quoting would cancel keeps its queue place instead (whole when at the front,
+    /// else shrunk by a modify to KEEP_LOTS)
+    fn preserve(&mut self, index: usize, sign: i64, price: Option<i64>, ctx: &mut Ctx) -> bool {
+        if price.is_none() && !self.front_none {
+            return false;
+        }
+        let r = &self.orders[index];
+        if !r.accepted || r.cancelling || self.hedge_id == Some(r.id) {
+            return false;
+        }
+        if self.ladder_lots > 0 && price.map_or(false, |p| p - sign == r.price) {
+            // one tick behind the desired price: kept (shrunk to LADDER_LOTS) as the next level's place
+            let (id, quantity, target) = (r.id, r.quantity, r.target);
+            if quantity > self.ladder_lots && (target == 0 || target > self.ladder_lots) {
+                ctx.modify_order(id, self.ladder_lots);
+                self.orders[index].target = self.ladder_lots;
+            }
+            return true;
+        }
+        if r.price != self.qp_touch[side_index(sign)] {
+            return false;
+        }
+        let Some(&ahead) = self.ahead.get(&r.id) else { return false };
+        let toward = sign as f64 * self.qp_d;
+        if self.front_lots >= 0 && ahead <= self.front_lots && toward >= -self.front_th {
+            return true;
+        }
+        if self.keep_lots > 0 && toward >= -self.keep_th {
+            let (id, quantity, target) = (r.id, r.quantity, r.target);
+            if quantity > self.keep_lots && (target == 0 || target > self.keep_lots) {
+                ctx.modify_order(id, self.keep_lots);
+                self.orders[index].target = self.keep_lots;
+            }
+            return true;
+        }
+        false
+    }
+
     fn quote(&mut self, now: i64, sign: i64, price: Option<i64>, ctx: &mut Ctx) {
         let mut current = 0usize;
         for index in 0..self.orders.len() {
@@ -734,6 +847,9 @@ impl RidgeMaker {
             }
             current += 1;
             if (price.is_none() || Some(self.orders[index].price) != price) && now >= self.orders[index].exempt_until {
+                if self.qp && self.preserve(index, sign, price, ctx) {
+                    continue;
+                }
                 self.cancel(index, ctx);
             }
         }
@@ -744,22 +860,39 @@ impl RidgeMaker {
         if price <= 0 || now - self.last_action[side_index(sign)] < self.requote_us {
             return;
         }
+        if self.slice_lots > 0
+            && now - self.last_action[side_index(sign)] < self.slice_us
+            && self.orders.iter().any(|r| r.sign == sign && r.price == price && !r.cancelling)
+        {
+            return;
+        }
         let reserved: i64 = self.orders.iter().filter(|r| r.sign == sign).map(|r| r.quantity).sum();
         let effective: i64 = self
             .orders
             .iter()
             .filter(|r| r.sign == sign)
-            .map(|r| if r.cancelling { (r.quantity as f64 * (1.0 - self.cancel_free)).ceil() as i64 } else { r.quantity })
+            .map(|r| {
+                if r.cancelling {
+                    (r.quantity as f64 * (1.0 - self.cancel_free)).ceil() as i64
+                } else if r.target > 0 {
+                    r.quantity.min(r.target)
+                } else {
+                    r.quantity
+                }
+            })
             .sum();
-        let quantity = self
+        let mut quantity = self
             .quote_size
             .min(self.exposure - sign * self.inventory - effective)
             .min(self.position_limit - sign * self.inventory - reserved);
+        if self.slice_lots > 0 {
+            quantity = quantity.min(self.slice_lots);
+        }
         if quantity <= 0 {
             return;
         }
         let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, false);
-        self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: 0 });
+        self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: 0, target: 0 });
         self.last_action[side_index(sign)] = now;
     }
 
@@ -780,7 +913,7 @@ impl RidgeMaker {
         }
         let price = if sign > 0 { ask + self.hedge_ticks } else { 1i64.max(bid - self.hedge_ticks) };
         let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, true);
-        self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: 0 });
+        self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: 0, target: 0 });
         self.hedge_id = Some(id);
     }
 
@@ -798,7 +931,7 @@ impl RidgeMaker {
         let until = now + self.take_ms * 1000;
         self.take_block[key] = until;
         let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, false);
-        self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: until });
+        self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: until, target: 0 });
     }
 }
 
@@ -1145,6 +1278,31 @@ impl Strategy for RidgeMaker {
             self.fill_mature(now, mid);
             self.last_d = Some(raw - mid);
         }
+        if self.stats.is_some() {
+            self.stat_inv.0 += self.inventory.abs() as f64;
+            self.stat_inv.1 += 1.0;
+        }
+        if self.qp || self.stats.is_some() {
+            self.qp_d = raw - mid;
+            self.qp_touch = [bid, ask];
+            self.ahead.clear();
+            for (side, touch) in [(Side::Buy, bid), (Side::Sell, ask)] {
+                let mut ahead = 0i64;
+                for order in snapshot.side(side) {
+                    if order.price != touch {
+                        if (side == Side::Buy && order.price < touch) || (side == Side::Sell && order.price > touch) {
+                            break;
+                        }
+                        continue;
+                    }
+                    if order.owner == Owner::Market {
+                        ahead += order.quantity;
+                    } else {
+                        self.ahead.insert(order.order_id, ahead);
+                    }
+                }
+            }
+        }
         if (fair - mid).abs() <= self.dead_zone {
             fair = mid;
         }
@@ -1238,6 +1396,16 @@ impl Strategy for RidgeMaker {
                         }
                     }
                 }
+                if self.stats.is_some() && self.hedge_id != Some(event.order_id) {
+                    let b = match self.ahead.get(&event.order_id) {
+                        Some(&0) => 0,
+                        Some(&a) if a <= 100 => 1,
+                        Some(&a) if a <= 300 => 2,
+                        Some(_) => 3,
+                        None => 4,
+                    };
+                    self.stat_lots[b] += event.filled_quantity;
+                }
                 let record = &mut self.orders[index];
                 self.inventory += record.sign * event.filled_quantity;
                 record.quantity = event.remaining_quantity;
@@ -1253,9 +1421,13 @@ impl Strategy for RidgeMaker {
                     self.orders.remove(index);
                 } else {
                     self.orders[index].cancelling = false;
+                    self.orders[index].target = 0;
                 }
             }
-            Status::Modified => {}
+            Status::Modified => {
+                self.orders[index].quantity = event.remaining_quantity;
+                self.orders[index].target = 0;
+            }
         }
         let was_hedge = self.hedge_id == Some(event.order_id);
         if was_hedge && matches!(event.status, Status::Filled | Status::Canceled | Status::Rejected) {
