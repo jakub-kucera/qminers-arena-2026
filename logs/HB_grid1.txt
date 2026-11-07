@@ -1,0 +1,18 @@
+5 runs (4 cells + baseline, 1 files) on 2 jobs
+TAKE takes=661 lots=30084 filled=28300
+TAKE takes=662 lots=21915 filled=20988
+TAKE takes=478 lots=21283 filled=19810
+TAKE takes=479 lots=15731 filled=14940
+TAKE takes=0 lots=0 filled=0
+rank  TAKE_LOTS  TAKE_OWN      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base    (as is)            554,347  417,711  136,636        -     834       0  37,087  2,192,606         100  11,205    0      211
+   1         40       800  555,194  418,101  137,093  555,074     752       0  38,031  2,208,310         100  11,155    0      219
+   2         60       800  555,143  417,511  137,632  554,712     752       0  38,058  2,213,696         100  11,150    0      219
+   3         40       400  554,885  417,767  137,118  554,626     752       0  38,389  2,212,738         100  11,133    0      220
+   4         60       400  553,798  416,022  137,776  554,609     752       0  38,386  2,219,284         100  11,113    0      212
+
+best by pnl      TAKE_LOTS=40, TAKE_OWN=800  (555,194)
+best by holdout  TAKE_LOTS=60, TAKE_OWN=400  (137,776)
+best by nbhd     TAKE_LOTS=40, TAKE_OWN=800  (555,074)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+wrote logs/HB_grid1.csv

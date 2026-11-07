@@ -1,0 +1,22 @@
+13 runs (12 cells + baseline, 1 files) on 3 jobs
+rank  REDUCE_TOUCH  REDUCE_DEEP      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base       (as is)               462,060  342,279  119,781        -     569       0  52,527  1,713,604         100   8,291    0      291
+   1           100           80  497,675  368,988  128,687  492,751     538       0  52,862  1,792,826         100   8,687    0      309
+   2           100           40  497,248  368,455  128,793  492,638     559       0  53,122  1,795,782         100   8,693    0      305
+   3           100          120  496,807  368,831  127,976  491,306     542       0  52,592  1,788,974         100   8,682    0      300
+   4           100            0  496,334  367,647  128,687  491,107     584       0  51,846  1,795,018         100   8,725    0      289
+   5            80            0  479,738  355,582  124,156  479,544     539       0  55,133  1,759,374         100   8,376    0      305
+   6            80          120  479,435  355,690  123,745  479,045     550       0  55,239  1,754,878         100   8,393    0      309
+   7            80           40  479,293  355,356  123,937  479,603     550       0  55,574  1,760,130         100   8,372    0      313
+   8            80           80  479,275  355,275  124,000  479,548     550       0  55,542  1,759,086         100   8,373    0      312
+   9            65            0  462,813  342,225  120,588  468,337     569       0  52,143  1,714,552         100   8,307    0      287
+  10            65           40  462,461  342,319  120,142  466,657     569       0  52,551  1,716,426         100   8,303    0      294
+  11            65           80  462,060  342,279  119,781  466,114     569       0  52,527  1,713,604         100   8,291    0      291
+  12            65          120  460,662  341,053  119,609  467,386     521       0  52,473  1,707,472         100   8,321    0      289
+
+best by pnl      REDUCE_TOUCH=100, REDUCE_DEEP=80  (497,675)
+best by holdout  REDUCE_TOUCH=100, REDUCE_DEEP=40  (128,793)
+best by nbhd     REDUCE_TOUCH=100, REDUCE_DEEP=80  (492,751)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+! the best cell by pnl has REDUCE_TOUCH=100, the axis' highest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote logs/B_grid2.csv

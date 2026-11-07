@@ -1,0 +1,21 @@
+10 runs (9 cells + baseline, 1 files) on 4 jobs
+rank    LIMIT  UNWIND_TO      pnl   in 75%  out 25%     nbhd  max dd   breach    fills     volume  |inv| q997  pnl se  rej  cxl rej
+base  (as is)             519,027  386,964  132,063        -     519        0   66,371  1,877,776         100   8,473    0      295
+   1      110        100  239,319  176,802   62,518  196,923   1,630  290,417   74,958  2,087,422         100  10,504    0      315  !
+   2      125        100  210,419  156,245   54,174  181,322   2,463  333,603   80,923  2,382,764         100  11,547    0      335  !
+   3      150        100  181,048  132,207   48,840  137,498   3,983  379,285   90,953  2,836,190         103  12,737    0      424  !
+   4      110         90  141,029  102,636   38,393  140,650   2,989  363,788   83,933  2,200,020         101  11,785    0      386  !
+   5      125         90   94,502   68,591   25,911   97,097   4,306  422,337   91,404  2,552,146         108  13,264    0      401  !
+   6      110         60   87,749   65,387   22,363   82,428   3,911  344,860   82,279  2,377,296         100  11,420    0      382  !
+   7      150         90   21,028   11,225    9,803   61,884  12,380  500,463  107,731  3,103,254         119  15,460    0      512  !
+   8      125         60   18,506   11,710    6,796   37,929   9,502  411,438   92,960  2,750,959         106  12,931    0      463  !
+   9      150         60  -49,040  -42,499   -6,541   -3,169  50,716  481,812  112,291  3,319,669         115  14,983    0      590  !
+
+best by pnl      LIMIT=110, UNWIND_TO=100  (239,319)
+best by holdout  LIMIT=110, UNWIND_TO=100  (62,518)
+best by nbhd     LIMIT=110, UNWIND_TO=100  (196,923)
+all measures agree
+! breach penalty in 9 cells (|position| over the limit costs 10,000 a second): LIMIT=110, UNWIND_TO=60 | LIMIT=110, UNWIND_TO=90 | LIMIT=110, UNWIND_TO=100 | LIMIT=125, UNWIND_TO=60 | LIMIT=125, UNWIND_TO=90 | ... 4 more
+! the best cell by pnl has LIMIT=110, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+! the best cell by pnl has UNWIND_TO=100, the axis' highest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote results/r1_650/f8_unwind.csv

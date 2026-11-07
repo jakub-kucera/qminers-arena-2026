@@ -1,0 +1,13 @@
+4 runs (3 cells + baseline, 1 files) on 4 jobs
+rank  TAKE_POS      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base   (as is)  519,027  386,964  132,063        -     519       0  66,371  1,877,776         100   8,473    0      295
+   1        30  519,578  387,462  132,116  519,411     519       0  66,459  1,877,624         100   8,465    0      296
+   2        85  519,300  387,091  132,209  519,272     519       0  66,383  1,878,012         100   8,473    0      295
+   3        60  519,244  387,127  132,117  519,374     519       0  66,386  1,877,580         100   8,469    0      295
+
+best by pnl      TAKE_POS=30  (519,578)
+best by holdout  TAKE_POS=85  (132,209)
+best by nbhd     TAKE_POS=30  (519,411)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+! the best cell by pnl has TAKE_POS=30, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote logs/H8_grid2.csv

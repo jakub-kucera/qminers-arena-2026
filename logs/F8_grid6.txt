@@ -1,0 +1,13 @@
+4 runs (3 cells + baseline, 1 files) on 3 jobs
+rank  SIZE_NARROW      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base      (as is)  518,775  386,853  131,922        -     520       0  67,496  1,880,134         100   8,474    0      294
+   1          100  521,530  388,089  133,441  520,374     518       0  73,318  1,898,997         100   8,224    0      316
+   2           80  519,219  386,936  132,283  517,971     497       0  83,895  1,916,586         100   7,713    0      417
+   3           70  513,164  381,467  131,697  516,192     488       0  90,154  1,917,588         100   7,408    0      493
+
+best by pnl      SIZE_NARROW=100  (521,530)
+best by holdout  SIZE_NARROW=100  (133,441)
+best by nbhd     SIZE_NARROW=100  (520,374)
+all measures agree
+! the best cell by pnl has SIZE_NARROW=100, the axis' highest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote logs/F8_grid6.csv

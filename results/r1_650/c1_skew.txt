@@ -1,0 +1,13 @@
+4 runs (3 cells + baseline, 1 files) on 4 jobs
+rank   SKEW_K      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base  (as is)  554,347  417,711  136,636        -     834       0  37,087  2,192,606         100  11,205    0      211
+   1      0.1  530,804  396,265  134,539  463,928     752       0  39,216  2,315,366         100  10,628    0      258
+   2     0.25  397,052  293,607  103,445  416,307     929       0  43,901  2,482,428         100   9,450    0      440
+   3      0.5  321,064  234,758   86,306  359,058   1,142       0  44,469  2,493,804         100   9,181    0      471
+
+best by pnl      SKEW_K=0.1  (530,804)
+best by holdout  SKEW_K=0.1  (134,539)
+best by nbhd     SKEW_K=0.1  (463,928)
+all measures agree
+! the best cell by pnl has SKEW_K=0.1, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote results/r1_650/c1_skew.csv

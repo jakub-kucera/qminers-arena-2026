@@ -1,0 +1,15 @@
+7 runs (6 cells + baseline, 1 files) on 5 jobs
+rank  FLOW_CUT  SKEW_K      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base   (as is)          554,347  417,711  136,636        -     834       0  37,087  2,192,606         100  11,205    0      211
+   1       1.1   0.025  554,347  417,711  136,636  545,792     834       0  37,087  2,192,606         100  11,205    0      211
+   2       1.5   0.025  554,347  417,711  136,636  546,499     834       0  37,087  2,192,606         100  11,205    0      211
+   3       0.8   0.025  543,668  409,715  133,953  539,276     792       0  33,873  2,148,344         100  11,112    0      164
+   4       1.1     0.1  530,804  396,265  134,539  533,942     752       0  39,216  2,315,366         100  10,628    0      258
+   5       1.5     0.1  530,804  396,265  134,539  538,652     752       0  39,216  2,315,366         100  10,628    0      258
+   6       0.8     0.1  519,812  387,879  131,933  531,428     762       0  35,485  2,264,872         100  10,570    0      231
+
+best by pnl      FLOW_CUT=1.1, SKEW_K=0.025  (554,347)
+best by holdout  FLOW_CUT=1.1, SKEW_K=0.025  (136,636)
+best by nbhd     FLOW_CUT=1.5, SKEW_K=0.025  (546,499)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+wrote logs/X1_grid3.csv

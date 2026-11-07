@@ -1,0 +1,13 @@
+5 runs (4 cells + baseline, 1 files) on 4 jobs
+rank  SIZE_NARROW  SIZE_DEEP      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base      (as is)             519,027  386,964  132,063        -     519       0  66,371  1,877,776         100   8,473    0      295
+   1           90         60  520,733  387,819  132,914  518,356     499       0  78,349  1,909,516         100   7,993    0      368
+   2           90        100  520,453  387,358  133,095  517,770     499       0  76,600  1,903,616         100   7,989    0      367
+   3          140         60  513,881  383,611  130,270  515,580     555       0  61,253  1,853,094         100   8,784    0      265
+   4          140        100  512,125  381,901  130,224  515,486     555       0  59,460  1,845,048         100   8,773    0      264
+
+best by pnl      SIZE_NARROW=90, SIZE_DEEP=60  (520,733)
+best by holdout  SIZE_NARROW=90, SIZE_DEEP=100  (133,095)
+best by nbhd     SIZE_NARROW=90, SIZE_DEEP=60  (518,356)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+wrote logs/F8_grid5.csv

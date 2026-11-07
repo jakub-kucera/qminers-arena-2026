@@ -1,0 +1,11 @@
+3 runs (2 cells + baseline, 1 files) on 1 jobs
+rank  INSIDE_POS      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base     (as is)  496,564  368,589  127,975        -     570       0  53,919  1,802,862         100   8,711    0      305
+   1          90  490,815  363,864  126,951  489,386     593       0  56,477  1,854,940         100   8,468    0      331
+   2          80  487,957  361,586  126,371  489,386     612       0  57,191  1,870,302         100   8,418    0      326
+
+best by pnl      INSIDE_POS=90  (490,815)
+best by holdout  INSIDE_POS=90  (126,951)
+best by nbhd     INSIDE_POS=80  (489,386)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+wrote logs/r1_F7_inside_pos.csv

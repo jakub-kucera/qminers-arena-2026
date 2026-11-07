@@ -1,0 +1,1 @@
+uv run exchange-simulator --strategy strategy_codex_best.py --backtest    >    115.37s user 0.65s system 99% cpu 1:56.29 total

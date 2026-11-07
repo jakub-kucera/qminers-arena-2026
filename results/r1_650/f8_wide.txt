@@ -1,0 +1,17 @@
+730 runs (729 cells + baseline, 1 files) on 6 threads (Rust)
+done in 153.97 s
+rank  SIZE_NARROW  SIZE_TOUCH  SIZE_DEEP  DEPLETE_LOTS  DEPL_FRAC  MOM_MS      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base      (as is)                                                          519,027  386,964  132,063        -     519       0  66,371  1,877,776         100   8,473    0      295
+   1          115          40         80            50       0.12     150  509,422  375,901  133,521  504,672     533       0  71,231  1,964,764         100   8,554    0      370
+   2          115          40         80            50       0.12      50  509,286  376,041  133,245  505,398     558       0  70,259  1,949,338         100   8,565    0      378
+   3          115          65         80            50       0.12     150  513,130  380,039  133,091  508,492     536       0  69,295  1,951,928         100   8,561    0      346
+  ... 726 more (--top, or --out for all)
+
+best by pnl      SIZE_NARROW=115, SIZE_TOUCH=65, SIZE_DEEP=80, DEPLETE_LOTS=100, DEPL_FRAC=0.12, MOM_MS=50  (519,027)
+best by holdout  SIZE_NARROW=115, SIZE_TOUCH=40, SIZE_DEEP=80, DEPLETE_LOTS=50, DEPL_FRAC=0.12, MOM_MS=150  (133,521)
+best by nbhd     SIZE_NARROW=115, SIZE_TOUCH=65, SIZE_DEEP=40, DEPLETE_LOTS=100, DEPL_FRAC=0.12, MOM_MS=50  (513,943)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+! the best cell by holdout has SIZE_TOUCH=40, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+! the best cell by holdout has DEPLETE_LOTS=50, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+! the best cell by holdout has MOM_MS=150, the axis' highest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote results/r1_650/f8_wide.csv

@@ -1,0 +1,38 @@
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:121:5
+    |
+120 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+121 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+73 runs (72 cells + baseline, 1 files) on 6 threads (Rust)
+done in 29.13 s
+rank  HEDGE_TICKS  MAX_ORDERS  SKEW_K  REPLENISH_US      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base      (as is)                                    595,442  448,951  146,491        -     818   1,720  21,120  2,108,898         100  11,200    0      115  !
+   1            3           8    0.01             0  598,149  449,230  148,919  597,520     847   1,250  20,848  2,075,686         100  11,274    0      116  !
+   2            3           8    0.01          5000  598,503  449,584  148,919  597,735     847   1,250  20,846  2,075,972         100  11,275    0      115  !
+   3            3          16    0.01             0  598,149  449,230  148,919  597,750     847   1,250  20,848  2,075,686         100  11,274    0      116  !
+   4            3          16    0.01          5000  598,503  449,584  148,919  597,927     847   1,250  20,846  2,075,972         100  11,275    0      115  !
+   5           10           8    0.01             0  598,149  449,230  148,919  597,526     847   1,250  20,848  2,075,686         100  11,274    0      116  !
+   6           10           8    0.01          5000  598,503  449,584  148,919  597,741     847   1,250  20,846  2,075,972         100  11,275    0      115  !
+   7           10          16    0.01             0  598,149  449,230  148,919  597,757     847   1,250  20,848  2,075,686         100  11,274    0      116  !
+   8           10          16    0.01          5000  598,503  449,584  148,919  597,934     847   1,250  20,846  2,075,972         100  11,275    0      115  !
+   9           30           8    0.01             0  598,149  449,230  148,919  597,422     847   1,250  20,848  2,075,686         100  11,274    0      116  !
+  10           30           8    0.01          5000  598,503  449,584  148,919  597,613     847   1,250  20,846  2,075,972         100  11,275    0      115  !
+  11           30          16    0.01             0  598,149  449,230  148,919  597,679     847   1,250  20,848  2,075,686         100  11,274    0      116  !
+  12           30          16    0.01          5000  598,503  449,584  148,919  597,820     847   1,250  20,846  2,075,972         100  11,275    0      115  !
+  13            1           8    0.01             0  598,107  449,188  148,919  597,387     847   1,292  20,848  2,075,686         100  11,274    0      116  !
+  14            1           8    0.01          5000  598,461  449,542  148,919  597,578     847   1,292  20,846  2,075,972         100  11,275    0      115  !
+  15            1          16    0.01             0  598,107  449,188  148,919  597,645     847   1,292  20,848  2,075,686         100  11,274    0      116  !
+  ... 57 more (--top, or --out for all)
+
+best by pnl      HEDGE_TICKS=3, MAX_ORDERS=8, SKEW_K=0.01, REPLENISH_US=5000  (598,503)
+best by holdout  HEDGE_TICKS=3, MAX_ORDERS=8, SKEW_K=0.01, REPLENISH_US=0  (148,919)
+best by nbhd     HEDGE_TICKS=10, MAX_ORDERS=16, SKEW_K=0.01, REPLENISH_US=5000  (597,934)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+! breach penalty in 73 cells (|position| over the limit costs 10,000 a second): base | HEDGE_TICKS=1, MAX_ORDERS=4, SKEW_K=0.01, REPLENISH_US=0 | HEDGE_TICKS=1, MAX_ORDERS=4, SKEW_K=0.01, REPLENISH_US=5000 | HEDGE_TICKS=1, MAX_ORDERS=4, SKEW_K=0.025, REPLENISH_US=0 | HEDGE_TICKS=1, MAX_ORDERS=4, SKEW_K=0.025, REPLENISH_US=5000 | ... 68 more
+! the best cell by holdout has SKEW_K=0.01, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote results/r1_650/c5_exec.csv

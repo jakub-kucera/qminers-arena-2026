@@ -1,0 +1,15 @@
+7 runs (6 cells + baseline, 1 files) on 7 jobs
+rank  QUOTE_SIZE  INSIDE_EDGE      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base     (as is)               554,347  417,711  136,636        -     834       0  37,087  2,192,606         100  11,205    0      211
+   1         150          0.3  554,470  417,867  136,603  553,049     834       0  41,363  2,193,082         100  11,205    0      234
+   2         200          0.3  554,347  417,711  136,636  552,780     834       0  37,087  2,192,606         100  11,205    0      211
+   3         100          0.3  554,322  417,682  136,640  552,591     834       0  45,170  2,192,862         100  11,203    0      254
+   4         200          0.5  549,523  413,458  136,065  550,975     752       0  36,964  2,184,680         100  11,236    0      207
+   5         150          0.5  549,056  413,568  135,488  550,508     752       0  41,204  2,184,842         100  11,234    0      230
+   6         100          0.5  548,981  413,446  135,535  550,786     752       0  45,005  2,184,592         100  11,232    0      251
+
+best by pnl      QUOTE_SIZE=150, INSIDE_EDGE=0.3  (554,470)
+best by holdout  QUOTE_SIZE=100, INSIDE_EDGE=0.3  (136,640)
+best by nbhd     QUOTE_SIZE=150, INSIDE_EDGE=0.3  (553,049)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+wrote logs/X1_grid1.csv

@@ -1,0 +1,19 @@
+Simulation complete
+fills=66371
+traded_volume=1877776
+inventory=82
+cash=-303351.00
+mark_price=10029.00
+breach_penalty=0.00
+pnl=519027.00
+pnl_se=8472.59
+abs_inventory_q50=40
+abs_inventory_q68=65
+abs_inventory_q95=100
+abs_inventory_q997=100
+log_dir=logs/r1_F8
+uv run exchange-simulator --strategy  --backtest data/arena/round1/round1.csv  44.59s user 0.15s system 99% cpu 44.855 total
+candidate [40773, 42261, 41337, 46163, 43162, 44248, 43793, 41113, 44230, 44326, 45119, 42502] total 519027
+baseline  [38780, 40295, 40681, 42132, 40715, 43340, 41054, 38533, 43204, 43157, 43733, 40940] total 496564
+difference [1993, 1966, 656, 4031, 2447, 908, 2739, 2580, 1026, 1169, 1386, 1562]
+ahead in 12 of 12, mean +1,872, t 6.73, worst +656

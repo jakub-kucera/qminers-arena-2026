@@ -1,0 +1,16 @@
+6 runs (5 cells + baseline, 1 files) on 5 jobs
+rank    LIMIT          pnl       in 75%     out 25%         nbhd      max dd      breach   fills     volume  |inv| q997   pnl se  rej  cxl rej
+base  (as is)      519,027      386,964     132,063            -         519           0  66,371  1,877,776         100    8,473    0      295
+   1      100      519,027      386,964     132,063   -8,966,948         519           0  66,371  1,877,776         100    8,473    0      295
+   2      110  -18,452,922  -13,781,206  -4,671,716  -13,248,010  18,452,985  19,005,860  69,117  2,052,828         110  266,124    0      290  !
+   3      125  -21,810,134  -16,329,685  -5,480,449  -21,500,644  21,810,352  22,407,189  74,901  2,299,719         125  286,954    0      363  !
+   4      150  -24,238,877  -18,317,650  -5,921,227  -26,775,942  24,239,116  24,884,433  83,802  2,660,218         150  296,434    0      452  !
+   5      200  -34,278,817  -25,851,696  -8,427,121  -29,258,847  34,278,847  34,945,928  97,600  3,145,305         200  319,056    0      703  !
+
+best by pnl      LIMIT=100  (519,027)
+best by holdout  LIMIT=100  (132,063)
+best by nbhd     LIMIT=100  (-8,966,948)
+all measures agree
+! breach penalty in 4 cells (|position| over the limit costs 10,000 a second): LIMIT=110 | LIMIT=125 | LIMIT=150 | LIMIT=200
+! the best cell by pnl has LIMIT=100, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote results/r1_650/f8_limit.csv

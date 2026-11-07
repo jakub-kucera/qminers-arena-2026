@@ -1,0 +1,6 @@
+logs/r1_F8_full: 82659 fills of ours, 1,877,776 lots
+  as maker: 78742 fills, 1,830,317 lots; edge at the fill +0.51 ticks a lot; the mid's move our way after: 1s -0.23, 5s -0.23, 30s -0.23
+  as taker: 3917 fills, 47,459 lots; edge at the fill -0.40 ticks a lot; the mid's move our way after: 1s +0.56, 5s +0.58, 30s +0.48
+  our events: add 98,607, add_sent 100,268, cancel 36,464, cancel_failed 295, cancel_sent 36,759
+  PnL: end 519,027, at each quarter 124,371 / 257,944 / 387,080 / 519,027, max drawdown 519
+  result.json: pnl 519,027.00, breach 0.00, |inventory| q99.7 100

@@ -1,0 +1,11 @@
+3 runs (2 cells + baseline, 1 files) on 3 jobs
+rank  ALLOC_K      pnl   in 75%  out 25%     nbhd  max dd  breach   fills   volume  |inv| q997  pnl se  rej  cxl rej
+base  (as is)  227,492  172,548   54,944        -     260       0  14,116  374,652         100   4,045    0       82
+   1     -0.5  228,457  172,894   55,563  227,974     197       0  28,511  380,200         100   4,020    0      120
+   2        0  227,492  172,548   54,944  227,974     260       0  14,116  374,652         100   4,045    0       82
+
+best by pnl      ALLOC_K=-0.5  (228,457)
+best by holdout  ALLOC_K=-0.5  (55,563)
+best by nbhd     ALLOC_K=0  (227,974)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+wrote logs/H6_v2.csv

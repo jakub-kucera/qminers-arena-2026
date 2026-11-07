@@ -1,0 +1,13 @@
+4 runs (3 cells + baseline, 1 files) on 3 jobs
+rank  JOIN_OWN      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base   (as is)  508,175  377,052  131,123        -     658       0  68,594  1,899,282         100   8,455    0      382
+   1       400  515,336  384,074  131,262  513,862     519       0  66,871  1,873,268         100   8,466    0      301
+   2       800  512,387  381,424  130,963  511,711     519       0  66,157  1,858,820         100   8,496    0      239
+   3      1500  507,410  377,287  130,123  509,898     559       0  65,276  1,843,660         100   8,482    0      222
+
+best by pnl      JOIN_OWN=400  (515,336)
+best by holdout  JOIN_OWN=400  (131,262)
+best by nbhd     JOIN_OWN=400  (513,862)
+all measures agree
+! the best cell by pnl has JOIN_OWN=400, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote logs/H6_grid3.csv

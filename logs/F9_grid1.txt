@@ -1,0 +1,16 @@
+7 runs (6 cells + baseline, 1 files) on 7 jobs
+rank  GHOST_REST  GHOST_BLOCK_MS      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base     (as is)                  499,698  372,767  126,931        -     519       0  65,043  1,895,360         100   8,541    0      330
+   1           0              50  513,141  381,684  131,457  508,725     519       0  67,391  1,899,718         100   8,492    0      339
+   2           0             250  506,764  377,637  129,127  506,534     519       0  66,041  1,880,792         100   8,498    0      326
+   3          40              50  506,269  376,978  129,291  505,820     519       0  66,544  1,917,054         100   8,519    0      347
+   4          80              50  504,172  375,263  128,909  502,424     519       0  66,087  1,922,376         100   8,534    0      338
+   5          40             250  499,698  372,767  126,931  502,390     519       0  65,043  1,895,360         100   8,541    0      330
+   6          80             250  496,831  370,969  125,862  500,234     519       0  64,607  1,899,738         100   8,565    0      323
+
+best by pnl      GHOST_REST=0, GHOST_BLOCK_MS=50  (513,141)
+best by holdout  GHOST_REST=0, GHOST_BLOCK_MS=50  (131,457)
+best by nbhd     GHOST_REST=0, GHOST_BLOCK_MS=50  (508,725)
+all measures agree
+! the best cell by pnl has GHOST_REST=0, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote logs/F9_grid1.csv

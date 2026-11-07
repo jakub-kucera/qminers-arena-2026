@@ -1,0 +1,23 @@
+13 runs (12 cells + baseline, 1 files) on 12 jobs
+rank  SWEEP_LOTS  SWEEP_SIZE      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base     (as is)              519,027  386,964  132,063        -     519       0  66,371  1,877,776         100   8,473    0      295
+   1        1000         100  520,666  388,186  132,480  519,680     519       0  67,424  1,900,376         100   8,410    0      300
+   2        1000          40  520,638  388,133  132,505  520,263     519       0  67,285  1,891,380         100   8,408    0      300
+   3        1000          60  520,630  388,052  132,578  520,086     519       0  67,434  1,896,604         100   8,409    0      299
+   4         700          40  519,521  387,747  131,774  517,776     519       0  68,253  1,910,912         100   8,360    0      323
+   5         700          60  518,408  387,379  131,029  516,885     519       0  68,414  1,923,532         100   8,356    0      326
+   6         700         100  517,745  387,297  130,448  514,971     519       0  68,538  1,933,116         100   8,360    0      326
+   7         500          40  512,539  382,348  130,191  508,637     519       0  70,027  1,940,928         100   8,274    0      334
+   8         500          60  508,120  379,742  128,378  504,588     519       0  70,000  1,962,838         100   8,265    0      339
+   9         500         100  503,064  375,642  127,422  499,145     519       0  70,291  1,978,558         100   8,273    0      338
+  10         300          40  494,369  367,938  126,431  495,906     554       0  75,344  2,043,643         100   8,086    0      368
+  11         300          60  480,809  358,074  122,735  487,737     545       0  74,805  2,091,156         100   8,072    0      368
+  12         300         100  467,651  349,333  118,318  483,841     543       0  74,940  2,129,504         100   8,150    0      374
+
+best by pnl      SWEEP_LOTS=1000, SWEEP_SIZE=100  (520,666)
+best by holdout  SWEEP_LOTS=1000, SWEEP_SIZE=60  (132,578)
+best by nbhd     SWEEP_LOTS=1000, SWEEP_SIZE=40  (520,263)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+! the best cell by pnl has SWEEP_LOTS=1000, the axis' highest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+! the best cell by pnl has SWEEP_SIZE=100, the axis' highest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote logs/H9_grid1.csv

@@ -1,0 +1,16 @@
+7 runs (6 cells + baseline, 1 files) on 6 jobs
+rank  MOM_LOTS  MOM_MS      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base   (as is)          519,027  386,964  132,063        -     519       0  66,371  1,877,776         100   8,473    0      295
+   1       200     100  519,170  385,575  133,595  518,750     522       0  68,910  1,928,664         100   8,429    0      370
+   2       200      50  518,693  385,687  133,006  518,702     519       0  68,419  1,911,466         100   8,454    0      385
+   3       300     100  518,387  385,874  132,513  518,006     519       0  67,912  1,908,598         100   8,438    0      317
+   4       300      50  518,242  385,679  132,563  517,935     519       0  67,217  1,892,734         100   8,449    0      319
+   5       600      50  516,417  384,987  131,430  516,962     519       0  65,452  1,859,942         100   8,474    0      259
+   6       600     100  516,227  384,900  131,327  517,010     519       0  65,790  1,867,410         100   8,461    0      264
+
+best by pnl      MOM_LOTS=200, MOM_MS=100  (519,170)
+best by holdout  MOM_LOTS=200, MOM_MS=100  (133,595)
+best by nbhd     MOM_LOTS=200, MOM_MS=100  (518,750)
+all measures agree
+! the best cell by pnl has MOM_LOTS=200, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote logs/F8_grid3.csv

@@ -1,0 +1,13 @@
+5 runs (4 cells + baseline, 1 files) on 4 jobs
+rank  JOIN_OWN  MOM_MS      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base   (as is)          508,482  378,500  129,982        -     521       0  66,229  1,966,958         100   8,453    0      255
+   1       800      50  511,776  380,367  131,409  509,616     521       0  66,080  1,942,438         100   8,492    0      259
+   2       800      20  508,589  377,870  130,719  507,944     546       0  66,255  1,948,008         100   8,491    0      253
+   3       400      50  508,482  378,500  129,982  507,908     521       0  66,229  1,966,958         100   8,453    0      255
+   4       400      20  503,467  374,244  129,223  506,846     542       0  66,522  1,975,384         100   8,451    0      247
+
+best by pnl      JOIN_OWN=800, MOM_MS=50  (511,776)
+best by holdout  JOIN_OWN=800, MOM_MS=50  (131,409)
+best by nbhd     JOIN_OWN=800, MOM_MS=50  (509,616)
+all measures agree
+wrote logs/F8_grid2.csv

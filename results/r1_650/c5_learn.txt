@@ -1,0 +1,39 @@
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:121:5
+    |
+120 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+121 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+37 runs (36 cells + baseline, 1 files) on 6 threads (Rust)
+done in 16.81 s
+rank   FIT_US  OBSERVATION_INTERVAL_US  MIN_LABELS  QUOTE_SIZE      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base  (as is)                                                   595,442  448,951  146,491        -     818   1,720  21,120  2,108,898         100  11,200    0      115  !
+   1  1000000                    50000          50         200  596,114  449,938  146,176  595,023     818   1,670  21,120  2,109,700         100  11,207    0      119  !
+   2  1000000                    20000         200         200  595,442  448,951  146,491  594,942     818   1,720  21,120  2,108,898         100  11,200    0      115  !
+   3   250000                    20000         200         200  595,286  448,838  146,448  594,808     818   1,770  21,126  2,110,294         100  11,198    0      117  !
+   4   250000                    20000        1000         200  595,282  448,754  146,528  594,650     818   1,670  21,112  2,110,670         100  11,201    0      119  !
+   5   250000                    20000          50         200  595,228  448,793  146,435  594,618     818   1,670  21,101  2,108,148         100  11,192    0      122  !
+   6  1000000                    20000          50         200  595,124  448,678  146,446  594,897     818   1,720  21,112  2,108,368         100  11,200    0      118  !
+   7  1000000                    10000         200         200  595,048  448,866  146,182  594,232     818   1,720  21,118  2,108,174         100  11,190    0      124  !
+   8  1000000                    50000         200         200  594,971  448,938  146,033  594,929     818   1,670  21,106  2,109,124         100  11,203    0      121  !
+   9  1000000                    20000        1000         200  594,725  448,141  146,584  594,515     818   1,720  21,112  2,108,972         100  11,202    0      119  !
+  10   250000                    50000        1000         200  594,698  448,651  146,047  594,404     903   1,570  21,122  2,109,508         100  11,200    0      122  !
+  11   250000                    50000          50         200  594,579  448,611  145,968  594,915     818   1,620  21,110  2,110,046         100  11,195    0      121  !
+  12  1000000                    50000        1000         200  594,448  448,453  145,995  594,364     903   1,520  21,106  2,108,376         100  11,194    0      118  !
+  13   250000                    50000         200         200  594,444  448,476  145,968  594,674     818   1,670  21,130  2,110,632         100  11,195    0      120  !
+  14   250000                    10000        1000         200  594,440  448,350  146,090  594,229     818   1,870  21,127  2,110,224         100  11,194    0      124  !
+  15  1000000                    50000          50         100  594,326  448,713  145,613  594,509     818   1,870  30,545  2,103,144         100  11,175    0      200  !
+  ... 21 more (--top, or --out for all)
+
+best by pnl      FIT_US=1000000, OBSERVATION_INTERVAL_US=50000, MIN_LABELS=50, QUOTE_SIZE=200  (596,114)
+best by holdout  FIT_US=1000000, OBSERVATION_INTERVAL_US=20000, MIN_LABELS=1000, QUOTE_SIZE=200  (146,584)
+best by nbhd     FIT_US=1000000, OBSERVATION_INTERVAL_US=50000, MIN_LABELS=50, QUOTE_SIZE=200  (595,023)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+! breach penalty in 37 cells (|position| over the limit costs 10,000 a second): base | FIT_US=250000, OBSERVATION_INTERVAL_US=10000, MIN_LABELS=50, QUOTE_SIZE=100 | FIT_US=250000, OBSERVATION_INTERVAL_US=10000, MIN_LABELS=50, QUOTE_SIZE=200 | FIT_US=250000, OBSERVATION_INTERVAL_US=10000, MIN_LABELS=200, QUOTE_SIZE=100 | FIT_US=250000, OBSERVATION_INTERVAL_US=10000, MIN_LABELS=200, QUOTE_SIZE=200 | ... 32 more
+! the best cell by pnl has OBSERVATION_INTERVAL_US=50000, the axis' highest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+! the best cell by pnl has MIN_LABELS=50, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote results/r1_650/c5_learn.csv

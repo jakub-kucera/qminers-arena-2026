@@ -1,0 +1,14 @@
+6 runs (5 cells + baseline, 1 files) on 6 jobs
+rank  JOIN_OWN      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base   (as is)  511,978  380,138  131,840        -     697       0  67,989  1,903,048         100   8,457    0      366
+   1       400  519,027  386,964  132,063  518,197     519       0  66,371  1,877,776         100   8,473    0      295
+   2       300  518,829  386,398  132,431  518,332     519       0  66,586  1,881,614         100   8,479    0      298
+   3       200  517,139  385,073  132,066  517,441     519       0  66,754  1,885,084         100   8,475    0      303
+   4       600  516,735  384,713  132,022  517,881     519       0  65,953  1,870,246         100   8,482    0      270
+   5       100  516,354  383,847  132,507  516,746     519       0  66,988  1,888,798         100   8,455    0      318
+
+best by pnl      JOIN_OWN=400  (519,027)
+best by holdout  JOIN_OWN=100  (132,507)
+best by nbhd     JOIN_OWN=300  (518,332)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+wrote logs/H6_grid6.csv

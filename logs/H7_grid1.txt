@@ -1,0 +1,13 @@
+4 runs (3 cells + baseline, 1 files) on 4 jobs
+rank  DYING_OWN      pnl   in 75%  out 25%     nbhd  max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base    (as is)  519,027  386,964  132,063        -     519       0  66,371  1,877,776         100   8,473    0      295
+   1        400  519,281  386,251  133,030  519,148     519       0  66,147  1,879,596         100   8,499    0      316
+   2        800  519,014  386,092  132,922  518,611     523       0  65,779  1,882,464         100   8,503    0      319
+   3       1500  517,537  384,230  133,307  518,276     527       0  65,067  1,889,396         100   8,516    0      297
+
+best by pnl      DYING_OWN=400  (519,281)
+best by holdout  DYING_OWN=1500  (133,307)
+best by nbhd     DYING_OWN=400  (519,148)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+! the best cell by pnl has DYING_OWN=400, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote logs/H7_grid1.csv
