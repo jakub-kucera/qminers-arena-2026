@@ -956,17 +956,28 @@ def went(memory: dict, cancels: list, new: list[tuple[int, int, bool]], delay: i
 PRODUCT = "ASSET"  # the instrument's name in PARAMS
 LIMIT = 100  # MAX_POSITION: every second above it costs 10,000 (above 1,000 an order is rejected)
 SESSION_US = 3_600_000_000  # a round's hour, mapped onto the template's clock of 0..999,900
+BOOK_LEVELS = 5  # prices a side read_book adds up: enough for the mid, the walls near the touch and takes within a few ticks
 
 
 def read_book(snapshot: OrderBookSnapshot) -> Book:
-    """The market's book in ticks, best first, volumes positive, our own orders left out."""
-    bids: dict[int, int] = {}
-    asks: dict[int, int] = {}
-    for orders, levels in ((snapshot.bids, bids), (snapshot.asks, asks)):
+    """The market's book in ticks, best first, volumes positive, our own orders left out, at most BOOK_LEVELS prices a
+    side: the snapshot lists every order within 20 ticks, and adding all of them up was most of a call's time on a
+    deep book (the ADAPTER review, 7 Nov: 3 / 31 / 77 µs a call at 20 / 400 / 1,000 orders a side, against a
+    15-minute limit for ~8.8M calls)."""
+    sides = []
+    for orders in (snapshot.bids, snapshot.asks):  # best first, each price's orders together
+        levels: list[list[int]] = []
         for order in orders:
-            if order.owner == "market":
-                levels[order.price] = levels.get(order.price, 0) + order.quantity
-    return Book([[price, size] for price, size in sorted(bids.items(), reverse=True)], [[price, size] for price, size in sorted(asks.items())])
+            if order.owner != "market":
+                continue
+            if levels and levels[-1][0] == order.price:
+                levels[-1][1] += order.quantity
+            elif len(levels) < BOOK_LEVELS:
+                levels.append([order.price, order.quantity])
+            else:
+                break
+        sides.append(levels)
+    return Book(sides[0], sides[1])
 
 
 def params_for(product: str) -> dict | None:
@@ -1009,6 +1020,7 @@ class ArenaBot(BaseStrategy):
         self.position = 0
         self.orders: dict[str, list] = {}  # id -> [price, signed quantity left, ioc, state: "sent", "live" or "cancelling"]
         self.fills: list[tuple[float, int]] = []  # ours since the last book call, (price, signed quantity)
+        self.start_us: int | None = None  # the tape's first time: a round's Time may not start at 0
 
     def on_private_order_update(self, event: PrivateOrderEvent) -> None:
         order = self.orders.get(event.order_id)
@@ -1035,7 +1047,9 @@ class ArenaBot(BaseStrategy):
             if p is None:
                 return
             book = read_book(snapshot)
-            clock = min(999_900, snapshot.timestamp_us * 1_000_000 // SESSION_US // 100 * 100)
+            if self.start_us is None:
+                self.start_us = snapshot.timestamp_us
+            clock = min(999_900, (snapshot.timestamp_us - self.start_us) * 1_000_000 // SESSION_US // 100 * 100)
             market = Market({PRODUCT: book}, read_trades(trades), {PRODUCT: self.fills}, clock)
             self.fills = []
             mine = self.memory.setdefault(PRODUCT, {})
