@@ -1,0 +1,14 @@
+{
+  "base_source": "strategies/round2_taker_liquidity_269920.py",
+  "base_sha256": "154504db3b2b6919e485a406a3be52c8ecb056a7dd7d342e2b59d6487529b6a5",
+  "candidates": [
+    {
+      "name": "liquidity_edge_budget",
+      "file": "logs/round2/edge_budget/liquidity_edge_budget.py",
+      "source_sha256": "f50a86b4c4f405748e9b9969f2e21a844bdcc216b0a341629009dbc7e5b0f989",
+      "risk": "strict100"
+    }
+  ],
+  "scope": "Adaptive structural followup on reused public data; forecast must pay extra execution cost.",
+  "archived_source": "strategies/round2_research/taker_extensions/liquidity_edge_budget.py"
+}

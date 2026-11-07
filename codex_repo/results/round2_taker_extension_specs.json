@@ -1,0 +1,21 @@
+{
+  "base_source": "strategies/round2_taker_liquidity_269920.py",
+  "base_sha256": "154504db3b2b6919e485a406a3be52c8ecb056a7dd7d342e2b59d6487529b6a5",
+  "candidates": [
+    {
+      "name": "liquidity_no_probes",
+      "file": "logs/round2/taker_extensions/sources/liquidity_no_probes.py",
+      "source_sha256": "4d46c848817325c0266377e36be4ecc6c96d5963ff4dcdda5cb0a33b73f68e22",
+      "risk": "strict100",
+      "archived_source": "strategies/round2_research/taker_extensions/liquidity_no_probes.py"
+    },
+    {
+      "name": "liquidity_large_flow",
+      "file": "logs/round2/taker_extensions/sources/liquidity_large_flow.py",
+      "source_sha256": "bb325693fb0a9728df04b9f0bdd2e212d4e86d432e54d6df0eb3ba0d781e3efc",
+      "risk": "strict100",
+      "archived_source": "strategies/round2_research/taker_extensions/liquidity_large_flow.py"
+    }
+  ],
+  "selection_scope": "Two predeclared structural changes on reused public data. No volatility sizing search or server query."
+}

@@ -14,6 +14,7 @@ SOURCES={
     'pure':('strategies/round2_taker_pure_209616.py','strict100'),
     'M4':('strategies/round2_imported/r2_M4_flow_window.py','strict100'),
     'maker181':('strategies/round2_distribution_ensemble_shock_180895.py','native'),
+    'V2':('strategies/round2_imported/r2_V2_vol_exposure_dz18.py','native'),
 }
 
 

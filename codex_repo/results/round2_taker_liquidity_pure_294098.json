@@ -1,0 +1,93 @@
+{
+  "source": "strategies/round2_taker_liquidity_pure_294098.py",
+  "source_sha256": "4d46c848817325c0266377e36be4ecc6c96d5963ff4dcdda5cb0a33b73f68e22",
+  "status": "Every public result field matched independent unmodified organizer CLI. No server score supplied for this source.",
+  "official_cli_match": true,
+  "evaluation": {
+    "result": {
+      "fills": 2492,
+      "traded_volume": 288516,
+      "inventory": -100,
+      "cash": 1263098.0,
+      "mark_price": 9690.0,
+      "breach_penalty": 0.0,
+      "pnl": 294098.0,
+      "pnl_se": 26613.662922492476,
+      "abs_inventory_q50": 100,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 106.04926450015046,
+    "max_abs_inventory": 100,
+    "max_potential_inventory_at_submission": 100,
+    "max_drawdown_1s": 6222.0,
+    "submissions": 2532,
+    "order_status_counts": {
+      "accepted": 2532,
+      "filled": 1481,
+      "partially_filled": 3906,
+      "canceled": 1051
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 1000.0,
+        "pnl_increment": 23165.0
+      },
+      {
+        "start_s": 1000.0,
+        "end_s": 2000.0,
+        "pnl_increment": 19537.0
+      },
+      {
+        "start_s": 2000.0,
+        "end_s": 3000.0,
+        "pnl_increment": 58634.0
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 4000.0,
+        "pnl_increment": 92314.0
+      },
+      {
+        "start_s": 4000.0,
+        "end_s": 5000.0,
+        "pnl_increment": 41863.0
+      },
+      {
+        "start_s": 5000.0,
+        "end_s": 5999.995946,
+        "pnl_increment": 58585.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "boundary_pnl": {
+      "3599997635": 117351.0,
+      "4799996824": 223851.0
+    },
+    "source": "logs/round2/taker_extensions/sources/liquidity_no_probes.py",
+    "source_sha256": "4d46c848817325c0266377e36be4ecc6c96d5963ff4dcdda5cb0a33b73f68e22",
+    "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+    "independent_private_ledger": true,
+    "risk_contract": "strict100"
+  },
+  "parent_source": "strategies/round2_taker_liquidity_269920.py",
+  "parent_public_pnl": 269920,
+  "organizer_validation_evaluated": false,
+  "organizer_private_evaluated": false,
+  "limitation": "Probe removal also changes own-fill inputs and increases median inventory from92 to100. All public data reused for selection."
+}

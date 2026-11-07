@@ -26,7 +26,7 @@ later tuning results are sample-tuned, not independent holdouts.
 
 ## Round-2 current checkpoint
 
-New [taker shortlist](docs/ROUND2_TAKER_SHORTLIST.md) and [research](docs/ROUND2_TAKER_RESEARCH.md): **269,920 public** for `strategies/round2_taker_liquidity_269920.py`, zero penalties, exact original CLI reproduction. Server validation is pending for this altered file. Imported T2 reproduces 194,391 public and has supplied server validation **490,359**. Use the named source files; the mutable submission pointer remains the previous maker. The following distribution section is historical.
+Latest [taker shortlist](docs/ROUND2_TAKER_SHORTLIST.md) and [further ideas](docs/ROUND2_NEXT_IDEAS.md): **294,098 public**, zero penalties, for `strategies/round2_taker_liquidity_pure_294098.py`; every result field matches the original CLI. Its parent269,920 has lower drawdown. Both await source-specific server feedback. Imported T2 has supplied validation **490,359**. Use named files: the mutable submission pointer remains the older maker. The following distribution section is historical.
 
 [Distribution research and sixteen-model comparison](docs/ROUND2_DISTRIBUTION_RESEARCH.md)
 cover order-size tails, liquidity state, fill selection and executable shock exits.

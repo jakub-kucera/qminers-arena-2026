@@ -1,11 +1,47 @@
 # Handoff for the next session
 
-Updated 7 November 2026: supplied server evidence has shifted priority to takers.
-Read [taker research](docs/ROUND2_TAKER_RESEARCH.md) and the [seven-model shortlist](docs/ROUND2_TAKER_SHORTLIST.md).
-New candidate `strategies/round2_taker_liquidity_269920.py` earns **269,920 public**, zero fees, strict actual/potential 100; every field matches independent organizer CLI. Server validation for this exact file is pending.
-Imported T2 reproduces **194,391 public** and has operator-associated **490,359 validation**, submission `2d72ef32-8561-4299-8aaf-f8168bb6d003`. Imports, original paths, source hashes and server artifacts are recorded; the other repository was not modified.
-**110 tests pass.** Six-candidate synthetic high-volatility stress batch is still in progress at this checkpoint; inspect `logs/round2/taker_stress/highvol_1p25/` and the final `results/round2_taker_stress_highvol_1p25.json` if present. No normal-speed stress batch has been started.
-Use named immutable files: `round2_submission.py` still points to the earlier 181 K maker. Do not infer a new submission or server score from that mutable path. Public scores have been reused for selection. No private result is available.
+Updated 7 November 2026 after structural taker followups.
+Read [further ideas and completed experiments](docs/ROUND2_NEXT_IDEAS.md),
+[taker research](docs/ROUND2_TAKER_RESEARCH.md), and the
+[nine-model shortlist](docs/ROUND2_TAKER_SHORTLIST.md).
+
+- **294,098 public**, zero penalties: `strategies/round2_taker_liquidity_pure_294098.py`.
+  Every result field matches an independent original organizer CLI replay.
+  Source SHA: `4d46c848817325c0266377e36be4ecc6c96d5963ff4dcdda5cb0a33b73f68e22`.
+  It removes all one-lot quotes from269,920. Public drawdown6,222 versus4,658,
+  and median inventory100 versus92. It does not inherit a server score.
+- **269,920 public** liquidity forecast remains the first candidate for which
+  the user was asked for validation. Its server result is still pending.
+- **263,059 public**, drawdown3,418: `strategies/round2_taker_largeflow_263059.py`.
+  Adds learned large-aggressor features. Audited native replay, no separate CLI.
+- Imported T2 reproduces **194,391 public**, with supplied **490,359 validation**,
+  submission `2d72ef32-8561-4299-8aaf-f8168bb6d003`. Original files were not modified.
+  Source associations are operator-supplied; server metadata has no upload hash.
+
+The forecast-funded extra-tick experiment made262,394 and was not promoted.
+All three followups, two original CLI checks (T2/269,920) plus the new294,098
+CLI check, the execution diagnostic and seven-source fast stress comparison
+have completed. **114 tests pass. No research process is running.**
+Normal-speed synthetic tape exists but has not been replayed.
+
+The synthetic fast tape gives269,920 liquidity846,899, T2 553,157 and V2 185,512.75.
+V2's actual supplied validation is71,864.15, illustrating that this synthetic
+tape is not a hidden-score estimator. See `results/round2_taker_stress_highvol_1p25.json`.
+
+The one-lot LIMIT probes accounted for113,810 lots,29.75% of269,920-model volume.
+Its IOC orders filled268,715 of381,598 requested lots; only84 of3,346 IOC
+orders were completely unfilled. Removing probes changes both exposure and
+own-fill forecast inputs; do not attribute its gain only to maker avoidance.
+
+Use immutable named files. **`round2_submission.py` still points to the old
+181 K maker**; no automatic competition upload or pointer change was made.
+All public scores were reused for selection; no private score is available.
+Best next mechanisms: actual fill-conditional return targets, distinct entry
+and holding horizons, and post-sweep replenishment rather than blind momentum.
+
+The earlier plain SSH push was interrupted after hanging without output.
+Do not assume remote sync; inspect subsequent bounded push result. Keep local
+commits and verified bundles. The distribution-study handoff below is history.
 
 ## Historical distribution-study handoff (superseded status below)
 

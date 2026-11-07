@@ -36,7 +36,7 @@ notifications, checks them against the native engine, and supports both the
 `inventory` and `_pos` strategy interfaces. No native simulator/evaluator
 source was changed. All taker replays assert actual and potential exposure at
 most 100 lots and zero breach penalties. Cancel-pending and unaccepted orders
-continue consuming same-side room. There are 110 passing tests, including five
+continue consuming same-side room. There are 114 passing tests, including five
 new checks for reservations, shock expiry, external-flow isolation, causal
 feature dimensions and the imported flow strategy's private ledger.
 
@@ -99,9 +99,11 @@ identified replicas of the validation tape. The supplied RA/M3 examples also
 show that local/proxy improvements need not transfer to validation. Synthetic
 scores are deliberately excluded from the shortlist's server column.
 
-The six-candidate 1.25-speed batch was started under
-`logs/round2/taker_stress/highvol_1p25/`; its final tracked artifact is
-`results/round2_taker_stress_highvol_1p25.json` when completed. Intermediate
-results alone must not be described as a completed comparison. The next useful
+The six-candidate1.25-speed batch and one added V2 control have completed.
+The final tracked artifact is `results/round2_taker_stress_highvol_1p25.json`.
+The liquidity model earned846,899 versus T2 553,157 on this artificial tape.
+V2 earned185,512.75 versus its actual supplied validation71,864.15: the proxy
+does not reproduce its server outcome. See [further ideas](ROUND2_NEXT_IDEAS.md)
+for the completed results and two new public candidates294,098 and263,059. The next useful
 external observation is the exact liquidity candidate's server result and
 submission ID, already requested from the user.

@@ -5,9 +5,13 @@ from types import SimpleNamespace
 
 from scripts.round2_taker_audit import run
 from scripts.round2_taker_variants import BASE,shock_override,flow_bias,liquidity_features
+from scripts.round2_taker_extensions import BASE as LIQUIDITY_BASE,large_flow
+from scripts.round2_edge_budget import edge_budget
+from scripts.round2_taker_execution import ExecutionAudit
 from scripts.benchmark import digest
 from simulator.main import load_strategy_from_file
-from simulator.models import BookOrderView,OrderBookSnapshot,Side
+from simulator.models import BookOrderView,OrderBookSnapshot,Side,PrivateOrderEvent,OrderStatus
+from simulator.simulator import SimulationConfig
 from test_strategy import Gateway
 
 
@@ -80,6 +84,42 @@ class TakerResearchTests(unittest.TestCase):
         self.assertEqual(result['result']['inventory'],100)
         self.assertEqual(result['result']['traded_volume'],100)
         self.assertTrue(result['independent_private_ledger'])
+
+    def test_large_flow_aggregates_one_aggressor_and_excludes_own_trades(self):
+        s=self.load_text(large_flow(LIQUIDITY_BASE.read_text()));Gateway(s)
+        # Same taker ID: 300+250 crosses the threshold, neither fill does alone.
+        s._large_flow(0,[self.trade(0,300),self.trade(0,250),self.trade(0,900,owner='user')])
+        self.assertAlmostEqual(s._tail_mass,1.1)
+        self.assertAlmostEqual(s._tail_net,1.1)
+        self.assertAlmostEqual(s._tail_value,111.1)
+        s._large_flow(500000,[])
+        self.assertAlmostEqual(s._tail_mass,1.1*__import__('math').exp(-1))
+        s._large_flow(500000,[self.trade(500000,10000,'bid')])
+        self.assertAlmostEqual(s._tail_net,1.1*__import__('math').exp(-1)-4)
+
+    def test_large_flow_features_have_expected_dimensions(self):
+        s=self.load_text(large_flow(LIQUIDITY_BASE.read_text()));Gateway(s)
+        s.on_order_book_change(self.snapshot(0),[self.trade(0,600)])
+        features=s._observations[-1][2]
+        self.assertEqual(len(features),37)
+        self.assertGreater(features[-4],0)
+
+    def test_execution_budget_keeps_edge_and_reservations(self):
+        for signal,price in ((0.8,101),(2.0,102),(-0.8,100),(-2.0,99)):
+            s=self.load_text(edge_budget(LIQUIDITY_BASE.read_text()));g=Gateway(s)
+            sign=1 if signal>0 else -1
+            s.inventory=20*sign
+            s._orders={'pending':[sign,price,75,False,False,0,0,0]}
+            s._take(10000,signal,1,100,101)
+            self.assertEqual(g.sent[0].price,price)
+            self.assertEqual(g.sent[0].quantity,5)
+
+    def test_execution_diagnostic_accepts_late_cancel_rejection(self):
+        s=load_strategy_from_file(LIQUIDITY_BASE)
+        engine=ExecutionAudit(s,SimulationConfig())
+        engine._private_notify(PrivateOrderEvent(timestamp_us=0,order_id='gone',
+            status=OrderStatus.REJECTED,remaining_quantity=0))
+        self.assertEqual(engine.execution_counts,{})
 
 
 if __name__=='__main__':unittest.main()
