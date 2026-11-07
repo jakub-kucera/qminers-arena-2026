@@ -200,6 +200,37 @@ impl OrderBook {
     pub fn resting_user_quantity(&self, side: Side) -> i64 {
         self.user_quantity[side.index()]
     }
+
+    /// What `iter_levels(side, Some(depth))` gives a loop that takes the first market order's price and sums the
+    /// market's lots at it (ours skipped): (price, lots), without the iterator chain (the room maker's hot path).
+    pub fn market_touch(&self, side: Side, depth: i64) -> Option<(i64, i64)> {
+        let mut best: Option<i64> = None;
+        let mut level = |price: i64, queue: &VecDeque<usize>| -> Option<Option<(i64, i64)>> {
+            let (mut live, mut market, mut lots) = (false, false, 0);
+            for &s in queue {
+                let o = &self.slots[s];
+                if o.remaining > 0 {
+                    live = true;
+                    if o.owner == Owner::Market {
+                        market = true;
+                        lots += o.remaining;
+                    }
+                }
+            }
+            if !live {
+                return None;
+            }
+            let b = *best.get_or_insert(price);
+            if (price - b).abs() >= depth {
+                return Some(None);
+            }
+            market.then_some(Some((price, lots)))
+        };
+        match side {
+            Side::Buy => self.levels[0].iter().rev().find_map(|(&p, q)| level(p, q)).flatten(),
+            Side::Sell => self.levels[1].iter().find_map(|(&p, q)| level(p, q)).flatten(),
+        }
+    }
 }
 
 // ---------------------------------------------------------------------------- the strategy's side
@@ -221,6 +252,10 @@ impl<'a> Snapshot<'a> {
     }
     pub fn side(&self, side: Side) -> impl Iterator<Item = BookOrder> + 'a {
         self.book.iter_levels(side, Some(self.depth))
+    }
+    /// The market's best price on a side of the snapshot and its lots there (OrderBook::market_touch).
+    pub fn market_touch(&self, side: Side) -> Option<(i64, i64)> {
+        self.book.market_touch(side, self.depth)
     }
 }
 

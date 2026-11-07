@@ -37,6 +37,7 @@ BINARY = ROOT / "rust" / "target" / "release" / "arena-sim"
 STRATEGIES = {
     "trend_follower": "strategies/trend_follower.py",
     "fallback_maker": "python/bots/qminers/candidates/r0_F1_fallback.py",
+    "room_maker": "python/bots/qminers/families/room_maker.py",
     "probe": "python/tests/fixtures/qsim_probe.py",
 }
 

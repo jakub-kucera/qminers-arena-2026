@@ -2,11 +2,18 @@
 lines, result.json and pnl.csv byte for byte for trend_follower and the F1 fallback maker as written, and every
 result field, the PnL curve and the reject counts for parameter variants and the probe strategy
 (python/tests/fixtures/qsim_probe.py), which drives the paths the two don't (modifies, cancels that lose, the
-cap, the penalty). Skipped without cargo."""
+cap, the penalty). The room maker (python/bots/qminers/families/room_maker.py) on a synthetic tape with one- and
+two-tick spreads and thin touches, so every knob's path runs; and, with ARENA_SIM_FULL=1 and the playground's
+sample_v2.csv and round 1's tape present (data/arena/, or ARENA_SIM_DATA), F3 and knob settings on them byte for
+byte (about 30 s a Python run). Skipped without cargo."""
 
 from __future__ import annotations
 
 import gzip
+import json
+import os
+import random
+import re
 import shutil
 import subprocess
 import sys
@@ -90,6 +97,106 @@ def test_variants_every_field(sample):
         hit["rejected"] |= theirs["rejected"] > 0
         hit["cancel_rejected"] |= theirs["cancel_rejected"] > 0
     assert all(hit.values()), hit  # the variants reach the paths they are here for
+
+
+def write_tape(path: Path, seconds: int = 900, seed: int = 7) -> Path:
+    """The starter's format: each second the market's book is requoted around a random-walk mid, two levels a side,
+    the spread one tick in odd minutes and two in even ones, the touch's lots from 5 to 60 (thin touches for
+    DEPLETE_LOTS, MIN_QUEUE, IMB); three times a second a fill-and-kill order of 1 to 70 lots takes one side."""
+    rng = random.Random(seed)
+    rows, next_id, live, mid = [], 1_000_001, [], 20_000
+    for second in range(seconds):
+        t = float(second)
+        for order_id in live:
+            rows.append([f"{t:.6f}", "Cancel", order_id, "", "", "", ""])
+            t += 1e-6
+        mid += rng.choice((-1, 0, 0, 0, 1))
+        half = 0 if (second // 60) % 2 else 1
+        live = []
+        for side, touch, away in (("B", mid - half, -1), ("A", mid + 1, 1)):
+            for level in range(2):
+                rows.append([f"{t:.6f}", "Insert", next_id, side, rng.randint(5, 60), touch + away * level, "G"])
+                live.append(next_id)
+                next_id += 1
+                t += 1e-6
+        for quarter in range(1, 4):
+            side = rng.choice("BA")
+            price = mid + 4 if side == "B" else mid - 4
+            rows.append([f"{second + quarter / 4:.6f}", "Insert", next_id, side, rng.randint(1, 70), price, "F"])
+            next_id += 1
+    with path.open("w") as f:
+        f.write("Time,Operation,OrderId,Side,Volume,Price,Lifespan\n")
+        f.write("".join(",".join(str(x) for x in row) + "\n" for row in rows))
+    return path
+
+
+# The room maker's knobs, each setting a different path (F3 as written first); the synthetic tape is 900 s.
+ROOM = [
+    {},
+    {"SESSION_S": 700, "WIND_DOWN_S": 60, "FLAT_S": 120},
+    {"LEVELS": 2, "SIZE_DEEP": 30, "KEEP_DEPTH": 2},
+    {"DEPLETE_LOTS": 20},
+    {"DEPLETE_LOTS": 30, "DEPLETE_SIZE": 40},
+    {"BACK_POS": 60},
+    {"SIZE_NARROW": 150, "SHRINK_NARROW": 1},
+    {"SIZE_NARROW": 40, "SHRINK_NARROW": 1, "TOPUP": 0},
+    {"UNWIND": 60, "UNWIND_TO": 30},
+    {"IMB": 0.5, "MIN_QUEUE": 10, "REBALANCE": 1, "LEVELS": 3, "CANCEL_ALONE": 0, "SKEW": 60, "SKEW_CANCEL": 0,
+     "INSIDE_POS": 40, "INSIDE_SPREAD": 2, "SESSION_S": 800, "WIND_DOWN_S": 200, "FLAT_S": 50, "UNWIND": 70, "UNWIND_TO": 30},
+]
+
+
+def test_room_maker_synthetic(tmp_path):
+    qsim_rust.build()
+    tape = write_tape(tmp_path / "tape.csv")
+    rust_runs = qsim_rust.run_batch("room_maker", ROOM, [tape], threads=4)
+    pnls = set()
+    for overrides, [ours] in zip(ROOM, rust_runs):
+        theirs = python_run(qsim_rust.STRATEGIES["room_maker"], overrides, tape)
+        assert ours.get("error") is None, ours
+        for key in FIELDS + ["rejected", "cancel_rejected"]:
+            assert ours[key] == theirs[key], (overrides, key, ours[key], theirs[key])
+        assert ours["curve"] == theirs["curve"], overrides
+        pnls.add(theirs["pnl"])
+    assert len(pnls) == len(ROOM), pnls  # every setting changes the run: its path is taken
+
+
+ARENA_DATA = Path(os.environ.get("ARENA_SIM_DATA", ROOT / "data" / "arena"))
+FULL = [  # (file, overrides, pnl, fills): F3 and knob settings on the real tapes (SESSION_S 1e9: round 1 never winds down)
+    ("playground/sample_v2.csv", {}, "263282.00", 7764),
+    ("playground/sample_v2.csv", {"LEVELS": 2, "SIZE_DEEP": 30, "KEEP_DEPTH": 2}, "220177.00", 8300),
+    ("playground/sample_v2.csv", {"DEPLETE_LOTS": 30, "DEPLETE_SIZE": 40}, "264775.00", 8537),
+    ("playground/sample_v2.csv", {"SIZE_NARROW": 150, "SHRINK_NARROW": 1}, "257145.00", 9467),
+    ("playground/sample_v2.csv", {"UNWIND": 60, "UNWIND_TO": 30}, "45646.67", 19536),
+    ("round1/round1.csv", {"SESSION_S": 1000000000}, "425553.00", 30452),
+    ("round1/round1.csv", {"SESSION_S": 1000000000, "DEPLETE_LOTS": 20}, "399672.00", 26527),
+    ("round1/round1.csv", {"SESSION_S": 1000000000, "BACK_POS": 95}, "425216.00", 29646),
+    ("round1/round1.csv", {"SESSION_S": 5700, "FLAT_S": 30, "WIND_DOWN_S": 10}, "184793.35", 14353),
+]
+
+
+@pytest.mark.skipif(os.environ.get("ARENA_SIM_FULL") != "1", reason="ARENA_SIM_FULL=1: about 30 s a Python run")
+@pytest.mark.parametrize("file, overrides, pnl, fills", FULL)
+def test_room_maker_full_byte_for_byte(tmp_path, file, overrides, pnl, fills):
+    data = ARENA_DATA / file
+    if not data.exists():
+        pytest.skip(f"no {data}")
+    qsim_rust.build()
+    source = (ROOT / qsim_rust.STRATEGIES["room_maker"]).read_text()
+    for key, value in overrides.items():
+        source, n = re.subn(rf"^{key} = \S+", f"{key} = {value!r}", source, flags=re.M)
+        assert n == 1, key
+    bot = tmp_path / "room_maker.py"
+    bot.write_text(source)
+    theirs = subprocess.run([sys.executable, "-m", "simulator.main", "--strategy", str(bot), "--backtest", str(data),
+                             "--log-dir", str(tmp_path / "py"), "--no-logs"], capture_output=True, text=True, check=True, cwd=ROOT)
+    ours = subprocess.run([str(qsim_rust.BINARY), "--backtest", str(data), "--strategy", "room_maker", "--params", json.dumps(overrides),
+                           "--log-dir", str(tmp_path / "rs")], capture_output=True, text=True, check=True)
+    lines = [line for line in theirs.stdout.splitlines() if not line.startswith("log_dir=")]
+    assert [line for line in ours.stdout.splitlines() if not line.startswith("log_dir=")] == lines
+    assert f"pnl={pnl}" in lines and f"fills={fills}" in lines
+    for name in ("result.json", "pnl.csv"):
+        assert (tmp_path / "rs" / name).read_bytes() == (tmp_path / "py" / name).read_bytes(), name
 
 
 def test_grid_table(sample, capsys):
