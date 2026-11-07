@@ -1,0 +1,22 @@
+{
+  "source": "outputs\\qminers-algo-arena\\strategies\\round1_ml_candidate.py",
+  "sha256": "afcd83d1a5e77cfbdb7db8d6953cd33b51686b3639c0149dee1be58cddbafc35",
+  "result": {
+    "fills": 23499,
+    "traded_volume": 2276842,
+    "inventory": 0,
+    "cash": 403073.0,
+    "mark_price": 10029.0,
+    "breach_penalty": 0.0,
+    "pnl": 403073.0,
+    "pnl_se": 11131.649774814072,
+    "abs_inventory_q50": 98,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "wall_seconds": 99.5863423999399,
+  "cpu_seconds": 98.171875,
+  "peak_working_set_bytes": 58281984,
+  "note": "One Windows Python process using the official loader/engine; other final comparisons run concurrently. No CatBoost or sklearn runtime dependency."
+}

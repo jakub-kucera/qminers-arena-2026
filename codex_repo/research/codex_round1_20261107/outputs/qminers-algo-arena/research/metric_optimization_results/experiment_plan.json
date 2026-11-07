@@ -1,0 +1,136 @@
+{
+  "created_utc": "2026-11-07T13:08:38.461549+00:00",
+  "objective": "Official executable net PnL. The private round standardizes positive teams; no other teams private results are available. Forecast MSE, Sharpe and pnl_se are diagnostics, not the objective.",
+  "scoring_evidence": "Team snapshot of official technical page saved 2026-11-07, lines 511-520; official ExchangeSimulator.run and executable liquidation calculation. Live general rules checked; authenticated technical page unavailable in the selected browser.",
+  "variants": [
+    {
+      "name": "g05_e0",
+      "gain": 0.5,
+      "edge": 0.0,
+      "params": {},
+      "family": "grid"
+    },
+    {
+      "name": "g05_e015",
+      "gain": 0.5,
+      "edge": 0.15,
+      "params": {},
+      "family": "grid"
+    },
+    {
+      "name": "g05_e03",
+      "gain": 0.5,
+      "edge": 0.3,
+      "params": {},
+      "family": "grid"
+    },
+    {
+      "name": "g1_e0",
+      "gain": 1.0,
+      "edge": 0.0,
+      "params": {},
+      "family": "grid"
+    },
+    {
+      "name": "g1_e015",
+      "gain": 1.0,
+      "edge": 0.15,
+      "params": {},
+      "family": "grid"
+    },
+    {
+      "name": "g1_e03",
+      "gain": 1.0,
+      "edge": 0.3,
+      "params": {},
+      "family": "grid"
+    },
+    {
+      "name": "g15_e0",
+      "gain": 1.5,
+      "edge": 0.0,
+      "params": {},
+      "family": "grid"
+    },
+    {
+      "name": "g15_e015",
+      "gain": 1.5,
+      "edge": 0.15,
+      "params": {},
+      "family": "grid"
+    },
+    {
+      "name": "g15_e03",
+      "gain": 1.5,
+      "edge": 0.3,
+      "params": {},
+      "family": "grid"
+    },
+    {
+      "name": "refill1",
+      "gain": 1.0,
+      "edge": 0.15,
+      "params": {
+        "MIN_REFILL": 1
+      },
+      "family": "execution"
+    },
+    {
+      "name": "refill25",
+      "gain": 1.0,
+      "edge": 0.15,
+      "params": {
+        "MIN_REFILL": 25
+      },
+      "family": "execution"
+    },
+    {
+      "name": "deplete0",
+      "gain": 1.0,
+      "edge": 0.15,
+      "params": {
+        "DEPLETE_LOTS": 0
+      },
+      "family": "execution"
+    },
+    {
+      "name": "deplete40",
+      "gain": 1.0,
+      "edge": 0.15,
+      "params": {
+        "DEPLETE_LOTS": 40
+      },
+      "family": "execution"
+    }
+  ],
+  "model": "Elastic Net only; 24 existing causal features; target last sampled midpoint at/before 250ms; l1_ratio .5.",
+  "folds": [
+    {
+      "fold": 1,
+      "fit_end": 3000,
+      "eval_start": 3000,
+      "eval_end": 6000
+    },
+    {
+      "fold": 2,
+      "fit_end": 6000,
+      "eval_start": 6000,
+      "eval_end": 9000
+    }
+  ],
+  "inner_cv": "Fold1 chooses alpha from .0001/.001/.01 using only 0-1500 -> 1500-3000. Fold2 reuses the already frozen first-6000 fit and its prior expanding CV. Labels crossing a time boundary are purged.",
+  "execution": "All replays start at the beginning to preserve the book and causal state; SESSION_S stays 12000. Validation uses identical one-second sampled boundary valuations, excluding prefix-terminal liquidation differences.",
+  "selection": "Compare each of 12 changes with its fold-matched parent in paired five-minute PnL blocks. Require positive total excess in both folds and a positive simultaneous one-sided 95% lower bound from a centered, studentized, family-wise max-T moving-block bootstrap. Choose highest total validation PnL among passing variants. If none passes, retain the parent as recommendation.",
+  "bootstrap": {
+    "seed": 20261107,
+    "resamples": 10000,
+    "block_seconds": 300,
+    "moving_block_length": 2,
+    "folds_resampled_separately": true,
+    "caution": "Two-fold, single-tape diagnostic with dependence assumptions. Adjusts only this batch, not all earlier research or regime uncertainty."
+  },
+  "plateau": "Report immediate grid neighbors and their fold improvements; an isolated grid maximum with no improving neighbor is not promoted.",
+  "followup": "Freeze the selected candidate and the raw-profit leader if different (maximum two). Full round1 at 5/20/50ms and frozen-model sample_v2 at5ms with SESSION_S5750. No further tuning after opening these results.",
+  "final_gate": "Require validation gate, zero penalties and reserved exposure <=100, positive 9000-12000 PnL excess over the parent at5ms, no >2% later-half loss versus parent at20/50ms, no >2% sample_v2 loss versus parent, and submission size/runtime checks. Otherwise keep the previous Elastic Net bot.",
+  "limitations": "All provided tapes have already been inspected. No new untouched holdout exists. No procedure can guarantee absence of overfitting or a maximum private score; this finite batch ends after frozen follow-up."
+}

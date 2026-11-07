@@ -1,0 +1,11 @@
+{
+  "rows": 87414,
+  "maximum_error": 0.0,
+  "current_feature_count": 9,
+  "history_feature_count": 24,
+  "lags_ms": [
+    250,
+    1000,
+    5000
+  ]
+}

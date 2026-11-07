@@ -1,0 +1,7 @@
+# Offline research only. The standalone bot uses the normal simulator environment.
+numpy==2.5.4
+pandas==3.0.6
+scipy==1.18.1
+scikit-learn==1.9.1
+catboost==1.2.10
+plotly==6.9.0

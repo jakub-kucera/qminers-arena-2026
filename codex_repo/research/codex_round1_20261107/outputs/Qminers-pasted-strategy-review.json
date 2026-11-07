@@ -1,0 +1,183 @@
+{
+  "unchanged_pasted_strategy": {
+    "name": "pasted_original",
+    "source": "work\\pasted-review\\pasted_original.py",
+    "source_sha256": "4792badcfc708524441f40e381b479f8b8ba03de39909c203b3f27be9790dfd6",
+    "data": "sample_v2.csv",
+    "params": {},
+    "delay_ms": 5,
+    "result": {
+      "fills": 4300,
+      "traded_volume": 391649,
+      "inventory": 1,
+      "cash": 273956.0,
+      "mark_price": 10003.0,
+      "breach_penalty": 0.0,
+      "pnl": 283959.0,
+      "pnl_se": 5776.732482074121,
+      "abs_inventory_q50": 100,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "wall_seconds": 80.22581960004754,
+    "cpu_seconds": 78.59375,
+    "max_abs_inventory": 100,
+    "max_reserved_exposure": 100,
+    "final_tracked_inventory": 1,
+    "quarter_pnl": [
+      73619.0,
+      69440.0,
+      71806.0,
+      69094.0
+    ],
+    "first_half_pnl": 143059.0,
+    "third_quarter_pnl": 71806.0,
+    "last_quarter_pnl": 69094.0,
+    "max_drawdown": 300.0,
+    "event_counts": {
+      "sent": 11390,
+      "accepted": 11390,
+      "cancel_requested": 7984,
+      "canceled": 7974,
+      "partially_filled": 4080,
+      "filled": 3412,
+      "rejected": 10,
+      "reject:cancel rejected: no resting order with this id": 10
+    },
+    "diagnostics": {
+      "callbacks": 2000000,
+      "max_absolute_flow": 0.9978101512003744,
+      "flow_above_point6": 731061,
+      "maximum_orders_per_side": 4,
+      "four_order_capacity_blocks": 56162
+    }
+  },
+  "illustrative_flow_threshold_06": {
+    "name": "illustrative_flow06",
+    "source": "work\\pasted-review\\illustrative_flow06.py",
+    "source_sha256": "3c9ec9c0fcb9d55965179922c2289919624df25d9a7948afc1e2e6853d626e41",
+    "data": "sample_v2.csv",
+    "params": {},
+    "delay_ms": 5,
+    "result": {
+      "fills": 3160,
+      "traded_volume": 328939,
+      "inventory": -89,
+      "cash": 1128276.0,
+      "mark_price": 10004.0,
+      "breach_penalty": 0.0,
+      "pnl": 237920.0,
+      "pnl_se": 5590.9503593146055,
+      "abs_inventory_q50": 100,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "wall_seconds": 76.7589257999789,
+    "cpu_seconds": 75.140625,
+    "max_abs_inventory": 100,
+    "max_reserved_exposure": 100,
+    "final_tracked_inventory": -89,
+    "quarter_pnl": [
+      61662.0,
+      57889.0,
+      61121.0,
+      57248.0
+    ],
+    "first_half_pnl": 119551.0,
+    "third_quarter_pnl": 61121.0,
+    "last_quarter_pnl": 57248.0,
+    "max_drawdown": 260.0,
+    "event_counts": {
+      "sent": 10571,
+      "accepted": 10571,
+      "cancel_requested": 8421,
+      "canceled": 8410,
+      "partially_filled": 3264,
+      "filled": 2159,
+      "rejected": 11,
+      "reject:cancel rejected: no resting order with this id": 11
+    },
+    "diagnostics": {
+      "callbacks": 2000000,
+      "max_absolute_flow": 0.9984070499450654,
+      "flow_above_point6": 725572,
+      "maximum_orders_per_side": 4,
+      "four_order_capacity_blocks": 11808
+    }
+  },
+  "older_dataset": {
+    "name": "pasted_original_older_tape",
+    "source": "work\\pasted-review\\pasted_original.py",
+    "source_sha256": "4792badcfc708524441f40e381b479f8b8ba03de39909c203b3f27be9790dfd6",
+    "data": "sample.csv",
+    "params": {},
+    "delay_ms": 5,
+    "result": {
+      "fills": 207,
+      "traded_volume": 4832,
+      "inventory": -36,
+      "cash": 362057.0,
+      "mark_price": 10038.0,
+      "breach_penalty": 0.0,
+      "pnl": 689.0,
+      "pnl_se": 9828.380185351778,
+      "abs_inventory_q50": 58,
+      "abs_inventory_q68": 73,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "wall_seconds": 0.868735000025481,
+    "cpu_seconds": 0.875,
+    "max_abs_inventory": 100,
+    "max_reserved_exposure": 100,
+    "final_tracked_inventory": -36,
+    "quarter_pnl": [
+      -10915.0,
+      1232.0,
+      3967.0,
+      6405.0
+    ],
+    "first_half_pnl": -9683.0,
+    "third_quarter_pnl": 3967.0,
+    "last_quarter_pnl": 6405.0,
+    "max_drawdown": 11869.0,
+    "event_counts": {
+      "sent": 10553,
+      "accepted": 10553,
+      "cancel_requested": 10544,
+      "canceled": 10533,
+      "partially_filled": 235,
+      "filled": 18,
+      "rejected": 11,
+      "reject:cancel rejected: no resting order with this id": 11
+    }
+  },
+  "exact_file_benchmark": {
+    "file": "pasted_passive_v2.py",
+    "wall_seconds": 58.68786279996857,
+    "cpu_seconds": 57.546875,
+    "peak_working_set_bytes": 53321728,
+    "result": {
+      "fills": 4300,
+      "traded_volume": 391649,
+      "inventory": 1,
+      "cash": 273956.0,
+      "mark_price": 10003.0,
+      "breach_penalty": 0.0,
+      "pnl": 283959.0,
+      "pnl_se": 5776.732482074121,
+      "abs_inventory_q50": 100,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "note": "Windows process measurement, includes Python and local harness imports; not the remote Linux sandbox."
+  },
+  "visible_trade_volume": {
+    "maker": 391649.0,
+    "taker": 0.0
+  },
+  "review_note": "Attachment unchanged. The 0.6 threshold is one exploratory probe, not a tuned setting. Public-data performance does not establish private-round generalization."
+}

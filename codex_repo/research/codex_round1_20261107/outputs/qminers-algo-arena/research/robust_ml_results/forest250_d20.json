@@ -1,0 +1,56 @@
+{
+  "name": "forest250_d20",
+  "source": "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\forest250.py",
+  "source_sha256": "95b6cb5cc9896821a4f6397387f5aa1202bae7b1a7b39a204a0d76973b954ac1",
+  "data": "round1_first75.csv",
+  "params": {},
+  "delay_ms": 20,
+  "result": {
+    "fills": 17637,
+    "traded_volume": 1663210,
+    "inventory": 100,
+    "cash": -755896.0,
+    "mark_price": 10036.0,
+    "breach_penalty": 0.0,
+    "pnl": 247704.0,
+    "pnl_se": 9809.968119820347,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "wall_seconds": 115.9840881000273,
+  "cpu_seconds": 114.265625,
+  "max_abs_inventory": 100,
+  "max_reserved_exposure": 100,
+  "final_tracked_inventory": 100,
+  "quarter_pnl": [
+    58294.0,
+    59958.0,
+    63993.0,
+    65459.0
+  ],
+  "first_half_pnl": 118252.0,
+  "third_quarter_pnl": 63993.0,
+  "last_quarter_pnl": 65459.0,
+  "max_drawdown": 1286.0,
+  "event_counts": {
+    "sent": 37981,
+    "accepted": 37981,
+    "cancel_requested": 23771,
+    "canceled": 23349,
+    "partially_filled": 14758,
+    "filled": 14631,
+    "rejected": 422,
+    "reject:cancel rejected: no resting order with this id": 422
+  },
+  "validation_blocks": [
+    30094.0,
+    28794.0,
+    31053.0
+  ],
+  "validation_pnl": 89941.0,
+  "training_pnl": 157763.0,
+  "tail_pnl": null,
+  "outside_fit_pnl": 89941.0
+}

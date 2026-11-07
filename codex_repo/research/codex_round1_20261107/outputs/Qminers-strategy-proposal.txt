@@ -1,0 +1,137 @@
+QMINERS ARENA — RESEARCH AND IMPLEMENTATION PROPOSAL
+7 November 2026
+
+UPDATE: The later sample_v2.csv study supersedes the initial approach ranking below. See Qminers-local-testing.html or Qminers-local-testing.txt for 21 measured replay experiments, five engine probes, and standalone candidates. On v2, prefer the tested market-making baseline; the momentum approach that wins on the original sample loses substantially on v2. The research references and API analysis below remain background, not proof of performance on the new tape. The team repository also added a Rust Arena simulator after the commit reviewed below; this study used the official Python engine throughout.
+
+Recommendation
+
+Build a small model of order flow and short-term executable returns, coupled to strict inventory accounting. Compare selective IOC execution with selective passive quoting. Start with the simpler IOC candidate; add market making only where actual fills have positive subsequent value. Choose using the official simulator on chronological validation data, then freeze the candidate before opening a final test segment.
+
+Use Jakub's existing research infrastructure and Arena adapter as the reference implementation. Develop one compact independent challenger in the official starter so that the team has two implementations with different assumptions. This is a proposed workflow, not a claim that the strategy already makes money on the unreleased round data.
+
+Evidence inspected
+
+Official starter: QminersOrg/qminers-algo-arena, commit 3f5bea730d5f341c6988b1fe2722998b66270ea0.
+New team repository: jakub-kucera/qminers-arena-hachathon, main at b5440d9ce008979efc577b5758a58f6e6b08a1f8 (7 November, 10:53 Europe/Prague).
+Reviewed the runbook, current rules/playground notes, selected IDEAS research, queue and imbalance literature notes, Arena adapter, A0 candidate, and qgrid implementation. The older QQH-2025 betting repository is background only; its sporting models are not inputs to this proposal.
+
+Reproduced with the official simulator and the full synthetic sample:
+  Team candidate r0_A0_mm.py: PnL -7,598; 394 filled order IDs; 1,988 lots; final inventory 0; penalty 0.
+  Official trend_follower.py: PnL +1,878; 305 filled order IDs; 305 lots; final inventory -1; penalty 0 (earlier run).
+  Empty template: PnL 0 (earlier run).
+The team notes' A0 result matches our run. Its reported portal/local byte parity was not independently reproduced against the portal. No real-round dataset is present in either inspected checkout. No profitable real-round strategy has therefore been demonstrated.
+
+1. WHAT TO REUSE, AND WHAT TO RECONSIDER
+
+Reuse the official simulator, arena.qgrid's process-level experiment runner, the ArenaBot pending-order reservation concept, run_review's fill diagnostics, and the candidate/handover records. Use the official simulator for selection; the team's Prosperity engine and Rust twins do not reproduce this competition's API and scoring simply by switching a flag.
+
+The team's strongest finding is the failure of its original assumptions in ABIDES: a wall-based market maker lost under realistic resting-order replay, while adding flow/trend terms or pulling the vulnerable quote helped. Those are reported experiments on other data, not measurements of the Arena market. They justify putting a linear fair and a directional quote gate on the candidate list, not copying their coefficients.
+
+The current Arena adapter aggregates individual orders into price-level volumes and converts trades into unsigned quantity/price tuples. For the new challenger, retain the public trade direction and individual order identities before aggregation. The public API gives more information than the generic Prosperity representation preserves.
+
+Do not assume a large order identifies fundamental value. Compare plain mid, depth-weighted/microprice features and a robust depth-based reference on the actual round. Retire baskets, options, cross-asset arbitrage, named-counterparty following and shared-team adversarial experiments from this round's plan: the inspected API is one instrument on an independent fixed tape.
+
+2. CONSTRAINTS THAT DETERMINE THE DESIGN
+
+Verified in the official starter: Python 3.13; one strategy file; BaseStrategy callbacks; integer-tick prices and quantities; LIMIT/IOC; 5 ms simulated delay on send/cancel/modify; price-time queues; quantity reduction only for modify; no trading with one's own orders; no fees. The workshop notes sharpen the submission to exactly one BaseStrategy subclass, with no constructor arguments.
+
+The team's saved official portal text records: at most 1 MiB; 1 CPU; 2 GB memory; 15 minutes for the complete run; up to 10 submissions per round. These portal limits are sourced to the saved 7 November material, not a newly opened authenticated dashboard. Confirm any round-specific change before submission.
+
+The sandbox permits numpy, pandas, scipy and scikit-learn alongside allowed standard-library modules and the two public simulator interfaces. It bans file/network/system access and various introspection/builtin operations. Train offline. Export coefficients or compact model arrays as literals in the strategy file; no model file loading or runtime downloads. Verify numerical agreement between the exported predictor and its training implementation.
+
+A real tape is described as roughly 8.8 million rows. 900 seconds / 8.8 million is only about 102 microseconds per event for the entire replay, including engine overhead. A paper's sub-millisecond neural forward pass is not automatically fast enough here. Keep state bounded, avoid DataFrames and model fitting in callbacks, and benchmark the whole tape. CPU computation time does not reduce the simulator's fixed 5 ms order delay; faster code buys more experiments and timeout margin.
+
+Inventory above absolute 100 costs 10,000 per simulated second, even though rejection only starts at potential exposure above 1,000. Reserve exposure before sending. With B and S the remaining quantities of every buy/sell still able to fill, including pending orders and pending cancellations, require:
+  position + B <= internal_cap
+  position - S >= -internal_cap
+Do not offset B against S: one side may fill alone. An initial cap of 80 and order size 1–5 are proposed engineering starting points, not optimized values. Increase size only after rerunning actual execution and liquidation costs.
+
+3. THE PREDICTION LAYER
+
+Begin with about 15–30 normalized, causal features:
+  - Spread and market-only depth near the best, over several tick bands.
+  - Bid/ask imbalance and weighted-mid deviation from the plain mid.
+  - Signed aggressive trade volume over fast and slow time windows.
+  - Changes in depth, identifiable adds/cancels, replenishment and order persistence.
+  - Short and longer momentum, volatility, event rate and time since a trade.
+  - For a passive order: quantity ahead, its age, distance to touch and recent fill pressure.
+
+Exclude self-generated volume from market-signal features. Trade.book_side identifies the maker side: a trade at the ask is buyer-initiated. Individual snapshot differences can recover visible changes, but an order leaving the 20-tick view is not proof of cancellation. Crossing inserts, executions and changes outside the visible region are not all recoverable from callbacks. Build features from exactly the callback-visible information, not privileged full-CSV events unavailable to the submitted bot.
+
+Use time-based exponential decays, not just a count of callbacks: event rates vary, and 100 events is not a fixed economic horizon. Start by measuring 20/100/500 ms and 1/5 s outcomes; expand or shorten only if actual trade-response curves justify it. Fit Ridge regression for return magnitude or calibrated logistic regression for up/down probabilities. Compare a small scikit-learn tree/MLP challenger only if linear residuals show repeatable structure.
+
+For execution, classification accuracy is secondary. Measure realized fill-to-exit value with entry delay, price limits, missed/partial fills, spread, exit delay and size-dependent depth included. A predicted mid-price rise is insufficient if crossing the spread consumes it. Separate passive and aggressive outcomes: passive fills are selected precisely by the subsequent order flow.
+
+4. THE TRADING POLICIES TO COMPARE
+
+A — Selective IOC, first executable challenger.
+Buy only when the conservative estimate of executable round-trip value is positive after a margin for model uncertainty; sell symmetrically. Use a bounded price limit, a small order, and explicit handling of partial fill and cancellation. The exit rule is specified before testing: signal decay/reversal, a bounded holding horizon, risk reduction, and scheduled session-end handling if the end is known. Never assume entry and exit fill at mid-price.
+
+B — Selective passive quoting, second challenger.
+Start with one small quote per side, allow either side to be absent, and compare candidate prices rather than always quoting. Estimate value for the chosen cancellation policy as:
+  probability of filling × expected net fill-to-exit PnL conditional on filling
+  minus incremental inventory risk.
+Keep an existing queue position while its estimated value remains positive; cancel when its value becomes adverse or risk requires it. Hysteresis reduces needless cancel/repost churn, but cannot justify retaining a toxic quote. Quantity shrink preserves priority; moving price requires cancellation and a new order.
+
+A rising forecast can justify buying aggressively while withholding a vulnerable sell quote. It does not guarantee a profitable passive buy: that order may fill only when the forecast fails. Estimate passive outcomes on actual simulated fills, not on unconditional price moves. High fill rate alone is not success.
+
+C — Combined policy, only if it adds value.
+Combine A and B behind one exposure ledger, never as independent bots each using the full risk cap. Share fill accounting and let risk reduction take priority. Promote the combination only if it improves validation PnL and the difficult segments against the better individual policy. More components are not inherently more robust.
+
+5. VALIDATION CHANGES I WOULD MAKE TO THE CURRENT WORKFLOW
+
+qgrid's --holdout splits a completed PnL curve into early and trailing segments. It does not train a model or enforce separation. It displays and can rank all candidates by the trailing segment; neighborhood scores use full-run PnL. Repeatedly choosing by those values makes the apparent holdout part of tuning.
+
+Before experimentation, allocate contiguous train/development, validation and untouched final-test periods, for example 50%/25%/25%. Within the development portion use expanding chronological checks where data volume permits. Fit scaling and models only on preceding data. Remove training labels whose future outcome crosses the boundary. Use validation for bounded model/policy choices, then freeze and inspect the final segment once. If that segment is used to revise the bot, call it validation thereafter, not a fresh test. With one public hour, uncertainty about the private market remains large.
+
+Replay the prefix to initialize the book and causal strategy state correctly. Cutting raw event CSV rows and starting from an empty book loses pre-existing order IDs and invalidates cancellations. Report inventory and liquidation value at segment boundaries so a trailing result is not mistaken for independently earned flat-start PnL.
+
+Do not transplant the Prosperity raw-tick shuffle experiment to Qminers order events. Randomizing Insert/Cancel rows breaks the book's causal lifecycle. For uncertainty use contiguous blocks of paired PnL differences, or signal permutations that preserve a valid tape and keep the entire selection procedure inside training. Any bootstrap interval is a diagnostic under dependence assumptions, not proof about a new private regime.
+
+Compare three kinds of candidate, not thousands of tiny variants of one: no-trade/safe starter; selective IOC; selective maker. Limit the early search to a few dozen interpretable configurations, log every trial, and promote broad parameter plateaus rather than isolated maxima. Bayesian optimization is an optional offline search controller after a sensible small search space exists; it cannot repair leakage or manufacture independent data.
+
+Select by official net PnL and robustness on validation. Track drawdown, concentration in the best few minutes, fill-to-exit markouts, adverse fill rate, inventory, penalties, cancellation races and runtime. Do not optimize Sharpe alone: the saved rules rank private PnL, standardized across teams, with round weights 0.8/1/1/1.2. Non-positive PnL is treated as PnL zero before standardization; this is not necessarily a standardized score of zero. Avoid betting the design on an unverified interpretation of that floor.
+
+6. LATEST PUBLIC RESEARCH: WHAT TO TAKE FROM IT
+
+Event History Over Scale (October 2026) reports competitive short-horizon forecasts from very small models using order-event history. Our adaptation is to preserve history in bounded time-window features first, then consider a tiny temporal model. Its latency benchmarks exclude input preparation, and its disclosed test-label construction uses the test distribution; neither reported speed nor absolute F1 transfers directly to this bot. PyTorch is not in the submission allowlist. A small NumPy export or distillation is an optional later experiment, not round one's critical path.
+Source: https://arxiv.org/html/2610.02917v1
+Authors' code: https://github.com/lassebaerlandstrand/event-history-over-scale
+
+The Market Maker's Dilemma (2025, revised version) measures the conflict between fill likelihood and post-fill returns using live minimum-size orders. It supports the separate passive-value model and quote gating above. Its crypto venue, fees, and size differ from this competition; its profitable reversal cases are hypotheses to test, not a recipe to copy.
+Source: https://arxiv.org/abs/2502.18625
+
+TLOB (2025) finds a strong simple-MLP baseline and highlights the gap between directional forecasting and profitability once spread costs matter. That supports a small-model baseline and an execution-aware promotion gate.
+Source: https://arxiv.org/abs/2502.15757
+Authors' code: https://github.com/LeonardoBerti00/TLOB
+
+Deep Order Flow Imbalance (2023) supports stationary flow-derived inputs and evaluating several horizons. It is an older foundation, not a new 2026 result.
+Source: https://onlinelibrary.wiley.com/doi/10.1111/mafi.12413
+
+Bridging the Reality Gap in Limit Order Book Simulation (March 2026) emphasizes timing, feedback and execution sensitivity. Here the official fixed-tape simulator is the scoring authority, so use it for candidate selection. Treat alternate agent simulators as hypothesis/stress tools and avoid claiming real-market profitability from replay PnL.
+Source: https://arxiv.org/abs/2603.24137
+
+Defer foundation models on OHLCV bars, full reinforcement learning, large transformers and generic always-on market making. Their data, runtime or development requirements are a poor fit for this first round. The team's own reported Kronos experiment found no dependable improvement on its stand-in data; that is another reason to make an expensive model earn its place through a cheap baseline comparison.
+
+7. FIRST FIVE-HOUR ROUND: EXECUTION PLAN
+
+First 30 minutes: pin rules/code/data hashes; profile the real tape; reproduce no-trade and existing candidates; inspect spread, flow response and maker markouts. Start a candidate ledger with hypothesis, parent, features, parameters, split boundaries, runtime and exact commands.
+
+30–90 minutes: implement the compact IOC challenger and validate the exposure/order-state machinery. Run the entire tape, not just a short sample. Preserve a working fallback. Test cancellation before/after fill, partial fills plus IOC residual cancellation, rejected new orders, empty sides, quote replacement overlap, and end-of-tape behavior. A rejected modify is not necessarily a terminal rejection of the resting order; preserve its risk reservation. Fix the official trend follower's stuck in-flight state if it is used as a baseline.
+
+90–180 minutes: bounded feature/policy ablations and the selective-maker candidate. Use actual fill-conditioned outcomes and parameter neighborhoods. The engineer responsible for execution owns the order ledger and submission file; the researcher owns features, splitting and the experiment log. Agree on one interface so these can proceed without changing each other's assumptions.
+
+180–240 minutes: choose using validation, freeze coefficients and policy, run the untouched test, measure full runtime/memory and verify the final export. A useful engineering target is a full run comfortably under the 15-minute cap, with substantial machine-speed margin, rather than a paper's isolated inference benchmark.
+
+Final hour: freeze early enough for two observed portal-evaluation durations. Source/sandbox checks plus a complete official replay are mandatory; the existing arena.validate has a documented BaseStrategy entry-point mismatch and is not an end-to-end approval stamp. The user uploads. Confirm the intended submission remains final after successful experiments. Record and commit the experiment history in the team's organizer-visible research repository at least every 30 minutes, as the saved rules require.
+
+Repeat the market diagnosis each round. Reuse reliable accounting and data tools, while reconsidering the alpha coefficients and execution policy. A strong earlier-round result is a prior, not permission to skip validation on a harder market.
+
+Useful anchors in the new team repository
+
+https://github.com/jakub-kucera/qminers-arena-hachathon/blob/b5440d9ce008979efc577b5758a58f6e6b08a1f8/ON_THE_DAY.md#L144
+https://github.com/jakub-kucera/qminers-arena-hachathon/blob/b5440d9ce008979efc577b5758a58f6e6b08a1f8/IDEAS.md#L153
+https://github.com/jakub-kucera/qminers-arena-hachathon/blob/b5440d9ce008979efc577b5758a58f6e6b08a1f8/python/arena/qgrid.py#L182
+https://github.com/jakub-kucera/qminers-arena-hachathon/blob/b5440d9ce008979efc577b5758a58f6e6b08a1f8/python/bots/qminers/template.py#L961
+
+Scope: a strategy proposal with selected source-code checks and one reproduced team baseline. No team repository files were changed or pushed; no strategy was submitted. Paper results and the team's ABIDES/Prosperity results were reviewed, not rerun. Actual round data and the live private-scoring run remain the decisive tests.

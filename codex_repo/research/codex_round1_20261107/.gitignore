@@ -1,0 +1,11 @@
+# Local datasets and generated replay artifacts never belong in this archive.
+.venv/
+__pycache__/
+*.py[cod]
+*.npz
+/outputs/qminers-algo-arena/data/
+/outputs/qminers-algo-arena/logs/
+/work/*
+!/work/pasted-review/
+/work/pasted-review/*
+!/work/pasted-review/illustrative_flow06.py

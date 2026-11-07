@@ -1,0 +1,81 @@
+[
+  [
+    "record",
+    "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {
+      "MODE": "record"
+    },
+    5
+  ],
+  [
+    "official_trend",
+    "outputs\\qminers-algo-arena\\strategies\\trend_follower.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {},
+    5
+  ],
+  [
+    "fixed_trend",
+    "outputs\\qminers-algo-arena\\strategies\\trend_follower_fixed.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {},
+    5
+  ],
+  [
+    "team_F2",
+    "work\\jakub-arena\\python\\bots\\qminers\\candidates\\r0_F2_maker_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {},
+    5
+  ],
+  [
+    "team_F2_cap80",
+    "work\\jakub-arena\\python\\bots\\qminers\\candidates\\r0_F2_maker_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {
+      "QUOTE": 80,
+      "LIMIT": 80,
+      "SKEW": 60
+    },
+    5
+  ],
+  [
+    "team_M2",
+    "work\\jakub-arena\\python\\bots\\qminers\\candidates\\r0_M2_runner_safe.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {
+      "SESSION_S": 5749.868964
+    },
+    5
+  ],
+  [
+    "protected_maker",
+    "work\\jakub-arena\\python\\bots\\qminers\\families\\protected_maker.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {
+      "SESSION_S": 5749.868964
+    },
+    5
+  ],
+  [
+    "microprice_maker",
+    "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {
+      "MODE": "maker",
+      "SESSION_S": 5749.868964
+    },
+    5
+  ],
+  [
+    "mean_reversion",
+    "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {
+      "MODE": "revert",
+      "SESSION_S": 5749.868964
+    },
+    5
+  ]
+]

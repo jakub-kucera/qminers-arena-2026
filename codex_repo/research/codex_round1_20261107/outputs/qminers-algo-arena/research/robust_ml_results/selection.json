@@ -1,0 +1,274 @@
+{
+  "frozen_utc": "2026-11-07T12:54:47.599375+00:00",
+  "ranking": [
+    {
+      "name": "elastic250",
+      "score": 0.012068497383130318,
+      "excess": [
+        1289.0,
+        2144.0
+      ],
+      "relative": [
+        0.012068497383130318,
+        0.023951025514991734
+      ],
+      "block_excess": [
+        556.0,
+        -388.0,
+        1121.0,
+        517.0,
+        522.0,
+        1105.0
+      ],
+      "positive_blocks": 5,
+      "safe": true,
+      "passes_validation_gate": true,
+      "export": "outputs\\qminers-algo-arena\\strategies\\round1_robust_candidate.py",
+      "sha256": "9a7259079a5510248f3f1a3e721b29450e417d3b179db7f82b10de66ea3a02ba",
+      "bytes": 12180
+    },
+    {
+      "name": "diverse_composite",
+      "score": 0.008857097381257784,
+      "excess": [
+        946.0,
+        1917.0
+      ],
+      "relative": [
+        0.008857097381257784,
+        0.021415166003842887
+      ],
+      "block_excess": [
+        114.0,
+        -233.0,
+        1065.0,
+        726.0,
+        -153.0,
+        1344.0
+      ],
+      "positive_blocks": 4,
+      "safe": true,
+      "passes_validation_gate": true,
+      "export": "outputs\\qminers-algo-arena\\strategies\\round1_robust_alternative.py",
+      "sha256": "bb829da6acc59a8f6b6f97b508d9d3d263fedfd99c44556b3ecb3fb65a941c28",
+      "bytes": 353391
+    },
+    {
+      "name": "ridge250",
+      "score": 0.008304699130206821,
+      "excess": [
+        887.0,
+        1842.0
+      ],
+      "relative": [
+        0.008304699130206821,
+        0.02057732695830913
+      ],
+      "block_excess": [
+        438.0,
+        -380.0,
+        829.0,
+        505.0,
+        416.0,
+        921.0
+      ],
+      "positive_blocks": 5,
+      "safe": true,
+      "passes_validation_gate": true
+    },
+    {
+      "name": "forest250",
+      "score": 0.004747754591357969,
+      "excess": [
+        630.0,
+        425.0
+      ],
+      "relative": [
+        0.00589848979935772,
+        0.004747754591357969
+      ],
+      "block_excess": [
+        -263.0,
+        559.0,
+        334.0,
+        -86.0,
+        252.0,
+        259.0
+      ],
+      "positive_blocks": 4,
+      "safe": true,
+      "passes_validation_gate": true
+    },
+    {
+      "name": "guarded_ensemble",
+      "score": 0.0017789096220285187,
+      "excess": [
+        190.0,
+        647.0
+      ],
+      "relative": [
+        0.0017789096220285187,
+        0.007227758166137897
+      ],
+      "block_excess": [
+        160.0,
+        -511.0,
+        541.0,
+        115.0,
+        -531.0,
+        1063.0
+      ],
+      "positive_blocks": 4,
+      "safe": true,
+      "passes_validation_gate": true
+    },
+    {
+      "name": "prior_cat",
+      "score": 0.0013388635576319903,
+      "excess": [
+        143.0,
+        344.0
+      ],
+      "relative": [
+        0.0013388635576319903,
+        0.0038428884221815094
+      ],
+      "block_excess": [
+        91.0,
+        -655.0,
+        707.0,
+        -26.0,
+        -669.0,
+        1039.0
+      ],
+      "positive_blocks": 3,
+      "safe": true,
+      "passes_validation_gate": false
+    },
+    {
+      "name": "window_ensemble",
+      "score": 0.0011703352776503413,
+      "excess": [
+        125.0,
+        402.0
+      ],
+      "relative": [
+        0.0011703352776503413,
+        0.00449081728406095
+      ],
+      "block_excess": [
+        3.0,
+        -505.0,
+        627.0,
+        -9.0,
+        -494.0,
+        905.0
+      ],
+      "positive_blocks": 3,
+      "safe": true,
+      "passes_validation_gate": false
+    },
+    {
+      "name": "huber250",
+      "score": -7.819831091648421e-05,
+      "excess": [
+        2.0,
+        -7.0
+      ],
+      "relative": [
+        1.872536444240546e-05,
+        -7.819831091648421e-05
+      ],
+      "block_excess": [
+        -1.0,
+        0.0,
+        3.0,
+        0.0,
+        -3.0,
+        -4.0
+      ],
+      "positive_blocks": 1,
+      "safe": true,
+      "passes_validation_gate": false
+    },
+    {
+      "name": "calibrated_logit",
+      "score": -0.017077532371473778,
+      "excess": [
+        -1824.0,
+        189.0
+      ],
+      "relative": [
+        -0.017077532371473778,
+        0.0021113543947450736
+      ],
+      "block_excess": [
+        -59.0,
+        -1935.0,
+        170.0,
+        396.0,
+        -583.0,
+        376.0
+      ],
+      "positive_blocks": 3,
+      "safe": true,
+      "passes_validation_gate": false
+    }
+  ],
+  "candidates": [
+    {
+      "name": "elastic250",
+      "score": 0.012068497383130318,
+      "excess": [
+        1289.0,
+        2144.0
+      ],
+      "relative": [
+        0.012068497383130318,
+        0.023951025514991734
+      ],
+      "block_excess": [
+        556.0,
+        -388.0,
+        1121.0,
+        517.0,
+        522.0,
+        1105.0
+      ],
+      "positive_blocks": 5,
+      "safe": true,
+      "passes_validation_gate": true,
+      "export": "outputs\\qminers-algo-arena\\strategies\\round1_robust_candidate.py",
+      "sha256": "9a7259079a5510248f3f1a3e721b29450e417d3b179db7f82b10de66ea3a02ba",
+      "bytes": 12180
+    },
+    {
+      "name": "diverse_composite",
+      "score": 0.008857097381257784,
+      "excess": [
+        946.0,
+        1917.0
+      ],
+      "relative": [
+        0.008857097381257784,
+        0.021415166003842887
+      ],
+      "block_excess": [
+        114.0,
+        -233.0,
+        1065.0,
+        726.0,
+        -153.0,
+        1344.0
+      ],
+      "positive_blocks": 4,
+      "safe": true,
+      "passes_validation_gate": true,
+      "export": "outputs\\qminers-algo-arena\\strategies\\round1_robust_alternative.py",
+      "sha256": "bb829da6acc59a8f6b6f97b508d9d3d263fedfd99c44556b3ecb3fb65a941c28",
+      "bytes": 353391
+    }
+  ],
+  "decision": "Freeze these two new candidates for diagnostics; selection gate alone is not a deployment recommendation.",
+  "required_followup": "Inspect 9000-12000 tail, latency 50ms, alternate sample, and runtime before recommending. No parameter changes after selection."
+}

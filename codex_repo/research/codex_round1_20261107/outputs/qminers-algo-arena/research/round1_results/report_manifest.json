@@ -1,0 +1,70 @@
+{
+  "dataset": {
+    "path": "data/round1.csv",
+    "bytes": 161219988,
+    "sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+    "columns": [
+      "Time",
+      "Operation",
+      "OrderId",
+      "Side",
+      "Volume",
+      "Price",
+      "Lifespan"
+    ],
+    "rows": 4411336,
+    "first_s": 0.008661,
+    "last_s": 11999.999025,
+    "duration_s": 11999.990364,
+    "backward_timestamps": 0,
+    "operations": {
+      "Insert": 2253745,
+      "Cancel": 2157591
+    },
+    "insert_sides": {
+      "B": 1126743,
+      "A": 1127002
+    },
+    "lifespans": {
+      "G": 2157657,
+      "F": 96088
+    },
+    "insert_price_range": [
+      9988,
+      10098
+    ],
+    "scan_seconds": 9.62144730007276
+  },
+  "winner": {
+    "selected_case": "team_F4",
+    "expected_pnl": 399096.0,
+    "export": "outputs\\qminers-algo-arena\\strategies\\round1_best.py",
+    "sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+    "bytes": 13499,
+    "source_checks": [
+      [],
+      []
+    ],
+    "change": "SESSION_S = 12000.0; all other F4 strategy logic and parameters unchanged.",
+    "ranking_basis": "Highest full supplied-round PnL among 12 frozen trading candidates; no retraining.",
+    "stress_candidates": [
+      "team_F4",
+      "pasted_passive"
+    ]
+  },
+  "trading_candidates": 12,
+  "initial_comparisons": 16,
+  "latency_checks": 4,
+  "exact_export_replays": 1,
+  "top_pair_gap": 8808.0,
+  "top_pair_gap_percent": 2.256794982167015,
+  "top_pair_segment_wins": 9,
+  "files": {
+    "qminers-algo-arena\\strategies\\round1_best.py": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+    "Qminers-round1-diagnostics.txt": "4c506bf348ffb8b47b5e3560bfa10424b7656a3e4145d4d3aab080768da2662d",
+    "Qminers-round1-diagnostics.html": "e0cd2e8e155ec93fd031f81df0e885d1590890320fe78461e2403a1c86342a38",
+    "qminers-algo-arena\\research\\round1_results\\comparison_summary.json": "46cdcf7a3532a5ace3255839eb0aa2743f1a19808f043a5e1989e765a302a8f6",
+    "qminers-algo-arena\\research\\round1_results\\stress_summary.json": "a407789d6fccec62a5665abfe031d0e1aab1d6389a0fd61b05b9b2ebe648c1b5",
+    "qminers-algo-arena\\research\\round1_results\\winner_benchmark.json": "77832a378cb002f1c2fbde0db71d3acec48488ed9566c861f7559f84d56fb7bc"
+  }
+}

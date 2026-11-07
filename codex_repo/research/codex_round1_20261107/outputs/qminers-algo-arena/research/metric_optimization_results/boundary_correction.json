@@ -1,0 +1,146 @@
+{
+  "at_utc": "2026-11-07T13:14:06.539558+00:00",
+  "reason": "The trace has an extra terminal-liquidation row. Remove that row from validation block scoring to implement the predeclared regular-grid convention; official full PnL remains unchanged. Correction applied uniformly before statistical selection.",
+  "changes": [
+    {
+      "name": "f4_f1",
+      "before": 100890.0,
+      "after": 100990.0
+    },
+    {
+      "name": "g15_e03_f1",
+      "before": 82720.0,
+      "after": 82557.0
+    },
+    {
+      "name": "g1_e03_f1",
+      "before": 96716.0,
+      "after": 96553.0
+    },
+    {
+      "name": "g15_e015_f1",
+      "before": 101664.0,
+      "after": 101501.0
+    },
+    {
+      "name": "deplete40_f1",
+      "before": 96629.0,
+      "after": 96729.0
+    },
+    {
+      "name": "g1_e0_f1",
+      "before": 101456.0,
+      "after": 101556.0
+    },
+    {
+      "name": "g15_e0_f1",
+      "before": 100985.0,
+      "after": 101085.0
+    },
+    {
+      "name": "g05_e0_f1",
+      "before": 101091.0,
+      "after": 101191.0
+    },
+    {
+      "name": "g05_e015_f1",
+      "before": 101091.0,
+      "after": 101191.0
+    },
+    {
+      "name": "g1_e015_f1",
+      "before": 100277.0,
+      "after": 100377.0
+    },
+    {
+      "name": "refill25_f1",
+      "before": 99899.0,
+      "after": 99999.0
+    },
+    {
+      "name": "g05_e03_f1",
+      "before": 100914.0,
+      "after": 101014.0
+    },
+    {
+      "name": "refill1_f1",
+      "before": 100359.0,
+      "after": 100459.0
+    },
+    {
+      "name": "deplete0_f1",
+      "before": 106995.0,
+      "after": 107095.0
+    },
+    {
+      "name": "g05_e015_f2",
+      "before": 106937.0,
+      "after": 106883.0
+    },
+    {
+      "name": "g05_e0_f2",
+      "before": 106937.0,
+      "after": 106883.0
+    },
+    {
+      "name": "g1_e0_f2",
+      "before": 107289.0,
+      "after": 107244.0
+    },
+    {
+      "name": "g05_e03_f2",
+      "before": 107208.0,
+      "after": 107068.0
+    },
+    {
+      "name": "f4_f2",
+      "before": 106807.0,
+      "after": 106753.0
+    },
+    {
+      "name": "g1_e015_f2",
+      "before": 108096.0,
+      "after": 107965.0
+    },
+    {
+      "name": "g15_e03_f2",
+      "before": 83363.0,
+      "after": 83263.0
+    },
+    {
+      "name": "g1_e03_f2",
+      "before": 99125.0,
+      "after": 99025.0
+    },
+    {
+      "name": "g15_e015_f2",
+      "before": 99871.0,
+      "after": 99771.0
+    },
+    {
+      "name": "g15_e0_f2",
+      "before": 106980.0,
+      "after": 106780.0
+    },
+    {
+      "name": "refill25_f2",
+      "before": 107617.0,
+      "after": 107486.0
+    },
+    {
+      "name": "deplete40_f2",
+      "before": 100788.0,
+      "after": 100657.0
+    },
+    {
+      "name": "refill1_f2",
+      "before": 108371.0,
+      "after": 108240.0
+    },
+    {
+      "name": "deplete0_f2",
+      "before": 115406.0,
+      "after": 115322.0
+    }
+  ]
+}

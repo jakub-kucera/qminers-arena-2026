@@ -474,3 +474,14 @@ order-count imbalance, per-order quantities capped at 100 lots, and liquidity
 within two ticks of each touch. This extends the eight-feature 498,056 model;
 it does not replace that archived source. Full metrics and source/input hashes
 are tracked in `results/round1_523999.json`. It also uses already consumed data.
+
+## Additional Codex round-1 research
+
+[The Codex research archive](research/codex_round1_20261107/README.md) contains an
+independent line of strategy diagnostics, ML comparisons, chronological policy
+selection, and execution optimization. Its final standalone candidate scored
+436,047 locally. The package preserves the experimental sources, successful and
+failed result summaries, native model parameters, and self-contained reports,
+with dataset hashes and reproduction instructions. It does not replace the
+476,052, 498,056, or 523,999 strategy milestones above. Raw market tapes and
+binary replay traces remain excluded.

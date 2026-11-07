@@ -1,0 +1,342 @@
+{
+  "entries": [
+    {
+      "name": "ridge250_d5",
+      "model": "ridge250",
+      "sha256": "e6dfd9f4329234a84dabd01e4b3456dae0c90919ab1818b90fbd9af2c52eec11",
+      "case": [
+        "ridge250_d5",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\ridge250.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "ridge250_d20",
+      "model": "ridge250",
+      "sha256": "e6dfd9f4329234a84dabd01e4b3456dae0c90919ab1818b90fbd9af2c52eec11",
+      "case": [
+        "ridge250_d20",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\ridge250.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        20
+      ]
+    },
+    {
+      "name": "huber250_d5",
+      "model": "huber250",
+      "sha256": "8a55cace9f2242611578f121bb001495c83d54cc56fc5b01bb7d832e9bdbea3a",
+      "case": [
+        "huber250_d5",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\huber250.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "huber250_d20",
+      "model": "huber250",
+      "sha256": "8a55cace9f2242611578f121bb001495c83d54cc56fc5b01bb7d832e9bdbea3a",
+      "case": [
+        "huber250_d20",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\huber250.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        20
+      ]
+    },
+    {
+      "name": "elastic250_d5",
+      "model": "elastic250",
+      "sha256": "9a7259079a5510248f3f1a3e721b29450e417d3b179db7f82b10de66ea3a02ba",
+      "case": [
+        "elastic250_d5",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\elastic250.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "elastic250_d20",
+      "model": "elastic250",
+      "sha256": "9a7259079a5510248f3f1a3e721b29450e417d3b179db7f82b10de66ea3a02ba",
+      "case": [
+        "elastic250_d20",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\elastic250.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        20
+      ]
+    },
+    {
+      "name": "forest250_d5",
+      "model": "forest250",
+      "sha256": "95b6cb5cc9896821a4f6397387f5aa1202bae7b1a7b39a204a0d76973b954ac1",
+      "case": [
+        "forest250_d5",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\forest250.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "forest250_d20",
+      "model": "forest250",
+      "sha256": "95b6cb5cc9896821a4f6397387f5aa1202bae7b1a7b39a204a0d76973b954ac1",
+      "case": [
+        "forest250_d20",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\forest250.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        20
+      ]
+    },
+    {
+      "name": "window_ensemble_d5",
+      "model": "window_ensemble",
+      "sha256": "b9454ae0547b982f791b0deba0ab25ed4a15f5dd0ca3c65262168a3647d9c56f",
+      "case": [
+        "window_ensemble_d5",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\window_ensemble.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "window_ensemble_d20",
+      "model": "window_ensemble",
+      "sha256": "b9454ae0547b982f791b0deba0ab25ed4a15f5dd0ca3c65262168a3647d9c56f",
+      "case": [
+        "window_ensemble_d20",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\window_ensemble.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        20
+      ]
+    },
+    {
+      "name": "guarded_ensemble_d5",
+      "model": "guarded_ensemble",
+      "sha256": "d852c82885728ab627a9be81c50e2ebd362404238832efa29cfd4a7a70a089c6",
+      "case": [
+        "guarded_ensemble_d5",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\guarded_ensemble.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "guarded_ensemble_d20",
+      "model": "guarded_ensemble",
+      "sha256": "d852c82885728ab627a9be81c50e2ebd362404238832efa29cfd4a7a70a089c6",
+      "case": [
+        "guarded_ensemble_d20",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\guarded_ensemble.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        20
+      ]
+    },
+    {
+      "name": "diverse_composite_d5",
+      "model": "diverse_composite",
+      "sha256": "bb829da6acc59a8f6b6f97b508d9d3d263fedfd99c44556b3ecb3fb65a941c28",
+      "case": [
+        "diverse_composite_d5",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\diverse_composite.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "diverse_composite_d20",
+      "model": "diverse_composite",
+      "sha256": "bb829da6acc59a8f6b6f97b508d9d3d263fedfd99c44556b3ecb3fb65a941c28",
+      "case": [
+        "diverse_composite_d20",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\diverse_composite.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        20
+      ]
+    },
+    {
+      "name": "calibrated_logit_d5",
+      "model": "calibrated_logit",
+      "sha256": "8ac33926dad9d0af60fe713075e549f619d6435cb363a798409630f8834a9e4f",
+      "case": [
+        "calibrated_logit_d5",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\calibrated_logit.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "calibrated_logit_d20",
+      "model": "calibrated_logit",
+      "sha256": "8ac33926dad9d0af60fe713075e549f619d6435cb363a798409630f8834a9e4f",
+      "case": [
+        "calibrated_logit_d20",
+        "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\calibrated_logit.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        20
+      ]
+    },
+    {
+      "name": "f4_d20",
+      "model": "f4",
+      "sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+      "case": [
+        "f4_d20",
+        "outputs\\qminers-algo-arena\\strategies\\round1_best.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        20
+      ]
+    },
+    {
+      "name": "prior_cat_d20",
+      "model": "prior_cat",
+      "sha256": "afcd83d1a5e77cfbdb7db8d6953cd33b51686b3639c0149dee1be58cddbafc35",
+      "case": [
+        "prior_cat_d20",
+        "outputs\\qminers-algo-arena\\strategies\\round1_ml_candidate.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        20
+      ]
+    }
+  ],
+  "reused_controls": [
+    {
+      "name": "f4_d5",
+      "source": "outputs\\qminers-algo-arena\\strategies\\round1_best.py",
+      "source_sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+      "data": "round1_first75.csv",
+      "params": {},
+      "delay_ms": 5,
+      "result": {
+        "fills": 19453,
+        "traded_volume": 1793728,
+        "inventory": 60,
+        "cash": -305309.0,
+        "mark_price": 10036.0,
+        "breach_penalty": 0.0,
+        "pnl": 296851.0,
+        "pnl_se": 9841.914578549253,
+        "abs_inventory_q50": 98,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "wall_seconds": 101.73293940001167,
+      "cpu_seconds": 97.34375,
+      "max_abs_inventory": 100,
+      "max_reserved_exposure": 100,
+      "final_tracked_inventory": 60,
+      "quarter_pnl": [
+        69588.0,
+        71341.0,
+        77483.0,
+        78439.0
+      ],
+      "first_half_pnl": 140929.0,
+      "third_quarter_pnl": 77483.0,
+      "last_quarter_pnl": 78439.0,
+      "max_drawdown": 1045.0,
+      "event_counts": {
+        "sent": 38679,
+        "accepted": 38679,
+        "cancel_requested": 22614,
+        "canceled": 22491,
+        "filled": 16186,
+        "partially_filled": 15715,
+        "rejected": 123,
+        "reject:cancel rejected: no resting order with this id": 123
+      },
+      "training_pnl": 190044.0,
+      "policy_validation_pnl": 106807.0,
+      "diagnostic_tail_pnl": null,
+      "validation_blocks": [
+        35499.0,
+        34269.0,
+        37039.0
+      ],
+      "validation_pnl": 106807.0,
+      "tail_pnl": null,
+      "outside_fit_pnl": 106807.0,
+      "prior_name": "f4_reference",
+      "reused_from": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\validation_summary.json"
+    },
+    {
+      "name": "prior_cat_d5",
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat24_025s_t40.py",
+      "source_sha256": "afcd83d1a5e77cfbdb7db8d6953cd33b51686b3639c0149dee1be58cddbafc35",
+      "data": "round1_first75.csv",
+      "params": {},
+      "delay_ms": 5,
+      "result": {
+        "fills": 17712,
+        "traded_volume": 1710620,
+        "inventory": 60,
+        "cash": -301650.0,
+        "mark_price": 10036.0,
+        "breach_penalty": 0.0,
+        "pnl": 300510.0,
+        "pnl_se": 9689.635677127224,
+        "abs_inventory_q50": 97,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "wall_seconds": 129.22489550011232,
+      "cpu_seconds": 123.328125,
+      "max_abs_inventory": 100,
+      "max_reserved_exposure": 100,
+      "final_tracked_inventory": 60,
+      "quarter_pnl": [
+        71055.0,
+        73042.0,
+        77632.0,
+        78781.0
+      ],
+      "first_half_pnl": 144097.0,
+      "third_quarter_pnl": 77632.0,
+      "last_quarter_pnl": 78781.0,
+      "max_drawdown": 956.0,
+      "event_counts": {
+        "sent": 39027,
+        "accepted": 39027,
+        "cancel_requested": 24619,
+        "canceled": 24526,
+        "filled": 14499,
+        "partially_filled": 14785,
+        "rejected": 93,
+        "reject:cancel rejected: no resting order with this id": 93
+      },
+      "training_pnl": 193560.0,
+      "policy_validation_pnl": 106950.0,
+      "diagnostic_tail_pnl": null,
+      "validation_blocks": [
+        35590.0,
+        33614.0,
+        37746.0
+      ],
+      "validation_pnl": 106950.0,
+      "tail_pnl": null,
+      "outside_fit_pnl": 106950.0,
+      "prior_name": "cat24_025s_t40",
+      "reused_from": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\validation_summary.json"
+    }
+  ]
+}

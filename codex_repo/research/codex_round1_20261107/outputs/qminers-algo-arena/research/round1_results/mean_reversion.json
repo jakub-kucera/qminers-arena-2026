@@ -1,0 +1,65 @@
+{
+  "name": "mean_reversion",
+  "source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\mean_reversion.py",
+  "source_sha256": "4f358a48be378128c3938d1720e4b6aa4d486773ec48349b931af1b34eaf87dd",
+  "data": "round1.csv",
+  "params": {
+    "MODE": "revert"
+  },
+  "delay_ms": 5,
+  "result": {
+    "fills": 10182,
+    "traded_volume": 189542,
+    "inventory": 0,
+    "cash": -101703.0,
+    "mark_price": 10029.0,
+    "breach_penalty": 0.0,
+    "pnl": -101703.0,
+    "pnl_se": 1864.4147896193303,
+    "abs_inventory_q50": 0,
+    "abs_inventory_q68": 20,
+    "abs_inventory_q95": 20,
+    "abs_inventory_q997": 20
+  },
+  "wall_seconds": 76.73184650018811,
+  "cpu_seconds": 73.5625,
+  "max_abs_inventory": 20,
+  "max_reserved_exposure": 20,
+  "final_tracked_inventory": 0,
+  "quarter_pnl": [
+    -26174.0,
+    -24957.0,
+    -24880.0,
+    -25692.0
+  ],
+  "first_half_pnl": -51131.0,
+  "third_quarter_pnl": -24880.0,
+  "last_quarter_pnl": -25692.0,
+  "max_drawdown": 101709.0,
+  "event_counts": {
+    "sent": 10228,
+    "accepted": 10228,
+    "partially_filled": 6950,
+    "canceled": 665,
+    "filled": 9563
+  },
+  "twelve_segment_pnl": [
+    -8585.0,
+    -9447.0,
+    -8142.0,
+    -7517.0,
+    -8990.0,
+    -8450.0,
+    -8563.0,
+    -8509.0,
+    -7808.0,
+    -8216.0,
+    -8264.0,
+    -9212.0
+  ],
+  "positive_segments": 0,
+  "maker_volume": 0.0,
+  "taker_volume": 189542.0,
+  "pnl_per_traded_lot": -0.5365723691846662,
+  "last_fill_s": 11936.162062
+}

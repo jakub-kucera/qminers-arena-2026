@@ -1,0 +1,62 @@
+{
+  "name": "ridge_maker",
+  "source": "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+  "source_sha256": "9bb1252b81ba44d0ab239228872af626b9f612095ac6b085876def66ee2359ac",
+  "data": "sample_v2.csv",
+  "params": {
+    "COEFFICIENTS": [
+      -0.002125057500729188,
+      0.13765623156788026,
+      0.09935151729287892,
+      -0.12532670810745913,
+      0.2731004180741459,
+      -0.03654012754727239,
+      0.00550194914885027,
+      -0.014808658483958402,
+      0.3627563070679183
+    ],
+    "INTERCEPT": 0.050059130871324055,
+    "SESSION_S": 5749.868964,
+    "MODE": "ridge_maker"
+  },
+  "delay_ms": 5,
+  "result": {
+    "fills": 6314,
+    "traded_volume": 120706,
+    "inventory": 0,
+    "cash": 73797.0,
+    "mark_price": 10003.0,
+    "breach_penalty": 0.0,
+    "pnl": 73797.0,
+    "pnl_se": 1070.7257919945284,
+    "abs_inventory_q50": 9,
+    "abs_inventory_q68": 12,
+    "abs_inventory_q95": 25,
+    "abs_inventory_q997": 36
+  },
+  "wall_seconds": 17.698577099945396,
+  "cpu_seconds": 17.46875,
+  "max_abs_inventory": 53,
+  "max_reserved_exposure": 80,
+  "final_tracked_inventory": 0,
+  "quarter_pnl": [
+    18807.0,
+    18570.0,
+    18674.0,
+    17746.0
+  ],
+  "first_half_pnl": 37377.0,
+  "third_quarter_pnl": 18674.0,
+  "last_quarter_pnl": 17746.0,
+  "max_drawdown": 40.0,
+  "event_counts": {
+    "sent": 16548,
+    "accepted": 16548,
+    "filled": 5675,
+    "partially_filled": 1476,
+    "cancel_requested": 10905,
+    "canceled": 10873,
+    "rejected": 32,
+    "reject:cancel rejected: no resting order with this id": 32
+  }
+}

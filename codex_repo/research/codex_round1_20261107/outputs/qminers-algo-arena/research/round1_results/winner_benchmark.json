@@ -1,0 +1,22 @@
+{
+  "source": "outputs\\qminers-algo-arena\\strategies\\round1_best.py",
+  "source_sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+  "result": {
+    "fills": 25843,
+    "traded_volume": 2387642,
+    "inventory": 0,
+    "cash": 399096.0,
+    "mark_price": 10029.0,
+    "breach_penalty": 0.0,
+    "pnl": 399096.0,
+    "pnl_se": 11305.44475122513,
+    "abs_inventory_q50": 99,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "wall_seconds": 63.243509699823335,
+  "cpu_seconds": 62.671875,
+  "peak_working_set_bytes": 58294272,
+  "note": "Exact export, official engine, one Python process on Windows. Other stress replays run concurrently; not a remote Linux sandbox measurement."
+}

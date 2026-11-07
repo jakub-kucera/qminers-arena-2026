@@ -1,0 +1,8 @@
+{
+  "first_s": 0.027441,
+  "training_end_s": 2874.9619230000003,
+  "validation_end_s": 4312.429164,
+  "session_s": 5749.868964,
+  "prefix_rows": 1500001,
+  "selection": "Max validation PnL on 50-75% among zero-penalty policies with max reserved exposure <=100. Exact ties choose fewer changes. Final 25% not read during new tuning; it was already viewed in the earlier study."
+}

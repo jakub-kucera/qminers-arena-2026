@@ -1,0 +1,201 @@
+{
+  "ridge9_1s": {
+    "gpu": false,
+    "rows_fit": 58268,
+    "export_max_error": 2.220446049250313e-16,
+    "file_sha256": "5682c1601fdf6e5166141a623e486cd27772225346447ca8915510ac52f45fba",
+    "prediction_source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\predict_ridge9_1s.py",
+    "input_features": 9,
+    "policy_validation_forecast": {
+      "mse": 0.6818369774107004,
+      "correlation": 0.3569145932791365
+    }
+  },
+  "ridge24_1s": {
+    "gpu": false,
+    "rows_fit": 58268,
+    "export_max_error": 2.498001805406602e-16,
+    "file_sha256": "07d3a3ce535ec9ad2130d0ff5e81848785157bb28eb7665de9326a37d664d8fe",
+    "prediction_source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\predict_ridge24_1s.py",
+    "input_features": 24,
+    "policy_validation_forecast": {
+      "mse": 0.6752165651786938,
+      "correlation": 0.3688609311006283
+    }
+  },
+  "cat9_1s": {
+    "iterations": 191,
+    "internal_validation": {
+      "mse": 0.688676536556751,
+      "correlation": 0.36436798249855984
+    },
+    "seconds": 1.5939157998654991,
+    "gpu": true,
+    "rows_fit": 58268,
+    "configuration": {
+      "iterations": 192,
+      "depth": 4,
+      "learning_rate": 0.05,
+      "l2_leaf_reg": 10,
+      "loss_function": "RMSE",
+      "random_seed": 20261107,
+      "task_type": "GPU",
+      "devices": "0",
+      "thread_count": 8,
+      "gpu_ram_part": 0.65,
+      "verbose": false,
+      "allow_writing_files": false
+    },
+    "export_max_error": 0.0,
+    "file_sha256": "c7b5333732f0897aa3a6c87e68f93d957d6418c55befd565baaec371ed7f833f",
+    "prediction_source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\predict_cat9_1s.py",
+    "input_features": 9,
+    "policy_validation_forecast": {
+      "mse": 0.6804942147543637,
+      "correlation": 0.3591410094430683
+    }
+  },
+  "cat24_1s": {
+    "iterations": 190,
+    "internal_validation": {
+      "mse": 0.6771334358579691,
+      "correlation": 0.3835282248553906
+    },
+    "seconds": 1.479972899891436,
+    "gpu": true,
+    "rows_fit": 58268,
+    "configuration": {
+      "iterations": 192,
+      "depth": 4,
+      "learning_rate": 0.05,
+      "l2_leaf_reg": 10,
+      "loss_function": "RMSE",
+      "random_seed": 20261107,
+      "task_type": "GPU",
+      "devices": "0",
+      "thread_count": 8,
+      "gpu_ram_part": 0.65,
+      "verbose": false,
+      "allow_writing_files": false
+    },
+    "export_max_error": 0.0,
+    "file_sha256": "d285774edb63d46f9e4877ce84d694cb86d812e312bdc437ece8e918a31e59bc",
+    "prediction_source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\predict_cat24_1s.py",
+    "input_features": 24,
+    "policy_validation_forecast": {
+      "mse": 0.6689276525019345,
+      "correlation": 0.37883570883971557
+    }
+  },
+  "cat24_025s": {
+    "iterations": 192,
+    "internal_validation": {
+      "mse": 0.14036519218089927,
+      "correlation": 0.48760650583722803
+    },
+    "seconds": 1.5138794998638332,
+    "gpu": true,
+    "rows_fit": 58276,
+    "configuration": {
+      "iterations": 192,
+      "depth": 4,
+      "learning_rate": 0.05,
+      "l2_leaf_reg": 10,
+      "loss_function": "RMSE",
+      "random_seed": 20261107,
+      "task_type": "GPU",
+      "devices": "0",
+      "thread_count": 8,
+      "gpu_ram_part": 0.65,
+      "verbose": false,
+      "allow_writing_files": false
+    },
+    "export_max_error": 0.0,
+    "file_sha256": "ab59c2c8fd3f678ea52c34082971f8bd4a676849e2088ba15903cc5307cb45bf",
+    "prediction_source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\predict_cat24_025s.py",
+    "input_features": 24,
+    "policy_validation_forecast": {
+      "mse": 0.1335079831058001,
+      "correlation": 0.47552155179961125
+    }
+  },
+  "mlp24_1s": {
+    "epochs": 18,
+    "internal_validation_mse": 0.6862837403440505,
+    "epoch_validation_mse": [
+      0.7397185412645151,
+      0.7153449296126365,
+      0.7040816199190504,
+      0.6980014189668671,
+      0.6941525877432162,
+      0.6921895759599175,
+      0.6904257609485868,
+      0.689308245097121,
+      0.6881991538334357,
+      0.6877850402700507,
+      0.6872263822050366,
+      0.6870183774912875,
+      0.6863870472156975,
+      0.6863180567131149,
+      0.6863093734591847,
+      0.6864405576151269,
+      0.6863971618400259,
+      0.6862837403440505,
+      0.6862941117468228,
+      0.6863358318100535,
+      0.6864762803450835,
+      0.6863134343703806,
+      0.6866051671012682,
+      0.6868550516697474,
+      0.6867178269430889,
+      0.6870569998884545,
+      0.6870514658205723,
+      0.6872537420100363,
+      0.6874433865911322,
+      0.6873915105178772
+    ],
+    "seconds": 2.699595500016585,
+    "gpu": false,
+    "export_max_error": 7.771561172376096e-16,
+    "file_sha256": "faf33fe19b9812899e317e07a91892c7ab75fbc039dd2bace2a300d602a4817a",
+    "prediction_source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\predict_mlp24_1s.py",
+    "input_features": 24,
+    "policy_validation_forecast": {
+      "mse": 0.6829323019539366,
+      "correlation": 0.36323730825807626
+    }
+  },
+  "cat_fill25": {
+    "iterations": 183,
+    "internal_validation": {
+      "mse": 0.7908439978786592,
+      "correlation": 0.3085978895970258
+    },
+    "seconds": 1.5194866000674665,
+    "gpu": true,
+    "rows_fit": 21154,
+    "configuration": {
+      "iterations": 192,
+      "depth": 4,
+      "learning_rate": 0.05,
+      "l2_leaf_reg": 10,
+      "loss_function": "RMSE",
+      "random_seed": 20261107,
+      "task_type": "GPU",
+      "devices": "0",
+      "thread_count": 8,
+      "gpu_ram_part": 0.65,
+      "verbose": false,
+      "allow_writing_files": false
+    },
+    "target": "One-second signed mid markout from the earlier decision touch, conditioned on actual F4 fills. Features are from >=5ms before fill; quantity weights capped at 100.",
+    "export_max_error": 0.0,
+    "file_sha256": "c82f3b6c8748b1b401ad4c51fff1fe3f1e9fee05e97e610da6928233d90021eb",
+    "prediction_source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\predict_cat_fill25.py",
+    "input_features": 25
+  },
+  "_verification": {
+    "feature_parity_max_error": 0.0,
+    "training_tail_excluded": true
+  }
+}

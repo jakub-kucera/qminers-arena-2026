@@ -1,0 +1,9 @@
+{
+  "methods_identical_to_frozen_parent": true,
+  "source_hashes_verified": 28,
+  "cap": 100,
+  "session_seconds": 12000,
+  "policies": 13,
+  "folds": 2,
+  "statement": "Only model coefficient scale and declared execution constants changed. No new strategy methods or access to future observations."
+}

@@ -1,0 +1,414 @@
+[
+  {
+    "name": "official_trend",
+    "source": "outputs\\qminers-algo-arena\\strategies\\trend_follower.py",
+    "source_sha256": "e75c32f257a4b9f016c9dc71f255198d6b5bed166c4e022351018e90250f7fc2",
+    "data": "sample_v2.csv",
+    "params": {},
+    "delay_ms": 5,
+    "result": {
+      "fills": 618,
+      "traded_volume": 618,
+      "inventory": 0,
+      "cash": -531.0,
+      "mark_price": 10003.0,
+      "breach_penalty": 0.0,
+      "pnl": -531.0,
+      "pnl_se": 44.07144907444302,
+      "abs_inventory_q50": 0,
+      "abs_inventory_q68": 0,
+      "abs_inventory_q95": 0,
+      "abs_inventory_q997": 1
+    },
+    "wall_seconds": 13.247793999966234,
+    "cpu_seconds": 13.0625,
+    "max_abs_inventory": 1,
+    "max_reserved_exposure": 1,
+    "final_tracked_inventory": 0,
+    "quarter_pnl": [
+      -531.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "first_half_pnl": -531.0,
+    "third_quarter_pnl": 0.0,
+    "last_quarter_pnl": 0.0,
+    "max_drawdown": 532.0,
+    "event_counts": {
+      "sent": 619,
+      "accepted": 619,
+      "filled": 618,
+      "canceled": 1
+    }
+  },
+  {
+    "name": "record",
+    "source": "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+    "source_sha256": "9bb1252b81ba44d0ab239228872af626b9f612095ac6b085876def66ee2359ac",
+    "data": "sample_v2.csv",
+    "params": {
+      "MODE": "record"
+    },
+    "delay_ms": 5,
+    "result": {
+      "fills": 0,
+      "traded_volume": 0,
+      "inventory": 0,
+      "cash": 0.0,
+      "mark_price": 10003.0,
+      "breach_penalty": 0.0,
+      "pnl": 0.0,
+      "pnl_se": 0.0,
+      "abs_inventory_q50": 0,
+      "abs_inventory_q68": 0,
+      "abs_inventory_q95": 0,
+      "abs_inventory_q997": 0
+    },
+    "wall_seconds": 15.61366180004552,
+    "cpu_seconds": 15.390625,
+    "max_abs_inventory": 0,
+    "max_reserved_exposure": 0,
+    "final_tracked_inventory": 0,
+    "quarter_pnl": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "first_half_pnl": 0.0,
+    "third_quarter_pnl": 0.0,
+    "last_quarter_pnl": 0.0,
+    "max_drawdown": 0.0,
+    "event_counts": {}
+  },
+  {
+    "name": "fixed_trend",
+    "source": "outputs\\qminers-algo-arena\\strategies\\trend_follower_fixed.py",
+    "source_sha256": "75ed10c2a7e9bf3088aae4e20e98915a40b3d76ff0adc0e0b691eb933a0e7a80",
+    "data": "sample_v2.csv",
+    "params": {},
+    "delay_ms": 5,
+    "result": {
+      "fills": 16594,
+      "traded_volume": 16594,
+      "inventory": 0,
+      "cash": -14125.0,
+      "mark_price": 10003.0,
+      "breach_penalty": 0.0,
+      "pnl": -14125.0,
+      "pnl_se": 131.04635508715376,
+      "abs_inventory_q50": 0,
+      "abs_inventory_q68": 1,
+      "abs_inventory_q95": 1,
+      "abs_inventory_q997": 1
+    },
+    "wall_seconds": 15.147159699816257,
+    "cpu_seconds": 14.828125,
+    "max_abs_inventory": 1,
+    "max_reserved_exposure": 1,
+    "final_tracked_inventory": 0,
+    "quarter_pnl": [
+      -3552.0,
+      -3471.0,
+      -3622.0,
+      -3480.0
+    ],
+    "first_half_pnl": -7023.0,
+    "third_quarter_pnl": -3622.0,
+    "last_quarter_pnl": -3480.0,
+    "max_drawdown": 14125.0,
+    "event_counts": {
+      "sent": 16620,
+      "accepted": 16620,
+      "filled": 16594,
+      "canceled": 26
+    }
+  },
+  {
+    "name": "team_F2",
+    "source": "work\\jakub-arena\\python\\bots\\qminers\\candidates\\r0_F2_maker_v2.py",
+    "source_sha256": "81d7877e0185b8ead59c3f458a2e16fd5fa9f0eb640af1f37601ea9cc6512b54",
+    "data": "sample_v2.csv",
+    "params": {},
+    "delay_ms": 5,
+    "result": {
+      "fills": 6187,
+      "traded_volume": 389036,
+      "inventory": 0,
+      "cash": 212831.0,
+      "mark_price": 10003.0,
+      "breach_penalty": 0.0,
+      "pnl": 212831.0,
+      "pnl_se": 4691.694834266662,
+      "abs_inventory_q50": 56,
+      "abs_inventory_q68": 84,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "wall_seconds": 40.321716899983585,
+    "cpu_seconds": 39.921875,
+    "max_abs_inventory": 100,
+    "max_reserved_exposure": 100,
+    "final_tracked_inventory": 0,
+    "quarter_pnl": [
+      54398.0,
+      53869.0,
+      56364.0,
+      48200.0
+    ],
+    "first_half_pnl": 108267.0,
+    "third_quarter_pnl": 56364.0,
+    "last_quarter_pnl": 48200.0,
+    "max_drawdown": 232.0,
+    "event_counts": {
+      "sent": 9115,
+      "cancel_requested": 4206,
+      "accepted": 9115,
+      "canceled": 4174,
+      "partially_filled": 4997,
+      "filled": 4941,
+      "rejected": 32,
+      "reject:cancel rejected: no resting order with this id": 32
+    }
+  },
+  {
+    "name": "team_F2_cap80",
+    "source": "work\\jakub-arena\\python\\bots\\qminers\\candidates\\r0_F2_maker_v2.py",
+    "source_sha256": "81d7877e0185b8ead59c3f458a2e16fd5fa9f0eb640af1f37601ea9cc6512b54",
+    "data": "sample_v2.csv",
+    "params": {
+      "QUOTE": 80,
+      "LIMIT": 80,
+      "SKEW": 60
+    },
+    "delay_ms": 5,
+    "result": {
+      "fills": 6366,
+      "traded_volume": 337820,
+      "inventory": 0,
+      "cash": 187588.0,
+      "mark_price": 10003.0,
+      "breach_penalty": 0.0,
+      "pnl": 187588.0,
+      "pnl_se": 3909.4297620458938,
+      "abs_inventory_q50": 45,
+      "abs_inventory_q68": 67,
+      "abs_inventory_q95": 80,
+      "abs_inventory_q997": 80
+    },
+    "wall_seconds": 37.70032770000398,
+    "cpu_seconds": 37.265625,
+    "max_abs_inventory": 80,
+    "max_reserved_exposure": 80,
+    "final_tracked_inventory": 0,
+    "quarter_pnl": [
+      48116.0,
+      47288.0,
+      48988.0,
+      43196.0
+    ],
+    "first_half_pnl": 95404.0,
+    "third_quarter_pnl": 48988.0,
+    "last_quarter_pnl": 43196.0,
+    "max_drawdown": 240.0,
+    "event_counts": {
+      "sent": 9410,
+      "cancel_requested": 4305,
+      "accepted": 9410,
+      "canceled": 4283,
+      "partially_filled": 4328,
+      "filled": 5127,
+      "rejected": 22,
+      "reject:cancel rejected: no resting order with this id": 22
+    }
+  },
+  {
+    "name": "team_M2",
+    "source": "work\\jakub-arena\\python\\bots\\qminers\\candidates\\r0_M2_runner_safe.py",
+    "source_sha256": "2d40fa14b5d7bbbb37644c39d88e46c8f7848199ea1fba71f1407f64e171b806",
+    "data": "sample_v2.csv",
+    "params": {
+      "SESSION_S": 5749.868964
+    },
+    "delay_ms": 5,
+    "result": {
+      "fills": 5968,
+      "traded_volume": 903696,
+      "inventory": 0,
+      "cash": -870942.0,
+      "mark_price": 10003.0,
+      "breach_penalty": 0.0,
+      "pnl": -870942.0,
+      "pnl_se": 16916.880099894195,
+      "abs_inventory_q50": 100,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "wall_seconds": 16.23866909998469,
+    "cpu_seconds": 16.140625,
+    "max_abs_inventory": 100,
+    "max_reserved_exposure": 100,
+    "final_tracked_inventory": 0,
+    "quarter_pnl": [
+      -214424.0,
+      -223464.0,
+      -212789.0,
+      -220265.0
+    ],
+    "first_half_pnl": -437888.0,
+    "third_quarter_pnl": -212789.0,
+    "last_quarter_pnl": -220265.0,
+    "max_drawdown": 870942.0,
+    "event_counts": {
+      "sent": 5984,
+      "accepted": 5984,
+      "partially_filled": 29553,
+      "filled": 4519,
+      "canceled": 1465
+    }
+  },
+  {
+    "name": "protected_maker",
+    "source": "work\\jakub-arena\\python\\bots\\qminers\\families\\protected_maker.py",
+    "source_sha256": "2e4a416244932b7f9d636fc93354a1bc114e93d71121ac528f252eca91b9b612",
+    "data": "sample_v2.csv",
+    "params": {
+      "SESSION_S": 5749.868964
+    },
+    "delay_ms": 5,
+    "result": {
+      "fills": 0,
+      "traded_volume": 0,
+      "inventory": 0,
+      "cash": 0.0,
+      "mark_price": 10003.0,
+      "breach_penalty": 0.0,
+      "pnl": 0.0,
+      "pnl_se": 0.0,
+      "abs_inventory_q50": 0,
+      "abs_inventory_q68": 0,
+      "abs_inventory_q95": 0,
+      "abs_inventory_q997": 0
+    },
+    "wall_seconds": 15.83097490016371,
+    "cpu_seconds": 15.609375,
+    "max_abs_inventory": 0,
+    "max_reserved_exposure": 10,
+    "final_tracked_inventory": 0,
+    "quarter_pnl": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "first_half_pnl": 0.0,
+    "third_quarter_pnl": 0.0,
+    "last_quarter_pnl": 0.0,
+    "max_drawdown": 0.0,
+    "event_counts": {
+      "sent": 2,
+      "cancel_requested": 2,
+      "accepted": 2,
+      "canceled": 2
+    }
+  },
+  {
+    "name": "microprice_maker",
+    "source": "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+    "source_sha256": "9bb1252b81ba44d0ab239228872af626b9f612095ac6b085876def66ee2359ac",
+    "data": "sample_v2.csv",
+    "params": {
+      "MODE": "maker",
+      "SESSION_S": 5749.868964
+    },
+    "delay_ms": 5,
+    "result": {
+      "fills": 6044,
+      "traded_volume": 114412,
+      "inventory": 0,
+      "cash": 61615.0,
+      "mark_price": 10003.0,
+      "breach_penalty": 0.0,
+      "pnl": 61615.0,
+      "pnl_se": 1059.4057153558315,
+      "abs_inventory_q50": 9,
+      "abs_inventory_q68": 12,
+      "abs_inventory_q95": 25,
+      "abs_inventory_q997": 37
+    },
+    "wall_seconds": 17.904140300117433,
+    "cpu_seconds": 17.578125,
+    "max_abs_inventory": 53,
+    "max_reserved_exposure": 80,
+    "final_tracked_inventory": 0,
+    "quarter_pnl": [
+      15699.0,
+      15062.0,
+      16100.0,
+      14754.0
+    ],
+    "first_half_pnl": 30761.0,
+    "third_quarter_pnl": 16100.0,
+    "last_quarter_pnl": 14754.0,
+    "max_drawdown": 48.0,
+    "event_counts": {
+      "sent": 19560,
+      "accepted": 19560,
+      "cancel_requested": 14266,
+      "canceled": 14231,
+      "filled": 5329,
+      "partially_filled": 1570,
+      "rejected": 35,
+      "reject:cancel rejected: no resting order with this id": 35
+    }
+  },
+  {
+    "name": "mean_reversion",
+    "source": "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+    "source_sha256": "9bb1252b81ba44d0ab239228872af626b9f612095ac6b085876def66ee2359ac",
+    "data": "sample_v2.csv",
+    "params": {
+      "MODE": "revert",
+      "SESSION_S": 5749.868964
+    },
+    "delay_ms": 5,
+    "result": {
+      "fills": 1098,
+      "traded_volume": 21522,
+      "inventory": 0,
+      "cash": -15401.0,
+      "mark_price": 10003.0,
+      "breach_penalty": 0.0,
+      "pnl": -15401.0,
+      "pnl_se": 676.16919358818,
+      "abs_inventory_q50": 0,
+      "abs_inventory_q68": 0,
+      "abs_inventory_q95": 20,
+      "abs_inventory_q997": 20
+    },
+    "wall_seconds": 15.348080300027505,
+    "cpu_seconds": 15.171875,
+    "max_abs_inventory": 20,
+    "max_reserved_exposure": 20,
+    "final_tracked_inventory": 0,
+    "quarter_pnl": [
+      -3959.0,
+      -4202.0,
+      -3199.0,
+      -4041.0
+    ],
+    "first_half_pnl": -8161.0,
+    "third_quarter_pnl": -3199.0,
+    "last_quarter_pnl": -4041.0,
+    "max_drawdown": 15401.0,
+    "event_counts": {
+      "sent": 1100,
+      "accepted": 1100,
+      "filled": 1074,
+      "partially_filled": 248,
+      "canceled": 26
+    }
+  }
+]

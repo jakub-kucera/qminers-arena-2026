@@ -1,0 +1,140 @@
+{
+  "team_F2": {
+    "maker": {
+      "lots": 388916,
+      "matches": 9932,
+      "markouts": {
+        "1": {
+          "eligible_lots": 388916,
+          "mean_signed_future_mid_minus_fill": 0.535157977558136
+        },
+        "5": {
+          "eligible_lots": 388916,
+          "mean_signed_future_mid_minus_fill": 0.5389467134291209
+        },
+        "30": {
+          "eligible_lots": 388916,
+          "mean_signed_future_mid_minus_fill": 0.5525949048123502
+        }
+      }
+    },
+    "taker": {
+      "lots": 120,
+      "matches": 6,
+      "markouts": {
+        "1": {
+          "eligible_lots": 120,
+          "mean_signed_future_mid_minus_fill": -0.9416666666666667
+        },
+        "5": {
+          "eligible_lots": 120,
+          "mean_signed_future_mid_minus_fill": -0.25
+        },
+        "30": {
+          "eligible_lots": 120,
+          "mean_signed_future_mid_minus_fill": 2.0
+        }
+      }
+    },
+    "caveat": "Future mid is the latest 100-ms sample at or before the horizon; terminal pending fills may be absent from public trade callbacks. Descriptive markout, not a second PnL measure."
+  },
+  "team_F2_cap80": {
+    "maker": {
+      "lots": 337716,
+      "matches": 9449,
+      "markouts": {
+        "1": {
+          "eligible_lots": 337716,
+          "mean_signed_future_mid_minus_fill": 0.5396264908976773
+        },
+        "5": {
+          "eligible_lots": 337716,
+          "mean_signed_future_mid_minus_fill": 0.5459172796077177
+        },
+        "30": {
+          "eligible_lots": 337716,
+          "mean_signed_future_mid_minus_fill": 0.5598683509220765
+        }
+      }
+    },
+    "taker": {
+      "lots": 104,
+      "matches": 6,
+      "markouts": {
+        "1": {
+          "eligible_lots": 104,
+          "mean_signed_future_mid_minus_fill": -0.6346153846153846
+        },
+        "5": {
+          "eligible_lots": 104,
+          "mean_signed_future_mid_minus_fill": -0.9807692307692307
+        },
+        "30": {
+          "eligible_lots": 104,
+          "mean_signed_future_mid_minus_fill": -2.5384615384615383
+        }
+      }
+    },
+    "caveat": "Future mid is the latest 100-ms sample at or before the horizon; terminal pending fills may be absent from public trade callbacks. Descriptive markout, not a second PnL measure."
+  },
+  "ridge_maker": {
+    "maker": {
+      "lots": 120605,
+      "matches": 7145,
+      "markouts": {
+        "1": {
+          "eligible_lots": 120605,
+          "mean_signed_future_mid_minus_fill": 0.6115832676920526
+        },
+        "5": {
+          "eligible_lots": 120605,
+          "mean_signed_future_mid_minus_fill": 0.6163260229675387
+        },
+        "30": {
+          "eligible_lots": 120325,
+          "mean_signed_future_mid_minus_fill": 0.6075711614377727
+        }
+      }
+    },
+    "taker": {
+      "lots": 101,
+      "matches": 6,
+      "markouts": {
+        "1": {
+          "eligible_lots": 101,
+          "mean_signed_future_mid_minus_fill": -0.8960396039603961
+        },
+        "5": {
+          "eligible_lots": 101,
+          "mean_signed_future_mid_minus_fill": -0.6089108910891089
+        },
+        "30": {
+          "eligible_lots": 100,
+          "mean_signed_future_mid_minus_fill": 0.7
+        }
+      }
+    },
+    "caveat": "Future mid is the latest 100-ms sample at or before the horizon; terminal pending fills may be absent from public trade callbacks. Descriptive markout, not a second PnL measure."
+  },
+  "team_M2": {
+    "taker": {
+      "lots": 903696,
+      "matches": 34072,
+      "markouts": {
+        "1": {
+          "eligible_lots": 903696,
+          "mean_signed_future_mid_minus_fill": -0.9568876037959668
+        },
+        "5": {
+          "eligible_lots": 903696,
+          "mean_signed_future_mid_minus_fill": -0.9638827658858731
+        },
+        "30": {
+          "eligible_lots": 903596,
+          "mean_signed_future_mid_minus_fill": -0.9624013386513441
+        }
+      }
+    },
+    "caveat": "Future mid is the latest 100-ms sample at or before the horizon; terminal pending fills may be absent from public trade callbacks. Descriptive markout, not a second PnL measure."
+  }
+}

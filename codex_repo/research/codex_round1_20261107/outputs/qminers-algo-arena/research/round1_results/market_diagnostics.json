@@ -1,0 +1,79 @@
+{
+  "round1_market": {
+    "sample_count": 116565,
+    "first_mid": 10000.0,
+    "last_mid": 10029.5,
+    "net_mid_change": 29.5,
+    "min_mid": 9990.5,
+    "max_mid": 10094.5,
+    "spread_quantiles": {
+      "q10": 1.0,
+      "q50": 1.0,
+      "q90": 1.0,
+      "q99": 2.0
+    },
+    "spread_one_fraction": 0.9300304551108823,
+    "spread_two_fraction": 0.0690773388238322,
+    "median_bid_depth": 902.0,
+    "median_ask_depth": 901.0,
+    "one_second_absolute_mid_move_mean": 0.6390543168269185,
+    "one_second_mid_move_std": 0.9148423885387463,
+    "method": "Event snapshots sampled no faster than 100 ms; quantiles are sample-weighted, not exact time-weighted."
+  },
+  "sample_v2_market": {
+    "sample_count": 55781,
+    "first_mid": 9999.5,
+    "last_mid": 10003.5,
+    "net_mid_change": 4.0,
+    "min_mid": 9966.0,
+    "max_mid": 10023.0,
+    "spread_quantiles": {
+      "q10": 1.0,
+      "q50": 2.0,
+      "q90": 2.0,
+      "q99": 2.0
+    },
+    "spread_one_fraction": 0.41329484950072604,
+    "spread_two_fraction": 0.5849662071314605,
+    "median_bid_depth": 769.0,
+    "median_ask_depth": 768.0,
+    "one_second_absolute_mid_move_mean": 0.35530321234072443,
+    "one_second_mid_move_std": 0.4926411583873344,
+    "method": "Event snapshots sampled no faster than 100 ms; quantiles are sample-weighted, not exact time-weighted."
+  },
+  "frozen_forecast_metrics": {
+    "ridge_1s": {
+      "mse": 0.80658349281126,
+      "correlation": 0.19689460534012965,
+      "abs_prediction_q95": 0.3995629493561504
+    },
+    "ridge_5s_as_1s_predictor": {
+      "mse": 0.8219668485809998,
+      "correlation": 0.17643745912486505,
+      "abs_prediction_q95": 0.479250321794615
+    },
+    "boosted_1s": {
+      "mse": 0.7962753896869257,
+      "correlation": 0.2274598372260191,
+      "abs_prediction_q95": 0.26483867390873866
+    },
+    "raw_microprice": {
+      "mse": 0.8027883100335317,
+      "correlation": 0.23830496705022236,
+      "abs_prediction_q95": 0.4960154070624523
+    },
+    "ensemble": {
+      "mse": 0.8021349063572893,
+      "correlation": 0.2052740492715834,
+      "abs_prediction_q95": 0.36307215568599904
+    },
+    "zero": {
+      "mse": 0.8369425990560361,
+      "correlation": null,
+      "abs_prediction_q95": 0.0
+    }
+  },
+  "target": "One-second future mid, linearly interpolated on the sampled no-trade tape.",
+  "no_refitting": true,
+  "model_source": "research/composite_results/model_params.json"
+}

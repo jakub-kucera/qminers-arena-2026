@@ -1,0 +1,3139 @@
+{
+  "version": 1,
+  "source_engine_commit": "3f5bea730d5f341c6988b1fe2722998b66270ea0",
+  "target_base_commit": "966d43c14436ced0e61f3519f1f7ccb104ff5c18",
+  "selected_strategy": "outputs/qminers-algo-arena/strategies/round1_max_metric.py",
+  "selected_sha256": "10b65baeb38b81bd2b60e2ad00b352bcf88c392a887113771326a01443cf9b43",
+  "excluded": [
+    "raw market CSVs",
+    "173 NPZ replay/feature arrays",
+    "virtual environments",
+    "browser profiles",
+    "Git metadata"
+  ],
+  "note": "Strategy, training/replay source, and native model bytes are preserved. One report builder display-only path and historical metadata paths are normalized. Historical report manifests describe original artifacts; this manifest verifies the published archive.",
+  "files": [
+    {
+      "path": "outputs/qminers-algo-arena/research/analyze_features.py",
+      "bytes": 4325,
+      "sha256": "7afda4d773e9b12562c60106d431cf195018ec4b929482db67427445aae58e6c",
+      "original_sha256": "7afda4d773e9b12562c60106d431cf195018ec4b929482db67427445aae58e6c",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/benchmark_export.py",
+      "bytes": 2263,
+      "sha256": "17289ebed8d1f99445d5a8b8787a63116efd6a24f4a3514c8bd290568d62d99c",
+      "original_sha256": "17289ebed8d1f99445d5a8b8787a63116efd6a24f4a3514c8bd290568d62d99c",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/build_composite_report.py",
+      "bytes": 22485,
+      "sha256": "42504803e78d15ad9b4c3b4ed08de6b765beaf39ee9226824eaa62c296dcc513",
+      "original_sha256": "42504803e78d15ad9b4c3b4ed08de6b765beaf39ee9226824eaa62c296dcc513",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/build_report.py",
+      "bytes": 20025,
+      "sha256": "0540b597ea82457c434d58c3c745797cf98f4adc5a32c96223c6f9b6c5ec1960",
+      "original_sha256": "083b49324a38e22a1c8697bc5b9fc7aca318a6a2129ee9b22a8dda05a5ff51fb",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/build_robust_ml_report.py",
+      "bytes": 23179,
+      "sha256": "75df4b9bf5fe1c7fb1d748941c4ebf480f731a67009165fade341ddc1f5e3081",
+      "original_sha256": "75df4b9bf5fe1c7fb1d748941c4ebf480f731a67009165fade341ddc1f5e3081",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/build_round1_ml_report.py",
+      "bytes": 19109,
+      "sha256": "ba4799633f695304631ca17f55f11a1bbd2c90f3b9e7f818e1c18f2173b6be39",
+      "original_sha256": "ba4799633f695304631ca17f55f11a1bbd2c90f3b9e7f818e1c18f2173b6be39",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/build_round1_report.py",
+      "bytes": 18830,
+      "sha256": "4b76f49ee57fedf14c113fbbf7e3fa245eab2bcb7b75213b002e939f8bcb0b95",
+      "original_sha256": "4b76f49ee57fedf14c113fbbf7e3fa245eab2bcb7b75213b002e939f8bcb0b95",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/a0_matched_linear.json",
+      "bytes": 28693,
+      "sha256": "26cdae35500d1c4be2df53214b0b564d51a28a6b771ab9c28d95385e50865845",
+      "original_sha256": "bbe54b72defebcd483e36a94559c4b7badb189c4d453f6ca1aa23965bf6e4155",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/a0_without_edge_filter.json",
+      "bytes": 28698,
+      "sha256": "4bcca22103301433e5299be4c1da89de6c01fe11899a70bd3a1ddbb5c5a43a15",
+      "original_sha256": "e8f35ac2fd61eae0662ae98713bbba80a58400f2f7bccc357a28d22a9e5909b7",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/all_composite_runs.csv",
+      "bytes": 8080,
+      "sha256": "5d74ee3becbb3d8eba89922ab96ad92dbb368ec26e4923c2ddc95a3646065f32",
+      "original_sha256": "5d74ee3becbb3d8eba89922ab96ad92dbb368ec26e4923c2ddc95a3646065f32",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/composite_manifest.json",
+      "bytes": 2578,
+      "sha256": "c3f850c135facd2774d4be0024bfc75e021f2405e59336df56f04c81bd48cafa",
+      "original_sha256": "68645fc026dc33d2484a80ce614e4f32bb4462bb4c58cdbc866527102cfb7d56",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/confirm_plan.json",
+      "bytes": 61814,
+      "sha256": "a96bcb31c6b5fe8dafbfe3d3bf33997f8f4db0da1ffd011d3a535cf0cce00e74",
+      "original_sha256": "0ec70a825f56573e9f0211d7b6eb62c6eee6a6e6543822f40fc9f702bf513653",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/confirm_summary.json",
+      "bytes": 64324,
+      "sha256": "f5dfda4fce778176ac08a2a3b77029e25713d4c1d8217229c176def88531720e",
+      "original_sha256": "d8f092485d939e85b91a587b25212729a479ff30420b21c4c73df717496b0c25",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/cross_original_F4.json",
+      "bytes": 1151,
+      "sha256": "f1a87fa82029eb8be6d4ea671bd549971f11c29ba4c5e76c3b6d9aca24f19835",
+      "original_sha256": "8907954faf9a829d9235951f10a386036bd9abab82f1b39f435ace4fb7fb87a9",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/cross_original_max_pnl.json",
+      "bytes": 1136,
+      "sha256": "12dbc1f81969fb117881be0ae4c12367318dd35d1f95f5fc04fe409137ecd0b8",
+      "original_sha256": "5f45d9b87dbd8eaee2e729d9ba337dc819631551002d6b2cb01365fae11cb6b9",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/cross_original_selected.json",
+      "bytes": 1135,
+      "sha256": "a833ba7bda8e44c7b040196e082ce465a4a5543acbe23cfa803a4fae79818992",
+      "original_sha256": "e1c766189a0b29c85e2c86ef3afd9021d3582fc89084ab87ba3fea5380d0a100",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/final_alternative.json",
+      "bytes": 1322,
+      "sha256": "c0ad0e82a7102a05bd36670699ce5b83a7a601d2d0401652247876e367e9e36c",
+      "original_sha256": "94d833736d7d5e0a0b1243bcae55d532336dfb2b5942b4fb17f374383bd1c212",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/final_F4.json",
+      "bytes": 1329,
+      "sha256": "8cda9bd8b72e58a02ff589471c615a4237369a9d5e516ab0786b3b3bb6a6967b",
+      "original_sha256": "c4c3decc28f6930351837d39c2bf177293117954cdc5626e8f47c0084d0d4e71",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/final_plan.json",
+      "bytes": 541,
+      "sha256": "be2cd99a30dd9343d7ba21f52ee80b65621043f6bf888fe4e7194039fc1435fb",
+      "original_sha256": "58cc59921902526f79cb5497ce002afae452e742df572217f86427c30caca855",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/final_selected.json",
+      "bytes": 1311,
+      "sha256": "fd9d22d962bbfd1553877b81f20a877d2ac67403625b60b8ffa88d718638fc38",
+      "original_sha256": "6a524417d5c8cac88045790f53bbd1c3c35bc5f6e75fb420bbb68c4e4729f768",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/final_summary.json",
+      "bytes": 4274,
+      "sha256": "519a327089d600eccd198dd210f6616a543d0ccdaac037942e568c26b4be8a0e",
+      "original_sha256": "0f6eb819e87685c00fc2eacb7939ea7d354774aac1a686061e06182db6517a43",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/latest_team_reference.json",
+      "bytes": 453,
+      "sha256": "b975981696dad5c91c49b061be806885b04cdec3e367306a7853a438965e654c",
+      "original_sha256": "ce7d7086820e921359c529381c2e3dc3147526b8ab7e1bd6f7b8f4a35077cc46",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/max_pnl_20ms.json",
+      "bytes": 1202,
+      "sha256": "df260157d9d57938fea9041b23c2d525b1fc8629fbf8f39b73e1777fa554aa13",
+      "original_sha256": "569f0f2546d81b72117d7cb6246ac535cf3d3417ffcba373e76be5880d68266e",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/max_pnl_50ms.json",
+      "bytes": 1204,
+      "sha256": "82bf4cd3c138ecee70ac0227f993536f887ec991d31ed0c9f47d01a0e5ad2faf",
+      "original_sha256": "4e03924a99f1e9d21ed9244b29c64e7610ff1bbabacc602c4e52ff413e306df2",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/max_pnl_stress_plan.json",
+      "bytes": 561,
+      "sha256": "9c2c4fb16fec817644d838ae5a4372ad3427bd8794d9daea4a3e38a1de3b7c73",
+      "original_sha256": "345e6033bb65032562159ed016e9daa5eeb0f13e9c0de842821952f920d91047",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/max_pnl_stress_summary.json",
+      "bytes": 3830,
+      "sha256": "1ac9d24b32687aa09ffb900c43fcd31ea8453d315c73a5e2947d286d60adcdfa",
+      "original_sha256": "4b46c8761717b0cc91a07f64fdf4317b2d8983e099c0833e14278e2ca438f807",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/model_fit.json",
+      "bytes": 1482,
+      "sha256": "573d85d46f29fd3b8117f1dfa89dc6830cc27dea9fa301ea787e9ecf8d26594a",
+      "original_sha256": "2755f5f660e685062feddc442d3db8fa6803533184c81bf73619bc9920485822",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/model_params.json",
+      "bytes": 23756,
+      "sha256": "de5177acc4fc056ecb2fb510c1e5f0c70e0329f8a1921457ccde12fe495a15f0",
+      "original_sha256": "3399364e8284801a57e8d718a07f5006b3bbbd01684d87a105f15d2a5a3255c6",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/r0_control.json",
+      "bytes": 28592,
+      "sha256": "b5f2be38c4410bfab5139a8bb4bfb3fa9fd808d1dac99ed564ec55be048f1dde",
+      "original_sha256": "c04bd2b0a2d73d8311efb98f7cfe32d4d5420871684eb129107a2d5abc8fdcbf",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/r0_ensemble_edge15.json",
+      "bytes": 28650,
+      "sha256": "d7f6754298b56a503834656c1d8732fd27a0fa16261926abdf580e6357f3c0d8",
+      "original_sha256": "8aaf95a69b25f67335b0e90cb965c0b2b513a4de9e728f898aedf2b5add22a84",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/r0_ensemble_edge35.json",
+      "bytes": 28641,
+      "sha256": "0527089bf293563a544dca605ce432bf8ea1044b49ba219f014806424384721d",
+      "original_sha256": "bc9eeaf46bfb85896668d6079de6fb397cc978f911e2bfcfc4c117cef23eac30",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/r0_ensemble_refill5.json",
+      "bytes": 28654,
+      "sha256": "22a71e689d9c984dd3cff81c4788d2561ac3521d7bcbaeb61ee9fd86f695e203",
+      "original_sha256": "af3d17711b8a0a5028f88a062452485e0631be811323bd88d01da79bb5d56d33",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/r0_ensemble_sizing.json",
+      "bytes": 28702,
+      "sha256": "bfe1e3eb6a60fc32c7d8e8f9c9f8e55c2c9dfcc347fae6204098cbc9f45a50e3",
+      "original_sha256": "84b87a1a13c3a5681879da8b0ca2c3e7847da6f8dd21edaba1787a866bf1db8b",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/r0_ensemble_target20.json",
+      "bytes": 28679,
+      "sha256": "b246a95e3b6a166ed76236ca1460c6e4d77b3cc4c2b86dedadeb72fed20d1926",
+      "original_sha256": "bb5e962d0292e75c83ea33841ea3fe06b33e4e0719e7cbe0f31b0e445e297582",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/r0_ensemble_target40.json",
+      "bytes": 28676,
+      "sha256": "60269969410d2609d525fe66697ed4ae122e867b4eb42066996f4a687875967c",
+      "original_sha256": "fbb1fca37243302c22f910cca307a11deac1e34f37e8db231c95846a8af20174",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/r0_F4.json",
+      "bytes": 1309,
+      "sha256": "472909b32dd546afbbc16d6466d183d4497365a844ed62e380d4dcd40e799d3b",
+      "original_sha256": "f78f6722343fee87dd15a5f20b49897140b1b46c90fb29a6f4d1b42e821d463a",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/r0_linear_edge15.json",
+      "bytes": 28646,
+      "sha256": "2c85efefe4bcbc42991880dedfac3c4786878f6a3cbc5e1370faf599ea13fdb3",
+      "original_sha256": "a5cfed6b1f9a830de33440e399ededebd7b0cdda1e31c3356da657c5a2c06d68",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/refine_plan.json",
+      "bytes": 369221,
+      "sha256": "9c79555e0b2b02c4bf5e2c6fd49a97fc2724022d41c74a7c3e4f935b0c859b80",
+      "original_sha256": "cee78be9eb19b82fcdebbbde3d092edfd95d454223f657e55d1f389a332d4766",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/refine_summary.json",
+      "bytes": 383998,
+      "sha256": "7ef4b4279d1bf4cacd5ef107c86ab9bf20f7ea31e89aed872db9fbe082becfa0",
+      "original_sha256": "4703935ac05a5a5f86beab2689c7ee6cc8a2647a8ab38aff39e3eec356cfc1af",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/refinement_decision.json",
+      "bytes": 1451,
+      "sha256": "4da46e64095b1a8d15a67b7552f4bf3a24de6e52f78423c42966a17abd2c2193",
+      "original_sha256": "33d9d879a118534c569db6b4bc9947331be5b353abded200a78309657c1661cb",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/room_plan.json",
+      "bytes": 247245,
+      "sha256": "8d0e728b883fbcf4aa7e0f7f9fd4960cc5d4b281dde69a56e0a9fb801690293f",
+      "original_sha256": "72001c633990b1b417694792ea7e26d1e44c980d34031888126175214e08e614",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/room_summary.json",
+      "bytes": 258345,
+      "sha256": "fe4809dc1551d01dc746c4b56836aab0003b15cfce251b98b27d92b0464cb3e8",
+      "original_sha256": "34944d3b87e18646d29de4eba802dd8ccdda799975ad22db7678ed2c1a63bb03",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_composite_inside.json",
+      "bytes": 28577,
+      "sha256": "87d49ff11a6a73ff32ff181f504c2e8c51775b769d88e12b2761854239f5ac90",
+      "original_sha256": "8d9dcc9c0ee4d575c58bf96540ddd9a8fb87fc08968851277c2255a52610594f",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_control.json",
+      "bytes": 28372,
+      "sha256": "b0826a5e0ce6a4b5b8ba92b94e9aeeaa9b558747ba3cf70d4d6db7afcd5fb025",
+      "original_sha256": "ef4f3026a3bc56f6845fd4b8da1d68704c5663c1674d3cc711cf8dfce73f35b6",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_ensemble_edge.json",
+      "bytes": 28426,
+      "sha256": "8cdd1c6d4bedfb62c76740c45cf0ceccd892171b7bb3ab4ef40a3994a16845df",
+      "original_sha256": "e86398019cf72efeeea93e9ea9e2b662e08239b687d1ae893005f506c87d26ef",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_ensemble_inside.json",
+      "bytes": 28459,
+      "sha256": "734ff975b65f966d4aa9ad27984ba812e74025a20015308b6d1ecb2dea6bbdc6",
+      "original_sha256": "cb4054412fe1a10e2c766e66d7ab4d9670d220e588e23d4c83a4e29d8c8a0b10",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_ensemble_refill.json",
+      "bytes": 28498,
+      "sha256": "f7eeab5bfb0f9d23b2b7d48873bd0d69c25a8bfc0e1e317ba1e90e92fd93febd",
+      "original_sha256": "66a2266fbd42974afdbf6c3305138fcbfe205a1ea145a7e8051ce04a80a572db",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_ensemble_sizes.json",
+      "bytes": 28454,
+      "sha256": "75000514e998a7b5ade8a697e7613de6c7e0509aebe169107bdae705e60beddf",
+      "original_sha256": "a640a10708c5b5f1207b8c9ff8332532a5ac79cbf633fc1f655111bdcf6f556b",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_F2.json",
+      "bytes": 1269,
+      "sha256": "c74852d7cd8b8e830e0d6c9ddddfd67c74a03b73a691f5e54918f3fd0568010b",
+      "original_sha256": "945fdc8edef8c2cd069b9b55d3eba06de418d80927667a787f3506453bcfdb35",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_full_composite.json",
+      "bytes": 28546,
+      "sha256": "7d6fe8099aa47af3894df69facba540f06d5a07301c3bfca44d1c59d0a358321",
+      "original_sha256": "473351119184f96e322e79fe3dfbd3596095e71febcfdde69701081c59e25cb2",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_inventory_inside.json",
+      "bytes": 28440,
+      "sha256": "a2a13c3ff844b85201f0cc90c72d256b70c2ade12d91701ed169491b1a2e1d59",
+      "original_sha256": "3039c61f78b2108c4648a9c63ccef2673d55f5c0e72a5c4e1d7dcee42d4b26d6",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_inventory_refill.json",
+      "bytes": 28424,
+      "sha256": "cd58f50b1dd7a2a4adb7f212e482c51d8b65879111a08749408f364d0aa27b0b",
+      "original_sha256": "bb686ff6e6c8084c7cc93b60112c23fbf097b3904095cba1f93036b9951c25f5",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_larger_reducing_quote.json",
+      "bytes": 28405,
+      "sha256": "ffd6b0f98c8829a61f153e344f2d19c74872cb759adc3f69de636100e581baca",
+      "original_sha256": "426ec4ca7f260370903e864ec53783dec18348eade3e43b64b6f717abc8dce10",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_linear_sizes.json",
+      "bytes": 28449,
+      "sha256": "95d99533dfd989bf5944f7cc8fe68e602c79060ace4c07f1abf892dd563088fc",
+      "original_sha256": "0e394a3ca67fa730a07c79c27b35c7d71bf0a39b8e4704412ac631f0f56a3b32",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_queue_refill.json",
+      "bytes": 28394,
+      "sha256": "b07ad71080f0ce1b1bfe591d8319e5a1ba6287610b007ca37137f13953764f35",
+      "original_sha256": "28f22b53208f0284acb5ff9f8cdb25b5aaa8acd7ddddb015f8cc2d68eafa223f",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s0_regime_guard.json",
+      "bytes": 28400,
+      "sha256": "d295817d62dcbe53bce862a67a10b5af12bebd6cd066d3375b8857ee9f659fbd",
+      "original_sha256": "af33c2f3d19df526915164432e563563313776ca601f790597ff8501ee3577b1",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s1_edge05.json",
+      "bytes": 28535,
+      "sha256": "b6856c3bf98c7410e4d1695e859b2ca2e7f42feed6dfe12af15cb54c1ac55476",
+      "original_sha256": "de010ed13009013716d1a7c5fc32afe27488cad3ff31aedf0aba0c9b3e2ab1e8",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s1_edge25.json",
+      "bytes": 28536,
+      "sha256": "b78d805aa5ee61861d526f4e30dbefcde56405a349d8868014c557b22ba541a3",
+      "original_sha256": "322b35131157791ac74611d6db75f30f2d9ce723886304d3d827e401ec8904e3",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s1_half_forecast_tilt.json",
+      "bytes": 28547,
+      "sha256": "ff217483b6a0da02b22cebf99890c847e1cbf4e293a0b2f6d12c411cda7b32de",
+      "original_sha256": "12e9caf72e8de5e1212459665cebb45941f49873062a45152d9d8c0aa813fac0",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s1_linear_only.json",
+      "bytes": 28540,
+      "sha256": "70440b72112093584282236b0a1dd00d1c3458bcc5e248948108202bffc68f8f",
+      "original_sha256": "b195260e768f37a5ce01b154fc8006b35934b0b9fa2d01f9dd91ab9f6a0ed25d",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s1_microprice_only.json",
+      "bytes": 28549,
+      "sha256": "f59ef8dd5d3bee5cd12274206c1f77b9072f818194672c749334116341b4f4da",
+      "original_sha256": "611f3b1e3dbba7b72460b690c71eefce1ceabc70a71c2c9ec2bbc125a3d24fee",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s1_more_queue_slots.json",
+      "bytes": 28591,
+      "sha256": "4999a2a3e32599d6ccfda398f27a750c1067256c470a50610dfe628d01bc2088",
+      "original_sha256": "43c0f777266b2314ef37a1d414414e39be02081c308481044033671b11e0891a",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s1_no_forecast.json",
+      "bytes": 28531,
+      "sha256": "6663317224e80017cd9c00c29751e76e7406e951d523315080a167be90c9558d",
+      "original_sha256": "6ca0f4637e52e48c0677615e61b96e76bb4f6c26ff063fbe1930e824700b3a38",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s1_no_inventory_target.json",
+      "bytes": 28548,
+      "sha256": "34fa91d3f131d3dbf0d79e8269a395ea6fe696680ee5176f68e6e4c2d7d3a225",
+      "original_sha256": "fdc7b7cd5857f60fa796d51a560cb5088a7e28f4b64ec188924ec3e63e7a1f02",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s1_no_regime_guard.json",
+      "bytes": 28547,
+      "sha256": "54f7f615e2082a2acb53e72577d30f3f33d1dfd6e0cf2c1a7dad14fa8c35b3a6",
+      "original_sha256": "da6128cb1d019fae77e4b01c5051f66cb1b33cddb6886c152d27a826489e7b06",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s1_no_size_tilt.json",
+      "bytes": 28542,
+      "sha256": "baf6171328f4dfe33e249920a8048d860a9eafa29dac5653bde3e62a10e8e62a",
+      "original_sha256": "3719b773d2c28eb39e32d931fea42849f6677e7ac630b9f74b66fc8cf7c8b3b7",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s1_refill5.json",
+      "bytes": 28556,
+      "sha256": "4ae5efce4ac652d0120ece57b93192593ead8fe72c7ee8332806d99df0c49d6d",
+      "original_sha256": "41573e3e74542354f3a9ce7869d1649a3d9376d85159224cbf91fb7d788fe681",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/s1_skew100.json",
+      "bytes": 28553,
+      "sha256": "c100a47ed38a7f0dd7ae9e326c259e49a30526ed1014cc44c10ea60b30c2fa92",
+      "original_sha256": "620c9d81bb357efdd3965c21c15f201b731912b7c446b192c390ff2a7cdb1e56",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/screen_plan.json",
+      "bytes": 398781,
+      "sha256": "68fbe8cdfc656ef59690cefa9be8068b8cd763c8853066d308b262fb0662697d",
+      "original_sha256": "0eda76c03a93bf24ddaa04b09bdb41062e1b28df0fca9454b1e465a5a83345bf",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/screen_summary.json",
+      "bytes": 415974,
+      "sha256": "5191fa9155bab22bfaec40380adbb58974f4aa12591bef3d6b6b230eb94eee99",
+      "original_sha256": "bee2d7ee24bf1a5535110e2afefce0bb7fb25407b9313eee24c6a9050d0714ac",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/selection.json",
+      "bytes": 28558,
+      "sha256": "c9a3644a0ecb13204f0280eb2ebf9063766e64207afc8e3e9082b7607b71eebd",
+      "original_sha256": "1e470f942b638fe05108712811d6ddd16b911750c115e71a3207f6743cabb9e6",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/split_plan.json",
+      "bytes": 379,
+      "sha256": "d1aabbf4275aa36afcb489d829d7ac233306ef76a3f95d092311afa9e9b81259",
+      "original_sha256": "72c1911906891950364eb8c4c572646c40a1ddcf150712d8e9b1853700070fc6",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/stress_20ms.json",
+      "bytes": 1198,
+      "sha256": "fe8c0ec7964aae91c8ccaf9296a3fef8935384a7f0d6feb4d9ea9ce9dbadf324",
+      "original_sha256": "5de282ea792a0c6c1c2cc46ac3542c2f4d93f8643a9d6ee88f3fcf0b080f7bdd",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/stress_50ms.json",
+      "bytes": 1202,
+      "sha256": "65f0319242aa5d07ecae18f38ac3a4c1ab7d02525f32f38c8cd1288e1920e2aa",
+      "original_sha256": "e4a585dcadd96b6c9948c31e6e2afc45ce743a831f1dbfa4d88d0ce466914ccd",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/stress_plan.json",
+      "bytes": 781,
+      "sha256": "1a631a1b30b77d6de1117f41fe1ad855f12e1f8016a63ed9c7923e5519920d7a",
+      "original_sha256": "df7415f42573b7b5cfb3dfc7b610295d2e80897529d0a0c9c2015bbfcbdb13cf",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_results/stress_summary.json",
+      "bytes": 5069,
+      "sha256": "b9b053abfe69e0d059e634ca3cccd600e4dbd23f065523dde3c6a8c296a03ea0",
+      "original_sha256": "4d4a652c774118874d84208bdd936dd6baf53547e008cb9ad1aa332dcab6dd9b",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/composite_study.py",
+      "bytes": 4870,
+      "sha256": "2a95c1f0c0fb8ae5cc4ff0163683ff989db77e20e104c642b7495ad04ab49d6a",
+      "original_sha256": "2a95c1f0c0fb8ae5cc4ff0163683ff989db77e20e104c642b7495ad04ab49d6a",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/confirm_composite.py",
+      "bytes": 696,
+      "sha256": "10b4163206b107e7c77cfc05b34cba15910029fdfff023261eea86f155ff7c10",
+      "original_sha256": "10b4163206b107e7c77cfc05b34cba15910029fdfff023261eea86f155ff7c10",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/export_candidates.py",
+      "bytes": 4881,
+      "sha256": "7dff30735b66adfd54edd03058076a210e60a6694792ae746b1042d52eb480b0",
+      "original_sha256": "7dff30735b66adfd54edd03058076a210e60a6694792ae746b1042d52eb480b0",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/finalize_metric_report.py",
+      "bytes": 20982,
+      "sha256": "f8189f4f5570c61c42901e7f36b8b73a37606b31cd38ef5fba11e306de31fd7b",
+      "original_sha256": "f8189f4f5570c61c42901e7f36b8b73a37606b31cd38ef5fba11e306de31fd7b",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/finalize_robust_ml.py",
+      "bytes": 4852,
+      "sha256": "60e10333bce14236a458ea3ab1d55eaf316a092d57e40313a3d3d8031e90a24d",
+      "original_sha256": "60e10333bce14236a458ea3ab1d55eaf316a092d57e40313a3d3d8031e90a24d",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/finalize_round1_ml.py",
+      "bytes": 5213,
+      "sha256": "24f2607feb5d98d8cb889a47ce571c75963cb82edc51090bc9355b74e32a46d2",
+      "original_sha256": "24f2607feb5d98d8cb889a47ce571c75963cb82edc51090bc9355b74e32a46d2",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/fit_composite.py",
+      "bytes": 4087,
+      "sha256": "feadad02aed44861bfc978d92e2704d7f4b0529e65dc49a950fd5613e6aeb3dc",
+      "original_sha256": "feadad02aed44861bfc978d92e2704d7f4b0529e65dc49a950fd5613e6aeb3dc",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/fit_robust_ml.py",
+      "bytes": 10777,
+      "sha256": "28ffd2d585129c45f3ade7a68b8226bed496632d541f8de0fd49a028fe70b57c",
+      "original_sha256": "28ffd2d585129c45f3ade7a68b8226bed496632d541f8de0fd49a028fe70b57c",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/fit_round1_ml.py",
+      "bytes": 10078,
+      "sha256": "1496afec506ccbf40dc3d587ed69d8527176480f8f6bf7a049a129e0f1629c2b",
+      "original_sha256": "1496afec506ccbf40dc3d587ed69d8527176480f8f6bf7a049a129e0f1629c2b",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/freeze_composite.py",
+      "bytes": 3663,
+      "sha256": "5bfcef3d04a5cebc80b31c7ae3270778d058212d51a39c8f3155150f362a6115",
+      "original_sha256": "5bfcef3d04a5cebc80b31c7ae3270778d058212d51a39c8f3155150f362a6115",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/boundary_correction.json",
+      "bytes": 2856,
+      "sha256": "b2dacbda6b34cae0c5856fa928fb08c32dbdeedd1436d04584bc57511ea30d38",
+      "original_sha256": "6dd8287db2b1a41c850c1366ffcd5b71825fec25cea130d7dcf3361b5ca35a73",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/candidate_benchmark.json",
+      "bytes": 731,
+      "sha256": "f93a98de73e1f8f9a34a7592b36be9c319435df1198cf023cf68d24bf95a2476",
+      "original_sha256": "b65173c7e1d9333b068fa9c43cde5b3a661f85d32d65d1bbae28a95ea5ca4f9e",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/deplete0_f1.json",
+      "bytes": 1595,
+      "sha256": "8cb936491734ae60ecd597e2838bd6b5c7e9466396e5065a66d225e8837d61e5",
+      "original_sha256": "873e8e5315d699a4ad33e99b8bc8f7dffc9278e36aef2b1ec0d445c33c4158ad",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/deplete0_f2.json",
+      "bytes": 1594,
+      "sha256": "9d1aa28e3b7893d2da8b074b16e8b3d4d5effef9c4468a62e8d441d04330542f",
+      "original_sha256": "ac2a69d09b1d4238b2e181e2775c2213c4475fbfa917c8245f02431c3b4fc2f3",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/deplete40_f1.json",
+      "bytes": 1589,
+      "sha256": "bb783e1336971f71e8b5c39898d2b39831f287ce5d21e3b77b65ba75af821dd1",
+      "original_sha256": "31aebfb6b87c8db0e9d06b21485f5dcf75f836f4b32c7f388e6823a532b87cbb",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/deplete40_f2.json",
+      "bytes": 1589,
+      "sha256": "6d0828c9ba101e93b4ca9b71d09a0974a529a7a19494db54edb1b12d76f46574",
+      "original_sha256": "2e7340207959a42ba3791dadadcdbdde8eeee19927960e4e6a95e4eebb99db7b",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/experiment_plan.json",
+      "bytes": 4647,
+      "sha256": "a7ab5666679969184b1b72f00bd4ce19f8c1fb16c520db474751bbc42096efb0",
+      "original_sha256": "b1b9ec3db9a94cef6c2c38cd73dd6dfde1ab24f5b84a632d7028d5388d3f9429",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/f4_f1.json",
+      "bytes": 1551,
+      "sha256": "4dd641a27335f9c028a63de8712e1a68dd766e2db8af728db556e976ed3a15f1",
+      "original_sha256": "af298eeb1b4528928f7de0e797ddb27ebc2f4ab3d3b19038fcd12adf6b929e75",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/f4_f2.json",
+      "bytes": 1548,
+      "sha256": "8f96bf14bd651508e848a5743db127ab93dcff3c59f471d72edb28b2c736fd66",
+      "original_sha256": "6d9e822a23b492b729f3136c1fcfe2221b905fbc5da7349a48060ef0df4800c0",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/final_deplete0_d20.json",
+      "bytes": 1326,
+      "sha256": "ac84623aba0ddbd708b6c70cd9283a545ff613c2a84485997c28039f3e8747a3",
+      "original_sha256": "b5eea83a12606a8a53a7599b8bda419eec0b5d64131f6c5ec2ef6f61b000c230",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/final_deplete0_d5.json",
+      "bytes": 1327,
+      "sha256": "8b85222fc66936ff5f90bcbf3390cd3b1bc20e44eb6c4cd0e4f432777e23d01c",
+      "original_sha256": "68b41ed6391fdcfa36d07c8a180b0d281afaa99d76fe067c1fd0469e2cf065b7",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/final_deplete0_d50.json",
+      "bytes": 1331,
+      "sha256": "f2b2f9664d6508cfb2ac5b9f0fb44d9902a54058453da70e31544ebf2d0decf8",
+      "original_sha256": "eb6761a3f4c54a981dfd4c77e56d9ad952b1f423153a6761ff622bda316663dd",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/final_plan.json",
+      "bytes": 987,
+      "sha256": "074464479185cfa2950455b7bad5e32ad6e3d80a55f57a9e8347e56c32d8b3ba",
+      "original_sha256": "bab835e8002fcced45b9d99de21bfca21388278dc7113da991715143d9f6ab21",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/final_summary.json",
+      "bytes": 5623,
+      "sha256": "54a35716b4c03f5f7c8751eb8bd037216f692c091f6d7fa5dcccda0de232a642",
+      "original_sha256": "74394713a100ec14ad322c84f5b695c7c05c689d5447c1ff737dd88db09d6b05",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g05_e015_f1.json",
+      "bytes": 1594,
+      "sha256": "4e22dd2477922cfbdee2d85dfe4cc22581620cd5bbade337879587842d3ddbc8",
+      "original_sha256": "f6468ded3552561eb39cdff376ae7f62eb841cd4212eadcf0ce0629bfc853417",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g05_e015_f2.json",
+      "bytes": 1597,
+      "sha256": "9c23ef4aa396843a494ab2891fd7f42fbadfcfa8ec1c3beced9775848e95e2e9",
+      "original_sha256": "8218bc72d029fca93523b1334775fff4777af5bfd10930d0f7e6625e7cd5ce93",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g05_e03_f1.json",
+      "bytes": 1591,
+      "sha256": "6e33b5bd3909fd516143337eb0f4fa346f8ef18b31aee356da4f8b4acb0390bb",
+      "original_sha256": "0b1567147fb7156775b61b361166ab76ea5ecb708b2e9f244b20d59756edc385",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g05_e03_f2.json",
+      "bytes": 1592,
+      "sha256": "31a85ef3b3c6a171f1fe2952124b0aff91b95625dc6957fdb4d3502d01662d85",
+      "original_sha256": "f39fe82e8203093fad4b0ba922d59487a95ff662a573a982186959c04482ca5d",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g05_e0_f1.json",
+      "bytes": 1591,
+      "sha256": "ddd5a1a516f6e5665f5db437d9554088289bfbc3efe5b6b01afdc2301e1ef438",
+      "original_sha256": "20e72f36fb9348443aea270359a1f57a2cd958a7a93a302e03464080a7060c6b",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g05_e0_f2.json",
+      "bytes": 1591,
+      "sha256": "67eaca6093f9a82005ae4e3a56773a72b5df55006f14cffde9f8969468d65ac7",
+      "original_sha256": "4887b8a377b95c7f3afd746eb64502798a0540cc18401a11d79f9928063ce188",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g15_e015_f1.json",
+      "bytes": 1588,
+      "sha256": "523b061256115eda62bd943fe1e5272f8b0cb7d0b49e7456731c938ed0b7680f",
+      "original_sha256": "c454106b2230727fba06b90be8616b70052b88d2bad4a3115145e8f1563375c5",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g15_e015_f2.json",
+      "bytes": 1590,
+      "sha256": "70d1a044cedb6ff6d555ce71a788e31a3cb69f5fb1203dd9244f1930cff1d50b",
+      "original_sha256": "58bdf459cd4a7da031d6dbf79e8ec5e43ee6c1383bdc0369371b4d95aff0ba24",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g15_e03_f1.json",
+      "bytes": 1577,
+      "sha256": "cf688a63dba044a3d197a5951a3e1e3a125e6df1f4735f78a3f9939c1138f311",
+      "original_sha256": "d9e564cf6c507f578f511639d5654b1277d3092172ba57eb3ff9414f09c82f3c",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g15_e03_f2.json",
+      "bytes": 1580,
+      "sha256": "051b379b77d92c807015b944ff7a18dd7420b4dcfb541f771fbcd70e48715d9f",
+      "original_sha256": "4982c564d384498985ca22046dd435246f7569a68a0419f30fa14bea8e507b59",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g15_e0_f1.json",
+      "bytes": 1587,
+      "sha256": "5cfc53ce7a775236216752ffd4f2ba4b669f88445a74585f5285fa4ff4e06027",
+      "original_sha256": "72207b738264129418b5ba0d8003686300e8cb0a3be335f7c4641b731a6b8c16",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g15_e0_f2.json",
+      "bytes": 1591,
+      "sha256": "b9fcbe9b82913e421d23e53fc55219eab97b0727026e49c57ffd7777813a07c1",
+      "original_sha256": "7debc85793549e37843c2dd414108dcc2d24684a17573cc4c9feb35df814aa05",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g1_e015_f1.json",
+      "bytes": 1589,
+      "sha256": "835b3bf35603b5ec845c8aea3c602dac45878eb22beac5db3623c5dcf8dfcb62",
+      "original_sha256": "7ab40863a4635c269a05c47fdb2aadd564ca453b551247a46bb067504a8852d7",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g1_e015_f2.json",
+      "bytes": 1590,
+      "sha256": "a9a3bc0b035885e6d9d31ae9229b14c71403369dc6d0d435fcafbf6613f0959e",
+      "original_sha256": "7872244bf4656e04fd09c1f101edc26c046387c17c4eff77e92ae5e52c900e16",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g1_e03_f1.json",
+      "bytes": 1580,
+      "sha256": "eafd3cf3bf000e5c01ccdc5d37347367bcfa003c1d71a50dc7f7c421d7021c4c",
+      "original_sha256": "0464294d4969ef207f5cf67540a7586aa383b4fed4c26090a4fb7ec91e4a15d1",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g1_e03_f2.json",
+      "bytes": 1585,
+      "sha256": "2d7d62a9b034aca7dac08912ce9276acacbba8c9fb53bccc0b88f615c9c87857",
+      "original_sha256": "9a9a4b8c374207b73892c56c7cb03dde031c1a66941aac05c7790bd7183f4340",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g1_e0_f1.json",
+      "bytes": 1588,
+      "sha256": "0ed4da11011cd685ef2534c8a22736b2556f50475c513cf03713f6a17483c313",
+      "original_sha256": "c2556baf7f5174eb712f23eac505fdbe0f9bd8509577e8d33223282a59bb635a",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/g1_e0_f2.json",
+      "bytes": 1588,
+      "sha256": "f5caf03566ad83d42fcbdbeeac74cd7bcb364275965962a13ea77ea360ff4be7",
+      "original_sha256": "a370aab7a9ed7ed4f6c83e7c07ea1947c5752b1f2370cea3a9d7757ddf7cac5c",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/manifest.json",
+      "bytes": 571,
+      "sha256": "bd403249920d9e679dd771da358cf1fc0b839fb3daec726309dbb5a5f9d966d3",
+      "original_sha256": "f833f2ce0102fbe68a84550b7b07f8149d9a18528ad342a9c2f07adb0662ba32",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/models.json",
+      "bytes": 1789,
+      "sha256": "3c0cf53eb906492f17be95dea59ee8b6d5b2f6de4e4900033803204fc823e88c",
+      "original_sha256": "b346de8ef1980023818a8fef7ccb665a523af0c792eb82f34d33f80888193167",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/outcome.json",
+      "bytes": 24601,
+      "sha256": "3622f0282d2e4e49f00cd342207910d5d2b9fd1e5eacbe56493d8b50bcfc42d1",
+      "original_sha256": "0f2b8f47eeee1e524407effbd8317a5a09a301fe98012233c74d34625d437a20",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/portability_plan.json",
+      "bytes": 2413,
+      "sha256": "b8c868d5a097568435cb2a9ff09e368808f5c6c47f6e7f5d9d7ebff1438efb9a",
+      "original_sha256": "f828db0bd4c78c47d98541823f12b947514332a78a626850f07e4e352a296941",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/portability_results.json",
+      "bytes": 5569,
+      "sha256": "360d49f23809b6f79b79300da36c4e4d2d150e32383c169e2d01b25d51d669e9",
+      "original_sha256": "b8d7c6e4896d1899f2ef29394a66449f22355baa08cf5587578248879c8c787d",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/portable_benchmark.json",
+      "bytes": 682,
+      "sha256": "a331c0b3130a8a0ec19c7b062170cd0cb4a02bb1b8f4d5110b30e7b99e92c40e",
+      "original_sha256": "ea236f829b62f231ca9618c9ef0e747a11d273a91ab3a49d2f60f7df61052e27",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/portable_d20.json",
+      "bytes": 1320,
+      "sha256": "b0d3e3e33071bef3a845083a722e30aafc289df5240cd1f6a83b79a5d0876705",
+      "original_sha256": "9f67c72a02a850127e8b9e1aee41d8eb21e20c33df5d2a861c1595eac91af946",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/portable_d5.json",
+      "bytes": 1323,
+      "sha256": "167270a1affa648197252351becb9d455a0c1219e8ea666618f20c12234b9414",
+      "original_sha256": "4cfa38980e72ab51a2479c37663d8a8e345f085afc1ef604377a39ae624f9cc1",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/portable_d50.json",
+      "bytes": 1321,
+      "sha256": "7d61231b572dfdee7b0bd1a5578c18ef29e5a92487cf48e329bac0bc6e726619",
+      "original_sha256": "9eefd73ec665af1ccd25e37bf40406f5084dcd2fa9e817938734b67dde4ff8e5",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/portable_v2.json",
+      "bytes": 1198,
+      "sha256": "df4d932cb5220ab69cba734d093911466bdf428db5ac3679a574eabe41b4d35d",
+      "original_sha256": "930d69a4a9e35f57235db193e84e57f0a531a2d8e19647a31a8a2dff28c30628",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/prefix6000.json",
+      "bytes": 121,
+      "sha256": "d005958d826e6000d81bfb04e319340fe96547ddae676a1a082ae0a87e1d69fc",
+      "original_sha256": "756565b0bf9216f28370227a4dc9bb3ebf57aa330834c54805e2e409da57758c",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/refill1_f1.json",
+      "bytes": 1588,
+      "sha256": "4845acbca7de491457c4d2ea7b96136ffc037c06496a32ac401a653e791a318c",
+      "original_sha256": "bd072b818ae8097e0694af4d995fece3fb40d805982a013dc21fb05cbe220e73",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/refill1_f2.json",
+      "bytes": 1591,
+      "sha256": "74881edcc00661d28273467dbf98890224db75a4b8c0f14be3978365b74906de",
+      "original_sha256": "c87fd6c7b4cbad87f33332f53e516f1c5dd99b4b344154b02a541a8603dcf214",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/refill25_f1.json",
+      "bytes": 1591,
+      "sha256": "4639cdfbf955198df83934e7bb55521c95d73738f407de20cec75b550a349c34",
+      "original_sha256": "dd642c96714f742cb7ecf103d138e26493801442c80a67db24ec5aa20c44da87",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/refill25_f2.json",
+      "bytes": 1592,
+      "sha256": "caaf631b56d8d8368be7276f647b77e08dea80b719badeffb9c5de3bbb1bd9a5",
+      "original_sha256": "dbaf0d012fd2894eb8a064aff910df03262be93fbba0903383035a156b291343",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/scoring_evidence.json",
+      "bytes": 760,
+      "sha256": "2f09f054eb010296d1f3d761b79f3c4357f6639e454983ce9a6488f8c6dd78c8",
+      "original_sha256": "19d32631e94e136bb808e92b11ff2c900795e16975c03ed7f6297368eb791507",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/selection.json",
+      "bytes": 6999,
+      "sha256": "5584e0f79c2949473bad582d1e57de90c081aa265fef38337aa9e6ba33dad610",
+      "original_sha256": "bdcc8921d1d74b1c5ca4b3a651ff2be360529521096c129a7c71cd6f3b50c1d0",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/deplete0_f1.py",
+      "bytes": 12182,
+      "sha256": "79302b5b23f62c4b2d1de8f74c1a9bd484bcd49d988199cbcf9ebabd1796a4a4",
+      "original_sha256": "79302b5b23f62c4b2d1de8f74c1a9bd484bcd49d988199cbcf9ebabd1796a4a4",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/deplete0_f2.py",
+      "bytes": 12179,
+      "sha256": "f873780053b050c059b763beafb42f8af3b45a4096ef762da92169785ca4b6ef",
+      "original_sha256": "f873780053b050c059b763beafb42f8af3b45a4096ef762da92169785ca4b6ef",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/deplete40_f1.py",
+      "bytes": 12183,
+      "sha256": "d6d9d346001e446cb7b4bcde4f2aa4d4a1a5898691eca67d2ab547d2ac6177d7",
+      "original_sha256": "d6d9d346001e446cb7b4bcde4f2aa4d4a1a5898691eca67d2ab547d2ac6177d7",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/deplete40_f2.py",
+      "bytes": 12180,
+      "sha256": "115fee375cfdf305a3c1ec6d3143db549e0f8a22ef20e90c21a08d7c25406b34",
+      "original_sha256": "115fee375cfdf305a3c1ec6d3143db549e0f8a22ef20e90c21a08d7c25406b34",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g05_e015_f1.py",
+      "bytes": 12189,
+      "sha256": "6a7d9edab8a7f75f8fdcdecdc927da33d9890c96e7bcf60c17d31810ecfaccb2",
+      "original_sha256": "6a7d9edab8a7f75f8fdcdecdc927da33d9890c96e7bcf60c17d31810ecfaccb2",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g05_e015_f2.py",
+      "bytes": 12188,
+      "sha256": "a029787150e686a8a066d445898217413474abdd84e02e9aec5ee566152bd98f",
+      "original_sha256": "a029787150e686a8a066d445898217413474abdd84e02e9aec5ee566152bd98f",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g05_e03_f1.py",
+      "bytes": 12188,
+      "sha256": "7e22f96a85036b01650e42d88faff1844861e6947bd600a735681d04040fcae0",
+      "original_sha256": "7e22f96a85036b01650e42d88faff1844861e6947bd600a735681d04040fcae0",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g05_e03_f2.py",
+      "bytes": 12187,
+      "sha256": "ff4a367f02a216408c614ef4f72fd538d6e43b2c1ed65a22d43b09a8bfb5f41b",
+      "original_sha256": "ff4a367f02a216408c614ef4f72fd538d6e43b2c1ed65a22d43b09a8bfb5f41b",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g05_e0_f1.py",
+      "bytes": 12188,
+      "sha256": "fb64a128c8474c26d7c87954867358326a72159c7acbe425927f320bfd00ee9b",
+      "original_sha256": "fb64a128c8474c26d7c87954867358326a72159c7acbe425927f320bfd00ee9b",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g05_e0_f2.py",
+      "bytes": 12187,
+      "sha256": "470f82049a562203f3f375913a88a6cfd91d4f83bae2f84ee8effc30382427b3",
+      "original_sha256": "470f82049a562203f3f375913a88a6cfd91d4f83bae2f84ee8effc30382427b3",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g15_e015_f1.py",
+      "bytes": 12176,
+      "sha256": "31d37248b6f0bf8130b951cb0c672ec9ccde6aef02fec769c7bbf17e785763c5",
+      "original_sha256": "31d37248b6f0bf8130b951cb0c672ec9ccde6aef02fec769c7bbf17e785763c5",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g15_e015_f2.py",
+      "bytes": 12177,
+      "sha256": "511d9fefc17e8288e9f74103d1a8694e8e8cbfdc33915a1d49cdce3ca7608619",
+      "original_sha256": "511d9fefc17e8288e9f74103d1a8694e8e8cbfdc33915a1d49cdce3ca7608619",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g15_e03_f1.py",
+      "bytes": 12175,
+      "sha256": "ae63dbd09a4aef8f14ad93970b8d263c903e69998bc800d97cc2a496aeb1e400",
+      "original_sha256": "ae63dbd09a4aef8f14ad93970b8d263c903e69998bc800d97cc2a496aeb1e400",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g15_e03_f2.py",
+      "bytes": 12176,
+      "sha256": "46d5edb99a6c3647fafff707821351af506aafe9b43cb220a9fba3711768fc1a",
+      "original_sha256": "46d5edb99a6c3647fafff707821351af506aafe9b43cb220a9fba3711768fc1a",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g15_e0_f1.py",
+      "bytes": 12175,
+      "sha256": "fd57c8c486dd9d539e21ab7af847d68be95c67ba3a78dc60a597e33e308f22a2",
+      "original_sha256": "fd57c8c486dd9d539e21ab7af847d68be95c67ba3a78dc60a597e33e308f22a2",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g15_e0_f2.py",
+      "bytes": 12176,
+      "sha256": "c961c2dd916bcd42ee22d4f74992309a62c9e331fcd8c9a7460c30addb0b52b9",
+      "original_sha256": "c961c2dd916bcd42ee22d4f74992309a62c9e331fcd8c9a7460c30addb0b52b9",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g1_e015_f1.py",
+      "bytes": 12183,
+      "sha256": "b2da7e3974ee645123f262e872c20ed231256d773400ddaad0736fdc083abb43",
+      "original_sha256": "b2da7e3974ee645123f262e872c20ed231256d773400ddaad0736fdc083abb43",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g1_e015_f2.py",
+      "bytes": 12180,
+      "sha256": "9a7259079a5510248f3f1a3e721b29450e417d3b179db7f82b10de66ea3a02ba",
+      "original_sha256": "9a7259079a5510248f3f1a3e721b29450e417d3b179db7f82b10de66ea3a02ba",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g1_e03_f1.py",
+      "bytes": 12182,
+      "sha256": "99db7b7a50ecb2888466ce595a78310e028cb2500243f550c9bf87af4a7d8ce4",
+      "original_sha256": "99db7b7a50ecb2888466ce595a78310e028cb2500243f550c9bf87af4a7d8ce4",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g1_e03_f2.py",
+      "bytes": 12179,
+      "sha256": "33d4607b68c9b69d1eca0988740c7252ed680d29cf2cdfc44be8390f7c3845f1",
+      "original_sha256": "33d4607b68c9b69d1eca0988740c7252ed680d29cf2cdfc44be8390f7c3845f1",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g1_e0_f1.py",
+      "bytes": 12182,
+      "sha256": "c9f5d7ebe69be99f9210f42370e499b59fdae6220620249ea7b6d49c1f5689f9",
+      "original_sha256": "c9f5d7ebe69be99f9210f42370e499b59fdae6220620249ea7b6d49c1f5689f9",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/g1_e0_f2.py",
+      "bytes": 12179,
+      "sha256": "44dbcc0ea5a32a3065c16c930db8eda8724bb0fb8ccf1e03ea13a74b82c69725",
+      "original_sha256": "44dbcc0ea5a32a3065c16c930db8eda8724bb0fb8ccf1e03ea13a74b82c69725",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/refill1_f1.py",
+      "bytes": 12182,
+      "sha256": "6dbd529c285993531a615418b0697444c2c192561a8f98169bfdb620ee6de17e",
+      "original_sha256": "6dbd529c285993531a615418b0697444c2c192561a8f98169bfdb620ee6de17e",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/refill1_f2.py",
+      "bytes": 12179,
+      "sha256": "92e290781e7a5f1358b016c4ff8541ac83ebe639d149c587c172b32a848dcf01",
+      "original_sha256": "92e290781e7a5f1358b016c4ff8541ac83ebe639d149c587c172b32a848dcf01",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/refill25_f1.py",
+      "bytes": 12183,
+      "sha256": "3bfd9d2aa0c05555498697efcee069bdaf0020d6407582b46e4b77bf65eab57b",
+      "original_sha256": "3bfd9d2aa0c05555498697efcee069bdaf0020d6407582b46e4b77bf65eab57b",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/sources/refill25_f2.py",
+      "bytes": 12180,
+      "sha256": "a274889e7c5f11498cd3fd069c4f9b435354eb18297c830efb621712072373c7",
+      "original_sha256": "a274889e7c5f11498cd3fd069c4f9b435354eb18297c830efb621712072373c7",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/v2_deplete0.json",
+      "bytes": 1228,
+      "sha256": "bf3a9100f38cc8b44ea3309c5be75118bbd5ca4accb75e30e1dda942a4ba1eb2",
+      "original_sha256": "41435fcbb02ce486e2cada93ab1f3f0b321ebe34503a925cdf4937971570e60a",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/validation_plan.json",
+      "bytes": 10201,
+      "sha256": "62f7e17c941fe42b544a57005623130192012dedbe610db9bd9ff35c60d5e0eb",
+      "original_sha256": "3ad0a142f0c0232eab8b14f5164367756e92b927f7feabde6b02b76cb052405b",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/validation_summary.json",
+      "bytes": 48536,
+      "sha256": "b92436ebf751baa68c49cf36b3e829f72b6e9ec2643394f269fdb20cbc97fbb1",
+      "original_sha256": "0e879656fb9e2779451f52e0bedb116cac9d0fd3271553940842b98145236602",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/validation_summary_before_boundary_correction.json",
+      "bytes": 48536,
+      "sha256": "5a9d34002173aae3379a91bd792f4f76382e28c1c13b045d40a0c4c2ad62b033",
+      "original_sha256": "4a29730bbfea86ce4690a742f2559882951c7800692fa941ff96882720e7f55b",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_optimization_results/verification.json",
+      "bytes": 302,
+      "sha256": "f8769ea5fcca9ca09cb751bfe2ff967bcaa949b77b114c4a9c7b2e82283983be",
+      "original_sha256": "d3c39217b97047bd26ef70342060e31c6328bcb7442a4dfa6bc0a8fb17d271c7",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/metric_portability.py",
+      "bytes": 4010,
+      "sha256": "94197bd3bf01f9c6a58302ce32bda39394e5852df8ad41b65c4d191597ace442",
+      "original_sha256": "94197bd3bf01f9c6a58302ce32bda39394e5852df8ad41b65c4d191597ace442",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_common.py",
+      "bytes": 6125,
+      "sha256": "8b91646beb5da5d4f3cb0ab1ccc9719d6d95e0a29117e3ee9be46efac1559e86",
+      "original_sha256": "8b91646beb5da5d4f3cb0ab1ccc9719d6d95e0a29117e3ee9be46efac1559e86",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/all_model_parameters.json",
+      "bytes": 670476,
+      "sha256": "dd658339ad1e5bed309acae49a9cfb7fb656b72f293ae282eb995a6e75bc7b79",
+      "original_sha256": "eb6ca53600be1bb38a8db43983bc8543d83beb334b896588ed02210b697ff0c8",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/candidate_benchmark.json",
+      "bytes": 762,
+      "sha256": "d9ffaff5ab3347ef3427bafd064587fe12151915bfdf2a71311d66593a619491",
+      "original_sha256": "6c6aec8eacecbbfa03865aa99e912d7739d9e1f97f8ac7b23c9141deefe29458",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat24_025s.cbm",
+      "bytes": 70848,
+      "sha256": "13c495b56485cc4ca80ed6dd96040acfd9c8d6026a73f0c95f3360c6cfaab9c0",
+      "original_sha256": "13c495b56485cc4ca80ed6dd96040acfd9c8d6026a73f0c95f3360c6cfaab9c0",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat24_025s_catboost.json",
+      "bytes": 305443,
+      "sha256": "6b62fb5810b1eaa97e57d3f346e35ea3d6c96f52d608cfbdd86684ec458b984a",
+      "original_sha256": "9d4f28ba4d614c80f9f15aef97a42e89729eb557989416cf6fa854eb5423182c",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat24_025s_parameters.json",
+      "bytes": 144045,
+      "sha256": "40e3d3fd71d96df0e586c93a483272c8909e76512f28ec20ceec02ca873388af",
+      "original_sha256": "b3015bb3f2b58c301afc72d12f42264a180616f75c6f3301cfa9924bddba178f",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat24_025s_t0.json",
+      "bytes": 1327,
+      "sha256": "65b872baa16f31f58bae1460af064611804b25b4d3de35f035bc9baeb033c322",
+      "original_sha256": "1783b6948e8638f18e3c12e25b012a23226e52421f0d6ae52cf8548ec43cafd6",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat24_025s_t40.json",
+      "bytes": 1329,
+      "sha256": "eb4518ee5c1ac4db6d7e875539a8fb15f7f0759102193a12502312b19fc542a3",
+      "original_sha256": "c313b7d3af3074756af458894672005d0ff6bf29e1c064983c9b6111eebf4cd9",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat24_1s.cbm",
+      "bytes": 70016,
+      "sha256": "e87175d231ffed2bf01df786dcc9c21a40c17a1f89dc3d93898d02c896db15c8",
+      "original_sha256": "e87175d231ffed2bf01df786dcc9c21a40c17a1f89dc3d93898d02c896db15c8",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat24_1s_catboost.json",
+      "bytes": 301933,
+      "sha256": "16352c0acf9dd54efea9351df28cc492b7bebaf5b9b3f48946be541740f272d4",
+      "original_sha256": "54797b1569a6691d8b7fce81bad2eed1eec29fb5756b736c288bebf45f4f9e1d",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat24_1s_parameters.json",
+      "bytes": 142539,
+      "sha256": "7408751524b92b9a013b6727d86687847b91d8acbb6a4b272dd9294a1048701a",
+      "original_sha256": "aa48f90a13b0c8e913c640b0b862a9f0e8b4cc5548c98c87a6554af8173db150",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat24_1s_t0.json",
+      "bytes": 1326,
+      "sha256": "52bb1389aa08a383c417772a43b1c3949205c10cfb7ca17a40f64a60f7e87f56",
+      "original_sha256": "64b077e4d2d547f2079fdb42683e33e8f22e05559a025481c200bbc718a645e3",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat24_1s_t40.json",
+      "bytes": 1328,
+      "sha256": "d11da1f99831f3ff04876f8b178fd2dcfcc67c3694f8be4d6a2b270df7f7de01",
+      "original_sha256": "d2d57082bc924e589e95d5ee079c0d357659eb47bf25c0d27d1f98e133f45176",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat9_1s.cbm",
+      "bytes": 69824,
+      "sha256": "b6cc06dc912934f43b880b42e1a9837aa821f776c9bd5a1abb6a265471a612df",
+      "original_sha256": "b6cc06dc912934f43b880b42e1a9837aa821f776c9bd5a1abb6a265471a612df",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat9_1s_catboost.json",
+      "bytes": 298534,
+      "sha256": "f72bea1637ba1f7d94217be6871cb0f984a8556115f794f6b9cada1d89342dce",
+      "original_sha256": "079be6cdea473e908da0208640ce5665e4706ea1ce2e9679ade6d07dda664e6e",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat9_1s_parameters.json",
+      "bytes": 142531,
+      "sha256": "84aef00c6dd30d8db1f364c86d8bdc632b34f6a947438532d922957de844a1be",
+      "original_sha256": "2e74d369388eb55da19157baa7d42ceb5a103dac4470f01666b6c2e49a505fb7",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat9_1s_t0.json",
+      "bytes": 1323,
+      "sha256": "110fe2456bbd93b5b0502f74a22d611b1d393c2ae1fd152fa75526fb001f78f7",
+      "original_sha256": "ba11063835a3748d609bb7ef12d46d9b59c04afee3c27566a61c94316538b64c",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat9_1s_t40.json",
+      "bytes": 1325,
+      "sha256": "930f96fc65c115cf083f3ee8352b04f722b43f6517884317229627e72e53afb3",
+      "original_sha256": "4dd0f2963e0d81c3603045713c9c5b3b91f2d994df47b0a95ffd813acc91b3a4",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat_fill25.cbm",
+      "bytes": 67808,
+      "sha256": "ddfe0d505d47d83879462a42ee1c69373779a937ac1a1cf4b998a4a4abf88d8f",
+      "original_sha256": "ddfe0d505d47d83879462a42ee1c69373779a937ac1a1cf4b998a4a4abf88d8f",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat_fill25_catboost.json",
+      "bytes": 296527,
+      "sha256": "08e08f27751781fd4f24e2f56e1d1adc6bd860f2a5362d12f803d20335347cc2",
+      "original_sha256": "e8bdb1b35ea12634d4a2a587ed30f2d572ee99d832181b75db23a3b714ff11bb",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat_fill25_parameters.json",
+      "bytes": 137984,
+      "sha256": "fe70f3631fee4ff812ec4034ece7e65cdefe230f5e85829cf7f09c63eee45bf2",
+      "original_sha256": "008546eed764e237aca0ebfbd11c792e3613998b0ddba2461c85b18e2b2c84f7",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat_fill25_t0.json",
+      "bytes": 1322,
+      "sha256": "347353e2bbc0d1a7bf1e1f8c7caba04a9113230d8ddd81f66aabc305a24df552",
+      "original_sha256": "c632c5a22162ada4d40aa47c40e5bbf7ec919a348d57d730bef57bc63dcfe71f",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/cat_fill25_t40.json",
+      "bytes": 1324,
+      "sha256": "6e2661d90b21377740e027da1510f022a25b26eabf6620cb4146ccca57d9bf2b",
+      "original_sha256": "37b8318f6155917971e41792eeedb12a374c32708e074406182ae0cad4777619",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/experiment_plan.json",
+      "bytes": 1402,
+      "sha256": "53871f616f72622081761cc54d9531ab3c7cc569da755fed7be71441597a6ca2",
+      "original_sha256": "f657bb707d234cb251bb258e4628323ed06da9b90d13f1baece6171d1baebe53",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/f4_control.json",
+      "bytes": 1324,
+      "sha256": "aaf0183fe2871392e2324968499818e2c7ecf558a3377f3c210cdac6498d981d",
+      "original_sha256": "721d97d374100a4b90b89a39a64c43ff091d605b590bf8dc3ae8290144ebba91",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/f4_reference.json",
+      "bytes": 1299,
+      "sha256": "f00d3ecdcc6e625e17dc43f0f57f4f2c5499b7d8097bde7e326d3e5d6989db9b",
+      "original_sha256": "695ff89d522b4c18d7db72e7bdca0459786605351dd99de6b0ef3104e551612d",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/feature_parity.json",
+      "bytes": 153,
+      "sha256": "f80859e8e1c1f111ff89bc7e51b4cd1529621de082e6fcd65fce99a88db93f49",
+      "original_sha256": "8b83e2a69679370abfb90c7a0ee5a9e7e5147a7ca7ba211b10401a6d1363aa31",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/final_ml.json",
+      "bytes": 1303,
+      "sha256": "3f3006970fd0236d1f5f2cc7d21e811e200cb384b8e1db88bb41081bf270ffaa",
+      "original_sha256": "42dd0c6e91969180aed69ae9ae8b0b2ba61aa7bf2c30f7afdec73fd0cb1cd6aa",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/final_plan.json",
+      "bytes": 166,
+      "sha256": "3084abccee19b5d2c6bb111b0d093aa3f49498bd0260254d66185e9c6026e4e4",
+      "original_sha256": "d44ac97cda2fca9c7719697b0ece39d00bdccedc334cc541dac7ddcf31181ee6",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/final_summary.json",
+      "bytes": 1407,
+      "sha256": "3f5a3baa2938dd79d4a8dfb886e7799979cd774244e15b5656f613688360aa8e",
+      "original_sha256": "02cef3e95bd2747abeab6beecaf3b3c0fb632d06706e5879ebb5c61375f9a0e4",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/fit_results.json",
+      "bytes": 6227,
+      "sha256": "f7d41b1783146b0502a2bfeb0b7f5409aaf7656a655b3e82bae1516b6de1cbed",
+      "original_sha256": "d065a28667f42fdb6eb06a6083590b27b08bfaf94898c72db5d33800fa3af476",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/fit_results_progress.json",
+      "bytes": 6129,
+      "sha256": "b1ca9e27de8f4e55769e89ece9cd4baf345a988df241206e66a030290b843442",
+      "original_sha256": "90c48cf8400a9c4e7a1366673a41899aa59d3a448081a79fa03349a83f89352b",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/format_probe.json",
+      "bytes": 11625,
+      "sha256": "ed976fbc848173ad09480f0536b34529811fcd494dd26fbd53ec6f5302af34f7",
+      "original_sha256": "746ffc6df6d0bc7e9065d8e6c907d2a826bd8399785e9eca37d7f5766e71212b",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/interpretation.json",
+      "bytes": 2142,
+      "sha256": "d901e472ec4fe74b2474a7cd6482a46d463ce9c2722306bd5e16778622e7e0d7",
+      "original_sha256": "61d9b03910c2f803bd42cf9a74982ae21b0a63b94087e46134a38112baf20251",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/microprice_t0.json",
+      "bytes": 1327,
+      "sha256": "f9bcb874506ed6d612eb0bbc76ec44f8fc033d620159e0e845a9b492c003d8b7",
+      "original_sha256": "6874d7b4072a8dbf4385f4b99e5addcf9d7b9866fc9ecf18ce7a3acd2d701e09",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/microprice_t40.json",
+      "bytes": 1330,
+      "sha256": "a38bdbabb63a6758794b866fbbf824258e5792f9e37fc5fbafabf5a774e3bf72",
+      "original_sha256": "fb90f1ca46b3e9f5738c69fe61f601e3ae9b544c7a433582a1d8cdd681459522",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/ml_delay20.json",
+      "bytes": 1303,
+      "sha256": "116cc5ae3ea9e1e3b592b4699bfc3933648a6040e43a1822491027c5a9f1aebe",
+      "original_sha256": "0313fcce00a0c37852e9615555e8e967cafcc0b2db9da7f70e22345689ab074c",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/ml_delay50.json",
+      "bytes": 1305,
+      "sha256": "f830817547cacd285b8f0830d77959876dba3d6c15fe68e9073083b63b90baab",
+      "original_sha256": "30176ddec42c92fcbc63eda5946ab5080014643c4217467ae88ec572f3486197",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/mlp24_1s_parameters.json",
+      "bytes": 41577,
+      "sha256": "e6e2ba00b3b2193b1b52b20adab25a1cefe815da33d4d102a8d2024000f80ba2",
+      "original_sha256": "e9de6d517cd8d7c7fdd04187606f6442db39d79272727965d9ac9006a1522917",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/mlp24_1s_t0.json",
+      "bytes": 1321,
+      "sha256": "d26372027f0d0ed8fedf979a5b1c21e4dde888fad28faa643b3c59c5cbb090ce",
+      "original_sha256": "62094a0a933c67850684521c3e25c5f114332dc65cf31a079322585d52316c3c",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/mlp24_1s_t40.json",
+      "bytes": 1326,
+      "sha256": "3e8aca6679da96d01d54d9884f9d34cfc39db26aa0b2bbb8f821944322cfd9fb",
+      "original_sha256": "740ad725c20ea2d236a0b63e6255cf350743a228f441d42b0003a317e8781fff",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/outcome.json",
+      "bytes": 1162,
+      "sha256": "ebf175ab49e1deb3164387db0e1f02e95597cef56fc450160ddb6cb6c5a9567a",
+      "original_sha256": "c46f02ce1872519c2002740e1a7a2012af17fff61994aab1346b3d1d69d57321",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/prefix.json",
+      "bytes": 125,
+      "sha256": "8c4327aa160a4452e0b2484619beec6a9701a4dd5bc4b74f73ab874592a4d8e0",
+      "original_sha256": "b14b9522bdd4f83dc4da9f399e944394febc811c9551ea108563056b724a6918",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/report_manifest.json",
+      "bytes": 782,
+      "sha256": "fb494b286160e1b442862ee483858f7afc9efe586854341f45b2592735fda157",
+      "original_sha256": "fe17cde9626d1f39422eb3c3ba52e89872bb9faf1078d42247d5f791a19a09f2",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/ridge24_1s_parameters.json",
+      "bytes": 718,
+      "sha256": "a927ba50820f2fe24379c3c94491c2e72cf3a1848b9ca0d16d280bb87e39b46d",
+      "original_sha256": "e4e10b89923d91eb41282c774864784b18959a44cde99cf6f130a0a4d8b6d928",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/ridge24_1s_t0.json",
+      "bytes": 1326,
+      "sha256": "f803d18ef45db7f7258091d65284a20fa60d5d417a9d15d769b3aaeb6344a6b5",
+      "original_sha256": "27501de5dea837259247d403652f2f45171109d8758610a092af2ad9982c1ae7",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/ridge24_1s_t40.json",
+      "bytes": 1329,
+      "sha256": "d7879d1c9e98588b0929548e51b5938bb91c900eff3c1e984475270a0c7c9ee7",
+      "original_sha256": "5594c8d238480e69345437cd9a4fb39ce978d3a7c17c6fd36c5a3d6f02c1d7e5",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/ridge9_1s_parameters.json",
+      "bytes": 338,
+      "sha256": "b6f0c897a47e3691027ee0ff555d6c09f7fdca4cc3948877bda6891f9b07d200",
+      "original_sha256": "817b2e44618e36a49bdd37ee721ab850cd8f7878d0fc38f50278c1b6f48c547e",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/ridge9_1s_t0.json",
+      "bytes": 1323,
+      "sha256": "a97b61b49337806d5d2aa133fd161bf3533f0fece25e8f26c2f223b3355d6338",
+      "original_sha256": "3b6f58210b2aca0ad6bdffae5d9b71a0cb9362a9097db8654ec2428437b8cf41",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/ridge9_1s_t40.json",
+      "bytes": 1323,
+      "sha256": "df51fe875e72ce66e216858a8f02c02c420cd3e7028e6fa2343e9426a706d058",
+      "original_sha256": "f935ba15b444a0ddb1c5b1b14090eda8f3dc233c649d64bbaa12ac42e6bb16e5",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/selection.json",
+      "bytes": 804,
+      "sha256": "5e0536b92bc102bad47753fbe6ec5f8bcdfe5b6f50822ae789bf7df4c4886269",
+      "original_sha256": "1d904fa996594fe8f0c421922a0adce510984e364534244cbf7f7f14a614ffca",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/cat24_025s_t0.py",
+      "bytes": 93770,
+      "sha256": "bb4eb60812b60421b93d6d0a634618ef51a2930bdba1b86e7b1f537cf3b8e08b",
+      "original_sha256": "bb4eb60812b60421b93d6d0a634618ef51a2930bdba1b86e7b1f537cf3b8e08b",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/cat24_025s_t40.py",
+      "bytes": 93771,
+      "sha256": "afcd83d1a5e77cfbdb7db8d6953cd33b51686b3639c0149dee1be58cddbafc35",
+      "original_sha256": "afcd83d1a5e77cfbdb7db8d6953cd33b51686b3639c0149dee1be58cddbafc35",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/cat24_1s_t0.py",
+      "bytes": 92900,
+      "sha256": "c140e29e9d226197f759d463e171ad43483270c235d80defd6f3f17c027d0efb",
+      "original_sha256": "c140e29e9d226197f759d463e171ad43483270c235d80defd6f3f17c027d0efb",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/cat24_1s_t40.py",
+      "bytes": 92901,
+      "sha256": "3823f9d92b86b45bd3e9bb213192bb2640cb50d79454e2369dc9ad3dcfb89d09",
+      "original_sha256": "3823f9d92b86b45bd3e9bb213192bb2640cb50d79454e2369dc9ad3dcfb89d09",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/cat9_1s_t0.py",
+      "bytes": 92574,
+      "sha256": "867891c082e5b2ae6dee43cf4b70ef43976fd2eb3f398a4a4b8d3fe6024f9ac1",
+      "original_sha256": "867891c082e5b2ae6dee43cf4b70ef43976fd2eb3f398a4a4b8d3fe6024f9ac1",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/cat9_1s_t40.py",
+      "bytes": 92575,
+      "sha256": "837406e08196ca9847f56c54101f1ce7b569e6cc57b1a9b44f3c018a2abb8417",
+      "original_sha256": "837406e08196ca9847f56c54101f1ce7b569e6cc57b1a9b44f3c018a2abb8417",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/cat_fill25_t0.py",
+      "bytes": 90571,
+      "sha256": "b316fc56fccb53ca6d16ef3d88daaaf7dd8e3d1397adc12a817705ec6203fff1",
+      "original_sha256": "b316fc56fccb53ca6d16ef3d88daaaf7dd8e3d1397adc12a817705ec6203fff1",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/cat_fill25_t40.py",
+      "bytes": 90572,
+      "sha256": "fb0d9ad21c49f18f96419e09100104a3aa74126b01fe3e13ea42142660e5b575",
+      "original_sha256": "fb0d9ad21c49f18f96419e09100104a3aa74126b01fe3e13ea42142660e5b575",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/f4_control.py",
+      "bytes": 10889,
+      "sha256": "a09af35a7b23bf5e101174e65cc7c417825581fbd0023d2baa992e63f879e07e",
+      "original_sha256": "a09af35a7b23bf5e101174e65cc7c417825581fbd0023d2baa992e63f879e07e",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/microprice_t0.py",
+      "bytes": 10896,
+      "sha256": "114de9466291843254d93b9dde4f9fa9ffd659ec79e91ee106ce904b7436dc7d",
+      "original_sha256": "114de9466291843254d93b9dde4f9fa9ffd659ec79e91ee106ce904b7436dc7d",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/microprice_t40.py",
+      "bytes": 10897,
+      "sha256": "5a6fb8e557f7ed90b6ad9e31ca521cffbcff1bad43f04b914dcc8a502fc3e267",
+      "original_sha256": "5a6fb8e557f7ed90b6ad9e31ca521cffbcff1bad43f04b914dcc8a502fc3e267",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/mlp24_1s_t0.py",
+      "bytes": 40743,
+      "sha256": "cb1f8fdd14363e21bc3728be8655d8e86ab7f71577e13ab38c491432dca7fea3",
+      "original_sha256": "cb1f8fdd14363e21bc3728be8655d8e86ab7f71577e13ab38c491432dca7fea3",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/mlp24_1s_t40.py",
+      "bytes": 40744,
+      "sha256": "faf33fe19b9812899e317e07a91892c7ab75fbc039dd2bace2a300d602a4817a",
+      "original_sha256": "faf33fe19b9812899e317e07a91892c7ab75fbc039dd2bace2a300d602a4817a",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/predict_cat24_025s.py",
+      "bytes": 93771,
+      "sha256": "ab59c2c8fd3f678ea52c34082971f8bd4a676849e2088ba15903cc5307cb45bf",
+      "original_sha256": "ab59c2c8fd3f678ea52c34082971f8bd4a676849e2088ba15903cc5307cb45bf",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/predict_cat24_1s.py",
+      "bytes": 92901,
+      "sha256": "d285774edb63d46f9e4877ce84d694cb86d812e312bdc437ece8e918a31e59bc",
+      "original_sha256": "d285774edb63d46f9e4877ce84d694cb86d812e312bdc437ece8e918a31e59bc",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/predict_cat9_1s.py",
+      "bytes": 92575,
+      "sha256": "c7b5333732f0897aa3a6c87e68f93d957d6418c55befd565baaec371ed7f833f",
+      "original_sha256": "c7b5333732f0897aa3a6c87e68f93d957d6418c55befd565baaec371ed7f833f",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/predict_cat_fill25.py",
+      "bytes": 90572,
+      "sha256": "c82f3b6c8748b1b401ad4c51fff1fe3f1e9fee05e97e610da6928233d90021eb",
+      "original_sha256": "c82f3b6c8748b1b401ad4c51fff1fe3f1e9fee05e97e610da6928233d90021eb",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/predict_mlp24_1s.py",
+      "bytes": 40744,
+      "sha256": "faf33fe19b9812899e317e07a91892c7ab75fbc039dd2bace2a300d602a4817a",
+      "original_sha256": "faf33fe19b9812899e317e07a91892c7ab75fbc039dd2bace2a300d602a4817a",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/predict_ridge24_1s.py",
+      "bytes": 11427,
+      "sha256": "07d3a3ce535ec9ad2130d0ff5e81848785157bb28eb7665de9326a37d664d8fe",
+      "original_sha256": "07d3a3ce535ec9ad2130d0ff5e81848785157bb28eb7665de9326a37d664d8fe",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/predict_ridge9_1s.py",
+      "bytes": 11107,
+      "sha256": "5682c1601fdf6e5166141a623e486cd27772225346447ca8915510ac52f45fba",
+      "original_sha256": "5682c1601fdf6e5166141a623e486cd27772225346447ca8915510ac52f45fba",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/ridge24_1s_t0.py",
+      "bytes": 11426,
+      "sha256": "94b7a2fd80742fda830e87cb1334b35d60dc88d761d4aff0a7e4097821de27bb",
+      "original_sha256": "94b7a2fd80742fda830e87cb1334b35d60dc88d761d4aff0a7e4097821de27bb",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/ridge24_1s_t40.py",
+      "bytes": 11427,
+      "sha256": "07d3a3ce535ec9ad2130d0ff5e81848785157bb28eb7665de9326a37d664d8fe",
+      "original_sha256": "07d3a3ce535ec9ad2130d0ff5e81848785157bb28eb7665de9326a37d664d8fe",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/ridge9_1s_t0.py",
+      "bytes": 11106,
+      "sha256": "8f220ede758bde451ef965a84a5aee82092b6b4d4c85f38d732b798a8e2fb790",
+      "original_sha256": "8f220ede758bde451ef965a84a5aee82092b6b4d4c85f38d732b798a8e2fb790",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/sources/ridge9_1s_t40.py",
+      "bytes": 11107,
+      "sha256": "5682c1601fdf6e5166141a623e486cd27772225346447ca8915510ac52f45fba",
+      "original_sha256": "5682c1601fdf6e5166141a623e486cd27772225346447ca8915510ac52f45fba",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/stress_plan.json",
+      "bytes": 335,
+      "sha256": "a2da5f89d06eb6f0dcfa7b7fb04b84b0ef26ac78dbcd971e21cc73288672462b",
+      "original_sha256": "d804b4d50dd26adca5e0900f6ea49f13237bfb0e8ad51ebd71ccda1c15e9172b",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/stress_summary.json",
+      "bytes": 2813,
+      "sha256": "33576e3e52dc25d3f2ff2e43452ceeef91c59b01a77eba5296cb816110788541",
+      "original_sha256": "23d86a5c5d9822b95f34c35a744cbf865f34b0fc750f57f7272462bccd215a6e",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/validation_plan.json",
+      "bytes": 9447,
+      "sha256": "4d2bfda406eeae53480a0e2218a0d23802747e91a4332f0cf0f6c86982ffb2fd",
+      "original_sha256": "849853f3f1d6aefdc3bb5dc20736d2d5d20137a3ae5fa2a4aa97e72db36eb02c",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/ml_round1_results/validation_summary.json",
+      "bytes": 25653,
+      "sha256": "ee47341c19ca42a1026555e8b780bb05f56bf3c18a74689af859431c97776305",
+      "original_sha256": "5c744d8898c450cf30764b99757349edbbe4e1597d83c098bcbff28d68c9b767",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/optimize_metric.py",
+      "bytes": 16662,
+      "sha256": "8ceb78bc888716ca4221fc91009da1e14720e6ce3c44f93654f7ca8992e3fc8f",
+      "original_sha256": "8ceb78bc888716ca4221fc91009da1e14720e6ce3c44f93654f7ca8992e3fc8f",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/prepare_followup.py",
+      "bytes": 832,
+      "sha256": "9a938a22f3a5a1f43ff7e13f1f99c68063589e5ebf04d5629d7518c470eb570d",
+      "original_sha256": "9a938a22f3a5a1f43ff7e13f1f99c68063589e5ebf04d5629d7518c470eb570d",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/prepare_room_composite.py",
+      "bytes": 3726,
+      "sha256": "357a96138d5a2f1a6568b3faae6abed5c69d8ce1a595da9b4676d8fa23f5b785",
+      "original_sha256": "357a96138d5a2f1a6568b3faae6abed5c69d8ce1a595da9b4676d8fa23f5b785",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/prepare_stress.py",
+      "bytes": 884,
+      "sha256": "2d5b3142f067f507822390d93404b8e75cd5c6959ee35f656189b0e56ae18d4e",
+      "original_sha256": "2d5b3142f067f507822390d93404b8e75cd5c6959ee35f656189b0e56ae18d4e",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/README.txt",
+      "bytes": 2334,
+      "sha256": "ac985f703710834c9d3e27c7341d9dd41aa9a39b51fc6dae325189e6083c1097",
+      "original_sha256": "ac985f703710834c9d3e27c7341d9dd41aa9a39b51fc6dae325189e6083c1097",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/reference_strategies/protected_maker.py",
+      "bytes": 7005,
+      "sha256": "2e4a416244932b7f9d636fc93354a1bc114e93d71121ac528f252eca91b9b612",
+      "original_sha256": "2e4a416244932b7f9d636fc93354a1bc114e93d71121ac528f252eca91b9b612",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/reference_strategies/r0_F2_maker_v2.py",
+      "bytes": 4917,
+      "sha256": "81d7877e0185b8ead59c3f458a2e16fd5fa9f0eb640af1f37601ea9cc6512b54",
+      "original_sha256": "81d7877e0185b8ead59c3f458a2e16fd5fa9f0eb640af1f37601ea9cc6512b54",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/reference_strategies/r0_F4_depletion_guard.py",
+      "bytes": 13563,
+      "sha256": "a24eac9873969053aeeb8c769fac8c47aefa3ddbb07680a47c68009bc784059e",
+      "original_sha256": "a24eac9873969053aeeb8c769fac8c47aefa3ddbb07680a47c68009bc784059e",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/reference_strategies/r0_M2_runner_safe.py",
+      "bytes": 10223,
+      "sha256": "2d40fa14b5d7bbbb37644c39d88e46c8f7848199ea1fba71f1407f64e171b806",
+      "original_sha256": "2d40fa14b5d7bbbb37644c39d88e46c8f7848199ea1fba71f1407f64e171b806",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/reference_strategies/SOURCE.txt",
+      "bytes": 238,
+      "sha256": "62c7c67cee1d055b746686f617e7980bc16440f03ccc7a668b8acafa214321ab",
+      "original_sha256": "62c7c67cee1d055b746686f617e7980bc16440f03ccc7a668b8acafa214321ab",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/refine_composite.py",
+      "bytes": 1545,
+      "sha256": "be2084679ea9fe836d171b6e7b584c755a9ea230e7bf1513d088250a242df005",
+      "original_sha256": "be2084679ea9fe836d171b6e7b584c755a9ea230e7bf1513d088250a242df005",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/base_plan.json",
+      "bytes": 1834,
+      "sha256": "89c84721a45e9d5dae1d0986ae92b34289ff7bb5a7617a1201b370719068289b",
+      "original_sha256": "86dda4bc6c2ebd504f19b3ffd6a4b4d9eb8b38b17a73404c6a8b73fc18f571a5",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/base_summary.json",
+      "bytes": 10735,
+      "sha256": "45c216316249ed0a8d53e5860775b1c8b1abc04b0a48ba3394963954011a960f",
+      "original_sha256": "40fbd1b15d3a72b12adc3829e25d5e2b92ccef9567b39694438800a63a2babd2",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/benchmark_composite_max_pnl_v2.json",
+      "bytes": 597,
+      "sha256": "53b5a2cda038c2181324f15bb3a23a0029eb0240412b0bf51c673876dbfbcb69",
+      "original_sha256": "fe7cfedcbd5cfb5ce068ce57481343c88ca6d9e6c14b27647ed8dee39c551372",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/benchmark_pasted_passive_v2.json",
+      "bytes": 592,
+      "sha256": "7175430db7e62feebf703f6507c9c404605369329d29784f11cac96fb88cc8f1",
+      "original_sha256": "bf9c75166f1311783b813967557910db81d94ff048a8376707fe3e1d91e5dcc1",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/benchmark_ridge_maker_v2.json",
+      "bytes": 584,
+      "sha256": "0146fd34b14a5d5adb5567874138c88391f4a0a6c919681b3f0bd6ffde1f567f",
+      "original_sha256": "e3d6c9d55f12e51f41802270336c54fa3701e11f078d09217e2780c489d36ef6",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/benchmark_team_f2_cap80_v2.json",
+      "bytes": 585,
+      "sha256": "2768470d9deb2db52f0bf2f9ff072007bc20d44353ee0edb2aa495645903ba54",
+      "original_sha256": "f3290ace4086863222e9f5c98e0cf5c91db3b2fe72a073cc2a36ce48fc8ba01f",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/benchmark_team_f2_v2.json",
+      "bytes": 579,
+      "sha256": "7aa8263394738abd3e48a79002b2be9e8b17b5ea27961b3ed2c464c29f8f92d3",
+      "original_sha256": "7131e23fa3a281f4736bff05f3303a40d38072e229ed501911c8e11824deac4d",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/comparison.csv",
+      "bytes": 2457,
+      "sha256": "cf0df526745b4dbcf5ef0cae3f9177be2dcc5830c464b37483cbe0170ade0720",
+      "original_sha256": "cf0df526745b4dbcf5ef0cae3f9177be2dcc5830c464b37483cbe0170ade0720",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/dataset_profile.json",
+      "bytes": 544,
+      "sha256": "2fd1b4719ddd481263e95374f22a1165a904782b35c8ff6c6c1ec104cbfd687c",
+      "original_sha256": "f7926d2831ccb9674d3b3a58a3058d7dc210555d55d36dd328cc1a6dd826b491",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/engine_probes.json",
+      "bytes": 4877,
+      "sha256": "9470c278cf6755b60f468511606a9e63e806a8d070d782f03ce790269750048c",
+      "original_sha256": "40220c2280b1156155cb28c1f5d21482eaf7eff885c130f7f091ac8b32dc6527",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/exports.json",
+      "bytes": 1073,
+      "sha256": "7602cab2923117030c5924dfb7ca00f1303129225f6d12389e85f83bf879d144",
+      "original_sha256": "7bac72281b71c843533f2ecdfb5d0fc9be85bd4c08e1e891a4cc13846a538cbd",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/F2_cap50.json",
+      "bytes": 1240,
+      "sha256": "d3a6ea243c99d3d20b0d253453180976d71c8f218ab3cf5c0f44c1543a4bc45b",
+      "original_sha256": "b8755c9157963a9655886587e8f540ab2d09a26a37d89445ac53b463225f6a3c",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/F2_delay20ms.json",
+      "bytes": 1200,
+      "sha256": "0869ddd36cb29cd0ce65519cf234eab24fdc322d3db8cb8dc5dd6bc759041bc3",
+      "original_sha256": "b1e78729a15c58823cb473f57637cf30a8cc2ac3a35a797b7e8c5a235c94cc83",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/F2_delay50ms.json",
+      "bytes": 1200,
+      "sha256": "ece7d7e76d0958e425c69e0d9f3654a0ba46228be206604c27da2d2862f6894e",
+      "original_sha256": "fd4cd26a559d990793ef19be098e7dc5dd7c723d8884787362c9255cd4da1d17",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/F2_original_sample.json",
+      "bytes": 1235,
+      "sha256": "9bde11719c0b934ce04fa2882debbc8b357efd61731a008d618ac58d49aa1ab7",
+      "original_sha256": "8e79f942de563d6dfbf6112ea00c162cc74f93387c1b985de6c5cf8492ebcf32",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/fill_diagnostics.json",
+      "bytes": 4122,
+      "sha256": "8b6d3aee69de9da25e9af83f577b4dbf51f71fefe8c0a813d936e944124f3e62",
+      "original_sha256": "775b282015976e77b53a4e3d0de6116399036d51aa2ffdae6852312991e5080a",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/fixed_trend.json",
+      "bytes": 1040,
+      "sha256": "852560b1b2c9a09bba14db7934f1c8a9072fb5d393ff16539817bc06d336e056",
+      "original_sha256": "c33f206b642d45ea2ee917a4aa75ed497701039d70557ffb7af0c513fdd23769",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/followup_plan.json",
+      "bytes": 2032,
+      "sha256": "a31d005c143ecb602150affacea2315d0f0e852d8bf61d05f38c6d4eaf91c889",
+      "original_sha256": "5b1a55a604258d2a2d9f8ba97f0e0c9efa081e79f73c5a025b3581bc207eb39f",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/followup_summary.json",
+      "bytes": 6334,
+      "sha256": "716d087c69d3777dbf690c97b36e9cec2deb700b7883f49bcd869430bf1f5c2d",
+      "original_sha256": "96e90559a2b567b0d186315e04c5b185ed5cf93ff482e0c1ffbfe28ad761408e",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/M2_original_sample.json",
+      "bytes": 1122,
+      "sha256": "108e480d4f89433bb96e8dbfbd440c9945e876d1a83085b9ac4c5fee57f77bb1",
+      "original_sha256": "4f86e0d92f9dd5f7792752dafdfdb5d099ed83d50e10ae395a740b273046e4e8",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/mean_reversion.json",
+      "bytes": 1121,
+      "sha256": "303b2fbbe84f974eb9f72e31f708c6cbcd5210758c07c9521c6135ff434ef687",
+      "original_sha256": "e98201a30ec963c3ae5cc15230fd831d928bdd56ec4ad8062e09a49be109b24f",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/microprice_maker.json",
+      "bytes": 1244,
+      "sha256": "9e25140ff086486935b9db0e93b3a98b506d279c846344ef93c698d6bdaf031f",
+      "original_sha256": "534a67bc7f645db2d654694dde54c816158a7106ed71b5b016ea2024bbefa76d",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/microprice_maker_size80.json",
+      "bytes": 1264,
+      "sha256": "421cefd0e62a495e28a8069411714273ed8a26656a11938fa70ff3aa310fd330",
+      "original_sha256": "d0da27908c2ed6b6d2f29e5ef67d2dd950933fbb64ac6fc86798f380e815ef3c",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/microprice_original_sample.json",
+      "bytes": 1263,
+      "sha256": "aa401d26fd1aae64fba0029df683c9673bc9e8a823e10e440fea9ae14ff34eb2",
+      "original_sha256": "ffa80281c176230094cbdb9c7a08e0d28db94e0392be7c0bb338fa1be735b925",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/models_plan.json",
+      "bytes": 1141,
+      "sha256": "13a07b8b2dcf25071c10b49c2b8102da4458c59c717d26c0765e5951a1ac165c",
+      "original_sha256": "781d61bd552aeaab75ff50a57f4b4cb0a00180d044b84d1bd7dc98fafa54e479",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/models_summary.json",
+      "bytes": 3048,
+      "sha256": "94e24ad300611f4a05f9924f1ae83c45a7670df62eda215f7106d8b8e41b913f",
+      "original_sha256": "825035ca01012ca48b2e0205f137b2ea06c69a16674846adf129d0d4cece0b08",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/official_trend.json",
+      "bytes": 995,
+      "sha256": "d8512d3b780aa3bbd7d6c6e2a79f500a5d5a27e9642466a654eb74e9a80a5354",
+      "original_sha256": "3ee79fd9f1400abfc041e354a166c523ba3b0c133d7674cfd4b9c81df610afe1",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/protected_maker.json",
+      "bytes": 1014,
+      "sha256": "3fcc6a0fbb1ec039c5796dfe7df258550fd0b2945bb8d2da7178bd8e16ce8bfb",
+      "original_sha256": "4186badaa06e4427d4e94ff1fe5a3ed108e82977ad20c5f7287978d3405115f5",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/record.json",
+      "bytes": 906,
+      "sha256": "62585bc10ac7b3de74714f4a90fe1fbb0ad95c073e5e4c29e98c34adc4fcebd6",
+      "original_sha256": "f7c60c387ef2c4bdd6a03765d984d20e899f732bacc7466a621d1cfdfbfd1cba",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/ridge_ioc.json",
+      "bytes": 1255,
+      "sha256": "0564ebccc29ad6f74da0df3aa80e38a7c369126b7de6094cf9caa1ef5252824a",
+      "original_sha256": "30350945c1a6f2677c622af2a1ef298bad5fc955e7473df0a1b977bc8b322942",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/ridge_ioc_edge0.json",
+      "bytes": 1428,
+      "sha256": "c3fc4a0ce69e129ad0a128f3ae3d2248c0eb7755fcfbe35a7ff504967dc00438",
+      "original_sha256": "7fb85ed5056319e206606e1a37afbad3db343cf166f99ab7d61434185243db04",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/ridge_maker.json",
+      "bytes": 1558,
+      "sha256": "30e12158fcda6254649c6be9dd34296de54c0cdabb33cf88b2eb0fbec481aafd",
+      "original_sha256": "4704b786e150a51061422d001aaacd7fdd1f97a530cdad3cc6f382a49fa38f89",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/ridge_maker_original_sample.json",
+      "bytes": 1582,
+      "sha256": "bee6b9314f20bb680427c866c8b9bd90ccbc09c7fb1d87decd0b90c9bf9daaa4",
+      "original_sha256": "fe1e67aa6d370c693d91f88e55a6e504a3d64e2c73c7f52c3865568f6dbd364a",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/ridge_maker_size80.json",
+      "bytes": 1581,
+      "sha256": "206451764e9034fe4345f0df317c6c674e5385c0a015d1bff1c224b57a48c28d",
+      "original_sha256": "7ba622a6841edc534e2854cf86e46405a45909f94ab1ba4ad52402a9a7778129",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/signal_analysis.json",
+      "bytes": 8967,
+      "sha256": "83a3cda81d808a59b846e31988594b1b1c317180ad376f940b7044b1108af7e5",
+      "original_sha256": "f46e9500f5866001b3c012f8869bd964fcde8120647f3045ed8c7593a61d3dbb",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/stress_plan.json",
+      "bytes": 1271,
+      "sha256": "ef3016b6fbe944339a32448f3a8603da92acc294dd9f4db2603358937b954640",
+      "original_sha256": "dcbe9775aca0b6e5e8c17ba1b8d66f94ce9d34c177433871ad6343ac50b77554",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/stress_summary.json",
+      "bytes": 7849,
+      "sha256": "8de0422a016dc53653f860e401ff66e73078ad7dc9ab74613b37dab13032b664",
+      "original_sha256": "7e314c80363623f30f4bdba2c30a29d5a9b7a18356cedf419426a2ee97834808",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/study_manifest.json",
+      "bytes": 4244,
+      "sha256": "325d1c48d12adac23c46a46f4723f940464f8d5b3766ef2f8ff5e8c283b64b42",
+      "original_sha256": "f967001c5b4ec35ac35b10817ab02ab9a9045aabf315ae540d69e271a3ae5e85",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/team_F2.json",
+      "bytes": 1195,
+      "sha256": "6d7fa741056b10b4731a545bdfb591bb0ebe0c22e4624c31abde38f2fbe84af1",
+      "original_sha256": "14d8c51e21e008fc51769d35c35f33a1ffcc3453fafa2f29f6a3caf37ade8943",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/team_F2_cap80.json",
+      "bytes": 1248,
+      "sha256": "58fc3539585a0c90a51e221ecb96f1438332c010e57124020044156a9c13f801",
+      "original_sha256": "ed7c97eef93e59a2eade3f02a2aeeef0fa3a3c1327d08d251ff4b3672b80d554",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/results/team_M2.json",
+      "bytes": 1136,
+      "sha256": "d28df9d24cb253e6ca5c675c69aaf9182253550bed9758846b7357ac311d5c7c",
+      "original_sha256": "9652f6c4551532065858a792f34c465842ae827fa50854c701e7690a98801cfa",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_common.py",
+      "bytes": 4668,
+      "sha256": "a6dc47c82eea1126c34359bcd714959eb3dfef716cb20c01cbd3accd2d7c3bdb",
+      "original_sha256": "a6dc47c82eea1126c34359bcd714959eb3dfef716cb20c01cbd3accd2d7c3bdb",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/all_parameters.json",
+      "bytes": 2071422,
+      "sha256": "b2cdf945982372ad0a860aff47fe87e524c1c51d9f661b4664a44214e3b0e011",
+      "original_sha256": "800f7cf29aa5878f279b4faf3a05c09592af8c1cb2f40c3ed5705f776d820d69",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/calibrated_logit_d20.json",
+      "bytes": 1421,
+      "sha256": "bf7045866f3b9562e2507cd2ec1a491fc60e4ff3802fe6151ceb6c0c9cad357e",
+      "original_sha256": "7c2a521f4eae1edfb577b0f09ef9b3a695cae1de00def0452ca05d4f0a82c094",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/calibrated_logit_d5.json",
+      "bytes": 1417,
+      "sha256": "afe8a580fb2bcd60cf9845176ed666cf2f6c3b6faa13234a2c7dc0ead630ea3c",
+      "original_sha256": "bb817f79c17566149e124398fad62c47b642281ed889041044ad0944475e0542",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/candidate_benchmark.json",
+      "bytes": 753,
+      "sha256": "9bc17f294f6bfff78f9a224b9dd9d53a390d04d53353b48d2b4f13ae7d1510b3",
+      "original_sha256": "097cc9c0fda812e70ee021b0f2fabcd4e02b126fe254489ef0b1de97137c5fc1",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/decay_cat.cbm",
+      "bytes": 70856,
+      "sha256": "d919ee3dde95de6f77542bab99a9a756f2dea6e01f50e6eaea85d3e05d2a25d2",
+      "original_sha256": "d919ee3dde95de6f77542bab99a9a756f2dea6e01f50e6eaea85d3e05d2a25d2",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/decay_cat_catboost.json",
+      "bytes": 342625,
+      "sha256": "cbcfd3f8eda68550c68565a2fe36e57fba0c3f4b8192a7c5ac871fddea270b9d",
+      "original_sha256": "f02c1d62476327a592f860b5a1768273f4fef3df3042482578344e23618823b9",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/diverse_composite_d20.json",
+      "bytes": 1424,
+      "sha256": "13c803dd8fcf9f7e7bfc011af03e40c5150adfdb994f9f138204200f2c09de4c",
+      "original_sha256": "4f1e2946b6f8433dcfb3f4a3167daa7be99ed124a5a0a55aebe5cf96d6de5582",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/diverse_composite_d5.json",
+      "bytes": 1419,
+      "sha256": "f229c9c7ced1285debf2d8a4cf352bf0addabb8d7c5e36ef535bec2de125009d",
+      "original_sha256": "ee25f042e7656c24ebf21ccb7117bdc17ebc0fce55ac47f8223883dd6e747bb0",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/elastic250_d20.json",
+      "bytes": 1407,
+      "sha256": "4cb9d801a1ddb47ab8e685891038312d0520a20d294f88c8885f26ae24ce9217",
+      "original_sha256": "b6551cc20173937e7a0cec2170f71e08e1c2ac2a95d87b79353bedad02e7dd16",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/elastic250_d5.json",
+      "bytes": 1401,
+      "sha256": "07715cf255cea0c6c31ea2c30ac4e586be6359af0091d2852521af540894d7ce",
+      "original_sha256": "2df4f65a0822b14eacbe85bcffb0a63ffdd54bafd1b4a4b30a1e67ec8a389fb2",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/experiment_plan.json",
+      "bytes": 2408,
+      "sha256": "a9d31e8a61586cb3598216134254652377c5310a13ff9222f7aa0d5d51e5f022",
+      "original_sha256": "a01f7be7363cc918f7ed382c1d32614d9f4989b019724653c37de3a251ab1528",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/f4_d20.json",
+      "bytes": 1374,
+      "sha256": "8a08b7c987d81e2f25a122e225fef506b283751604bae5c38e4d94ad524a4474",
+      "original_sha256": "d7852ae0982f3b38001f3ccbc58a7c0c9f4c4c67d0938da1bea2f4b900e433f1",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/final_diverse_composite_d20.json",
+      "bytes": 1408,
+      "sha256": "b53e1505b1664e3befb234065d85d5c5ec7aaa6ed88d91f6eac326005ab799f7",
+      "original_sha256": "20fdf4bfddf86c328a303656ef27e610b23e52f2c048607ab212b5c2b865af90",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/final_diverse_composite_d5.json",
+      "bytes": 1405,
+      "sha256": "a1ace54bc4d0beb9e9341fe692fa74d2729cb7f69f8eaa884d5cae90118e0be2",
+      "original_sha256": "7676bd4e186686054f1707fcc1de158af14dd67b6f29a0b07299645b38e6b02c",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/final_diverse_composite_d50.json",
+      "bytes": 1410,
+      "sha256": "37f02002116d545eb2c059f7c03707e8dc6400515b979ad53f5ee805316f136b",
+      "original_sha256": "33238c65966f8a1db1c3237c10c6c9493fc1ea29e032e56aa91d8b3f4246c273",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/final_elastic250_d20.json",
+      "bytes": 1400,
+      "sha256": "ab6b9b8a711bdd7539d236b6d09b4ece437c03b64ea02dd0e0d1238006cbb51c",
+      "original_sha256": "823aa2349b8739b94728e8b79879f57fb7cc122bdfba3cc8cc220997e568cc3c",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/final_elastic250_d5.json",
+      "bytes": 1399,
+      "sha256": "f8fa6e702c1e41d6b9d6e35c3e8223dbd53a890a8bbe8d0f4d4b650fa0f04c80",
+      "original_sha256": "df7337a53d6fb08697e6c69070825df8a7eaf2c38eb1c5073285d15efa0a7227",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/final_elastic250_d50.json",
+      "bytes": 1401,
+      "sha256": "71966817ad69e8af956226993e9637dcacf93728d88a3f5c8751a02f07f173c8",
+      "original_sha256": "ce4ff9de3d1ed73a0966a9381567a34c7de33b762d30c5787cdcce70c45864e1",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/final_plan.json",
+      "bytes": 2868,
+      "sha256": "338188c1206efad5238fc1154d2879419c6ad1ff8ca206183d04201899ea10b9",
+      "original_sha256": "e14dba0f757fe35e918dadaa743458b887c666c19d57c2037e50c0d31f37ba8f",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/final_summary.json",
+      "bytes": 14951,
+      "sha256": "95afe283329fa04d50895f23df5d84e80a44a58fa65eee36e41816b8ef647213",
+      "original_sha256": "4b38fc7255efa026d719a79b51dc2ad64f8ef68411d29a257322200aa4b06dd4",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/fit_progress.json",
+      "bytes": 7520,
+      "sha256": "8cee4dd2e4e7e500dbd51d20984a763e61f58005369a3fb78e7e8214836bae17",
+      "original_sha256": "99f44045d3598dc08a72fff0884a94a1718390227a6dfccbeff05461f74452a7",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/fit_results.json",
+      "bytes": 8063,
+      "sha256": "074bac9f829b9d76f53ba1f38e12c4a3fc6a2ef591884f929cdb10a59bdb973c",
+      "original_sha256": "eb6b72a9aba85ebae13c5d28112bb8acadb1f5781e2a8eac3094664d4f52fa23",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/forest250_d20.json",
+      "bytes": 1408,
+      "sha256": "3f4621a027574ed1c0a443bd0193dc51f0a76307501a8c4f610af5d1f148d7f0",
+      "original_sha256": "c6c7a3ec01c824086488061b60cb50658c014881c6cb5d4772dc9cd71f3071e8",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/forest250_d5.json",
+      "bytes": 1404,
+      "sha256": "1700afc262a9a3e4a4e60b130b8016e0e591d6c1eebe050233957abe0a241858",
+      "original_sha256": "c95503b9ae593abb94e6aef8c177b115656d98c52d1e499509df3e5e1cb03f87",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/guarded_ensemble_d20.json",
+      "bytes": 1421,
+      "sha256": "0e3c1f90b15a00fe8a228856ac0ae3483c786abe6b31953040a53b04d12d1037",
+      "original_sha256": "a81a29df770925fbb84448db9123b817dd50798a6492648bd24e73115e46ceea",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/guarded_ensemble_d5.json",
+      "bytes": 1416,
+      "sha256": "1be54338612c20a62066477017af56b763449b85631b6fd96b392de2c0f9af83",
+      "original_sha256": "a7678948c2ab132fdc6e0f7eb05661cb50b9775da9c16be8c6c738c318643dd8",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/huber250_d20.json",
+      "bytes": 1405,
+      "sha256": "65b513f4d911c2417882b9a571897e168f74c2af819741a5184c1f7e46e34bc1",
+      "original_sha256": "ceb4746b9ea03d99fec1057d43ac8d7a37c881eec29f1a7b71083fb30ff7d79d",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/huber250_d5.json",
+      "bytes": 1402,
+      "sha256": "0a2d3d663a192bcbe05922d3bc9501dbf62a7b1a1bb66f01f014c32f43285bab",
+      "original_sha256": "3ce84764b7e8438de9f81fc29aa9df06eb0266d5e0082f562f8884f50c8baf24",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/outcome.json",
+      "bytes": 25418,
+      "sha256": "8ccc14af54a6ca2089c165285b9132578a84de2c43c1f464f0f53eae4ceb7fac",
+      "original_sha256": "37ad5ab362bdbd5d7835468900c81155977e6f07b271a2a081c6d1fa1c7768d0",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/prior_cat_d20.json",
+      "bytes": 1387,
+      "sha256": "71bdd500ff47221f0ee83b146c84a9d17ba1848d7eefa73fa0891246f6e8e210",
+      "original_sha256": "357076bd3ab706c7fda0d4c95f6ccb266fbe4f79f55a5f35094f0d0d002be327",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/recent_cat.cbm",
+      "bytes": 70872,
+      "sha256": "96aad9a8e86715c7903b4cefe4f5996a1b9e0a9a52b909d8be9efbff9e05cfd4",
+      "original_sha256": "96aad9a8e86715c7903b4cefe4f5996a1b9e0a9a52b909d8be9efbff9e05cfd4",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/recent_cat_catboost.json",
+      "bytes": 303379,
+      "sha256": "842367d91ecca60316787365d9f0a9a0478f76bd92b2282dc22802173d32da27",
+      "original_sha256": "f3c5a39eda183951c198e3aea2fb988f43e7cbb3b3abd4eefb8c8da7f17f151f",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/report_manifest.json",
+      "bytes": 779,
+      "sha256": "db7f59ad5343e750fa245e09b9ce801be7758d5cc357d646d356e38e4954ae22",
+      "original_sha256": "21a065bb3db68ed11ffe57503b68872ff9925c7525a2a43fb2e41f7694420085",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/reused_controls.json",
+      "bytes": 3432,
+      "sha256": "e0cf585ee14b552640cedf3568c9207b365bea19268dfe291ab949cae20eb0c7",
+      "original_sha256": "514d2993b91a33f1dd0536ebd1b85333cf81d2bdc4dd71b48344762226910550",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/ridge250_d20.json",
+      "bytes": 1407,
+      "sha256": "fc57cd95ed491d800733147e0300411b739f4368e72aa07b2dd38963ee83e518",
+      "original_sha256": "13283cc6670fb04789e47b4e654bfbc5c1e54d38b393c072d575fa9d251a5532",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/ridge250_d5.json",
+      "bytes": 1399,
+      "sha256": "bd24171deb54f10048edab9f9a3c95c39ce3b1be5587a948e237c486cc703542",
+      "original_sha256": "b42f678b1206f6bfb6c09034cc69457bb8f72794851ca1dad1bda8019db8f7ec",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/selection.json",
+      "bytes": 5931,
+      "sha256": "56911a568338a3a194834818b1e31e3d402f479b01bee8c226029167f03c2849",
+      "original_sha256": "6e58122bb5b10032b880df4a9ae5c54f829e4d0f6741253785e4fb54bccd0d65",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/sources/calibrated_logit.py",
+      "bytes": 13341,
+      "sha256": "8ac33926dad9d0af60fe713075e549f619d6435cb363a798409630f8834a9e4f",
+      "original_sha256": "8ac33926dad9d0af60fe713075e549f619d6435cb363a798409630f8834a9e4f",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/sources/diverse_composite.py",
+      "bytes": 353391,
+      "sha256": "bb829da6acc59a8f6b6f97b508d9d3d263fedfd99c44556b3ecb3fb65a941c28",
+      "original_sha256": "bb829da6acc59a8f6b6f97b508d9d3d263fedfd99c44556b3ecb3fb65a941c28",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/sources/elastic250.py",
+      "bytes": 12180,
+      "sha256": "9a7259079a5510248f3f1a3e721b29450e417d3b179db7f82b10de66ea3a02ba",
+      "original_sha256": "9a7259079a5510248f3f1a3e721b29450e417d3b179db7f82b10de66ea3a02ba",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/sources/forest250.py",
+      "bytes": 105336,
+      "sha256": "95b6cb5cc9896821a4f6397387f5aa1202bae7b1a7b39a204a0d76973b954ac1",
+      "original_sha256": "95b6cb5cc9896821a4f6397387f5aa1202bae7b1a7b39a204a0d76973b954ac1",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/sources/guarded_ensemble.py",
+      "bytes": 259045,
+      "sha256": "d852c82885728ab627a9be81c50e2ebd362404238832efa29cfd4a7a70a089c6",
+      "original_sha256": "d852c82885728ab627a9be81c50e2ebd362404238832efa29cfd4a7a70a089c6",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/sources/huber250.py",
+      "bytes": 12246,
+      "sha256": "8a55cace9f2242611578f121bb001495c83d54cc56fc5b01bb7d832e9bdbea3a",
+      "original_sha256": "8a55cace9f2242611578f121bb001495c83d54cc56fc5b01bb7d832e9bdbea3a",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/sources/ridge250.py",
+      "bytes": 12201,
+      "sha256": "e6dfd9f4329234a84dabd01e4b3456dae0c90919ab1818b90fbd9af2c52eec11",
+      "original_sha256": "e6dfd9f4329234a84dabd01e4b3456dae0c90919ab1818b90fbd9af2c52eec11",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/sources/window_ensemble.py",
+      "bytes": 259045,
+      "sha256": "b9454ae0547b982f791b0deba0ab25ed4a15f5dd0ca3c65262168a3647d9c56f",
+      "original_sha256": "b9454ae0547b982f791b0deba0ab25ed4a15f5dd0ca3c65262168a3647d9c56f",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/v2_diverse_composite.json",
+      "bytes": 1366,
+      "sha256": "32e3eae67f8d60c13981eb2ae7429b40f17d9ad93b89abd9d70b2c7e4180dc74",
+      "original_sha256": "12115546131bc7158766f9995ab557555060f8d591563a3b99c2fb628732ade1",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/v2_elastic250.json",
+      "bytes": 1356,
+      "sha256": "187e29dc8dcecc2ab19dda7dd4627740d5a19c40ecb9f12bc3d435e58e1cb26b",
+      "original_sha256": "591901b38905a48573b113036d59b9d97b1a4b8e00403d549ad1e379ceed8f78",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/v2_f4.json",
+      "bytes": 1337,
+      "sha256": "e3be679c3ce586bb086b8ca15441df3b3b337c58f71ff1d715349ae96e507947",
+      "original_sha256": "1a298ec1727d41cc9545de044a6ed7e5bf0b271eb991dcf7373bdb3af5bcceb9",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/v2_prior_cat.json",
+      "bytes": 1352,
+      "sha256": "67e31f5ee628c71ff437e3c8094ca2448baa7dc8180cd8be9660abee1455f62f",
+      "original_sha256": "34e434999bf75172c40ddf86099d55b27f13b32ee098554660d0b62ff221339e",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/validation_plan.json",
+      "bytes": 10437,
+      "sha256": "1d813a7025386590975b0cae87a64ce3647b58811db6595d685bca776121c28b",
+      "original_sha256": "17ebdea273eb6e1ef0997112a3e9a10cfb085761f5d9083e6537dfa3c3dec75d",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/validation_summary.json",
+      "bytes": 27382,
+      "sha256": "4568bd8411501de0e07c96830117e30543ca6b78bee8955ae18ff32899944532",
+      "original_sha256": "ff4860ea82679241ea7cc06c3ea9f3ed2f5f15afa750069208635de01a8c9e34",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/verification.json",
+      "bytes": 1416,
+      "sha256": "baf28afc1df43b0a67df0adff54e1a972dbf0e073de41a5e6ac3ef12334a077c",
+      "original_sha256": "6767405a50f79d3776b6bfc5c5e35e62d46c00998950c464fe5cd953cc5ced86",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/window_ensemble_d20.json",
+      "bytes": 1419,
+      "sha256": "e07b1a00ab37d4679c343cb4c26b5ceb38b331923237651004e6ad9f8542b395",
+      "original_sha256": "bbd6c0fb4baad12d4241737e4dd95464f896fd6b966f4e2cda3cf56d4b5eed56",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/robust_ml_results/window_ensemble_d5.json",
+      "bytes": 1414,
+      "sha256": "a518651ff6676a837612b335f30f1d9dc5b5e6ab9d93f08c6b984e78ea03b492",
+      "original_sha256": "f99f6e3fbfa82db0016ee0bd6f038eee7e6b574059ae0479cc6602d0cc7c9258",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_diagnostics.py",
+      "bytes": 3357,
+      "sha256": "fe66ae67708d999e26752bfe2aa33f3a639ade2e310cddb5bd2775f44cbb1655",
+      "original_sha256": "fe66ae67708d999e26752bfe2aa33f3a639ade2e310cddb5bd2775f44cbb1655",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_finalize.py",
+      "bytes": 3660,
+      "sha256": "c1f6e5672394a6bcc1f64b28d6428950e7506a704f25a2d917f26eb559a0173f",
+      "original_sha256": "c1f6e5672394a6bcc1f64b28d6428950e7506a704f25a2d917f26eb559a0173f",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/comparison_plan.json",
+      "bytes": 13274,
+      "sha256": "3f3e9c3c0425c6d797007c5f7a0c34894ce07c02b3019cf6498479b72cb3f125",
+      "original_sha256": "89d97abed21b8c302bc39c66dbe1cc5d0c16c92f7fce31ad1f609e6da774720b",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/comparison_summary.json",
+      "bytes": 26271,
+      "sha256": "64ce95281aea370aafd0d587ff59d3965e3d6307f8e1651e43753ca209ff44e4",
+      "original_sha256": "46cdcf7a3532a5ace3255839eb0aa2743f1a19808f043a5e1989e765a302a8f6",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/composite_ensemble.json",
+      "bytes": 1578,
+      "sha256": "c4d206dc6f42250dcef67cf963ec667e2d92480e7e91fea8521ebf70cadb3584",
+      "original_sha256": "a7062224b8e4f8e7552e1b730bb6b76e908a441bbbbe7a54d4e86665e984faa3",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/composite_linear.json",
+      "bytes": 1575,
+      "sha256": "7c96ca6a67d43cebc3b7367c4647407e53a0f269789ec863b1a5db263518454e",
+      "original_sha256": "56eb872e577c1076812dd586e16d6561c88af3dd7582f607868d57494a4b9327",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/dataset.json",
+      "bytes": 648,
+      "sha256": "9ac88ab91739bcb3d1bede372205c10850f339e458ac03c4331e4e3830d791e4",
+      "original_sha256": "a6dfe146f330a6dd5fe58788ccc4a0cf1f133d6988eb7c03afbed2421e05312e",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/fixed_trend.json",
+      "bytes": 1397,
+      "sha256": "2992ac777d0b8a5c2ae3d4a795e1d29b0f994a9c088b863ae7ee7a7abff9a7f2",
+      "original_sha256": "9356ec5fb888fbc7334e36c7673c30577f69feb19261bc6acc1ad2f230642fe9",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/composite_ensemble.py",
+      "bytes": 20309,
+      "sha256": "d1b3dd6fd0ac5afcf01c816c187f4f9193c4fa1449ad8ba4fc5cbfaacba26dfa",
+      "original_sha256": "d1b3dd6fd0ac5afcf01c816c187f4f9193c4fa1449ad8ba4fc5cbfaacba26dfa",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/composite_linear.py",
+      "bytes": 20304,
+      "sha256": "318c25d8dc0dd8540593173ef1ed0be6a7aa0ce15a6329870c0e2685aa1780d3",
+      "original_sha256": "318c25d8dc0dd8540593173ef1ed0be6a7aa0ce15a6329870c0e2685aa1780d3",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/fixed_trend.py",
+      "bytes": 2721,
+      "sha256": "75ed10c2a7e9bf3088aae4e20e98915a40b3d76ff0adc0e0b691eb933a0e7a80",
+      "original_sha256": "75ed10c2a7e9bf3088aae4e20e98915a40b3d76ff0adc0e0b691eb933a0e7a80",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/mean_reversion.py",
+      "bytes": 6537,
+      "sha256": "4f358a48be378128c3938d1720e4b6aa4d486773ec48349b931af1b34eaf87dd",
+      "original_sha256": "4f358a48be378128c3938d1720e4b6aa4d486773ec48349b931af1b34eaf87dd",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/microprice_maker.py",
+      "bytes": 6537,
+      "sha256": "4f358a48be378128c3938d1720e4b6aa4d486773ec48349b931af1b34eaf87dd",
+      "original_sha256": "4f358a48be378128c3938d1720e4b6aa4d486773ec48349b931af1b34eaf87dd",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/old_clock_composite.py",
+      "bytes": 20304,
+      "sha256": "8b33a9a7fd8679fde915e1832c0e576461a990a788e466ac673978a4d3e7d11c",
+      "original_sha256": "8b33a9a7fd8679fde915e1832c0e576461a990a788e466ac673978a4d3e7d11c",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/old_clock_F2.py",
+      "bytes": 5156,
+      "sha256": "d34d146df7c7ff458002445c5ea163de5081badc532b2542c3efd3c58f283ffe",
+      "original_sha256": "d34d146df7c7ff458002445c5ea163de5081badc532b2542c3efd3c58f283ffe",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/old_clock_F4.py",
+      "bytes": 13563,
+      "sha256": "a24eac9873969053aeeb8c769fac8c47aefa3ddbb07680a47c68009bc784059e",
+      "original_sha256": "a24eac9873969053aeeb8c769fac8c47aefa3ddbb07680a47c68009bc784059e",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/pasted_flow06.py",
+      "bytes": 6404,
+      "sha256": "3c9ec9c0fcb9d55965179922c2289919624df25d9a7948afc1e2e6853d626e41",
+      "original_sha256": "3c9ec9c0fcb9d55965179922c2289919624df25d9a7948afc1e2e6853d626e41",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/pasted_passive.py",
+      "bytes": 6404,
+      "sha256": "4792badcfc708524441f40e381b479f8b8ba03de39909c203b3f27be9790dfd6",
+      "original_sha256": "4792badcfc708524441f40e381b479f8b8ba03de39909c203b3f27be9790dfd6",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/record.py",
+      "bytes": 6537,
+      "sha256": "4f358a48be378128c3938d1720e4b6aa4d486773ec48349b931af1b34eaf87dd",
+      "original_sha256": "4f358a48be378128c3938d1720e4b6aa4d486773ec48349b931af1b34eaf87dd",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/ridge_maker.py",
+      "bytes": 7050,
+      "sha256": "76609b4674335d8bcefbbb84c6f8a532680a48be4abfbee5c000e9416a5cc6f6",
+      "original_sha256": "76609b4674335d8bcefbbb84c6f8a532680a48be4abfbee5c000e9416a5cc6f6",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/team_F2.py",
+      "bytes": 5158,
+      "sha256": "e93b4baa3d8772205724de84c27ecb3eac18e9e593d39a4c0ebf04248d28b66d",
+      "original_sha256": "e93b4baa3d8772205724de84c27ecb3eac18e9e593d39a4c0ebf04248d28b66d",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/team_F2_cap80.py",
+      "bytes": 5034,
+      "sha256": "6d829941fdf1b9d4c9c11c133f727e65af045b01033d95846e92ce39533a764b",
+      "original_sha256": "6d829941fdf1b9d4c9c11c133f727e65af045b01033d95846e92ce39533a764b",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/team_F4.py",
+      "bytes": 13499,
+      "sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+      "original_sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/frozen_sources/team_M2.py",
+      "bytes": 10159,
+      "sha256": "3cfc322d895f73fda66dd8868494b0c068e56d78ef9d8963f6df941d30dfa407",
+      "original_sha256": "3cfc322d895f73fda66dd8868494b0c068e56d78ef9d8963f6df941d30dfa407",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/market_diagnostics.json",
+      "bytes": 2431,
+      "sha256": "965567b703807a2b774d22b42c0fdfc4f66dd2eb8f6282afeb804ef765ed87c1",
+      "original_sha256": "12871d7fa10af242faa799d68db3eaff99a55361b22ae805741684140bcb7583",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/mean_reversion.json",
+      "bytes": 1470,
+      "sha256": "bcbe85e1b8e8e80c19ba403688ee551c5f9419f89e1960d8a37f2bb59004cca9",
+      "original_sha256": "eb005e0571d9058c7821be6306a402cefef59982607f5d388cb0f18d60ddbd35",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/microprice_maker.json",
+      "bytes": 1571,
+      "sha256": "970501665d0e62fe2edfef657075b6666c7fd73faa78bcea4d61c3b495579cc8",
+      "original_sha256": "88b0e9c2dfd1e30d993e32633bb4dd6d863db39f9ed53865c1dab8e266f69304",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/old_clock_composite.json",
+      "bytes": 1533,
+      "sha256": "24bb918799577490cda80200a24a8aedfd4ae8953668a95e55f8bd1ce71f30d6",
+      "original_sha256": "52bb26abcff5fee66c600a55246b8d9669d61b700ff8242ecb0048c875134129",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/old_clock_F2.json",
+      "bytes": 1514,
+      "sha256": "34db45218759454499630d87f49f04b628de1f80071ab8ac0416615cf5f9f7e0",
+      "original_sha256": "6ba33f8e0ab37d8f02ec193ee39664a1121223f7ecfee4c75625cf4d053b0484",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/old_clock_F4.json",
+      "bytes": 1521,
+      "sha256": "282300a482d68ae3a95642e63a62686e53bb984b9f2bf0c17eda5925b3f65c30",
+      "original_sha256": "f2cbd886f595bd8f9c24be6db08e7491b122fcb3ff0c07d7fce94c7873139143",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/pasted_flow06.json",
+      "bytes": 1571,
+      "sha256": "2e6b458698bb22be2fec96b870a533c284e3f419eaa55eb8f63a69afc71428da",
+      "original_sha256": "a10cfefc4be40ffe0389854f44d11ce4f9e38354f1b7eedf9742527fc9c936f8",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/pasted_passive.json",
+      "bytes": 1574,
+      "sha256": "76c05f6f69824463cff43a049b1838af1efc03584fe8a4afd8c190d442ba86cb",
+      "original_sha256": "d2835061e99b0caa6b8612635d1ea1b8960765b4d1b4942403825d626d34c9cf",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/pasted_passive_delay20.json",
+      "bytes": 1587,
+      "sha256": "85db8101e0ea89e2c006cbc6bfa93c4194c75ee5ba10d5c7fe39116c26da365d",
+      "original_sha256": "038be57541d5cec431a4f57939934bf4337a1025c030adc52f50f3db7df2c417",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/pasted_passive_delay50.json",
+      "bytes": 1586,
+      "sha256": "1a8ec1e42d2a42b321b94c4d4809976514e5e3eaa7345f170dd679319b1f7029",
+      "original_sha256": "d0bf4a0e5d16099548ee3431d2da8bbecf949780b6cfea69535fbe82b11295e3",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/record.json",
+      "bytes": 1183,
+      "sha256": "25daea8d682e8f6833c4891404e1a0c36ca6995339f81520341ca73d4697ab85",
+      "original_sha256": "02f54b6e0255a79d6a3a3f64b5a9d46ca125c3287c7ed08b791a917920217f4d",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/report_manifest.json",
+      "bytes": 2303,
+      "sha256": "45afb5cc43aa09ad1701bcba74fdd76d7f478374d5c6ed6003a6ab8ec43ec915",
+      "original_sha256": "10869f47745387dccc0aac70f7bbaa403eb9669d8a3cd81e7223b636df9d2f3d",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/ridge_maker.json",
+      "bytes": 1536,
+      "sha256": "cb419431bf687fd0c6314f9d61cef72ba6a0e5c07b7cf41e1f29a4a8e0bc30f1",
+      "original_sha256": "3cbb4b0f62444426fb798f1fc6d43be9d9f4ba8b40f0faa2de8f4c2af68f07c6",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/selection.json",
+      "bytes": 532,
+      "sha256": "26d7f17019032e53bff6717b05bc8c04b8872050e82542ddbf5b1d38168f2066",
+      "original_sha256": "bd728fc9c7bdc629a9fb416ba206c8c88350162d4b5fad2ac55dd819913beb92",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/stress_plan.json",
+      "bytes": 787,
+      "sha256": "2f9c5d1b6f89f8bc24920eb43e841a7704be001402b29e96061f9b1aba913fa8",
+      "original_sha256": "c38c8fea6ca825c251f139f5026b68f74b4a1a94894960db358f122f88feea2a",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/stress_summary.json",
+      "bytes": 6850,
+      "sha256": "438c6028642f4df8b472eea79abbc50c103c4bf677dec76ae260383a55552176",
+      "original_sha256": "a407789d6fccec62a5665abfe031d0e1aab1d6389a0fd61b05b9b2ebe648c1b5",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/team_F2.json",
+      "bytes": 1557,
+      "sha256": "b1ddfa5fd20bf0e26ff58eae921a8660763416d2869ce82768a5572d68956d0e",
+      "original_sha256": "fbe8c54db84ed4f6eae773d01d02425b972859f0e952676d98e6fd98e7dd7543",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/team_F2_cap80.json",
+      "bytes": 1560,
+      "sha256": "588462bf4410310bb499ac6d14d5dbcae4380e18f9e0b8b887fd3aa57c3a8a4d",
+      "original_sha256": "48a9bcf315d7458c40137b0251976afbcd89744817b72abb5daba6187d193425",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/team_F4.json",
+      "bytes": 1562,
+      "sha256": "27cf3bff93dbe19722ed42747eb1fb6777f00b9e766e4380cf1e4e10f10e8df9",
+      "original_sha256": "e916b57112b1098dcd2c9f7bba270df32e2c22d4d24bf3c683eca44d2e6435f5",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/team_F4_delay20.json",
+      "bytes": 1570,
+      "sha256": "d1444dfa37a96bcc31f7b5afd92a9f7ee240be2900ac99533e6d88f7f847592f",
+      "original_sha256": "72c2ec4cb9a98bc6d75a93242cfd0fb37ca9b49c3daf96cbecd35a2fdd7d61fd",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/team_F4_delay50.json",
+      "bytes": 1572,
+      "sha256": "05bd784c489d70ac44054b3d8eb421aa52698e459d5f8c3e3ddf3059a4f2173f",
+      "original_sha256": "75179b321c2d7de0972c5e36fc258b60d6085be2c38b98d54ce785c5c3ebe1b7",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/team_M2.json",
+      "bytes": 1464,
+      "sha256": "83ec2efa3009e7d0a0a084e54496b0215dcf039765b71a74708ac0e24db0641b",
+      "original_sha256": "cad6679caad058286d5ef899704b9fcda5ba6aa01020fdf56f9f058cc052b9f4",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_results/winner_benchmark.json",
+      "bytes": 757,
+      "sha256": "e42f885c603cfd53e99df9f5da4f36e4e6f4a222a9e5b715fab1a123f18490fa",
+      "original_sha256": "77832a378cb002f1c2fbde0db71d3acec48488ed9566c861f7559f84d56fb7bc",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/round1_study.py",
+      "bytes": 6775,
+      "sha256": "67dbbc9af51d35bcddcb8fb1d66f286fb79beda7116e0094d9bf35ddb81212fd",
+      "original_sha256": "67dbbc9af51d35bcddcb8fb1d66f286fb79beda7116e0094d9bf35ddb81212fd",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/run_robust_ml.py",
+      "bytes": 2637,
+      "sha256": "9b13b7cd021caa83e321cb979fbe14cd03e54e90132b2ccd03bf3a3d8a390576",
+      "original_sha256": "9b13b7cd021caa83e321cb979fbe14cd03e54e90132b2ccd03bf3a3d8a390576",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/run_round1_ml.py",
+      "bytes": 3660,
+      "sha256": "c358d4c595d2c4c52b56ad8b7afe93fa89a847846fe59499617f4f0f5400a4fe",
+      "original_sha256": "c358d4c595d2c4c52b56ad8b7afe93fa89a847846fe59499617f4f0f5400a4fe",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/run_study.py",
+      "bytes": 10502,
+      "sha256": "cdd9225cad934bc89c5bda04884725939ec0b0a65dc2c374a4424e930b5eb8ca",
+      "original_sha256": "cdd9225cad934bc89c5bda04884725939ec0b0a65dc2c374a4424e930b5eb8ca",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/stress_composite.py",
+      "bytes": 1109,
+      "sha256": "3da226580a04a2b54fae4454aa0884aabfa23784c23351ec6d834a6acb3f6c0e",
+      "original_sha256": "3da226580a04a2b54fae4454aa0884aabfa23784c23351ec6d834a6acb3f6c0e",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/stress_max_pnl.py",
+      "bytes": 1119,
+      "sha256": "4b24f8f7be71b039047fafcc68bc7a8fe37cace73c4db6f079caa36e1da18f9e",
+      "original_sha256": "4b24f8f7be71b039047fafcc68bc7a8fe37cace73c4db6f079caa36e1da18f9e",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/stress_round1_ml.py",
+      "bytes": 738,
+      "sha256": "b9b72b7a3f0a11492532e9089a4c78137d71cb160698ee06e3d4caf7edd01ad2",
+      "original_sha256": "b9b72b7a3f0a11492532e9089a4c78137d71cb160698ee06e3d4caf7edd01ad2",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/test_composite.py",
+      "bytes": 4973,
+      "sha256": "41518fed40b4ed6e8b63044b57d0bfa7b79cf893ff641b99d07c511ce3c4f5a8",
+      "original_sha256": "41518fed40b4ed6e8b63044b57d0bfa7b79cf893ff641b99d07c511ce3c4f5a8",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/test_engine_probes.py",
+      "bytes": 4983,
+      "sha256": "8947321e2fcc700ac396f9e1db770a462fc9638b345d37d5c38a6b5e881feade",
+      "original_sha256": "8947321e2fcc700ac396f9e1db770a462fc9638b345d37d5c38a6b5e881feade",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/research/verify_robust_ml.py",
+      "bytes": 2817,
+      "sha256": "13ac1391fe2645f8c4135b78494bb1bdcf73b312accb5585cbf836e6439475fc",
+      "original_sha256": "13ac1391fe2645f8c4135b78494bb1bdcf73b312accb5585cbf836e6439475fc",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/composite_alternative_v2.py",
+      "bytes": 20304,
+      "sha256": "8b33a9a7fd8679fde915e1832c0e576461a990a788e466ac673978a4d3e7d11c",
+      "original_sha256": "8b33a9a7fd8679fde915e1832c0e576461a990a788e466ac673978a4d3e7d11c",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/composite_best_v2.py",
+      "bytes": 20309,
+      "sha256": "daa1ab2670601bf9264432f127ee386117d3fdfd9031dd8d72b10ef15e05046b",
+      "original_sha256": "daa1ab2670601bf9264432f127ee386117d3fdfd9031dd8d72b10ef15e05046b",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/composite_max_pnl_v2.py",
+      "bytes": 20304,
+      "sha256": "8b33a9a7fd8679fde915e1832c0e576461a990a788e466ac673978a4d3e7d11c",
+      "original_sha256": "8b33a9a7fd8679fde915e1832c0e576461a990a788e466ac673978a4d3e7d11c",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/composite_room_template.py",
+      "bytes": 9046,
+      "sha256": "8f52c56bfb8a52e7eabbc84d79bba0a10550d532969bfeafe5b1d2ea2463d754",
+      "original_sha256": "8f52c56bfb8a52e7eabbc84d79bba0a10550d532969bfeafe5b1d2ea2463d754",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/composite_template.py",
+      "bytes": 8087,
+      "sha256": "83a6eb3325948ca55f7850d3d55ff1c07eeff3a65143f8278578bcf3b6a61267",
+      "original_sha256": "83a6eb3325948ca55f7850d3d55ff1c07eeff3a65143f8278578bcf3b6a61267",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/pasted_passive_v2.py",
+      "bytes": 6404,
+      "sha256": "4792badcfc708524441f40e381b479f8b8ba03de39909c203b3f27be9790dfd6",
+      "original_sha256": "4792badcfc708524441f40e381b479f8b8ba03de39909c203b3f27be9790dfd6",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/research_candidate.py",
+      "bytes": 6536,
+      "sha256": "9bb1252b81ba44d0ab239228872af626b9f612095ac6b085876def66ee2359ac",
+      "original_sha256": "9bb1252b81ba44d0ab239228872af626b9f612095ac6b085876def66ee2359ac",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/ridge_maker_v2.py",
+      "bytes": 7055,
+      "sha256": "591a07dbde0ea755510972285e8add2e15308a5f27f5dc9e5026e5cc35b3fb42",
+      "original_sha256": "591a07dbde0ea755510972285e8add2e15308a5f27f5dc9e5026e5cc35b3fb42",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/round1_best.py",
+      "bytes": 13499,
+      "sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+      "original_sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/round1_max_metric.py",
+      "bytes": 12202,
+      "sha256": "10b65baeb38b81bd2b60e2ad00b352bcf88c392a887113771326a01443cf9b43",
+      "original_sha256": "10b65baeb38b81bd2b60e2ad00b352bcf88c392a887113771326a01443cf9b43",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/round1_metric_deplete0.py",
+      "bytes": 12179,
+      "sha256": "f873780053b050c059b763beafb42f8af3b45a4096ef762da92169785ca4b6ef",
+      "original_sha256": "f873780053b050c059b763beafb42f8af3b45a4096ef762da92169785ca4b6ef",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/round1_metric_portable.py",
+      "bytes": 12202,
+      "sha256": "10b65baeb38b81bd2b60e2ad00b352bcf88c392a887113771326a01443cf9b43",
+      "original_sha256": "10b65baeb38b81bd2b60e2ad00b352bcf88c392a887113771326a01443cf9b43",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/round1_ml_candidate.py",
+      "bytes": 93771,
+      "sha256": "afcd83d1a5e77cfbdb7db8d6953cd33b51686b3639c0149dee1be58cddbafc35",
+      "original_sha256": "afcd83d1a5e77cfbdb7db8d6953cd33b51686b3639c0149dee1be58cddbafc35",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/round1_robust_alternative.py",
+      "bytes": 353391,
+      "sha256": "bb829da6acc59a8f6b6f97b508d9d3d263fedfd99c44556b3ecb3fb65a941c28",
+      "original_sha256": "bb829da6acc59a8f6b6f97b508d9d3d263fedfd99c44556b3ecb3fb65a941c28",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/round1_robust_candidate.py",
+      "bytes": 12180,
+      "sha256": "9a7259079a5510248f3f1a3e721b29450e417d3b179db7f82b10de66ea3a02ba",
+      "original_sha256": "9a7259079a5510248f3f1a3e721b29450e417d3b179db7f82b10de66ea3a02ba",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/team_f2_cap80_v2.py",
+      "bytes": 5032,
+      "sha256": "6a64fb178c672159b664a0ae7b8055baba13865dd704b4e882ea1bfe539a4a4e",
+      "original_sha256": "6a64fb178c672159b664a0ae7b8055baba13865dd704b4e882ea1bfe539a4a4e",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/team_f2_v2.py",
+      "bytes": 5156,
+      "sha256": "d34d146df7c7ff458002445c5ea163de5081badc532b2542c3efd3c58f283ffe",
+      "original_sha256": "d34d146df7c7ff458002445c5ea163de5081badc532b2542c3efd3c58f283ffe",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/template_strategy.py",
+      "bytes": 1386,
+      "sha256": "0fee750c2c022419dfe3779a98ad5e4c5e4591180a807896408728ad0cb15238",
+      "original_sha256": "0fee750c2c022419dfe3779a98ad5e4c5e4591180a807896408728ad0cb15238",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/trend_follower.py",
+      "bytes": 2678,
+      "sha256": "e75c32f257a4b9f016c9dc71f255198d6b5bed166c4e022351018e90250f7fc2",
+      "original_sha256": "e75c32f257a4b9f016c9dc71f255198d6b5bed166c4e022351018e90250f7fc2",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/qminers-algo-arena/strategies/trend_follower_fixed.py",
+      "bytes": 2721,
+      "sha256": "75ed10c2a7e9bf3088aae4e20e98915a40b3d76ff0adc0e0b691eb933a0e7a80",
+      "original_sha256": "75ed10c2a7e9bf3088aae4e20e98915a40b3d76ff0adc0e0b691eb933a0e7a80",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/Qminers-analysis.txt",
+      "bytes": 9359,
+      "sha256": "18be3b25540d749690575bced09e469d0a924a07aa86b9ec772028a57fe3440a",
+      "original_sha256": "f8eb5b6628e2bc98a24d7375d3f3b7342f1cd44ed4616b6ad4295c082c0aa5dd",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/Qminers-composite-results.html",
+      "bytes": 5347922,
+      "sha256": "9ce3e2dec659aaeec304a7338d842a4ca8a80a82cba0d3d499e2c834164d2912",
+      "original_sha256": "9ce3e2dec659aaeec304a7338d842a4ca8a80a82cba0d3d499e2c834164d2912",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/Qminers-composite-results.txt",
+      "bytes": 8768,
+      "sha256": "760bd434e1b6f852f802d07b441a7d879406eaa4a018fc35d46c6b6930f86d77",
+      "original_sha256": "760bd434e1b6f852f802d07b441a7d879406eaa4a018fc35d46c6b6930f86d77",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/Qminers-local-testing.html",
+      "bytes": 5399870,
+      "sha256": "a9d6516d8597c14deafc4e74ec573ca573a2f689ccc6fc8563d8a12e013c295a",
+      "original_sha256": "3e3a5fa9b9b7287b00a01494c297825d92db36dc8d8a74a46cb679e37ed77789",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/Qminers-local-testing.txt",
+      "bytes": 9769,
+      "sha256": "58ed372226413b26646c75ceb67460b743837398d84500656cfa507da2cbf69d",
+      "original_sha256": "58ed372226413b26646c75ceb67460b743837398d84500656cfa507da2cbf69d",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/Qminers-metric-optimization.html",
+      "bytes": 4886950,
+      "sha256": "e591793a7fbb9aa0ce65c44220a9a194a2547f1f7baf5c8e449f96662a3081d5",
+      "original_sha256": "e591793a7fbb9aa0ce65c44220a9a194a2547f1f7baf5c8e449f96662a3081d5",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/Qminers-metric-optimization.txt",
+      "bytes": 1270,
+      "sha256": "179211f881b2c997973ca0d3f4f85e9c3ffe9dc5c0beb8e2b753b0adf03908d7",
+      "original_sha256": "4861bf8634f381d58f0ccc3dca3ae9c9caf378128c2b4b4d7688a98eca7edbd5",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/Qminers-pasted-strategy-review.json",
+      "bytes": 5242,
+      "sha256": "79ba308c6e902b20ac088fa6c15bb4269e31c02e1385d927b8e783a58c0cc4bc",
+      "original_sha256": "13f3bad1b94a6662a5f7221aaa783314465a106494f2ec9740f9bf630b534601",
+      "metadata_paths_normalized": true
+    },
+    {
+      "path": "outputs/Qminers-robust-ML-results.html",
+      "bytes": 4919359,
+      "sha256": "847544505c224b86dc4726fe4aaf96fc3cd9c57ece117b73942518b53ea1be4f",
+      "original_sha256": "847544505c224b86dc4726fe4aaf96fc3cd9c57ece117b73942518b53ea1be4f",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/Qminers-robust-ML-results.txt",
+      "bytes": 2281,
+      "sha256": "ec4df5f71856762739d9e595e6c9136a4df563d704f340791ba0bf058fa2bc07",
+      "original_sha256": "ec4df5f71856762739d9e595e6c9136a4df563d704f340791ba0bf058fa2bc07",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/Qminers-round1-diagnostics.html",
+      "bytes": 8520032,
+      "sha256": "e0cd2e8e155ec93fd031f81df0e885d1590890320fe78461e2403a1c86342a38",
+      "original_sha256": "e0cd2e8e155ec93fd031f81df0e885d1590890320fe78461e2403a1c86342a38",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/Qminers-round1-diagnostics.txt",
+      "bytes": 6324,
+      "sha256": "4c506bf348ffb8b47b5e3560bfa10424b7656a3e4145d4d3aab080768da2662d",
+      "original_sha256": "4c506bf348ffb8b47b5e3560bfa10424b7656a3e4145d4d3aab080768da2662d",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/Qminers-round1-ML-results.html",
+      "bytes": 5157520,
+      "sha256": "804965b681d8da28533435274e4b93f28c0ad40429eab45482494ec0b8ca9cc2",
+      "original_sha256": "804965b681d8da28533435274e4b93f28c0ad40429eab45482494ec0b8ca9cc2",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/Qminers-round1-ML-results.txt",
+      "bytes": 7124,
+      "sha256": "c43566fddfb4462995eee437cf20159996f01de91ffd0f43ad4fcbe792682c8b",
+      "original_sha256": "c43566fddfb4462995eee437cf20159996f01de91ffd0f43ad4fcbe792682c8b",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "outputs/Qminers-strategy-proposal.txt",
+      "bytes": 18646,
+      "sha256": "c174af9649fd3fd07b9062c63301b1c3bad3e1f101d3018e9f95b0db0778d7ed",
+      "original_sha256": "c174af9649fd3fd07b9062c63301b1c3bad3e1f101d3018e9f95b0db0778d7ed",
+      "metadata_paths_normalized": false
+    },
+    {
+      "path": "work/pasted-review/illustrative_flow06.py",
+      "bytes": 6404,
+      "sha256": "3c9ec9c0fcb9d55965179922c2289919624df25d9a7948afc1e2e6853d626e41",
+      "original_sha256": "3c9ec9c0fcb9d55965179922c2289919624df25d9a7948afc1e2e6853d626e41",
+      "metadata_paths_normalized": false
+    }
+  ]
+}

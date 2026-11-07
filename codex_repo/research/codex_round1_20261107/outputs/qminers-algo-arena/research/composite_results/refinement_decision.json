@@ -1,0 +1,83 @@
+{
+  "parent": "s0_full_composite",
+  "parent_validation_pnl": 66423.0,
+  "reason": "Separate forecast, risk, and queue effects; compare a small local parameter neighborhood.",
+  "cases": [
+    {
+      "name": "no_regime_guard",
+      "changes": {
+        "REGIME_GUARD": 0
+      }
+    },
+    {
+      "name": "linear_only",
+      "changes": {
+        "MODEL": "linear"
+      }
+    },
+    {
+      "name": "microprice_only",
+      "changes": {
+        "MODEL": "microprice"
+      }
+    },
+    {
+      "name": "no_forecast",
+      "changes": {
+        "MODEL": "none",
+        "SIZE_ALPHA": 0.0,
+        "TARGET_ALPHA": 0.0
+      }
+    },
+    {
+      "name": "refill5",
+      "changes": {
+        "MIN_REFILL": 5
+      }
+    },
+    {
+      "name": "more_queue_slots",
+      "changes": {
+        "MIN_REFILL": 5,
+        "MAX_QUOTES": 8
+      }
+    },
+    {
+      "name": "skew100",
+      "changes": {
+        "SKEW": 100
+      }
+    },
+    {
+      "name": "no_inventory_target",
+      "changes": {
+        "TARGET_ALPHA": 0.0
+      }
+    },
+    {
+      "name": "no_size_tilt",
+      "changes": {
+        "SIZE_ALPHA": 0.0
+      }
+    },
+    {
+      "name": "half_forecast_tilt",
+      "changes": {
+        "TARGET_ALPHA": 40,
+        "SIZE_ALPHA": 0.75
+      }
+    },
+    {
+      "name": "edge05",
+      "changes": {
+        "EDGE_FLOOR": 0.05
+      }
+    },
+    {
+      "name": "edge25",
+      "changes": {
+        "EDGE_FLOOR": 0.25
+      }
+    }
+  ]
+}

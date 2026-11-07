@@ -1,0 +1,60 @@
+QMINERS ROUND-ONE MACHINE-LEARNING EXPERIMENT — 7 NOVEMBER 2026
+
+Machine learning is worth investigating, but this experiment does not establish a strong advantage over F4. The selected 250 ms CatBoost policy earned +403,073 versus +399,096 over the whole tape. However, 88.4% of the 3,977-point gain came from the period used for fitting. In the periods excluded from fitting, it earned +209,513 versus +209,052: a gain of 461 points (0.22%). The neural-network configuration did not beat F4 in policy validation.
+
+Keep the frozen ML file as an experimental challenger alongside F4. Its positive validation and diagnostic-tail margins satisfy the predeclared numerical gate, but the margins are too small and the evaluation too reused to establish a reliable winning advantage. Evaluate both once on genuinely new round data before preferring ML for generalization. No policy was retuned after the final-quarter result.
+
+MODEL
+The selected model is CatBoost with 192 symmetric trees of depth four. It learns a roughly 250 ms future mid-price change from 24 causal features: nine current book/flow measurements plus changes over 250 ms, one second, and five seconds. Predicted moves shift a bounded inventory target and suppress quotes whose predicted edge is below 0.15 ticks. F4-style queue preservation, replenishment, depletion checks and per-side exposure reservation remain deterministic. Training used the NVIDIA RTX 3070 Ti; the exported strategy runs on the CPU.
+
+CHRONOLOGICAL FITTING
+Seven models were fitted: two Ridge regressions, four GPU CatBoost models (including a fill-conditioned model), and one 32/16-unit ReLU neural network with 1,345 learned parameters. The neural network was trained on CPU. Initial fitting used seconds 0–4,800; seconds 4,800–6,000 selected tree count or neural training duration. Models were then refitted on seconds 0–6,000 with those settings. Targets crossing boundaries were excluded. Two predeclared quoting policies per model were evaluated on seconds 6,000–9,000, alongside two raw-microprice policies and two equivalent F4 controls. The F4 implementation and the ML execution framework reproduced exactly with the learned signals disabled.
+
+VALIDATION PNL
+Model | Quote filter only | Filter + inventory target | Best minus F4
+CatBoost, history features, 250 ms | +106,812 | +106,950 | +143
+CatBoost, history features, 1 s | +102,630 | +102,024 | -4,177
+Ridge, 24 features, 1 s | +101,148 | +101,269 | -5,538
+CatBoost, 9 features, 1 s | +100,546 | +101,065 | -5,742
+Ridge, 9 features, 1 s | +95,061 | +95,135 | -11,672
+Neural network, history features, 1 s | +93,785 | +94,110 | -12,697
+CatBoost, fill-conditioned markout | +39,075 | +38,376 | -67,732
+
+FULL REPLAY DECOMPOSITION
+Period | F4 | ML | Difference
+First 100 min: used for model fitting | +190,044 | +193,560 | +3,516
+Next 50 min: policy validation | +106,753 | +106,896 | +143
+Last 50 min: reused diagnostic tail | +102,299 | +102,617 | +318
+Periods excluded from fitting, combined | +209,052 | +209,513 | +461
+Entire tape, includes training | +399,096 | +403,073 | +3,977
+
+The best ML validation policy was frozen before its full-tape replay. The final 3,000 seconds were excluded from new fitting and policy tuning, but had already been viewed in earlier round-one analyses. They are a reused diagnostic tail, not an untouched test set. The validation selection replay ends at 9,000 seconds and uses terminal liquidation; the continuous full run uses its sampled PnL at the boundary. Consequently selection scores are 106,950 versus 106,807, while the continuous-run validation interval is 106,896 versus 106,753. The relative ML advantage is 143 in both calculations.
+
+Retraining substantially improved one-second predictive correlation compared with the old sample-trained models, but higher correlation did not reliably increase profit. The selected shorter-horizon model has correlation 0.476 against its own 250 ms target; this is not directly comparable with the one-second values below. The neural network was tested only at a one-second horizon, so the experiment does not prove trees are universally superior to neural networks. Targets use the last sampled mid at or before the requested horizon.
+
+The fill-conditioned model used 21,154 first-half F4 fill observations, with features available at least 5 ms before each fill and weights capped at 100 lots. Its target was a one-second signed mid markout from the earlier decision touch. It performed poorly as a quote filter. Training conditional on one policy’s fills does not by itself estimate the value of all the counterfactual fills under a changed policy.
+
+The exact 93,771-byte ML export reproduced +403,073 using the official loader and engine in 99.6 seconds wall time and 98.2 seconds CPU, with 55.6 MiB peak working set on Windows. Other final checks ran concurrently; remote sandbox runtime is unmeasured. The export imports only math, struct and the public simulator API, with no training-library, network or file dependency. The local source validator passed it.
+
+Eighteen prefix replays, one full-tape diagnostic replay, one exact-file benchmark and two latency checks were completed. All research replays had zero penalties and maximum reserved exposure at most 100. The final ML run reached inventory 100, had median absolute inventory 98, and finished flat. Its one-second sampled maximum drawdown was 956 versus 1,045 for F4. Faster excursions are not captured by this drawdown. Streaming and batch history features matched exactly on 87,414 observations. Exports matched native model predictions to less than 1e-8 on 2,500 checked rows per model. GPU fitting is not bitwise deterministic; the actual fitted models, literal exports and hashes are retained.
+
+LATENCY
+Delay | F4 full | ML full | Later-period ML advantage
+5 ms | +399,096 | +403,073 | +461
+20 ms | +333,616 | +339,242 | +699
+50 ms | +223,163 | +232,129 | +3,216
+
+The frozen ML candidate stayed ahead of F4 in the additional 20 ms and 50 ms checks, without penalties. Full-tape stress scores still include training data; the last column isolates the later periods excluded from model fitting. These are sensitivity checks on the same tape, not new independent evaluations.
+
+NEXT EXPERIMENT
+The next useful comparison is the same short horizon across Ridge, trees and the neural network on genuinely new chronological data. Use ML to estimate quote value or adjust inventory, retain deterministic risk limits, and judge it by executable PnL with fill and latency effects. A larger network or reinforcement-learning agent is not justified by this small gain; more diverse market episodes and a reliable evaluation matter more.
+
+REPRODUCE
+.venv/Scripts/exchange-simulator.exe --strategy strategies/round1_ml_candidate.py --backtest data/round1.csv --log-dir logs/round1-ml --no-logs
+
+EXPORT SHA256
+afcd83d1a5e77cfbdb7db8d6953cd33b51686b3639c0149dee1be58cddbafc35
+
+PRIMARY DOCUMENTATION
+https://catboost.ai/docs/en/features/training-on-gpu
+https://catboost.ai/docs/en/features/export-model-to-python

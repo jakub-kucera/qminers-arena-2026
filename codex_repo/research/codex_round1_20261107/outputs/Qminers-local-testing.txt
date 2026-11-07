@@ -1,0 +1,78 @@
+QMINERS LOCAL TESTING — 7 NOVEMBER 2026
+
+Use the simple F2 market maker as the current sample-v2 reference. The 100-lot version earns the most among tested candidates (+212,831); the 80-lot version retains 88.1% of that PnL (+187,588) and leaves 20 lots below the penalty boundary. The 80-lot variant changes quote size and skew as well as the cap, so this is a configuration comparison, not a pure cap ablation. Neither is established as the winner on private round data. The small learned maker is a useful challenger: +73,797, observed peak inventory 53, and a smaller sampled drawdown.
+
+The downloaded file contains 2,000,000 ordered events, 1,067,532 inserts and 932,468 cancels over 5,749.869 seconds (95.83 minutes). It is not the original 53,758-event sample. Sampled spreads are usually 1–2 ticks and median displayed volume at the best price is about 768–769 lots per side. Replay starts at the beginning and preserves every cancellation and order queue; no shuffled or truncated-book backtests were used.
+
+These are exploratory public-data results. F2 had already been tuned on this tape in the team repository. Its last quarter is a stability diagnostic, not an untouched holdout. Ridge coefficients and normalizers use only the first half, with crossing labels purged; the next quarter is validation. Subsequent comparisons reuse the same tape, and the final quarter is reported as a diagnostic tail. Learned candidates' full PnL includes their training period. Drawdown¹ comes from the engine's one-second PnL curve and may miss intrasecond excursions. All 21 research runs had zero penalties; that does not guarantee performance or safety on another tape.
+
+The nine-feature Ridge model predicts the next one-second mid change with correlation 0.404 on validation and 0.396 on the diagnostic tail. However, the validation 95th percentile of absolute predictions is only 0.367 ticks. At the conservative IOC threshold it places no orders; removing the extra buffer produces -307. Using the signal to position passive quotes earns +73,797 versus +61,615 for the microprice maker at the same 20-lot size. At 80-lot size, learned and microprice makers earn +98,774 and +90,649, still below F2's 80-lot configuration (+187,588). Prediction quality alone is not enough to justify crossing the spread.
+
+The original trend example makes its last fill around second 206.61 and then stops after an unfilled IOC: its cancellation branch does not clear the in-flight flag. Fixing that lifecycle bug changes PnL from -531 to -14,125 because trading continues. The protected maker's default six-second pause produces no trades on this tape. These are implementation and configuration findings, not evidence that all momentum or protection methods fail.
+
+F2 stays profitable when the simulated delay is increased from the official 5 ms to hypothetical 20 ms (+205,307) and 50 ms (+193,173). Reducing quote size/cap/skew to 50/50/30 yields +144,264. F2 loses -28,429 on the original sample, while M2 wins +305,374 there and loses -870,942 on v2. Market regime matters more than adding model complexity. These cross-tape results used the session length appropriate to each tape. F2's v2 break-even hypothetical extra cost is about 0.547 ticks per traded lot; the official simulator has no fees.
+
+Five deterministic engine probes passed: order acceptance occurs after 5 ms; an order can fill while its cancellation is pending; older same-price orders fill first at the maker's price; a rejected quantity increase leaves the original order live; and 101 lots held above the soft limit for one second costs 10,000, whereas a 1,001-lot order is rejected by the potential-exposure limit. The first probe combines delayed acceptance, partial fills, and a cancellation race. Strategy risk accounting reserves pending and cancelling orders separately on each side. Late-cancel rejections in full runs are recorded as such, not mistaken for limit breaches.
+
+For the next round, start with the new tape's spread, queue depth, signed-flow markouts and executable PnL. Compare a small, frozen set of maker and taker candidates on chronological development segments, then inspect one untouched test segment once. Fit time-based features and export coefficients as literals. A tiny event-history model is a reasonable later challenger only if it improves fill-conditioned PnL and fits the complete-run budget. Keep model fitting outside strategy callbacks.
+
+The signed-in website was inspected on 7 November: one Python file at most 1 MiB, one CPU, 2 GB RAM, no network, and 15 minutes; ten submissions per competition round (Playground showed 100). Public submissions only check sandbox execution; private data determines ranking. Keep a private team research repository, preserve experiments including failures, commit at least every 30 minutes, and share Read access with the named organizer. AI assistants and public research are allowed. No uploads, pushes, sharing changes, or organizer messages were made by this task. Local static checks are not a substitute for the server's checker.
+
+MEASURED LOCAL RUNTIME
+ridge_maker_v2.py: 24.5 s wall, 24.2 s CPU, 51.8 MiB peak working set; team_f2_cap80_v2.py: 51.3 s wall, 50.6 s CPU, 51.2 MiB peak working set; team_f2_v2.py: 36.7 s wall, 36.2 s CPU, 51.5 MiB peak working set
+
+ALL REPLAY RESULTS
+Case | Data | PnL | Last quarter | Max inventory | Drawdown (1s) | Lots
+official_trend | sample_v2.csv | -531 | +0 | 1 | 532 | 618
+record | sample_v2.csv | +0 | +0 | 0 | 0 | 0
+fixed_trend | sample_v2.csv | -14,125 | -3,480 | 1 | 14,125 | 16,594
+team_F2 | sample_v2.csv | +212,831 | +48,200 | 100 | 232 | 389,036
+team_F2_cap80 | sample_v2.csv | +187,588 | +43,196 | 80 | 240 | 337,820
+team_M2 | sample_v2.csv | -870,942 | -220,265 | 100 | 870,942 | 903,696
+protected_maker | sample_v2.csv | +0 | +0 | 0 | 0 | 0
+microprice_maker | sample_v2.csv | +61,615 | +14,754 | 53 | 48 | 114,412
+mean_reversion | sample_v2.csv | -15,401 | -4,041 | 20 | 15,401 | 21,522
+ridge_ioc | sample_v2.csv | +0 | +0 | 0 | 0 | 0
+ridge_maker | sample_v2.csv | +73,797 | +17,746 | 53 | 40 | 120,706
+F2_delay20ms | sample_v2.csv | +205,307 | +45,165 | 100 | 300 | 383,772
+F2_delay50ms | sample_v2.csv | +193,173 | +44,145 | 100 | 356 | 378,518
+F2_original_sample | sample.csv | -28,429 | -4,276 | 100 | 29,925 | 5,321
+M2_original_sample | sample.csv | +305,374 | +71,955 | 100 | 987 | 63,990
+microprice_original_sample | sample.csv | -116,002 | -25,761 | 80 | 116,035 | 31,286
+F2_cap50 | sample_v2.csv | +144,264 | +33,542 | 50 | 100 | 252,984
+microprice_maker_size80 | sample_v2.csv | +90,649 | +21,581 | 80 | 151 | 275,062
+ridge_maker_size80 | sample_v2.csv | +98,774 | +22,622 | 80 | 184 | 292,824
+ridge_maker_original_sample | sample.csv | -78,503 | -16,855 | 61 | 78,521 | 28,498
+ridge_ioc_edge0 | sample_v2.csv | -307 | -54 | 20 | 307 | 742
+
+ADDITIONAL APPROACHES
+Queue-aware selective making | Next experiment | Estimate fill probability and future value conditional on a fill; preserve queue priority, suppress only the threatened side. Compare with plain F2 at matched inventory limits.
+Regime-aware maker/taker selection | Next experiment | Choose from measured public-tape behavior per round. An online switch needs causal thresholds, hysteresis and validation on multiple independent tapes. Avoid choosing from future PnL.
+Small event-history linear/MLP/TCN model | Research option | Use recent adds, cancels, trades and depth at several time scales; train offline and benchmark exported inference. Start with the current Ridge baseline.
+Robust inventory control | Next experiment | Compare continuous inventory skew, a smaller cap, and quote-size adaptation. Score executable PnL, cancellation exposure, and drawdown together.
+Pure IOC momentum / mean reversion | Tested, unsuitable here at these settings | Keep as regime probes. Their current v2 executions lose money; M2 works on the original sample.
+Large transformer / online reinforcement learning | Defer | No demonstrated benefit here; limited independent data and the one-CPU submission budget make validation and execution the current bottlenecks.
+
+REPRODUCE
+# From this qminers-algo-arena directory (PowerShell):
+.venv/Scripts/exchange-simulator.exe --strategy strategies/team_f2_cap80_v2.py --backtest data/sample_v2.csv --log-dir logs/v2-cap80 --no-logs
+.venv/Scripts/exchange-simulator.exe --strategy strategies/ridge_maker_v2.py --backtest data/sample_v2.csv --log-dir logs/v2-ridge --no-logs
+.venv/Scripts/python.exe research/test_engine_probes.py
+# Rebuild the full research comparison:
+.venv/Scripts/python.exe research/run_study.py --phase base --jobs 2
+.venv/Scripts/python.exe research/analyze_features.py
+.venv/Scripts/python.exe research/run_study.py --phase models --jobs 2
+.venv/Scripts/python.exe research/prepare_stress.py
+.venv/Scripts/python.exe research/run_study.py --phase stress --jobs 2
+.venv/Scripts/python.exe research/prepare_followup.py
+.venv/Scripts/python.exe research/run_study.py --phase followup --jobs 2
+.venv/Scripts/python.exe research/export_candidates.py
+.venv/Scripts/python.exe research/build_report.py
+
+PROVENANCE
+Official commit 3f5bea730d5f341c6988b1fe2722998b66270ea0
+Team commit 6ca459e966bb1f9e767258ef5ae0ef0bce979c3f
+Data SHA256 dd4e00e281abe50c9a19e16c147ccbc0b5b69835fee567f00136402ef1e01d08
+
+Sources: https://arena.qminers.com/dashboard/info ; https://arena.qminers.com/rules ; https://github.com/QminersOrg/qminers-algo-arena ; https://github.com/jakub-kucera/qminers-arena-hachathon
+Research: https://arxiv.org/html/2610.02917v1 ; https://arxiv.org/abs/2502.18625 ; https://arxiv.org/abs/2502.15757 ; https://onlinelibrary.wiley.com/doi/10.1111/mafi.12413

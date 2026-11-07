@@ -1,0 +1,52 @@
+{
+  "created_utc": "2026-11-07T12:26:58.235278+00:00",
+  "internal_fit_s": [
+    0,
+    4800.0
+  ],
+  "early_stopping_s": [
+    4800.0,
+    6000.0
+  ],
+  "final_model_fit_s": [
+    0,
+    6000.0
+  ],
+  "policy_validation_s": [
+    6000.0,
+    9000.0
+  ],
+  "diagnostic_tail_s": [
+    9000.0,
+    12000
+  ],
+  "models": [
+    "ridge9_1s",
+    "ridge24_1s",
+    "cat9_1s",
+    "cat24_1s",
+    "cat24_025s",
+    "mlp24_1s",
+    "cat_fill25"
+  ],
+  "policy_variants": [
+    {
+      "TARGET_ALPHA": 0.0,
+      "EDGE_FLOOR": 0.15
+    },
+    {
+      "TARGET_ALPHA": 40.0,
+      "EDGE_FLOOR": 0.15
+    }
+  ],
+  "baselines": [
+    "F4 parity control",
+    "raw microprice with the same two policy variants"
+  ],
+  "selection": "Highest 6000–9000s PnL among ML policies with zero penalties and reserved exposure <=100. Lock one ML finalist before a full-tape replay; compare to F4 and any better simple baseline. No refit on the diagnostic tail.",
+  "tail_limitation": "The entire round was already inspected in preceding comparisons. This is a reused diagnostic tail, not an untouched holdout.",
+  "models_fit_on": "round1 only, first half; labels crossing split boundaries are excluded",
+  "catboost_version": "1.2.10",
+  "gpu": "NVIDIA RTX 3070 Ti Laptop GPU 8GB",
+  "gpu_nondeterminism": "GPU fitting is not bitwise deterministic. Trained files, exported literal weights, and their hashes are retained."
+}

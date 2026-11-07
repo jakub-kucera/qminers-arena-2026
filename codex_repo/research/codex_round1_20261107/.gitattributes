@@ -1,0 +1,6 @@
+# Frozen strategy and evidence hashes must survive Windows/Linux checkouts.
+* -text whitespace=cr-at-eol
+# Self-contained generated reports include the unmodified Plotly distribution.
+*.html -whitespace linguist-generated=true
+*.json linguist-generated=true
+*.cbm binary

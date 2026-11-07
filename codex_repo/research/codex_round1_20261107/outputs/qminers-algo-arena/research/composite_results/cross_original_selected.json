@@ -1,0 +1,47 @@
+{
+  "name": "cross_original_selected",
+  "source": "outputs\\qminers-algo-arena\\strategies\\composite_best_v2.py",
+  "source_sha256": "daa1ab2670601bf9264432f127ee386117d3fdfd9031dd8d72b10ef15e05046b",
+  "data": "sample.csv",
+  "params": {
+    "SESSION_S": 3599.000003
+  },
+  "delay_ms": 5,
+  "result": {
+    "fills": 102,
+    "traded_volume": 1887,
+    "inventory": -75,
+    "cash": 745201.0,
+    "mark_price": 10038.0,
+    "breach_penalty": 0.0,
+    "pnl": -7649.0,
+    "pnl_se": 8415.938355300754,
+    "abs_inventory_q50": 45,
+    "abs_inventory_q68": 61,
+    "abs_inventory_q95": 93,
+    "abs_inventory_q997": 100
+  },
+  "wall_seconds": 0.8762752001639456,
+  "cpu_seconds": 0.859375,
+  "max_abs_inventory": 100,
+  "max_reserved_exposure": 100,
+  "final_tracked_inventory": -75,
+  "quarter_pnl": [
+    1455.0,
+    -3098.0,
+    876.0,
+    -6882.0
+  ],
+  "first_half_pnl": -1643.0,
+  "third_quarter_pnl": 876.0,
+  "last_quarter_pnl": -6882.0,
+  "max_drawdown": 13272.0,
+  "event_counts": {
+    "sent": 9644,
+    "accepted": 9644,
+    "cancel_requested": 9641,
+    "canceled": 9641,
+    "partially_filled": 100,
+    "filled": 2
+  }
+}

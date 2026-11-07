@@ -1,0 +1,38 @@
+[
+  {
+    "case": "team_F2",
+    "file": "outputs\\qminers-algo-arena\\strategies\\team_f2_v2.py",
+    "bytes": 5156,
+    "sha256": "d34d146df7c7ff458002445c5ea163de5081badc532b2542c3efd3c58f283ffe",
+    "subclasses": [
+      "FallbackMakerStrategy"
+    ],
+    "local_static_fails": [],
+    "local_static_warnings": [],
+    "expected_pnl": 212831.0
+  },
+  {
+    "case": "team_F2_cap80",
+    "file": "outputs\\qminers-algo-arena\\strategies\\team_f2_cap80_v2.py",
+    "bytes": 5032,
+    "sha256": "6a64fb178c672159b664a0ae7b8055baba13865dd704b4e882ea1bfe539a4a4e",
+    "subclasses": [
+      "FallbackMakerStrategy"
+    ],
+    "local_static_fails": [],
+    "local_static_warnings": [],
+    "expected_pnl": 187588.0
+  },
+  {
+    "case": "ridge_maker",
+    "file": "outputs\\qminers-algo-arena\\strategies\\ridge_maker_v2.py",
+    "bytes": 7055,
+    "sha256": "591a07dbde0ea755510972285e8add2e15308a5f27f5dc9e5026e5cc35b3fb42",
+    "subclasses": [
+      "ResearchStrategy"
+    ],
+    "local_static_fails": [],
+    "local_static_warnings": [],
+    "expected_pnl": 73797.0
+  }
+]

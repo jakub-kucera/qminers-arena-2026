@@ -1,0 +1,20 @@
+Use the frozen horizon-independent Elastic Net market maker.
+Final file: outputs\qminers-algo-arena\strategies\round1_max_metric.py
+SHA256: 10b65baeb38b81bd2b60e2ad00b352bcf88c392a887113771326a01443cf9b43
+
+FULL PNL | LATER HALF | FINAL QUARTER | SAMPLED DD
+F4 | 399,096 | 209,052 | 102,299 | 1,045
+Previous Elastic Net | 406,325 | 212,856 | 104,891 | 894
+Selected: depletion filter off | 435,118 | 227,785 | 112,463 | 827
+Final: no assumed end time | 436,047 | 228,714 | 113,392 | 827
+
+LATER-HALF PNL AT 5/20/50ms | FULL SAMPLE_V2
+F4 | 209,052 | 176,685 | 119,129 | 264,616
+Previous Elastic Net | 212,856 | 181,662 | 124,246 | 262,373
+Selected: depletion filter off | 227,785 | 190,151 | 123,248 | 263,401
+Final: no assumed end time | 228,714 | 190,445 | 123,595 | 263,777
+
+Filter removal: +6,718, +7,357; 19/20 blocks; batch-adjusted lower bound 8,714.
+Forecast weights unchanged; depletion filter removed; scheduled wind-down disabled when duration is unknown.
+38 new replays, zero penalties. Chronological validation and batch multiplicity control; no untouched/private data claim.
+Portability audit was added after selection and is outside the original bootstrap bound. Full details in HTML and research/metric_optimization_results/outcome.json.

@@ -1,0 +1,43 @@
+{
+  "name": "fixed_trend",
+  "source": "outputs\\qminers-algo-arena\\strategies\\trend_follower_fixed.py",
+  "source_sha256": "75ed10c2a7e9bf3088aae4e20e98915a40b3d76ff0adc0e0b691eb933a0e7a80",
+  "data": "sample_v2.csv",
+  "params": {},
+  "delay_ms": 5,
+  "result": {
+    "fills": 16594,
+    "traded_volume": 16594,
+    "inventory": 0,
+    "cash": -14125.0,
+    "mark_price": 10003.0,
+    "breach_penalty": 0.0,
+    "pnl": -14125.0,
+    "pnl_se": 131.04635508715376,
+    "abs_inventory_q50": 0,
+    "abs_inventory_q68": 1,
+    "abs_inventory_q95": 1,
+    "abs_inventory_q997": 1
+  },
+  "wall_seconds": 15.147159699816257,
+  "cpu_seconds": 14.828125,
+  "max_abs_inventory": 1,
+  "max_reserved_exposure": 1,
+  "final_tracked_inventory": 0,
+  "quarter_pnl": [
+    -3552.0,
+    -3471.0,
+    -3622.0,
+    -3480.0
+  ],
+  "first_half_pnl": -7023.0,
+  "third_quarter_pnl": -3622.0,
+  "last_quarter_pnl": -3480.0,
+  "max_drawdown": 14125.0,
+  "event_counts": {
+    "sent": 16620,
+    "accepted": 16620,
+    "filled": 16594,
+    "canceled": 26
+  }
+}

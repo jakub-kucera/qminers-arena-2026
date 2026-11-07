@@ -1,0 +1,59 @@
+{
+  "name": "record",
+  "source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\record.py",
+  "source_sha256": "4f358a48be378128c3938d1720e4b6aa4d486773ec48349b931af1b34eaf87dd",
+  "data": "round1.csv",
+  "params": {
+    "MODE": "record"
+  },
+  "delay_ms": 5,
+  "result": {
+    "fills": 0,
+    "traded_volume": 0,
+    "inventory": 0,
+    "cash": 0.0,
+    "mark_price": 10029.0,
+    "breach_penalty": 0.0,
+    "pnl": 0.0,
+    "pnl_se": 0.0,
+    "abs_inventory_q50": 0,
+    "abs_inventory_q68": 0,
+    "abs_inventory_q95": 0,
+    "abs_inventory_q997": 0
+  },
+  "wall_seconds": 76.01419089990668,
+  "cpu_seconds": 73.453125,
+  "max_abs_inventory": 0,
+  "max_reserved_exposure": 0,
+  "final_tracked_inventory": 0,
+  "quarter_pnl": [
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "first_half_pnl": 0.0,
+  "third_quarter_pnl": 0.0,
+  "last_quarter_pnl": 0.0,
+  "max_drawdown": 0.0,
+  "event_counts": {},
+  "twelve_segment_pnl": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "positive_segments": 0,
+  "maker_volume": 0.0,
+  "taker_volume": 0.0,
+  "pnl_per_traded_lot": 0.0,
+  "last_fill_s": null
+}

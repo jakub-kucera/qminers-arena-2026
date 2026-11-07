@@ -1,0 +1,17 @@
+{
+  "selected_case": "team_F4",
+  "expected_pnl": 399096.0,
+  "export": "outputs\\qminers-algo-arena\\strategies\\round1_best.py",
+  "sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+  "bytes": 13499,
+  "source_checks": [
+    [],
+    []
+  ],
+  "change": "SESSION_S = 12000.0; all other F4 strategy logic and parameters unchanged.",
+  "ranking_basis": "Highest full supplied-round PnL among 12 frozen trading candidates; no retraining.",
+  "stress_candidates": [
+    "team_F4",
+    "pasted_passive"
+  ]
+}

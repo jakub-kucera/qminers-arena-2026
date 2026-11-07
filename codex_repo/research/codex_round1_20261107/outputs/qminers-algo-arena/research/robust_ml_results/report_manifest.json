@@ -1,0 +1,24 @@
+{
+  "files": [
+    {
+      "path": "outputs\\Qminers-robust-ML-results.html",
+      "bytes": 4919359,
+      "sha256": "847544505c224b86dc4726fe4aaf96fc3cd9c57ece117b73942518b53ea1be4f"
+    },
+    {
+      "path": "outputs\\Qminers-robust-ML-results.txt",
+      "bytes": 2281,
+      "sha256": "ec4df5f71856762739d9e595e6c9136a4df563d704f340791ba0bf058fa2bc07"
+    },
+    {
+      "path": "outputs\\qminers-algo-arena\\strategies\\round1_robust_candidate.py",
+      "bytes": 12180,
+      "sha256": "9a7259079a5510248f3f1a3e721b29450e417d3b179db7f82b10de66ea3a02ba"
+    },
+    {
+      "path": "outputs\\qminers-algo-arena\\strategies\\round1_robust_alternative.py",
+      "bytes": 353391,
+      "sha256": "bb829da6acc59a8f6b6f97b508d9d3d263fedfd99c44556b3ecb3fb65a941c28"
+    }
+  ]
+}

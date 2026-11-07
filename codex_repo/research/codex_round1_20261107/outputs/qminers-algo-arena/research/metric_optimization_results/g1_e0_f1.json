@@ -1,0 +1,73 @@
+{
+  "name": "g1_e0_f1",
+  "source": "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g1_e0_f1.py",
+  "source_sha256": "c9f5d7ebe69be99f9210f42370e499b59fdae6220620249ea7b6d49c1f5689f9",
+  "data": "round1_prefix6000.csv",
+  "params": {},
+  "delay_ms": 5,
+  "result": {
+    "fills": 12590,
+    "traded_volume": 1183806,
+    "inventory": -100,
+    "cash": 1200152.0,
+    "mark_price": 10082.0,
+    "breach_penalty": 0.0,
+    "pnl": 191952.0,
+    "pnl_se": 8009.765622691059,
+    "abs_inventory_q50": 97,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "wall_seconds": 79.69099720008671,
+  "cpu_seconds": 76.328125,
+  "max_abs_inventory": 100,
+  "max_reserved_exposure": 100,
+  "final_tracked_inventory": -100,
+  "quarter_pnl": [
+    48139.0,
+    42357.0,
+    52164.0,
+    49292.0
+  ],
+  "first_half_pnl": 90496.0,
+  "third_quarter_pnl": 52164.0,
+  "last_quarter_pnl": 49292.0,
+  "max_drawdown": 946.0,
+  "event_counts": {
+    "sent": 26342,
+    "accepted": 26342,
+    "cancel_requested": 16016,
+    "canceled": 15942,
+    "filled": 10399,
+    "partially_filled": 10352,
+    "rejected": 74,
+    "reject:cancel rejected: no resting order with this id": 74
+  },
+  "evaluation_pnl": 101556.0,
+  "blocks": [
+    12440.0,
+    11218.0,
+    8820.0,
+    10502.0,
+    9184.0,
+    10231.0,
+    12076.0,
+    9080.0,
+    7156.0,
+    10849.0
+  ],
+  "boundary_marks": [
+    90496.0,
+    102936.0,
+    114154.0,
+    122974.0,
+    133476.0,
+    142660.0,
+    152891.0,
+    164967.0,
+    174047.0,
+    181203.0,
+    192052.0
+  ]
+}

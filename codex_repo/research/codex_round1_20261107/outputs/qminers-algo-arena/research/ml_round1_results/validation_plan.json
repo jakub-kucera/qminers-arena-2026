@@ -1,0 +1,275 @@
+{
+  "entries": [
+    {
+      "name": "f4_reference",
+      "model": "none",
+      "role": "reference",
+      "target": 0,
+      "source": "outputs\\qminers-algo-arena\\strategies\\round1_best.py",
+      "source_sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+      "case": [
+        "f4_reference",
+        "outputs\\qminers-algo-arena\\strategies\\round1_best.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "f4_control",
+      "model": "none",
+      "role": "control",
+      "target": 0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\f4_control.py",
+      "source_sha256": "a09af35a7b23bf5e101174e65cc7c417825581fbd0023d2baa992e63f879e07e",
+      "case": [
+        "f4_control",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\f4_control.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "microprice_t0",
+      "model": "microprice",
+      "role": "simple",
+      "target": 0.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\microprice_t0.py",
+      "source_sha256": "114de9466291843254d93b9dde4f9fa9ffd659ec79e91ee106ce904b7436dc7d",
+      "case": [
+        "microprice_t0",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\microprice_t0.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "microprice_t40",
+      "model": "microprice",
+      "role": "simple",
+      "target": 40.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\microprice_t40.py",
+      "source_sha256": "5a6fb8e557f7ed90b6ad9e31ca521cffbcff1bad43f04b914dcc8a502fc3e267",
+      "case": [
+        "microprice_t40",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\microprice_t40.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "ridge9_1s_t0",
+      "model": "ridge9_1s",
+      "role": "ml",
+      "target": 0.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\ridge9_1s_t0.py",
+      "source_sha256": "8f220ede758bde451ef965a84a5aee82092b6b4d4c85f38d732b798a8e2fb790",
+      "case": [
+        "ridge9_1s_t0",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\ridge9_1s_t0.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "ridge9_1s_t40",
+      "model": "ridge9_1s",
+      "role": "ml",
+      "target": 40.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\ridge9_1s_t40.py",
+      "source_sha256": "5682c1601fdf6e5166141a623e486cd27772225346447ca8915510ac52f45fba",
+      "case": [
+        "ridge9_1s_t40",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\ridge9_1s_t40.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "ridge24_1s_t0",
+      "model": "ridge24_1s",
+      "role": "ml",
+      "target": 0.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\ridge24_1s_t0.py",
+      "source_sha256": "94b7a2fd80742fda830e87cb1334b35d60dc88d761d4aff0a7e4097821de27bb",
+      "case": [
+        "ridge24_1s_t0",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\ridge24_1s_t0.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "ridge24_1s_t40",
+      "model": "ridge24_1s",
+      "role": "ml",
+      "target": 40.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\ridge24_1s_t40.py",
+      "source_sha256": "07d3a3ce535ec9ad2130d0ff5e81848785157bb28eb7665de9326a37d664d8fe",
+      "case": [
+        "ridge24_1s_t40",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\ridge24_1s_t40.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "cat9_1s_t0",
+      "model": "cat9_1s",
+      "role": "ml",
+      "target": 0.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat9_1s_t0.py",
+      "source_sha256": "867891c082e5b2ae6dee43cf4b70ef43976fd2eb3f398a4a4b8d3fe6024f9ac1",
+      "case": [
+        "cat9_1s_t0",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat9_1s_t0.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "cat9_1s_t40",
+      "model": "cat9_1s",
+      "role": "ml",
+      "target": 40.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat9_1s_t40.py",
+      "source_sha256": "837406e08196ca9847f56c54101f1ce7b569e6cc57b1a9b44f3c018a2abb8417",
+      "case": [
+        "cat9_1s_t40",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat9_1s_t40.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "cat24_1s_t0",
+      "model": "cat24_1s",
+      "role": "ml",
+      "target": 0.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat24_1s_t0.py",
+      "source_sha256": "c140e29e9d226197f759d463e171ad43483270c235d80defd6f3f17c027d0efb",
+      "case": [
+        "cat24_1s_t0",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat24_1s_t0.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "cat24_1s_t40",
+      "model": "cat24_1s",
+      "role": "ml",
+      "target": 40.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat24_1s_t40.py",
+      "source_sha256": "3823f9d92b86b45bd3e9bb213192bb2640cb50d79454e2369dc9ad3dcfb89d09",
+      "case": [
+        "cat24_1s_t40",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat24_1s_t40.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "cat24_025s_t0",
+      "model": "cat24_025s",
+      "role": "ml",
+      "target": 0.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat24_025s_t0.py",
+      "source_sha256": "bb4eb60812b60421b93d6d0a634618ef51a2930bdba1b86e7b1f537cf3b8e08b",
+      "case": [
+        "cat24_025s_t0",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat24_025s_t0.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "cat24_025s_t40",
+      "model": "cat24_025s",
+      "role": "ml",
+      "target": 40.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat24_025s_t40.py",
+      "source_sha256": "afcd83d1a5e77cfbdb7db8d6953cd33b51686b3639c0149dee1be58cddbafc35",
+      "case": [
+        "cat24_025s_t40",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat24_025s_t40.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "mlp24_1s_t0",
+      "model": "mlp24_1s",
+      "role": "ml",
+      "target": 0.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\mlp24_1s_t0.py",
+      "source_sha256": "cb1f8fdd14363e21bc3728be8655d8e86ab7f71577e13ab38c491432dca7fea3",
+      "case": [
+        "mlp24_1s_t0",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\mlp24_1s_t0.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "mlp24_1s_t40",
+      "model": "mlp24_1s",
+      "role": "ml",
+      "target": 40.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\mlp24_1s_t40.py",
+      "source_sha256": "faf33fe19b9812899e317e07a91892c7ab75fbc039dd2bace2a300d602a4817a",
+      "case": [
+        "mlp24_1s_t40",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\mlp24_1s_t40.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "cat_fill25_t0",
+      "model": "cat_fill25",
+      "role": "ml",
+      "target": 0.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat_fill25_t0.py",
+      "source_sha256": "b316fc56fccb53ca6d16ef3d88daaaf7dd8e3d1397adc12a817705ec6203fff1",
+      "case": [
+        "cat_fill25_t0",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat_fill25_t0.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "cat_fill25_t40",
+      "model": "cat_fill25",
+      "role": "ml",
+      "target": 40.0,
+      "source": "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat_fill25_t40.py",
+      "source_sha256": "fb0d9ad21c49f18f96419e09100104a3aa74126b01fe3e13ea42142660e5b575",
+      "case": [
+        "cat_fill25_t40",
+        "outputs\\qminers-algo-arena\\research\\ml_round1_results\\sources\\cat_fill25_t40.py",
+        "work\\ml-round1\\round1_first75.csv",
+        {},
+        5
+      ]
+    }
+  ],
+  "scoring": "PnL at prefix end minus one-second curve PnL at 6000s. Full book replayed from the beginning. No wind-down at the 9000s prefix boundary."
+}

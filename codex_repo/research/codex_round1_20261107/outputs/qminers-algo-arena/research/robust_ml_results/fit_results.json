@@ -1,0 +1,251 @@
+{
+  "models": [
+    {
+      "name": "ridge250",
+      "source": "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\ridge250.py",
+      "sha256": "e6dfd9f4329234a84dabd01e4b3456dae0c90919ab1818b90fbd9af2c52eec11",
+      "bytes": 12201,
+      "export_max_error": 1.1102230246251565e-16,
+      "forecast_validation": {
+        "mse": 0.13831617856046696,
+        "correlation": 0.4453391427745086,
+        "mean": -0.0007999992541687517,
+        "std": 0.19028994031755314
+      },
+      "inactive_alpha_fraction": 0.0,
+      "details": {
+        "rows_fit": 58276,
+        "warnings": [],
+        "iterations": null,
+        "scale": null
+      }
+    },
+    {
+      "name": "huber250",
+      "source": "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\huber250.py",
+      "sha256": "8a55cace9f2242611578f121bb001495c83d54cc56fc5b01bb7d832e9bdbea3a",
+      "bytes": 12246,
+      "export_max_error": 2.6020852139652106e-18,
+      "forecast_validation": {
+        "mse": 0.17251432907238015,
+        "correlation": -0.0413233533714497,
+        "mean": 2.0959888193051717e-05,
+        "std": 0.00035250495003055174
+      },
+      "inactive_alpha_fraction": 0.007585899152164213,
+      "details": {
+        "rows_fit": 58276,
+        "warnings": [],
+        "iterations": 199,
+        "scale": 1.1746061902908403e-08
+      }
+    },
+    {
+      "name": "elastic250",
+      "source": "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\elastic250.py",
+      "sha256": "9a7259079a5510248f3f1a3e721b29450e417d3b179db7f82b10de66ea3a02ba",
+      "bytes": 12180,
+      "export_max_error": 1.6653345369377348e-16,
+      "forecast_validation": {
+        "mse": 0.1383095260355877,
+        "correlation": 0.44540222330802925,
+        "mean": -0.0007986863925751098,
+        "std": 0.19059344278623241
+      },
+      "inactive_alpha_fraction": 0.0,
+      "details": {
+        "alpha": 0.0001,
+        "cv": [
+          {
+            "alpha": 0.0001,
+            "folds": [
+              {
+                "mse": 0.14590302966339133,
+                "correlation": 0.4613930713317124,
+                "mean": 0.005299568254730641,
+                "std": 0.18927972600868403
+              },
+              {
+                "mse": 0.13054744396969217,
+                "correlation": 0.4554033018593893,
+                "mean": 0.0044377534047212175,
+                "std": 0.19379540693617944
+              },
+              {
+                "mse": 0.14209216908977618,
+                "correlation": 0.45692547812244877,
+                "mean": 0.001663374987669642,
+                "std": 0.18642978016338896
+              }
+            ],
+            "mse": 0.13951421424095323
+          },
+          {
+            "alpha": 0.001,
+            "folds": [
+              {
+                "mse": 0.14594875802716933,
+                "correlation": 0.4612823321266696,
+                "mean": 0.005329516633156941,
+                "std": 0.18790081299638905
+              },
+              {
+                "mse": 0.1305425477069833,
+                "correlation": 0.4552872668130426,
+                "mean": 0.004486159659197427,
+                "std": 0.19239949632567607
+              },
+              {
+                "mse": 0.14206455543904992,
+                "correlation": 0.45721725437251753,
+                "mean": 0.0018289029622373047,
+                "std": 0.185253578182463
+              }
+            ],
+            "mse": 0.13951862039106752
+          },
+          {
+            "alpha": 0.01,
+            "folds": [
+              {
+                "mse": 0.1465495681518325,
+                "correlation": 0.45940007898462776,
+                "mean": 0.004917035426028704,
+                "std": 0.17780383641201308
+              },
+              {
+                "mse": 0.13072159879421033,
+                "correlation": 0.4537267606495749,
+                "mean": 0.00441842446866923,
+                "std": 0.1818252980191175
+              },
+              {
+                "mse": 0.14263360041437456,
+                "correlation": 0.4551526671463262,
+                "mean": 0.0023277789964488574,
+                "std": 0.17545668774365022
+              }
+            ],
+            "mse": 0.1399682557868058
+          }
+        ],
+        "nonzero_coefficients": 23,
+        "rows_fit": 58276
+      }
+    },
+    {
+      "name": "forest250",
+      "source": "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\forest250.py",
+      "sha256": "95b6cb5cc9896821a4f6397387f5aa1202bae7b1a7b39a204a0d76973b954ac1",
+      "bytes": 105336,
+      "export_max_error": 2.7755575615628914e-16,
+      "forecast_validation": {
+        "mse": 0.14121836208538122,
+        "correlation": 0.4313409526185361,
+        "mean": -0.0007870309103364696,
+        "std": 0.15061939092482507
+      },
+      "inactive_alpha_fraction": 0.0,
+      "details": {
+        "rows_fit": 58276,
+        "trees": 64,
+        "max_depth": 4,
+        "total_nodes": 1956
+      }
+    },
+    {
+      "name": "window_ensemble",
+      "source": "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\window_ensemble.py",
+      "sha256": "b9454ae0547b982f791b0deba0ab25ed4a15f5dd0ca3c65262168a3647d9c56f",
+      "bytes": 259045,
+      "export_max_error": 1.1102230246251565e-16,
+      "forecast_validation": {
+        "mse": 0.1335007911972516,
+        "correlation": 0.47548494573829314,
+        "mean": -0.0011791553090079283,
+        "std": 0.1957888922567656
+      },
+      "inactive_alpha_fraction": 0.0,
+      "details": {
+        "member_rows": [
+          58276,
+          29140,
+          58276
+        ],
+        "gpu": true
+      }
+    },
+    {
+      "name": "guarded_ensemble",
+      "source": "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\guarded_ensemble.py",
+      "sha256": "d852c82885728ab627a9be81c50e2ebd362404238832efa29cfd4a7a70a089c6",
+      "bytes": 259045,
+      "export_max_error": 2.220446049250313e-16,
+      "forecast_validation": {
+        "mse": 0.13366340990146902,
+        "correlation": 0.47527387878536687,
+        "mean": -0.0010630283962782298,
+        "std": 0.1859724920709758
+      },
+      "inactive_alpha_fraction": 0.046991384340781935,
+      "details": {
+        "guard_standard_deviations": 1
+      }
+    },
+    {
+      "name": "diverse_composite",
+      "source": "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\diverse_composite.py",
+      "sha256": "bb829da6acc59a8f6b6f97b508d9d3d263fedfd99c44556b3ecb3fb65a941c28",
+      "bytes": 353391,
+      "export_max_error": 1.1102230246251565e-16,
+      "forecast_validation": {
+        "mse": 0.1355739362307785,
+        "correlation": 0.46488999177303447,
+        "mean": -0.000921624203973169,
+        "std": 0.17420158879131073
+      },
+      "inactive_alpha_fraction": 0.0,
+      "details": {
+        "weights": [
+          0.1111111111111111,
+          0.1111111111111111,
+          0.1111111111111111,
+          0.3333333333333333,
+          0.3333333333333333
+        ]
+      }
+    },
+    {
+      "name": "calibrated_logit",
+      "source": "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\calibrated_logit.py",
+      "sha256": "8ac33926dad9d0af60fe713075e549f619d6435cb363a798409630f8834a9e4f",
+      "bytes": 13341,
+      "export_max_error": 5.551115123125783e-16,
+      "forecast_validation": {
+        "mse": 0.14009610702419065,
+        "correlation": 0.4336278346236441,
+        "mean": -0.00035768219391132846,
+        "std": 0.18561651277569266
+      },
+      "inactive_alpha_fraction": 0.0,
+      "details": {
+        "rows_fit": 46617,
+        "calibration_rows": 11656,
+        "temperature": 1.0144081785450283,
+        "uncalibrated_logloss": 0.5196884108152521,
+        "calibrated_logloss": 0.519636432983511,
+        "class_values": [
+          -0.8168307276587531,
+          0.0,
+          0.8134854386941198
+        ],
+        "classes": [
+          -1,
+          0,
+          1
+        ]
+      }
+    }
+  ],
+  "seconds": 20.058314200025052
+}
