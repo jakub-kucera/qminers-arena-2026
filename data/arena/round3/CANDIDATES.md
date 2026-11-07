@@ -45,3 +45,8 @@ Trials so far: 0 experiments, 0 cells.
 
 ## Verifier verdicts
 <!-- each verifier's report, verbatim, under the candidate's id and the time -->
+
+### Ready before the tape (8 Nov 00:50): R3-B1 (`python/bots/qminers/candidates/r3_B1_huber_quote_switch.py`)
+- R2-L9 (the Huber-robust pure taker, +873,719 on round 2's validation) plus R2-L8's one-lot quotes switched on only while the 5-s |mid change| rate is below QS_RATE 2.5 ticks/s; QS_RATE 0 is L9 exactly. validate OK, 29.9 KB.
+- L9 / B1 (pnl; breach 0 everywhere; local run time): round2_public 317,057 / 318,954 (150 / 179 s); the mirror the same; round1 134,626 / **206,648** (+72k); hi_vol_fast1.25 1,020,848 / **999,473** (-21k); hi_vol 867,369 / 876,974 (+10k).
+- The quotes pay on calm tapes and cost on the fastest one, more than they did on L1/L8: on a fast round-3 tape start from L9; on a calmer one from B1; grid QS_RATE (1.0-3.0) on the new tape first.
