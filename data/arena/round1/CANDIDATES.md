@@ -8,7 +8,7 @@ so a compacted or restarted session, or the other laptop, picks up where it was.
 ## Round
 - Deadline 18:00 (the user, from the dashboard); freeze 17:30; E = ~1 min (R1-F3's simulation took 1 min 2.8 s): the last upload starts by 17:35, 17:45 at the latest.
 - T = 0 on the public data (the portal is byte-identical to `exchange-simulator`; ON_THE_DAY.md, "From the playground"); recheck on the first upload.
-- Data: D = data/arena/round1/<file>.csv (unzipped: `uv run python -m gzip -d`), one hour, one instrument. Training: the first 75% of the hour. Held out: the last 25% (`arena.qgrid --holdout 0.25`), never used to choose a setting. Repeats: none possible (one file).
+- Data: D = data/arena/round1/<file>.csv (unzipped: `uv run python -m gzip -d`), one hour, one instrument. Training: the first 75% of the hour. Held out: the last 25% (`arena.qgrid --holdout 0.25`), never used to choose a setting. Repeats: none possible (one file). **Judged on round1.csv only** (the user, 16:35): sample_v2 is a different tape, not round 1's distribution; its figures below are kept as a record but decide nothing.
 - **SESSION_S / SESSION_US from the file's length** (round_start prints it), on the long side if the private hour may be longer: F2 with SESSION_S 3598 on the 5,750 s sample_v2 wound down after an hour and made +136k instead of +213k.
 - The gate: their simulator, no fill model to choose; a change is kept only if it beats its parent on the first 75% and on the last 25%.
 - Calibrated settings: none needed (their own simulator).
@@ -104,4 +104,4 @@ R1-F8b against R1-F8, the same paired block bootstrap (logs/r1_F8b, logs/r1_F8_f
 - sample_v2.csv: 272,830 (R1-F8 234,661, F7 228,893): +38k on a tape it was presumably not tuned on.
 - arena.validate: Result OK (13,365 bytes; imports collections, math, simulator).
 - Risks: it sits at the limit (|inv| q50 96), so its PnL has more variance (pnl_se 11.2k vs 8.5k); its thresholds (0.3, 1.1, skew 0.025, 100 ms) may have been tuned on round1.csv by the other session, but sample_v2's +38k says the gain is not round1's alone.
-- Verdict: above every replacement bar against R1-F8 (+35k full, +4.6k last 25%, 11 of 12, sample_v2 +38k). The round 1 upload.
+- Verdict: above every replacement bar against R1-F8 on round1.csv alone (+35k full, +4.6k last 25%, 11 of 12 segments, bootstrap p5 +23k). The round 1 upload. (sample_v2 decides nothing: a different tape.)
