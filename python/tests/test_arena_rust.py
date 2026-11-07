@@ -7,7 +7,8 @@ two-tick spreads and thin touches, so every knob's path runs; and, with ARENA_SI
 sample_v2.csv and round 1's tape present (data/arena/, or ARENA_SIM_DATA), F3 and knob settings on them byte for
 byte (about 30 s a Python run). The shrink maker (python/bots/qminers/families/shrink_maker.py, the same Rust struct
 with DEPL_FRAC, REACT_CANCEL and MOM_LOTS) the same two ways, and family 12's alloc_maker.py and signal_maker.py
-(the same struct at R1-F6's defaults, with their knobs; R1-F6b and R1-F7 among the real-tape cases). Skipped
+(the same struct at R1-F6's defaults, with their knobs; R1-F6b and R1-F7 among the real-tape cases), and R1-F8
+(candidates/r1_F8_take_join.py, the same struct at its own defaults, as `take_maker`). Skipped
 without cargo."""
 
 from __future__ import annotations
@@ -179,10 +180,22 @@ SIGNAL = [
     {"SIZE_SKEW": 0.6},
     {"SIZE_SKEW": 0.6, "SKEW_TRIM": 1},
 ]
+# R1-F8 (candidates/r1_F8_take_join.py, the same struct at its own defaults): the take, the join, ANY_CLEAR, the
+# follower-depth gates and SIZE_SKEW after ALLOC_K; the synthetic tape's touches hold 5-60 lots, so the gates come down.
+TAKE = [
+    {},
+    {"TAKE_OWN": 0, "TAKE_DEPLETE": 40, "DEPL_FRAC": 0.5},
+    {"TAKE_OWN": 0, "TAKE_DEPLETE": 0, "DEPLETE_LOTS": 40, "DEPL_FRAC": 0.5, "TAKE_MAX": 10, "TAKE_MS": 1000},
+    {"TAKE_OWN": 10, "TAKE_DEPLETE": 40, "DEPL_FRAC": 0.5, "TAKE_RATIO": 0.5, "TAKE_LOTS": 30},
+    {"MOM_LOTS": 40, "MOM_MS": 300, "MOM_JOIN": 0, "JOIN_OWN": 0, "JOIN_LOTS": 20, "JOIN_MS": 400},
+    {"MOM_LOTS": 40, "MOM_MS": 300, "JOIN_OWN": 30},
+    {"ANY_CLEAR": 1, "MOM_MS": 300, "JOIN_OWN": 20},
+    {"SIZE_SKEW": 0.6, "ALLOC_K": -0.3, "ALLOC_UP": 0, "ALLOC_HI": 1.5},
+]
 
 
 @pytest.mark.parametrize("name, settings", [("room_maker", ROOM), ("shrink_maker", SHRINK), ("alloc_maker", ALLOC),
-                                            ("signal_maker", SIGNAL)])
+                                            ("signal_maker", SIGNAL), ("take_maker", TAKE)])
 def test_room_maker_synthetic(tmp_path, name, settings):
     qsim_rust.build()
     tape = write_tape(tmp_path / "tape.csv")
@@ -223,6 +236,9 @@ FULL = [  # (strategy, file, overrides, pnl, fills): F3 and knob settings on the
     ("signal_maker", "round1/round1.csv", {"MOM_LOTS": 300, "MOM_MS": 100, "MOM_SIZE": 20, "MOM_BLOCK": 0}, "473635.00", 53169),
     ("signal_maker", "round1/round1.csv", {"MOM_LOTS": 400, "MOM_MS": 200, "MOM_BLOCK": 1, "IMB_TRIM": 0.2, "IMB_SIZE": 10, "SIZE_SKEW": 0.5,
                                            "SKEW_TRIM": 1}, "378914.00", 57080),
+    # R1-F8 (candidates/r1_F8_take_join.py) as written
+    ("take_maker", "round1/round1.csv", {}, "519027.00", 66371),
+    ("take_maker", "playground/sample_v2.csv", {}, "234661.00", 28134),
 ]
 
 

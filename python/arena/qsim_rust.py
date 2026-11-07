@@ -41,6 +41,7 @@ STRATEGIES = {
     "shrink_maker": "python/bots/qminers/families/shrink_maker.py",  # room_maker.rs, with DEPL_FRAC, REACT_CANCEL, MOM_LOTS
     "alloc_maker": "python/bots/qminers/families/alloc_maker.py",  # room_maker.rs at R1-F6's defaults, with ALLOC_K ... ADV_SCOPE
     "signal_maker": "python/bots/qminers/families/signal_maker.py",  # room_maker.rs at R1-F6's defaults, with MOM_SIZE ... SKEW_TRIM
+    "take_maker": "python/bots/qminers/candidates/r1_F8_take_join.py",  # room_maker.rs at R1-F8's defaults, with TAKE_LOTS ... TAKE_MS, JOIN_*, ANY_CLEAR
     "probe": "python/tests/fixtures/qsim_probe.py",
 }
 

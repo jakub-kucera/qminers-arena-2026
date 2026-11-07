@@ -100,7 +100,8 @@ and the baseline with every number above and the per-file PnL. A cell whose bot 
 **The same grid in Rust**, for a strategy with a Rust version (`trend_follower`, `fallback_maker`, the F1
 candidate, `room_maker`, family 7, whose defaults are F3, `shrink_maker`, family 10, the same with `DEPL_FRAC`,
 `REACT_CANCEL` and `MOM_LOTS`, and family 12's `alloc_maker` and `signal_maker` at R1-F6's defaults with their knobs,
-so R1-F6b and R1-F7 are a `--set` away): `uv run python -m arena.qsim_rust fallback_maker
+so R1-F6b and R1-F7 are a `--set` away, and `take_maker`, R1-F8's file `candidates/r1_F8_take_join.py` at its own
+defaults with its `TAKE_*`, `JOIN_*` and `ANY_CLEAR` knobs): `uv run python -m arena.qsim_rust fallback_maker
 data/sample.csv.gz --grid QUOTE=2,3,5 --grid LIMIT=30,50 --threads 4` prints this table from `rust/arena_sim`, the
 simulator ported to give the same numbers to the bit, 50-90 times faster a run ([rust/README.md](rust/README.md),
 "arena_sim"). The keys are the Python file's globals (`QUOTE`, `LIMIT`, `SKEW`, `WIND_DOWN_S`, `SESSION_S`; the room
