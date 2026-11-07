@@ -52,6 +52,18 @@
 //! between valid books); `FLOWGRP` (0; 1 adds eight, C9's per-trade groups: market takers still resting after
 //! executing, those gone, and those that hit us, their signed lots, share and price offset, decayed over
 //! `FLOWGRP_US` 500000; 2, C10's per-taker-order groups, each order's lots capped at `FLOWGRP_CAP` 100).
+//! Inventory and room knobs (round 2, IDEAS.md "Inventory and room on R1-C12"), all off by default (C12 to the bit):
+//! `SKEW2_K` (0) / `SKEW2_X` (50), an extra skew of SKEW2_K spreads x max(0, |inv| - X) / (EXPOSURE - X);
+//! `REDUCE_IN` (0) / `REDUCE_AT` (0: EXPOSURE), the reducing side a tick inside at a 2+ tick spread once |inv| >=
+//! REDUCE_AT; `CONF_EXP` (0) / `CONF_TH` (0.3), a side's exposure CONF_EXP unless the forecast its way is >= CONF_TH;
+//! `UNWIND_LOTS` (0: off) / `UNWIND_AT` (0: EXPOSURE) / `UNWIND_TH` (0.5) / `UNWIND_US` (100000) / `UNWIND_THRU` (0) /
+//! `UNWIND_SAFE` (0): when |inv| >= UNWIND_AT and the forecast is against the position by more than UNWIND_TH
+//! spreads, an IOC UNWIND_THRU ticks through the touch for min(UNWIND_LOTS, |inv|), one at a time and one per
+//! UNWIND_US; SAFE 1 caps it so every lot on that side fits EXPOSURE, 2 cancels that side first, 3 cancels that
+//! side's newest orders until they and the IOC fit (R2-U1, python/bots/qminers/candidates/r2_U1_unwind.py:
+//! C12's and --set UNWIND_LOTS=100 --set UNWIND_SAFE=3 --set UNWIND_TH=0.7 --set UNWIND_AT=50 --set UNWIND_US=500000).
+//! `RIDGE_DEBUG` in the environment prints, at the end, the maker lots' edge against the mid at the fill, the IOC
+//! lots' edge, the time-weighted mean |inventory| and the 25-s PnL steps' mean and sd.
 //! Round-2 learned-model knobs (Rust-only, off by default: C12 622920.99 / 21,462 fills unchanged), appended after
 //! the features above: `PRIOR_MASS` (0; the warm start: with the env var RIDGE_WARM naming a stats file, each model
 //! starts from its X'X / X'y scaled to PRIOR_MASS labels and fits on its first book; RIDGE_DUMP writes that file at
@@ -314,6 +326,29 @@ pub struct RidgeMaker {
     cancel_net: f64,
     cancel_mass: f64,
     new_quote_time: Option<i64>,
+    /// R2 inventory knobs, all off by default
+    skew2_k: f64,
+    skew2_x: i64,
+    reduce_in: i64,
+    reduce_at: i64,
+    conf_exp: i64,
+    conf_th: f64,
+    side_exp: [i64; 2],
+    unwind_lots: i64,
+    unwind_at: i64,
+    unwind_th: f64,
+    unwind_us: i64,
+    unwind_thru: i64,
+    unwind_safe: i64,
+    unwind_id: Option<u64>,
+    unwind_block: i64,
+    /// RIDGE_DEBUG: [maker lots, maker edge vs the mid, IOC lots, IOC edge, books at the limit, books]
+    dbg: [f64; 6],
+    /// RIDGE_DEBUG: cash, time-weighted |inventory| (sum, time), the 25-s PnL steps (n, sum, sum of squares, last pnl, next sample)
+    dbg_cash: f64,
+    dbg_inv: [f64; 2],
+    dbg_inv_t: Option<i64>,
+    dbg_steps: [f64; 5],
     /// the forecast take (R2-FT), off by default (FT_SZ 0)
     ft_edge: f64,
     ft_sz: i64,
@@ -389,6 +424,18 @@ pub struct RidgeMaker {
 impl RidgeMaker {
     /// RIDGE_DUMP: the models' sufficient statistics (at DUMP_US, else at the end) to that file, for a warm start
     fn dump_on_drop(&mut self) {
+        if std::env::var("RIDGE_DEBUG").is_ok() {
+            eprintln!(
+                "RIDGE_DEBUG maker_lots={} maker_edge={:.1} ioc_lots={} ioc_edge={:.1} at_limit_share={:.3} final_inv={}",
+                self.dbg[0], self.dbg[1], self.dbg[2], self.dbg[3], self.dbg[4] / self.dbg[5].max(1.0), self.inventory
+            );
+            let st = self.dbg_steps;
+            let mean = st[1] / st[0].max(1.0);
+            eprintln!(
+                "RIDGE_DEBUG mean_abs_inv={:.1} step25_n={} step25_mean={:.1} step25_sd={:.1}",
+                self.dbg_inv[0] / self.dbg_inv[1].max(1.0), st[0], mean, (st[2] / st[0].max(1.0) - mean * mean).max(0.0).sqrt()
+            );
+        }
         let Ok(path) = std::env::var("RIDGE_DUMP") else { return };
         let text = match self.dump_snap.take() {
             Some(t) => t,
@@ -424,7 +471,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 102] = [
+pub const KEYS: [&str; 114] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -434,6 +481,8 @@ pub const KEYS: [&str; 102] = [
     "FILL_LEARN", "FILL_H_US", "FILL_MIN", "FILL_WARM", "FILL_MEM_US", "FILL_BIN", "FILL_Q",
     "LABEL_MODE", "LABEL_K", "LABEL_CAP_US", "PRED_SCALE",
     "FLOWGRP", "FLOWGRP_CAP", "FLOWGRP_US", "QUOTEFEAT", "QUOTEFEAT_US",
+    "SKEW2_K", "SKEW2_X", "REDUCE_IN", "REDUCE_AT", "CONF_EXP", "CONF_TH",
+    "UNWIND_LOTS", "UNWIND_AT", "UNWIND_TH", "UNWIND_US", "UNWIND_THRU", "UNWIND_SAFE",
     "FT_EDGE", "FT_SZ", "FT_GAP_MS", "FT_MODE", "FT_INV", "FT_THRU", "FT_NET",
     "PRIOR_MASS", "DUMP_US", "BUCKET", "SIDE2", "SIDE_W", "MH", "MH_US1", "MH_US2", "CLEAR_TH",
     "OBS_CAP", "TREND", "TREND_US1", "TREND_US2", "VOL_EXP", "VOL_US", "VOL_BASE_US", "VOL_MIN", "VOL_MAX",
@@ -592,6 +641,26 @@ impl RidgeMaker {
             cancel_net: 0.0,
             cancel_mass: 0.0,
             new_quote_time: None,
+            skew2_k: params.float("SKEW2_K", 0.0)?,
+            skew2_x: params.int("SKEW2_X", 50)?,
+            reduce_in: params.int("REDUCE_IN", 0)?,
+            reduce_at: params.int("REDUCE_AT", 0)?,
+            conf_exp: params.int("CONF_EXP", 0)?,
+            conf_th: params.float("CONF_TH", 0.3)?,
+            side_exp: [0, 0],
+            unwind_lots: params.int("UNWIND_LOTS", 0)?,
+            unwind_at: params.int("UNWIND_AT", 0)?,
+            unwind_th: params.float("UNWIND_TH", 0.5)?,
+            unwind_us: params.int("UNWIND_US", 100_000)?,
+            unwind_thru: params.int("UNWIND_THRU", 0)?,
+            unwind_safe: params.int("UNWIND_SAFE", 0)?,
+            unwind_id: None,
+            unwind_block: 0,
+            dbg: [0.0; 6],
+            dbg_cash: 0.0,
+            dbg_inv: [0.0; 2],
+            dbg_inv_t: None,
+            dbg_steps: [0.0, 0.0, 0.0, 0.0, 25_000_000.0],
             ft_edge: params.float("FT_EDGE", 1.0)?,
             ft_sz: params.int("FT_SZ", 0)?,
             ft_gap_ms: params.int("FT_GAP_MS", 100)?,
@@ -1141,7 +1210,7 @@ impl RidgeMaker {
             .sum();
         let mut quantity = self
             .quote_size
-            .min(self.exposure - sign * self.inventory - effective)
+            .min(if self.conf_exp > 0 { self.side_exp[side_index(sign)] } else { self.exposure } - sign * self.inventory - effective)
             .min(self.position_limit - sign * self.inventory - reserved);
         if self.slice_lots > 0 {
             quantity = quantity.min(self.slice_lots);
@@ -1431,7 +1500,11 @@ impl Strategy for RidgeMaker {
             self.trend_time = Some(now);
         }
         let spread_f = spread as f64;
-        let skew = self.skew_k * self.inventory as f64 / self.exposure as f64 * spread_f.max(1.0);
+        let mut skew = self.skew_k * self.inventory as f64 / self.exposure as f64 * spread_f.max(1.0);
+        if self.skew2_k != 0.0 {
+            let excess = (self.inventory.abs() - self.skew2_x).max(0) as f64 / (self.exposure - self.skew2_x).max(1) as f64;
+            skew += self.skew2_k * self.inventory.signum() as f64 * excess * spread_f.max(1.0);
+        }
         match self.model_time {
             Some(t) if now - t <= 10_000_000 => {
                 let dt = (now - t).max(0) as f64;
@@ -1766,11 +1839,100 @@ impl Strategy for RidgeMaker {
                 sell = Some((bid + 1).max(ask - 1));
             }
         }
-        if flow < -self.flow_cut || self.inventory >= self.exposure {
+        if self.reduce_in > 0 && spread >= 2 {
+            let at = if self.reduce_at > 0 { self.reduce_at } else { self.exposure };
+            if self.inventory >= at {
+                sell = Some(sell.map_or(ask - 1, |s| s.min(ask - 1)).max(bid + 1));
+            } else if self.inventory <= -at {
+                buy = Some(buy.map_or(bid + 1, |b| b.max(bid + 1)).min(ask - 1));
+            }
+        }
+        let (mut cap_buy, mut cap_sell) = (self.exposure, self.exposure);
+        if self.conf_exp > 0 {
+            if prediction < self.conf_th {
+                cap_buy = self.conf_exp;
+            }
+            if prediction > -self.conf_th {
+                cap_sell = self.conf_exp;
+            }
+            self.side_exp = [cap_buy, cap_sell];
+        }
+        if flow < -self.flow_cut || self.inventory >= cap_buy {
             buy = None;
         }
-        if flow > self.flow_cut || self.inventory <= -self.exposure {
+        if flow > self.flow_cut || self.inventory <= -cap_sell {
             sell = None;
+        }
+        self.dbg[5] += 1.0;
+        if let Some(t) = self.dbg_inv_t {
+            let dt = (now - t).max(0) as f64;
+            self.dbg_inv[0] += dt * self.inventory.abs() as f64;
+            self.dbg_inv[1] += dt;
+        }
+        self.dbg_inv_t = Some(now);
+        while now as f64 >= self.dbg_steps[4] {
+            let pnl = self.dbg_cash + self.inventory as f64 * mid;
+            let step = pnl - self.dbg_steps[3];
+            self.dbg_steps[0] += 1.0;
+            self.dbg_steps[1] += step;
+            self.dbg_steps[2] += step * step;
+            self.dbg_steps[3] = pnl;
+            self.dbg_steps[4] += 25_000_000.0;
+        }
+        if self.inventory.abs() >= self.exposure {
+            self.dbg[4] += 1.0;
+        }
+        if self.unwind_lots > 0 && self.unwind_id.is_none() && now >= self.unwind_block {
+            let at = if self.unwind_at > 0 { self.unwind_at } else { self.exposure };
+            if self.inventory.abs() >= at && -(self.inventory.signum() as f64) * prediction > self.unwind_th * spread_f {
+                let sign = -self.inventory.signum();
+                let mut quantity = self.unwind_lots.min(self.inventory.abs());
+                if self.unwind_safe == 3 {
+                    // the newest of our resting orders on that side cancelled until the rest and the IOC fit EXPOSURE
+                    let cf = self.cancel_free;
+                    let eff = move |r: &Record| if r.cancelling { (r.quantity as f64 * (1.0 - cf)).ceil() as i64 } else { r.quantity };
+                    let mut effective: i64 = self.orders.iter().filter(|r| r.sign == sign).map(eff).sum();
+                    let room = self.exposure + self.inventory.abs();
+                    for index in (0..self.orders.len()).rev() {
+                        if effective + quantity <= room {
+                            break;
+                        }
+                        let r = &self.orders[index];
+                        if r.sign != sign || r.cancelling || !r.accepted || Some(r.id) == self.hedge_id {
+                            continue;
+                        }
+                        let before = eff(r);
+                        self.cancel(index, ctx);
+                        effective += eff(&self.orders[index]) - before;
+                    }
+                    quantity = quantity.min(room - effective);
+                } else if self.unwind_safe == 2 {
+                    // our resting orders on that side cancelled first, the IOC then for what the cancels leave room for
+                    for index in 0..self.orders.len() {
+                        if self.orders[index].sign == sign && Some(self.orders[index].id) != self.hedge_id {
+                            self.cancel(index, ctx);
+                        }
+                    }
+                    let effective: i64 = self
+                        .orders
+                        .iter()
+                        .filter(|r| r.sign == sign)
+                        .map(|r| if r.cancelling { (r.quantity as f64 * (1.0 - self.cancel_free)).ceil() as i64 } else { r.quantity })
+                        .sum();
+                    quantity = quantity.min(self.exposure + self.inventory.abs() - effective);
+                } else if self.unwind_safe > 0 {
+                    // every lot of ours that can still fill on that side, the IOC included, stays within EXPOSURE
+                    let reserved: i64 = self.orders.iter().filter(|r| r.sign == sign).map(|r| r.quantity).sum();
+                    quantity = quantity.min(self.exposure + self.inventory.abs() - reserved);
+                }
+                let price = if sign > 0 { ask + self.unwind_thru } else { 1i64.max(bid - self.unwind_thru) };
+                if quantity > 0 {
+                    let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, true);
+                    self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: 0, target: 0, kept: false });
+                    self.unwind_id = Some(id);
+                }
+                self.unwind_block = now + self.unwind_us;
+            }
         }
         if self.deplete_lots > 0 || self.take_lots > 0 {
             for (key, price, lots) in [(0, bid, bq), (1, ask, aq)] {
@@ -1903,6 +2065,14 @@ impl Strategy for RidgeMaker {
                     self.stat_lots[b] += event.filled_quantity;
                 }
                 let record = &mut self.orders[index];
+                if let (Some((bid, ask, _)), Some(price)) = (self.cached, event.fill_price) {
+                    let edge = record.sign as f64 * ((bid + ask) as f64 * 0.5 - price as f64) * event.filled_quantity as f64;
+                    let ioc = self.hedge_id == Some(event.order_id) || self.unwind_id == Some(event.order_id);
+                    let k = if ioc { 2 } else { 0 };
+                    self.dbg[k] += event.filled_quantity as f64;
+                    self.dbg[k + 1] += edge;
+                    self.dbg_cash -= (record.sign * price * event.filled_quantity) as f64;
+                }
                 self.inventory += record.sign * event.filled_quantity;
                 record.quantity = event.remaining_quantity;
                 if event.status == Status::Filled {
@@ -1925,8 +2095,12 @@ impl Strategy for RidgeMaker {
                 self.orders[index].target = 0;
             }
         }
-        let was_hedge = self.hedge_id == Some(event.order_id);
-        if was_hedge && matches!(event.status, Status::Filled | Status::Canceled | Status::Rejected) {
+        let was_unwind = self.unwind_id == Some(event.order_id);
+        if was_unwind && matches!(event.status, Status::Filled | Status::Canceled | Status::Rejected) {
+            self.unwind_id = None;
+        }
+        let was_hedge = self.hedge_id == Some(event.order_id) || was_unwind;
+        if self.hedge_id == Some(event.order_id) && matches!(event.status, Status::Filled | Status::Canceled | Status::Rejected) {
             self.hedge_id = None;
         }
         if let Some(t) = self.desired_time {
