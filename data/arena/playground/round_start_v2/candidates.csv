@@ -1,0 +1,10 @@
+candidate,bot,pnl,first75,last25,max_dd,fills,volume,inv_q997,breach,rejected,run_s,proj_s,slow,error
+F1,python/bots/qminers/candidates/r0_F1_fallback.py,31531.0,23868.0,7663.0,52.0,10071,50042,24,0.0,0,12.442789833061397,54.74827526547015,False,
+A0,python/bots/qminers/template.py,18735.0,15299.0,3436.0,527.0,4340,20790,50,0.0,0,37.92733637499623,166.8802800499834,False,
+fade,python/bots/qminers/families/run_fade.py,0.0,0.0,0.0,0.0,0,0,0,0.0,0,7.736513874959201,34.040661049820486,False,
+pmaker,python/bots/qminers/families/protected_maker.py,0.0,0.0,0.0,0.0,0,0,0,0.0,0,8.246508749900386,36.284638499561694,False,
+tmpl_mom,python/bots/qminers/template.py,0.0,0.0,0.0,0.0,0,0,0,0.0,0,35.53796650003642,156.36705260016024,False,
+mmaker,python/bots/qminers/families/momentum_maker.py,-1468.0,-1607.0,139.0,2056.0,10203,100988,50,0.0,0,9.632539707934484,42.38317471491173,False,
+taker,python/bots/qminers/families/momentum_taker.py,-866349.0,-654031.0,-212318.0,866349.0,27661,962916,50,0.0,0,8.273973417002708,36.405483034811915,False,
+runner,python/bots/qminers/families/momentum_runner.py,-3290165.0,-2493202.0,-796963.0,3290165.0,19659,3317108,100,0.0,0,8.629807542078197,37.97115318514407,False,
+M1,python/bots/qminers/candidates/r0_M1_runner.py,-3290165.0,-2493202.0,-796963.0,3290165.0,19659,3317108,100,0.0,0,8.289147000061348,36.47224680026993,False,

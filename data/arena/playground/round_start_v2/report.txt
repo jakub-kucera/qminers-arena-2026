@@ -1,0 +1,32 @@
+== profile (2,000,000 rows replayed in 4.5 s)
+time     0.027 .. 5749.896 s, length 5,749.9 s (1.60 h), 347.8 events/s, 1.62 mid changes/s
+spread   time share 1 tick 41.4%, 2 ticks 58.4%, 3+ ticks 0.2%, one-sided 0.0%, empty 0.0%
+depth    median lots a side at the touch 915.25, within 5 ticks 1941.5 (sampled each second)
+trades   5.864 aggressive orders/s (33,718; 131,778 prints, 552.64 lots/s); size median 40, p90 224, mean 94.2
+markout  the mid's move in ticks in the event's direction (mean / median; + momentum, - reversion), from the mid just after it
+  after                          n         impact            1 s            5 s           30 s           60 s
+  trade (all)               33,707   +0.05 / +0.0   -0.03 / -0.0   -0.03 / -0.0   -0.03 / +0.0   -0.03 / +0.0
+  trade <= 40 lots          17,021   +0.02 / -0.0   -0.01 / -0.0   +0.00 / +0.0   -0.02 / +0.0   -0.01 / -0.0
+  trade > 40 lots           16,686   +0.08 / +0.0   -0.06 / +0.0   -0.07 / -0.0   -0.04 / +0.0   -0.04 / +0.0
+  1-tick mid move            9,319              -   -0.09 / -0.0   -0.09 / -0.0   -0.07 / -0.0   -0.06 / -0.0
+  1-tick move, no trade      6,029              -   +0.05 / -0.0   +0.06 / +0.0   +0.05 / +0.0   +0.05 / +0.0
+verdict  WEAK (-0.03 ticks at 5 s, mean spread ~1.6): following pays no spread; make markets (A0, pmaker, F1)
+
+== candidates (each at its file's defaults, the session set to the data's length; 2,000,000 rows)
+#  candidate         pnl   first 75%  last 25%     max dd   fills     volume  |inv| q997  breach  rej  run s  s @8.8M
+1  F1             31,531      23,868     7,663         52  10,071     50,042          24       0    0   12.4       55
+2  A0             18,735      15,299     3,436        527   4,340     20,790          50       0    0   37.9      167
+3  fade                0           0         0          0       0          0           0       0    0    7.7       34
+4  pmaker              0           0         0          0       0          0           0       0    0    8.2       36
+5  tmpl_mom            0           0         0          0       0          0           0       0    0   35.5      156
+6  mmaker         -1,468      -1,607       139      2,056  10,203    100,988          50       0    0    9.6       42
+7  taker        -866,349    -654,031  -212,318    866,349  27,661    962,916          50       0    0    8.3       36
+8  runner     -3,290,165  -2,493,202  -796,963  3,290,165  19,659  3,317,108         100       0    0    8.6       38
+9  M1         -3,290,165  -2,493,202  -796,963  3,290,165  19,659  3,317,108         100       0    0    8.3       36
+run s: wall time in the pool (contention inflates it); s @8.8M: projected to a real round's rows; SLOW: over 240 s here, at risk in the sandbox's 15 minutes on a 2-3x slower CPU
+
+== next grids (the top two by PnL)
+uv run python -m arena.qgrid python/bots/qminers/candidates/r0_F1_fallback.py data/arena/playground/sample_v2.csv --set 'SESSION_S=5750' --grid QUOTE=2,5,10 --grid SKEW=10,20,40 --holdout 0.25 --jobs 10 --sort holdout
+uv run python -m arena.qgrid python/bots/qminers/template.py data/arena/playground/sample_v2.csv --set 'PARAMS.ASSET={"limit": 50, "fair": "mid", "take_edge": 2, "make_edge": 1, "make_inside": 1, "make_size": 5, "flatten_from": 970000}' --set 'SESSION_US=5749868964' --grid PARAMS.ASSET.make_edge=0,1,2 --grid PARAMS.ASSET.make_size=2,5,10 --grid PARAMS.ASSET.take_edge=1,2,3 --holdout 0.25 --jobs 10 --sort holdout
+
+done in 38.0 s
