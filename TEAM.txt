@@ -11,7 +11,7 @@ Open models run locally for comparison bots: Qwen 3.8 27B, DeepSeek R1 14B, Gemm
 
 ===
 
-Claude Max $100 subscription (Claude Code), used for prep from 7 Oct and during the event
+2x Claude Max $100 subscription (Claude Code), used for prep from 7 Oct and during the event
 Claude Code usage in this repository, 7 Oct - 7 Nov, from its own logs: about 89M tokens without cache reads (77M cache writes, 12M output), about 4.3B with cache reads
 ChatGPT subscription, light use
 Local models: own hardware, no cost
