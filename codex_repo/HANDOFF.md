@@ -1,3 +1,22 @@
+
+Improvement concentration: +998 within the largest100s decline, only +28 outside, versus316031. Retain316031 as conservative reference;317057 is an experimental candidate, not a robust promotion.
+
+# Latest seven-minute follow-up
+
+Seven-minute local study, 8 Nov 2026 Prague
+main unchanged at 36a041af7da57060f5cafe5bcc4f4772c23cd31b.
+Selected robust_depth: net PnL 317,057; improvement +1,026. Requested +10,000 NOT achieved.
+Audit and independent native CLI match every result field.
+Fees 0.0; max actual 100; max potential 100.
+Sampled max drawdown 10880.0; final20 PnL 63148.0.
+Largest100s market decline3936-4036: strategy PnL 21221.0; outside 295836.0.
+Rebound5398-5400: strategy PnL -10880.0.
+Architecture: previous Huber6/ridge3x pure taker plus signed500ms flow normalized by current opposing top depth, clipped +/-3 (36 features).
+Three frozen variants; selected using30-80percent gain, then full comparison. Repeatedly consumed public data; no fresh holdout or private validation. Small improvement is not proof of generalization.
+Source SHA256 4df2b5c12142242fcff6be80e8765833f3d7c54d97893b5707589929e67aa622.
+No competition server accessed or submission made.
+
+
 # Handoff for the next session
 
 ## Latest goal: evolving main plus at least10k, with price-crash diagnostics
@@ -308,3 +327,6 @@ for this session only. Other repositories/sessions are explicitly out of scope.
 Account subscription and dollar pricing are unknown. No organizer invitation
 status has been verified. Keep committing concrete progress and update this
 handoff and the scoped usage estimate as work continues.
+
+L8 independently reproduced296181, zero penalty,75762 fills,356731 volume on identical round2_public native engine. Other-tape header scores unverified. No strict potential-exposure audit run for L8. Compared to317057: +20876 for experimental candidate.
+All seven-minute experiment processes completed.

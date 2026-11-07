@@ -1,0 +1,44 @@
+{
+  "robust_sqrt": {
+    "fills": 2342,
+    "traded_volume": 283838,
+    "inventory": -34,
+    "cash": 628582.0,
+    "mark_price": 9690.0,
+    "breach_penalty": 0.0,
+    "pnl": 299122.0,
+    "pnl_se": 28299.693764539614,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "robust_sqrt_depth": {
+    "fills": 2871,
+    "traded_volume": 307996,
+    "inventory": -64,
+    "cash": 928161.0,
+    "mark_price": 9690.0,
+    "breach_penalty": 0.0,
+    "pnl": 308001.0,
+    "pnl_se": 27810.16629900283,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "robust_depth": {
+    "fills": 2803,
+    "traded_volume": 302909,
+    "inventory": -47,
+    "cash": 772487.0,
+    "mark_price": 9690.0,
+    "breach_penalty": 0.0,
+    "pnl": 317057.0,
+    "pnl_se": 28045.43398774306,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  }
+}

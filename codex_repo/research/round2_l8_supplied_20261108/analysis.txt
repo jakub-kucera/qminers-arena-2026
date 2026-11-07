@@ -1,0 +1,1 @@
+L8 independently reproduced296181, zero penalty,75762 fills,356731 volume on identical round2_public native engine. Other-tape header scores unverified. No strict potential-exposure audit run for L8. Compared to317057: +20876 for experimental candidate.
