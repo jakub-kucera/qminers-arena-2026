@@ -38,3 +38,7 @@ Answered before the round: ON_THE_DAY.md, "Known so far", the 7 Nov blocks (site
 
 ## Next round
 <!-- round N+1's first candidate, and its first three actions -->
+- First: `uv run python -m experiments.day.round_start data/arena/round2/<file>.csv --jobs 10 --out data/arena/round2/round_start` (runs R1-F7, R1-F6b, R1-F6, R1-F5, R1-F3, M2 and the families; prints the verdict and the next grids, the shrink makers' on the Rust port).
+- If round 2 is a 1-tick maker's market like round 1: R1-F7 (or the round 1 final) is the first upload; re-grid on round 2's first 75% with the Rust port (signal_maker.py / alloc_maker.py / shrink_maker.py via `arena.qsim_rust`), check once on the last 25%, 12 segments and the bootstrap.
+- If it is a 2-tick market like sample_v2: R1-F5's one-level room (F3 / F5) beats the two-level F6/F7 there; if round_start says MOMENTUM: M2, with MAX_SPREAD set to the round's usual spread.
+- Then `run_review`, `fill_queue` and `fill_depletion` on the first upload's results folder: where the fills lose.
