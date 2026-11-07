@@ -12,7 +12,8 @@ price-time book (experiments/day/tape_book.py, the starter's matching):
   order left on the wrong side of it (asks at or below the new lb, bids above) cancels within Exp(`stale_s`) (on top
   of its own clock). Calibrated on round 1 against the profile (the mid's changes a second, its move after a 1-tick
   move): `stale_s` 0.2 s, `jump_rate` 0 (no moves beyond the trades'); `informed` (default 0) sends that share of
-  aggressive orders the way the book lags the latent mid; `wide_table` (default off; dropped: the 2-tick share 9.5%) draws
+  aggressive orders the way the book lags the latent mid; `f_buy_share` (default 0.5) the buys' share of them (a drift);
+  `spread2` (default off) centres the inserts on the rounded latent mid one tick off it each side (a 2-tick book); `wide_table` (default off; dropped: the 2-tick share 9.5%) draws
   the inserts at a 2+ tick spread from the tape's own offsets there. Without `continuous` the latent mid moves in whole ticks.
 - **Limit inserts (G)**: one Poisson stream (round 1: 180/s, the same rate at a 1- or 2-tick spread), the side a coin
   flip, bids at lb - k and asks at lb + 1 + k (k from round 1's offsets at a 1-tick spread: 0 55%, 1 39%, 2 6%),
@@ -203,6 +204,8 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
     grid = np.linspace(0, 1, len(lq))
     bid_share = params["g_bid_share"]
     informed = latent.get("informed", 0.0)
+    f_buy = latent.get("f_buy_share", 0.5)  # >0.5: more buys than sells, a drifting latent price
+    spread2 = latent.get("spread2", False)  # True: bids at c - 1 - k, asks at c + 1 + k around c = round(latent mid): a 2-tick book
     stale = latent.get("stale_s", 0.0)  # >0: on a latent move, the orders it leaves on the wrong side cancel within Exp(stale_s)
     due = {}  # oid -> the cancel time that counts (only with stale_s); -1 once written while a second time is queued
     extra = set()  # orders with a second (earlier, stale) cancel time queued
@@ -262,7 +265,7 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
             u = us.pop()
             bb, ba = book.best
             if u < p_f:
-                side = 0 if u < p_f / 2 else 1
+                side = 0 if u < p_f * f_buy else 1
                 if informed and bb is not None and ba is not None and lb + 0.5 != (bb + ba) / 2 and jumps.pop() < informed:
                     side = 0 if lb + 0.5 > (bb + ba) / 2 else 1  # an informed order: the way the book lags the latent price
                 opp = ba if side == 0 else bb
@@ -318,13 +321,18 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
                         due[oid] = ct
                     oid += 1
                     continue
+                if spread2:
+                    c = round(level) if continuous else lb
+                    lo_b, lo_a = c - 1, c + 1
+                else:
+                    lo_b, lo_a = lb, lb + 1
                 if side == 0:
-                    price = lb - k
+                    price = lo_b - k
                     if ba is not None:
                         price = min(price, ba - 1)
                     d = price - bb if bb is not None else 0
                 else:
-                    price = lb + 1 + k
+                    price = lo_a + k
                     if bb is not None:
                         price = max(price, bb + 1)
                     d = ba - price if ba is not None else 0

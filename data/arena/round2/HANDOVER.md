@@ -84,3 +84,20 @@ Round 2 is generated differently, so round 1's settings are priors, not answers.
 | 22 | 3 | Ceilings on the best candidate | `uv run python -m experiments.day.ceilings logs/<best full-logs run>` | where the remaining money is (queue place, room, taking) | guides the next idea |
 | 23 | 4 | Takers, only if triage shows fast moves | `families/momentum_taker.py`, `families/burst_taker.py` grids (IDEAS rows) | a trending or impact-heavy tape | the bar |
 | 24 | 4 | A nonlinear model (sklearn is allowed), if the run time allows | small online tree / kNN on the 23 features, blended | nonlinearity | the bar and run time < 300 s |
+
+## If the tape looks like X
+From `IDEAS.md`, "Which round-1 strategy survives which change of tape" (6 draws a regime of round 1's fitted generator,
+`experiments.day.tape_regimes`). The draws tie C5, C1 and F8 on the unaltered model (real round 1: C5 > C1 > F8), so
+read these as which family to start from, then choose the knobs on round 2's own tape. Learning paid in every regime
+(C5 +65-396k over its never-learning control) and the hedge's breach penalty stayed small (C5's 16k at worst).
+
+| If the tape looks like (round_start's profile) | Start from | Draws |
+|---|---|---|
+| a 2-tick spread most of the time | the ridge, not F8: C1, or C5 with HORIZON_US 100000 | C1 +65k over C5; C5 +153k over F8 |
+| a thin touch (~1/4 of round 1's ~900 lots) | F8 (`take_maker`) | F8 +167k over C5 |
+| a deep touch (~4x) | C5, DEAD_ZONE 0.25 | C5 +94k over F8; dz 0.25 +48k |
+| twice the IOC rate | C5 and F8 tie; C5 with HORIZON_US 100000 or DEAD_ZONE 0.25 | +47k / +39k over C5 |
+| big IOC orders sweeping 2+ levels | F8 | F8 +271k over C5 |
+| a trend (strong impact, more buys than sells) | C5 as it is (not HORIZON_US 100000: -69k) | C5 +42k over F8, +63k over C1 |
+| weak impact, a flat mid | C5 or C1 (F8 far behind) | C5 +319k over F8 |
+| IOC orders that predict the next move | F8, then C5 with DEAD_ZONE 0.25 | F8 +27k over C5 |
