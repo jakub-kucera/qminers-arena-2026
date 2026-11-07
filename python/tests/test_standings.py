@@ -18,7 +18,7 @@ def field(median: float, sd: float, common: float = 0.0, loading=(1.0, 1.0)) -> 
 
 def test_the_scorings_weigh_and_normalise_each_round():
     board = st.Board(["a", "b", "c"], [[10.0, -20.0, 5.0], [100.0, 50.0, 0.0]], [{}, {}])
-    named = {s.name: s for s in st.scorings((0.1, 0.2, 0.3))}
+    named = {s.name: s for s in st.scorings((0.1, 0.2, 0.3), names=("summed", "weighted", "max-weighted"))}
     assert st.totals(board, named["pnl summed"]) == [110.0, 30.0, 5.0]
     assert st.totals(board, named["pnl 10/20/30"]) == [21.0, 8.0, 0.5]
     score = st.totals(board, named["score 10/20/30"])  # round 1 over 20, round 2 over 100
@@ -26,18 +26,56 @@ def test_the_scorings_weigh_and_normalise_each_round():
     assert st.rank_of([3.0, 5.0, 3.0], 0) == 2 and st.rank_of([3.0, 5.0, 3.0], 1) == 1
 
 
+def test_the_real_rule_standardises_over_the_positive_teams_and_floors_a_loss_at_zero():
+    # a team below zero and one at zero: out of the mean (20) and sd (10), each scored (0 - 20) / 10
+    assert st.positive_z([30.0, 10.0, -5.0, 0.0]) == [1.0, -1.0, -2.0, -2.0]
+    # every team but one positive: the loser doesn't drag the mean down (20, not 2.5)
+    z = st.positive_z([-50.0, 10.0, 20.0, 30.0])
+    sigma = (200 / 3) ** 0.5
+    assert z == pytest.approx([-20 / sigma, -10 / sigma, 0.0, 10 / sigma])
+    assert st.positive_z([-1e9, 10.0, 20.0, 30.0]) == z  # however large the loss
+    # sd 0 (equal PnLs, or a single positive team) or no positive team: the round scores 0 for everyone
+    assert st.positive_z([5.0, 5.0, 5.0]) == [0.0, 0.0, 0.0]
+    assert st.positive_z([7.0, 7.0, -3.0]) == [0.0, 0.0, 0.0]
+    assert st.positive_z([-5.0, 0.0, 40.0]) == [0.0, 0.0, 0.0]
+    assert st.positive_z([-5.0, 0.0]) == [0.0, 0.0]
+
+
+def test_the_real_rule_weighs_three_known_rounds_and_simulates_the_fourth():
+    board = st.Board(["us", "a", "b"], [[30.0, 10.0, -5.0], [5.0, 5.0, 5.0], [-1.0, 20.0, 10.0]], [{}, {}, {}])
+    (real,) = st.scorings((1.0, 1.0, 1.0))
+    assert real.name == "real z 0.8/1/1" and real.weights == (0.8, 1.0, 1.0) and real.kind == "z"
+    # round 1: mu 20, sd 10 -> 1, -1, -2; round 2: all equal -> 0; round 3: mu 15, sd 5 -> -3, 1, -1
+    assert st.totals(board, real) == pytest.approx([0.8 - 3, -0.8 + 1, -1.6 - 1])
+    with pytest.raises(ValueError, match="real rule has 4 weights"):
+        st.scorings((1.0,) * 5)
+    result = st.simulate(board, 0, (1_000.0, 0.0), field(100.0, 1.0, loading=(1.0, 1.0, 1.0)), sims=200)
+    assert [s.name for s in result.scorings] == ["real z 0.8/1/1/1.2"] and result.now["real z 0.8/1/1/1.2"] == 2
+    assert all(t.first == t.sims for t in result.risk.values())  # 1,000 against two ~100s: z +1.41 against -0.71, times 1.2, closes the 2.4 gap
+
+
+def test_under_the_real_rule_a_bigger_loss_costs_nothing_more():
+    board = st.Board(["us", "a", "b", "c"], [[10.0, 12.0, 8.0, 11.0]], [{}])
+    rivals = field(100.0, 50.0, loading=(1.0, 1.0, 1.0, 1.0))
+    small = st.simulate(board, 0, (-1.0, 0.0), rivals, sims=500, seed=2, names=("real", "summed"))
+    huge = st.simulate(board, 0, (-1e6, 0.0), rivals, sims=500, seed=2, names=("real", "summed"))
+    key = ("real z 0.8/1", 1.0)
+    assert (small.risk[key].rank_sum, small.risk[key].first) == (huge.risk[key].rank_sum, huge.risk[key].first)
+    assert small.risk[("pnl summed", 1.0)].rank_sum < huge.risk[("pnl summed", 1.0)].rank_sum
+
+
 def test_a_lead_no_round_can_close_is_never_lost():
-    result = st.simulate(two_teams(1_000.0), 0, (0.0, 0.0), field(0.0, 1.0), (1.0, 1.0), sims=500)
+    result = st.simulate(two_teams(1_000.0), 0, (0.0, 0.0), field(0.0, 1.0), (1.0, 1.0), sims=500, names=("summed",))
     assert all(t.lost == 0 and t.first == t.sims for t in result.risk.values())
     assert result.now["pnl summed"] == 1 and result.gap["pnl summed"] == (1_000.0, 0.0)
 
 
 def test_less_risk_protects_a_lead_and_more_risk_chases_one():
     # the same expected round for both teams; with the mean held (mean power 0) only our variance scales
-    ahead = st.simulate(two_teams(10.0), 0, (5.0, 20.0), field(5.0, 1.0), (1.0, 1.0), multipliers=(0.25, 1.0, 1.5), sims=4_000, mean_power=0.0)
+    ahead = st.simulate(two_teams(10.0), 0, (5.0, 20.0), field(5.0, 1.0), (1.0, 1.0), multipliers=(0.25, 1.0, 1.5), sims=4_000, mean_power=0.0, names=("summed",))
     lost = {k: ahead.risk[("pnl summed", k)].lost for k in (0.25, 1.0, 1.5)}
     assert lost[0.25] < lost[1.0] < lost[1.5]
-    behind = st.simulate(two_teams(-10.0), 0, (5.0, 20.0), field(5.0, 1.0), (1.0, 1.0), multipliers=(0.25, 1.0, 1.5), sims=4_000, mean_power=0.0)
+    behind = st.simulate(two_teams(-10.0), 0, (5.0, 20.0), field(5.0, 1.0), (1.0, 1.0), multipliers=(0.25, 1.0, 1.5), sims=4_000, mean_power=0.0, names=("summed",))
     first = {k: behind.risk[("pnl summed", k)].first for k in (0.25, 1.0, 1.5)}
     assert first[0.25] < first[1.0] < first[1.5]
 
@@ -45,10 +83,10 @@ def test_less_risk_protects_a_lead_and_more_risk_chases_one():
 def test_holding_the_fields_bet_keeps_a_place_when_the_rivals_all_hold_it():
     board = st.Board(["us", "a", "b", "c"], [[10.0, 0.0, 0.0, 0.0]], [{}])
     strong = st.simulate(board, 0, (0.0, 1.0), field(0.0, 10.0, common=0.9, loading=(0.0, 1.0, 1.0, 1.0)), (1.0, 1.0), hedges=(0.0, 0.5, 1.0),
-                         sims=4_000)
+                         sims=4_000, names=("summed",))
     lost = {h: strong.hedge[("pnl summed", h)].lost for h in (0.0, 0.5, 1.0)}
     assert lost[1.0] < lost[0.5] < lost[0.0]
-    none = st.simulate(board, 0, (0.0, 1.0), field(0.0, 10.0, common=0.0, loading=(0.0, 1.0, 1.0, 1.0)), (1.0, 1.0), hedges=(0.0, 1.0), sims=500)
+    none = st.simulate(board, 0, (0.0, 1.0), field(0.0, 10.0, common=0.0, loading=(0.0, 1.0, 1.0, 1.0)), (1.0, 1.0), hedges=(0.0, 1.0), sims=500, names=("summed",))
     assert none.hedge[("pnl summed", 0.0)].lost == none.hedge[("pnl summed", 1.0)].lost  # no field's bet: nothing to hedge
 
 
@@ -86,7 +124,13 @@ def test_the_cli_runs_on_a_synthetic_field(capsys):
     assert st.main(["--synthetic", "--sims", "300"]) == 0
     text = capsys.readouterr().out
     assert "30 teams, 3 rounds so far" in text and "risk multiplier k" in text and "relative hedge h" in text
-    assert "score 10/20/30/40" in text and "least chance of losing a place at k" in text
+    assert "real z 0.8/1/1/1.2" in text and "least chance of losing a place at k" in text and "pnl summed" not in text
+    assert st.main(["--synthetic", "--sims", "100", "--scorings", "all"]) == 0
+    text = capsys.readouterr().out
+    assert all(name in text for name in ("real z 0.8/1/1/1.2", "pnl summed", "pnl 10/20/30/40", "score 10/20/30/40", "score equal"))
+    with pytest.raises(SystemExit):
+        st.main(["--synthetic", "--scorings", "real,ranked"])
+    assert "unknown scorings" in capsys.readouterr().err
 
 
 def test_proxy_growth_is_the_ratio_of_the_proxy_fields_spreads(data_dir):

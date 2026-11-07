@@ -34,9 +34,14 @@ The next round, simulated --sims times (seeded):
     don't trade it for its own sake (Frankfurt Hedgehogs kept mean-reversion exposure they no longer
     believed in because several top teams traded only that; ON_THE_DAY.md, "How is PnL scored?").
 
-The rounds combine in four ways, since the Technical Rules aren't out: PnL summed; PnL weighted
-(--weights, the site's unconfirmed 10/20/30/40%); and each round's PnL over the round's largest
-|PnL| (a score that doesn't let the biggest round's scale decide), weighted and equal. For each:
+The rounds combine by the real rule by default (ON_THE_DAY.md, "Known so far", the 7 Nov site block):
+Score = 0.8·z1 + z2 + z3 + 1.2·z4, z_r a team's PnL in round r standardised over the teams with
+positive PnL that round (their mean and population sd); a team at or below 0 (or missing) is left
+out of the mean and sd and scores (0 − mean) / sd. A round with no positive team, or whose positive
+teams' PnLs are all equal (one team, or a tie: sd 0), scores 0 for everyone: it separates no one.
+Fewer rounds than weights is fine (rounds 1–3 known, round 4 simulated). --scorings selects the
+four earlier assumptions as well: PnL summed; PnL weighted (--weights, the site's superseded
+10/20/30/40%); and each round's PnL over the round's largest |PnL|, weighted and equal. For each:
 our rank now, then after the next round for each k (the hedge at 0) and each h (at --k), as the
 mean rank, the chance of 1st, of the top 3, and of losing a place (a worse rank than now).
 """
@@ -56,7 +61,9 @@ from pathlib import Path
 
 from experiments.day import leaderboard_curves as lc
 
-WEIGHTS = (0.1, 0.2, 0.3, 0.4)  # the site's unconfirmed round weights (ON_THE_DAY.md, "Known so far")
+REAL_WEIGHTS = (0.8, 1.0, 1.0, 1.2)  # the real rule's round weights (the site's code, ON_THE_DAY.md, "Known so far")
+WEIGHTS = (0.1, 0.2, 0.3, 0.4)  # the site's superseded 10/20/30/40% strings, for the assumed weighted scorings
+SCORINGS = ("real", "summed", "weighted", "max-weighted", "max-equal")  # --scorings' choices; "all" is every one
 MULTIPLIERS = (0.25, 0.5, 0.75, 1.0, 1.25, 1.5)
 HEDGES = (0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5)
 SIMS = 5000
@@ -100,18 +107,43 @@ def board_of(rounds: list[list[lc.Team]]) -> Board:
 class Scoring:
     name: str
     weights: tuple[float, ...]  # one per round, the next one's last
-    normalise: bool  # each round's PnL over the round's largest |PnL|
+    kind: str  # "pnl" raw, "max" over the round's largest |PnL|, "z" standardised over the positive teams (the real rule)
 
 
-def scorings(weights: tuple[float, ...]) -> list[Scoring]:
+def scorings(weights: tuple[float, ...], names=("real",), real_weights: tuple[float, ...] = REAL_WEIGHTS) -> list[Scoring]:
+    """The scorings `names` (SCORINGS' keys) for len(weights) rounds: the real rule takes the first that
+    many of real_weights, the assumed weighted ones `weights` itself."""
+    n = len(weights)
+    if "real" in names and len(real_weights) < n:
+        raise ValueError(f"{n} rounds, but the real rule has {len(real_weights)} weights")
     shown = "/".join(f"{w * 100:g}" for w in weights)
     ones = tuple(1.0 for _ in weights)
-    return [Scoring("pnl summed", ones, False), Scoring(f"pnl {shown}", weights, False),
-            Scoring(f"score {shown}", weights, True), Scoring("score equal", ones, True)]
+    real = tuple(real_weights[:n])
+    built = {"real": Scoring("real z " + "/".join(f"{w:g}" for w in real), real, "z"),
+             "summed": Scoring("pnl summed", ones, "pnl"), "weighted": Scoring(f"pnl {shown}", weights, "pnl"),
+             "max-weighted": Scoring(f"score {shown}", weights, "max"), "max-equal": Scoring("score equal", ones, "max")}
+    unknown = [name for name in names if name not in built]
+    if unknown:
+        raise ValueError(f"unknown scorings {unknown}: choose from {', '.join(SCORINGS)} or all")
+    return [built[name] for name in names]
 
 
-def round_score(values: list[float], normalise: bool) -> list[float]:
-    if not normalise:
+def positive_z(values: list[float]) -> list[float]:
+    """The real rule's z for one round: each PnL, floored at 0, less the mean of the positive PnLs, over
+    their population sd; all 0 when no PnL is positive or the positive ones are all equal (sd 0)."""
+    positive = [v for v in values if v > 0]
+    if not positive:
+        return [0.0 for _ in values]
+    mu, sigma = statistics.fmean(positive), statistics.pstdev(positive)
+    if sigma <= 0:
+        return [0.0 for _ in values]
+    return [(max(v, 0.0) - mu) / sigma for v in values]
+
+
+def round_score(values: list[float], kind: str) -> list[float]:
+    if kind == "z":
+        return positive_z(values)
+    if kind == "pnl":
         return list(values)
     top = max((abs(v) for v in values), default=0.0)
     return [v / top for v in values] if top > 0 else [0.0 for _ in values]
@@ -121,7 +153,7 @@ def totals(board: Board, scoring: Scoring) -> list[float]:
     """Each team's total over the rounds so far under the scoring."""
     out = [0.0] * len(board.teams)
     for r, values in enumerate(board.pnl):
-        for i, s in enumerate(round_score(values, scoring.normalise)):
+        for i, s in enumerate(round_score(values, scoring.kind)):
             out[i] += scoring.weights[r] * s
     return out
 
@@ -320,17 +352,22 @@ class Result:
     k: float
 
 
-def simulate(board: Board, us: int, ours: tuple[float, float], field: Field, weights: tuple[float, ...], multipliers=MULTIPLIERS,
+def simulate(board: Board, us: int, ours: tuple[float, float], field: Field, weights: tuple[float, ...] = WEIGHTS, multipliers=MULTIPLIERS,
              hedges=HEDGES, k: float = 1.0, hedge_edge: float = 0.0, our_loading: float = 0.0, sims: int = SIMS, seed: int = 0,
-             mean_power: float = 1.0, growth_sd: float = 0.0) -> Result:
-    """Our rank now and after the next round, per scoring, for each multiplier (hedge 0) and each hedge (at
-    multiplier k). A multiplier m scales our mean by m ** mean_power and our sd by m. With growth_sd, the
-    other teams' PnL is scaled each simulation by exp(N(0, growth_sd)): a next round bigger or smaller
-    than the last, which our own distribution (backtests on the next round's data) already knows."""
+             mean_power: float = 1.0, growth_sd: float = 0.0, names=("real",)) -> Result:
+    """Our rank now and after the next round, per scoring (`names`, SCORINGS' keys; `weights` serves the
+    assumed weighted ones), for each multiplier (hedge 0) and each hedge (at multiplier k). A multiplier m
+    scales our mean by m ** mean_power and our sd by m. With growth_sd, the other teams' PnL is scaled each
+    simulation by exp(N(0, growth_sd)): a next round bigger or smaller than the last, which our own
+    distribution (backtests on the next round's data) already knows."""
     rounds = len(board.pnl)
-    if len(weights) < rounds + 1:
-        raise ValueError(f"{rounds} rounds so far need {rounds + 1} weights, not {len(weights)}")
-    chosen = scorings(tuple(weights[: rounds + 1]))
+    if any(name in ("weighted", "max-weighted") for name in names):
+        if len(weights) < rounds + 1:
+            raise ValueError(f"{rounds} rounds so far need {rounds + 1} weights, not {len(weights)}")
+        weights = tuple(weights[: rounds + 1])
+    else:
+        weights = tuple(1.0 for _ in range(rounds + 1))
+    chosen = scorings(weights, names)
     past = {s.name: totals(board, s) for s in chosen}
     now = {s.name: rank_of(past[s.name], us) for s in chosen}
     gap = {}
@@ -350,6 +387,7 @@ def simulate(board: Board, us: int, ours: tuple[float, float], field: Field, wei
     hedged = {(s.name, h): Tally() for s in chosen for h in hedges}
     configs = [("risk", m, m, 0.0) for m in multipliers] + [("hedge", h, k, h) for h in hedges]
     w_next = {s.name: s.weights[rounds] for s in chosen}
+    past_others = {s.name: [past[s.name][i] for i in others] for s in chosen}
     for _ in range(sims):
         bet = rng.gauss(0, 1)
         scale = math.exp(rng.gauss(0, growth_sd)) if growth_sd else 1.0
@@ -358,22 +396,42 @@ def simulate(board: Board, us: int, ours: tuple[float, float], field: Field, wei
         bet_pnl = scale * field.sd * luck * math.sqrt(c) * bet  # what the field's bet makes for a team of loading 1
         eta = rng.gauss(0, 1)
         top = max((abs(v) for v in x), default=0.0)
+        floored = [max(v, 0.0) for v in x]  # the real rule: a loss scores as 0, and only the positive enter mu and sigma
+        positive = sum(v > 0 for v in x)
+        s1, s2 = sum(floored), sum(v * v for v in floored)
         fixed = {}
         for s in chosen:
-            denominator = top if s.normalise else 1.0
-            fixed[s.name] = sorted(past[s.name][i] + w_next[s.name] * (v / denominator if denominator > 0 else 0.0)
-                                   for i, v in zip(others, x))
-        for kind, key, mult, h in configs:
+            if s.kind != "z":
+                denominator = top if s.kind == "max" else 1.0
+                fixed[s.name] = sorted(past[s.name][i] + w_next[s.name] * (v / denominator if denominator > 0 else 0.0)
+                                       for i, v in zip(others, x))
+        for table, key, mult, h in configs:
             y = mult**mean_power * mean + mult * sd * eta + (h + our_loading) * bet_pnl + h * hedge_edge
+            tallies = risk if table == "risk" else hedged
             for s in chosen:
-                if s.normalise and abs(y) > top:  # we set the round's scale: everyone's score moves
-                    theirs = sorted(past[s.name][i] + w_next[s.name] * v / abs(y) for i, v in zip(others, x))
-                    mine = past[s.name][us] + w_next[s.name] * y / abs(y)
+                w = w_next[s.name]
+                if s.kind == "z":
+                    ours_floored = max(y, 0.0)
+                    n = positive + (y > 0)
+                    mu = (s1 + ours_floored) / n if n else 0.0
+                    sigma = math.sqrt(max(0.0, (s2 + ours_floored**2) / n - mu * mu)) if n else 0.0
+                    if sigma <= 1e-6 * max(1.0, mu):  # no positive team, or all equal: the round scores 0 for everyone
+                        mine = past[s.name][us]
+                        rank = 1 + sum(p > mine for p in past_others[s.name])
+                    else:
+                        mine = past[s.name][us] + w * (ours_floored - mu) / sigma
+                        rank = 1 + sum(p + w * (f - mu) / sigma > mine for p, f in zip(past_others[s.name], floored))
+                    tallies[(s.name, key)].add(rank, now[s.name])
+                    continue
+                normalise = s.kind == "max"
+                if normalise and abs(y) > top:  # we set the round's scale: everyone's score moves
+                    theirs = sorted(past[s.name][i] + w * v / abs(y) for i, v in zip(others, x))
+                    mine = past[s.name][us] + w * y / abs(y)
                 else:
                     theirs = fixed[s.name]
-                    mine = past[s.name][us] + w_next[s.name] * (y / top if s.normalise and top > 0 else (0.0 if s.normalise else y))
+                    mine = past[s.name][us] + w * (y / top if normalise and top > 0 else (0.0 if normalise else y))
                 rank = 1 + len(theirs) - bisect.bisect_right(theirs, mine)
-                (risk if kind == "risk" else hedged)[(s.name, key)].add(rank, now[s.name])
+                tallies[(s.name, key)].add(rank, now[s.name])
     return Result(chosen, now, gap, risk, hedged, k)
 
 
@@ -467,6 +525,14 @@ def _floats(text: str) -> tuple[float, ...]:
     return tuple(float(x) for x in text.split(","))
 
 
+def _names(text: str) -> tuple[str, ...]:
+    names = SCORINGS if text == "all" else tuple(x.strip() for x in text.split(",") if x.strip())
+    unknown = [name for name in names if name not in SCORINGS]
+    if unknown:
+        raise argparse.ArgumentTypeError(f"unknown scorings {unknown}: choose from {', '.join(SCORINGS)} or all")
+    return names
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="python -m experiments.day.standings", description=__doc__.split("\n\n")[0])
     parser.add_argument("--rounds", nargs="+", type=Path, help="the leaderboards so far, round 1 first")
@@ -474,7 +540,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ours", help="our per-day PnL in the next round: numbers (a,b,c), a file of them, or an arena.grid --out CSV")
     parser.add_argument("--where", action="append", default=[], metavar="PATH=VALUE", help="the grid CSV's row (repeatable; default: its best by PnL)")
     parser.add_argument("--days-per-round", type=int, default=1, help="days the round's private run sums (default: 1)")
-    parser.add_argument("--weights", type=_floats, default=WEIGHTS, help="the rounds' weights, the next round's last (default: 0.1,0.2,0.3,0.4)")
+    parser.add_argument("--scorings", type=_names, default=("real",),
+                        help=f"the ways the rounds combine, comma-separated: {', '.join(SCORINGS)}, or all (default: real, "
+                             "0.8·z1 + z2 + z3 + 1.2·z4 over the teams with positive PnL)")
+    parser.add_argument("--weights", type=_floats, default=WEIGHTS,
+                        help="the assumed weighted scorings' round weights, the next round's last (default: 0.1,0.2,0.3,0.4; the real rule's are fixed)")
     parser.add_argument("--multipliers", type=_floats, default=MULTIPLIERS, help="risk multipliers k to try (default: 0.25 to 1.5)")
     parser.add_argument("--hedges", type=_floats, default=HEDGES, help="hedge shares h to try (default: 0 to 1.5)")
     parser.add_argument("--k", type=float, default=1.0, help="the risk multiplier the hedge table holds (default: 1)")
@@ -528,7 +598,7 @@ def main(argv: list[str] | None = None) -> int:
         ours = our_round(days, args.days_per_round)
         growth_sd = growth_spread(board) if args.growth_sd is None else args.growth_sd
         result = simulate(board, us, ours, field, args.weights, args.multipliers, args.hedges, args.k, args.hedge_edge, args.our_loading,
-                          args.sims, args.seed, args.mean_power, growth_sd)
+                          args.sims, args.seed, args.mean_power, growth_sd, args.scorings)
     except (ValueError, OSError, ImportError, json.JSONDecodeError, KeyError, StopIteration) as error:
         parser.error(str(error))
     print(format_result(board, us, ours, field, result))
