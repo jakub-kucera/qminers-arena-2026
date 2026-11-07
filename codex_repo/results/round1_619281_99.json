@@ -150,7 +150,11 @@
     "gross_pnl_before_penalty": 620892.0
   },
   "ast_equivalent_except_module_docstring": true,
-  "official_cli_match": false,
-  "verification": "Full audited replay passed private-event ledger checks; separate CLI verification pending.",
-  "limitation": "Sample tuning on consumed round1.csv, using causal inputs and unchanged native latency and penalties."
+  "official_cli_match": true,
+  "verification": "Every result field exactly matches the unmodified organizer CLI.",
+  "limitation": "Sample tuning on consumed round1.csv, using causal inputs and unchanged native latency and penalties.",
+  "official_cli_result": "logs/round1/claude_count_refine/official_619281/result.json",
+  "data_file": "data/round1.csv",
+  "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+  "tests_passed": 56
 }

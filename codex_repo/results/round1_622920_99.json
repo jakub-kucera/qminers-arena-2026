@@ -1,0 +1,156 @@
+{
+  "name": "group_tau1000000_cap20",
+  "file": "strategies/round1_quote_flow_622921.py",
+  "source_sha256": "5eeb9efb3fa692c181cda46cc81ef222cb830c4b82035ab753d64ce41b580d8e",
+  "result": {
+    "result": {
+      "fills": 21462,
+      "traded_volume": 2118528,
+      "inventory": 100,
+      "cash": -378169.0,
+      "mark_price": 10029.0,
+      "breach_penalty": 1810.0100000000002,
+      "pnl": 622920.99,
+      "pnl_se": 11172.840058376383,
+      "abs_inventory_q50": 97,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 226.39841712499037,
+    "max_abs_inventory": 256,
+    "max_potential_inventory_at_submission": 303,
+    "max_drawdown_1s": 894.0,
+    "submissions": 73318,
+    "order_status_counts": {
+      "accepted": 73318,
+      "partially_filled": 17841,
+      "canceled": 57697,
+      "filled": 15620,
+      "rejected": 128
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 600.0,
+        "pnl_increment": 26913.0
+      },
+      {
+        "start_s": 600.0,
+        "end_s": 1200.0,
+        "pnl_increment": 31439.989999999998
+      },
+      {
+        "start_s": 1200.0,
+        "end_s": 1800.0,
+        "pnl_increment": 28884.000000000007
+      },
+      {
+        "start_s": 1800.0,
+        "end_s": 2400.0,
+        "pnl_increment": 31852.0
+      },
+      {
+        "start_s": 2400.0,
+        "end_s": 3000.0,
+        "pnl_increment": 28946.999999999985
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 3600.0,
+        "pnl_increment": 35717.0
+      },
+      {
+        "start_s": 3600.0,
+        "end_s": 4200.0,
+        "pnl_increment": 31928.0
+      },
+      {
+        "start_s": 4200.0,
+        "end_s": 4800.0,
+        "pnl_increment": 31029.0
+      },
+      {
+        "start_s": 4800.0,
+        "end_s": 5400.0,
+        "pnl_increment": 33087.0
+      },
+      {
+        "start_s": 5400.0,
+        "end_s": 6000.0,
+        "pnl_increment": 32063.0
+      },
+      {
+        "start_s": 6000.0,
+        "end_s": 6600.0,
+        "pnl_increment": 31380.0
+      },
+      {
+        "start_s": 6600.0,
+        "end_s": 7200.0,
+        "pnl_increment": 34056.0
+      },
+      {
+        "start_s": 7200.0,
+        "end_s": 7800.0,
+        "pnl_increment": 31601.0
+      },
+      {
+        "start_s": 7800.0,
+        "end_s": 8400.0,
+        "pnl_increment": 31837.0
+      },
+      {
+        "start_s": 8400.0,
+        "end_s": 9000.0,
+        "pnl_increment": 32370.0
+      },
+      {
+        "start_s": 9000.0,
+        "end_s": 9600.0,
+        "pnl_increment": 29653.0
+      },
+      {
+        "start_s": 9600.0,
+        "end_s": 10200.0,
+        "pnl_increment": 28295.0
+      },
+      {
+        "start_s": 10200.0,
+        "end_s": 10800.0,
+        "pnl_increment": 31554.0
+      },
+      {
+        "start_s": 10800.0,
+        "end_s": 11400.0,
+        "pnl_increment": 30991.0
+      },
+      {
+        "start_s": 11400.0,
+        "end_s": 11999.990364,
+        "pnl_increment": 29324.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "source": "logs/round1/claude_final_combos/sources/group_tau1000000_cap20.py",
+    "source_sha256": "ce115fbcd92c999ae8b03b37cfb60f5f24af7618dc4412a347e337d0993d534e",
+    "gross_pnl_before_penalty": 624731.0
+  },
+  "ast_equivalent_except_module_docstring": true,
+  "official_cli_match": false,
+  "verification": "Full audited replay passed all private-event ledger checks. Separate CLI verification pending.",
+  "limitation": "Sample tuning on consumed data, causal features, unmodified native fees and latency."
+}

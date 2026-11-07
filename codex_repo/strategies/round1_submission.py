@@ -1,11 +1,11 @@
-"""Round-1 market maker with 23 causal public microstructure features.
+"""Round-1 market maker with 29 causal microstructure features.
 
-Extends the supplied 595K model with decayed aggressive-flow and price
-statistics, separating takers still visible after execution. Labels mature
-after 400 ms; training uses a long expanding memory. Pipelined replacements
-can cause brief inventory breaches, charged at the native 10000/second fee.
-The audited round1.csv replay scored 605752.82 net after all penalties.
-This model was tuned on the supplied sample; no independent holdout remains.
+Extends the supplied 595K strategy with fresh quote-price centers,
+cancellation pressure, and count-weighted aggressive-order groups.
+Labels mature after 400 ms; forecasts train online with a long memory.
+Pipelined replacements may briefly breach 100 lots and incur the full
+native fee. Audited round1.csv PnL is 619281.99 net after penalties.
+Sample-tuned on consumed data; no independent holdout remains.
 """
 from collections import deque
 from math import exp, ceil, floor, isfinite
@@ -15,7 +15,7 @@ from simulator.strategy import BaseStrategy
 
 
 class PassiveStrategy(BaseStrategy):
-    FEATURE_COUNT = 23
+    FEATURE_COUNT = 29
     HORIZON_US = 400000
     OBSERVATION_INTERVAL_US = 20000
     MIN_LABELS = 200
@@ -31,10 +31,15 @@ class PassiveStrategy(BaseStrategy):
         self._orders = {}
         self._hedge_id = None
         self._cached_bid = self._cached_ask = self._cached_time = None
-        self._group_net=[0.0,0.0,0.0]
-        self._group_volume=[0.0,0.0,0.0]
-        self._group_price=[0.0,0.0,0.0]
-        self._rest_count_net=self._rest_count=0.0
+        self._known_market = {}
+        self._new_counts = [0.0]*4
+        self._new_values = [0.0]*4
+        self._cancel_net = self._cancel_mass = 0.0
+        self._new_quote_time = None
+        self._second_group_net=[0.0,0.0,0.0]
+        self._second_group_volume=[0.0,0.0,0.0]
+        self._second_group_price=[0.0,0.0,0.0]
+        self._second_rest_count_net=self._second_rest_count=0.0
         self._desired_buy = self._desired_sell = None
         self._desired_time = None
         self._observations = deque(maxlen=64)
@@ -150,36 +155,42 @@ class PassiveStrategy(BaseStrategy):
         now = snapshot.timestamp_us
         elapsed = 0 if self._last_us is None else max(0,now-self._last_us)
         self._last_us = now
-        group_decay=exp(-elapsed/500000)
+        second_group_decay=exp(-elapsed/500000)
         for i in range(3):
-            self._group_net[i]*=group_decay
-            self._group_volume[i]*=group_decay
-            self._group_price[i]*=group_decay
-        self._rest_count_net*=group_decay
-        self._rest_count*=group_decay
+            self._second_group_net[i]*=second_group_decay
+            self._second_group_volume[i]*=second_group_decay
+            self._second_group_price[i]*=second_group_decay
+        self._second_rest_count_net*=second_group_decay
+        self._second_rest_count*=second_group_decay
         if trades:
             visible={o.order_id:o for orders in (snapshot.bids,snapshot.asks) for o in orders if o.owner=='market'}
-            counted=set()
+            arrivals={}
             for trade in trades:
                 if trade.taker_owner!='market':
                     continue
-                direction=1 if trade.book_side=='ask' else -1
-                group=0 if trade.taker_order_id in visible else 1
-                self._group_net[group]+=direction*trade.quantity
-                self._group_volume[group]+=trade.quantity
-                self._group_price[group]+=trade.quantity*trade.price
-                if group==0 and trade.taker_order_id not in counted:
-                    counted.add(trade.taker_order_id)
-                    remaining=visible[trade.taker_order_id]
-                    self._group_net[0]+=direction*remaining.quantity
-                    self._group_volume[0]+=remaining.quantity
-                    self._group_price[0]+=remaining.quantity*remaining.price
-                    self._rest_count_net+=direction
-                    self._rest_count+=1
+                row=arrivals.setdefault(trade.taker_order_id,[1 if trade.book_side=='ask' else -1,0,0.0,0,0.0])
+                row[1]+=trade.quantity
+                row[2]+=trade.quantity*trade.price
                 if trade.maker_owner=='user':
-                    self._group_net[2]+=direction*trade.quantity
-                    self._group_volume[2]+=trade.quantity
-                    self._group_price[2]+=trade.quantity*trade.price
+                    row[3]+=trade.quantity
+                    row[4]+=trade.quantity*trade.price
+            for oid,row in arrivals.items():
+                direction,quantity,value,own,own_value=row
+                group=0 if oid in visible else 1
+                price=visible[oid].price if group==0 else value/max(1,quantity)
+                quantity+=visible[oid].quantity if group==0 else 0
+                weight=min(1,quantity)
+                self._second_group_net[group]+=direction*weight
+                self._second_group_volume[group]+=weight
+                self._second_group_price[group]+=weight*price
+                if group==0:
+                    self._second_rest_count_net+=direction
+                    self._second_rest_count+=1
+                if own:
+                    weight=min(1,own)
+                    self._second_group_net[2]+=direction*weight
+                    self._second_group_volume[2]+=weight
+                    self._second_group_price[2]+=weight*own_value/own
         decay = exp(-elapsed/500_000)
         self._net *= decay
         self._volume *= decay
@@ -231,6 +242,37 @@ class PassiveStrategy(BaseStrategy):
                     self._cancel(order_id)
             return
         self._invalid_since = None
+        dt=0 if self._new_quote_time is None else max(0,now-self._new_quote_time)
+        self._new_quote_time=now
+        decay_new=exp(-dt/500000)
+        for i in range(4):
+            self._new_counts[i]*=decay_new
+            self._new_values[i]*=decay_new
+        self._cancel_net*=decay_new
+        self._cancel_mass*=decay_new
+        current={o.order_id:o for orders in (snapshot.bids,snapshot.asks) for o in orders if o.owner=='market'}
+        for oid,order in current.items():
+            if oid in self._known_market:
+                continue
+            distance=bid-order.price if order.side==Side.BUY else order.price-ask
+            if distance>3:
+                continue
+            index=0 if order.side==Side.BUY else 1
+            self._new_counts[index]+=1
+            self._new_values[index]+=order.price
+            if order.quantity<=50:
+                self._new_counts[index+2]+=1
+                self._new_values[index+2]+=order.price
+        traded={t.maker_order_id for t in trades if t.maker_owner=='market'}
+        for oid,order in self._known_market.items():
+            if oid in current or oid in traded:
+                continue
+            distance=bid-order.price if order.side==Side.BUY else order.price-ask
+            if abs(distance)>3:
+                continue
+            self._cancel_net+=-1 if order.side==Side.BUY else 1
+            self._cancel_mass+=1
+        self._known_market=current
         mid = (bid+ask)*0.5
         spread = ask-bid
         flow = self._net/(1+self._volume)
@@ -287,14 +329,20 @@ class PassiveStrategy(BaseStrategy):
         self._previous_touch = (bid,ask,bq,aq)
         ofi = max(-3,min(3,self._ofi))
         features=(flow,max(-5,min(5,self._fast_mid-self._slow_mid)),imbalance,
-                  ofi,spread*imbalance,flow*abs(flow),imbalance*abs(imbalance),ofi*abs(ofi),count_imbalance,robust_imbalance,depth_count,depth_imbalance,depth_mid,count_imbalance*abs(count_imbalance),robust_imbalance*abs(robust_imbalance),self._group_net[0]/(1+self._group_volume[0]),
-                  self._group_net[1]/(1+self._group_volume[1]),
-                  self._group_net[2]/(1+self._group_volume[2]),
-                  self._group_volume[0]/(1+self._group_volume[0]+self._group_volume[1]),
-                  max(-5,min(5,(self._group_price[0]-mid*self._group_volume[0])/(1+self._group_volume[0]))),
-                  max(-5,min(5,(self._group_price[1]-mid*self._group_volume[1])/(1+self._group_volume[1]))),
-                  max(-5,min(5,(self._group_price[2]-mid*self._group_volume[2])/(1+self._group_volume[2]))),
-                  self._rest_count_net/(1+self._rest_count))
+                  ofi,spread*imbalance,flow*abs(flow),imbalance*abs(imbalance),ofi*abs(ofi),count_imbalance,robust_imbalance,depth_count,depth_imbalance,depth_mid,count_imbalance*abs(count_imbalance),robust_imbalance*abs(robust_imbalance),(self._new_counts[0]-self._new_counts[1])/(1+self._new_counts[0]+self._new_counts[1]),
+                  max(-5,min(5,((self._new_values[0]-mid*self._new_counts[0])/(1+self._new_counts[0])+(self._new_values[1]-mid*self._new_counts[1])/(1+self._new_counts[1]))*0.5)),
+                  max(-5,min(5,((self._new_values[2]-mid*self._new_counts[2])/(1+self._new_counts[2])+(self._new_values[3]-mid*self._new_counts[3])/(1+self._new_counts[3]))*0.5)),
+                  self._cancel_net/(1+self._cancel_mass),
+                  max(-5,min(5,(self._new_values[0]+self._new_values[1]-mid*(self._new_counts[0]+self._new_counts[1]))/(1+self._new_counts[0]+self._new_counts[1]))),
+                  (self._new_counts[2]-self._new_counts[3])/(1+self._new_counts[2]+self._new_counts[3]))
+        features += (self._second_group_net[0]/(1+self._second_group_volume[0]),
+                  self._second_group_net[1]/(1+self._second_group_volume[1]),
+                  self._second_group_net[2]/(1+self._second_group_volume[2]),
+                  self._second_group_volume[0]/(1+self._second_group_volume[0]+self._second_group_volume[1]),
+                  max(-5,min(5,(self._second_group_price[0]-mid*self._second_group_volume[0])/(1+self._second_group_volume[0]))),
+                  max(-5,min(5,(self._second_group_price[1]-mid*self._second_group_volume[1])/(1+self._second_group_volume[1]))),
+                  max(-5,min(5,(self._second_group_price[2]-mid*self._second_group_volume[2])/(1+self._second_group_volume[2]))),
+                  self._second_rest_count_net/(1+self._second_rest_count))
         self._learn(now,mid)
         if now-self._last_observation_us >= self.OBSERVATION_INTERVAL_US:
             self._observations.append((now,mid,features))
