@@ -1,0 +1,656 @@
+{
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "fitting_data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+  "observation_sha256": "1acaeaff71e742c536500790f5050fe41bad0f97306c5280a5a850fa2ee807ad",
+  "models": {
+    "distribution_rich400": {
+      "name": "distribution_rich400",
+      "rich": true,
+      "horizon_us": 400000,
+      "clip": 3,
+      "weight_cap": 20,
+      "depletion_weight": 1,
+      "training_rows": 33296,
+      "training_last_label_before_us": 3599997635,
+      "source_sha256": "963c39a1efa73c21b3d288606afc52e8fc1fb69eaccabf87b4bd06cbc718ceba",
+      "export_max_error": 0.0,
+      "diagnostics": {
+        "fit_first60_400000": {
+          "all": {
+            "n": 33296,
+            "weight_fraction": 1.0,
+            "actual_mean": 0.0714108471798684,
+            "prediction_mean": 0.2078244316666513,
+            "loss_gt3_fraction": 0.033487506006727535
+          },
+          "gate_open": {
+            "n": 25977,
+            "weight_fraction": 0.8022956597764844,
+            "actual_mean": 0.36029020317512545,
+            "prediction_mean": 0.35712073191150223,
+            "loss_gt3_fraction": 0.0064672594987873885
+          },
+          "gate_closed": {
+            "n": 7319,
+            "weight_fraction": 0.1977043402235156,
+            "actual_mean": -1.1008783056631888,
+            "prediction_mean": -0.3980285990342084,
+            "loss_gt3_fraction": 0.12938926082798197
+          },
+          "exhausted_gate_open": {
+            "n": 2911,
+            "weight_fraction": 0.0986233010364839,
+            "actual_mean": 0.07415605828631384,
+            "prediction_mean": 0.3111331941968284,
+            "loss_gt3_fraction": 0.02679491583648231
+          },
+          "surviving_gate_open": {
+            "n": 23066,
+            "weight_fraction": 0.7036723587400006,
+            "actual_mean": 0.40039337556449733,
+            "prediction_mean": 0.3635661218996526,
+            "loss_gt3_fraction": 0.003901846874187115
+          }
+        },
+        "beyond_fit_later40_400000": {
+          "all": {
+            "n": 25353,
+            "weight_fraction": 1.0,
+            "actual_mean": -0.21352631183041462,
+            "prediction_mean": 0.08872288342841961,
+            "loss_gt3_fraction": 0.08283043426813395
+          },
+          "gate_open": {
+            "n": 16926,
+            "weight_fraction": 0.6904906218265667,
+            "actual_mean": 0.2326211723003018,
+            "prediction_mean": 0.3442911454213063,
+            "loss_gt3_fraction": 0.029717594233723266
+          },
+          "gate_closed": {
+            "n": 8427,
+            "weight_fraction": 0.30950937817343327,
+            "actual_mean": -1.2088455992839766,
+            "prediction_mean": -0.48142943048214565,
+            "loss_gt3_fraction": 0.18950990862703215
+          },
+          "exhausted_gate_open": {
+            "n": 2693,
+            "weight_fraction": 0.11051576337434868,
+            "actual_mean": -0.3771368360428283,
+            "prediction_mean": 0.3035520822409612,
+            "loss_gt3_fraction": 0.09097660601559598
+          },
+          "surviving_gate_open": {
+            "n": 14233,
+            "weight_fraction": 0.5799748584522181,
+            "actual_mean": 0.34881219469306873,
+            "prediction_mean": 0.35205408307440894,
+            "loss_gt3_fraction": 0.01812688821752266
+          }
+        },
+        "fit_first60_1000000": {
+          "all": {
+            "n": 33287,
+            "weight_fraction": 1.0,
+            "actual_mean": 0.011599947187747558,
+            "prediction_mean": 0.2077675463979575,
+            "loss_gt3_fraction": 0.05278336888274702
+          },
+          "gate_open": {
+            "n": 25968,
+            "weight_fraction": 0.8022334301557962,
+            "actual_mean": 0.30669065567543474,
+            "prediction_mean": 0.35710840057264975,
+            "loss_gt3_fraction": 0.0205637707948244
+          },
+          "gate_closed": {
+            "n": 7319,
+            "weight_fraction": 0.19776656984420385,
+            "actual_mean": -1.1854255736759323,
+            "prediction_mean": -0.3980285990342084,
+            "loss_gt3_fraction": 0.16709933050963247
+          },
+          "exhausted_gate_open": {
+            "n": 2908,
+            "weight_fraction": 0.0984959070504357,
+            "actual_mean": 0.16414569280758384,
+            "prediction_mean": 0.31095862345121966,
+            "loss_gt3_fraction": 0.06740027510316368
+          },
+          "surviving_gate_open": {
+            "n": 23060,
+            "weight_fraction": 0.7037375231053604,
+            "actual_mean": 0.32664141139354025,
+            "prediction_mean": 0.36356757605855056,
+            "loss_gt3_fraction": 0.014657415437987858
+          }
+        },
+        "beyond_fit_later40_1000000": {
+          "all": {
+            "n": 25348,
+            "weight_fraction": 1.0,
+            "actual_mean": -0.2597206337356213,
+            "prediction_mean": 0.08869198711565673,
+            "loss_gt3_fraction": 0.1299510809531324
+          },
+          "gate_open": {
+            "n": 16922,
+            "weight_fraction": 0.6904617739591404,
+            "actual_mean": 0.1453887296939091,
+            "prediction_mean": 0.344292027523048,
+            "loss_gt3_fraction": 0.06346767521569555
+          },
+          "gate_closed": {
+            "n": 8426,
+            "weight_fraction": 0.3095382260408596,
+            "actual_mean": -1.1633651796731854,
+            "prediction_mean": -0.48145425808644426,
+            "loss_gt3_fraction": 0.2634702112508901
+          },
+          "exhausted_gate_open": {
+            "n": 2693,
+            "weight_fraction": 0.11053407150034399,
+            "actual_mean": -0.5460123301657112,
+            "prediction_mean": 0.3035520822409612,
+            "loss_gt3_fraction": 0.17564054957296696
+          },
+          "surviving_gate_open": {
+            "n": 14229,
+            "weight_fraction": 0.5799277024587964,
+            "actual_mean": 0.2771695945532951,
+            "prediction_mean": 0.35205705065547926,
+            "loss_gt3_fraction": 0.04223768360390751
+          }
+        }
+      }
+    },
+    "distribution_tail400": {
+      "name": "distribution_tail400",
+      "rich": false,
+      "horizon_us": 400000,
+      "clip": 10,
+      "weight_cap": 100,
+      "depletion_weight": 1,
+      "training_rows": 33296,
+      "training_last_label_before_us": 3599997635,
+      "source_sha256": "4292a7da8a4bf576cecfc95d353e3bff5ef6bbc87bbb00cc975e8d00c2bb30b8",
+      "export_max_error": 0.0,
+      "diagnostics": {
+        "fit_first60_400000": {
+          "all": {
+            "n": 33296,
+            "weight_fraction": 1.0,
+            "actual_mean": 0.0714108471798684,
+            "prediction_mean": 0.0747212717267875,
+            "loss_gt3_fraction": 0.033487506006727535
+          },
+          "gate_open": {
+            "n": 23436,
+            "weight_fraction": 0.7273057965382959,
+            "actual_mean": 0.36807947519829964,
+            "prediction_mean": 0.278433288018855,
+            "loss_gt3_fraction": 0.005973715651135006
+          },
+          "gate_closed": {
+            "n": 9860,
+            "weight_fraction": 0.27269420346170414,
+            "actual_mean": -0.7198374084478683,
+            "prediction_mean": -0.4686013526374354,
+            "loss_gt3_fraction": 0.09888438133874239
+          },
+          "exhausted_gate_open": {
+            "n": 2330,
+            "weight_fraction": 0.08034070078813323,
+            "actual_mean": 0.047222569049700014,
+            "prediction_mean": 0.24270545011781156,
+            "loss_gt3_fraction": 0.02832618025751073
+          },
+          "surviving_gate_open": {
+            "n": 21106,
+            "weight_fraction": 0.6469650957501626,
+            "actual_mean": 0.40792377106838995,
+            "prediction_mean": 0.2828700026939897,
+            "loss_gt3_fraction": 0.0035061120060646263
+          }
+        },
+        "beyond_fit_later40_400000": {
+          "all": {
+            "n": 25353,
+            "weight_fraction": 1.0,
+            "actual_mean": -0.21352631183041462,
+            "prediction_mean": -0.09933523549392682,
+            "loss_gt3_fraction": 0.08283043426813395
+          },
+          "gate_open": {
+            "n": 14633,
+            "weight_fraction": 0.6058751370633862,
+            "actual_mean": 0.22024231614987358,
+            "prediction_mean": 0.27141369571536783,
+            "loss_gt3_fraction": 0.030205699446456638
+          },
+          "gate_closed": {
+            "n": 10720,
+            "weight_fraction": 0.3941248629366138,
+            "actual_mean": -0.8803444997852841,
+            "prediction_mean": -0.6692753246292364,
+            "loss_gt3_fraction": 0.1546641791044776
+          },
+          "exhausted_gate_open": {
+            "n": 2061,
+            "weight_fraction": 0.08682658118347543,
+            "actual_mean": -0.572640031988271,
+            "prediction_mean": 0.24153056084527705,
+            "loss_gt3_fraction": 0.11935953420669577
+          },
+          "surviving_gate_open": {
+            "n": 12572,
+            "weight_fraction": 0.5190485558799107,
+            "actual_mean": 0.3528758873055731,
+            "prediction_mean": 0.2764125545050164,
+            "loss_gt3_fraction": 0.015590200445434299
+          }
+        },
+        "fit_first60_1000000": {
+          "all": {
+            "n": 33287,
+            "weight_fraction": 1.0,
+            "actual_mean": 0.011599947187747558,
+            "prediction_mean": 0.07468416348410799,
+            "loss_gt3_fraction": 0.05278336888274702
+          },
+          "gate_open": {
+            "n": 23428,
+            "weight_fraction": 0.7272727752838658,
+            "actual_mean": 0.3097881694092838,
+            "prediction_mean": 0.2784465780128039,
+            "loss_gt3_fraction": 0.01779921461499061
+          },
+          "gate_closed": {
+            "n": 9859,
+            "weight_fraction": 0.27272722471613414,
+            "actual_mean": -0.7835688378785033,
+            "prediction_mean": -0.4686824067842963,
+            "loss_gt3_fraction": 0.13591642154376712
+          },
+          "exhausted_gate_open": {
+            "n": 2328,
+            "weight_fraction": 0.08026036440454186,
+            "actual_mean": 0.049294940548650086,
+            "prediction_mean": 0.2427946428145966,
+            "loss_gt3_fraction": 0.06486254295532647
+          },
+          "surviving_gate_open": {
+            "n": 21100,
+            "weight_fraction": 0.647012410879324,
+            "actual_mean": 0.3421017404037815,
+            "prediction_mean": 0.282869116533891,
+            "loss_gt3_fraction": 0.012606635071090047
+          }
+        },
+        "beyond_fit_later40_1000000": {
+          "all": {
+            "n": 25348,
+            "weight_fraction": 1.0,
+            "actual_mean": -0.2597206337356213,
+            "prediction_mean": -0.09938808303274452,
+            "loss_gt3_fraction": 0.1299510809531324
+          },
+          "gate_open": {
+            "n": 14629,
+            "weight_fraction": 0.6058322717299541,
+            "actual_mean": 0.17345259759178858,
+            "prediction_mean": 0.27141362194781243,
+            "loss_gt3_fraction": 0.051473101373983185
+          },
+          "gate_closed": {
+            "n": 10719,
+            "weight_fraction": 0.39416772827004587,
+            "actual_mean": -0.9255040146822666,
+            "prediction_mean": -0.6693069860227094,
+            "loss_gt3_fraction": 0.23705569549398264
+          },
+          "exhausted_gate_open": {
+            "n": 2061,
+            "weight_fraction": 0.08684096494140744,
+            "actual_mean": -0.6199685115457666,
+            "prediction_mean": 0.24153056084527705,
+            "loss_gt3_fraction": 0.16496846191169334
+          },
+          "surviving_gate_open": {
+            "n": 12568,
+            "weight_fraction": 0.5189913067885467,
+            "actual_mean": 0.306212922901938,
+            "prediction_mean": 0.2764138480163476,
+            "loss_gt3_fraction": 0.03286123488224061
+          }
+        }
+      }
+    },
+    "distribution_queue400": {
+      "name": "distribution_queue400",
+      "rich": true,
+      "horizon_us": 400000,
+      "clip": 10,
+      "weight_cap": 100,
+      "depletion_weight": 4,
+      "training_rows": 33296,
+      "training_last_label_before_us": 3599997635,
+      "source_sha256": "cb926f367ed219fcc824bdd6c94be28949a6eda9e8ef5f7f763e3fa083ab6ab1",
+      "export_max_error": 0.0,
+      "diagnostics": {
+        "fit_first60_400000": {
+          "all": {
+            "n": 33296,
+            "weight_fraction": 1.0,
+            "actual_mean": 0.0714108471798684,
+            "prediction_mean": -0.06404113260864584,
+            "loss_gt3_fraction": 0.033487506006727535
+          },
+          "gate_open": {
+            "n": 20991,
+            "weight_fraction": 0.65113542291415,
+            "actual_mean": 0.4206385564734986,
+            "prediction_mean": 0.24280954859475387,
+            "loss_gt3_fraction": 0.002906007336477538
+          },
+          "gate_closed": {
+            "n": 12305,
+            "weight_fraction": 0.34886457708584995,
+            "actual_mean": -0.5804023408592534,
+            "prediction_mean": -0.6367600648254379,
+            "loss_gt3_fraction": 0.0856562373019098
+          },
+          "exhausted_gate_open": {
+            "n": 2047,
+            "weight_fraction": 0.07023139270659988,
+            "actual_mean": 0.3420823153542567,
+            "prediction_mean": 0.2664787071584482,
+            "loss_gt3_fraction": 0.010258915486077186
+          },
+          "surviving_gate_open": {
+            "n": 18944,
+            "weight_fraction": 0.5809040302075502,
+            "actual_mean": 0.43013601893322473,
+            "prediction_mean": 0.2399479434350725,
+            "loss_gt3_fraction": 0.0021114864864864866
+          }
+        },
+        "beyond_fit_later40_400000": {
+          "all": {
+            "n": 25353,
+            "weight_fraction": 1.0,
+            "actual_mean": -0.21352631183041462,
+            "prediction_mean": -0.30881384439142645,
+            "loss_gt3_fraction": 0.08283043426813395
+          },
+          "gate_open": {
+            "n": 12805,
+            "weight_fraction": 0.5241274957108925,
+            "actual_mean": 0.35012916687366485,
+            "prediction_mean": 0.2537519418283918,
+            "loss_gt3_fraction": 0.01866458414681765
+          },
+          "gate_closed": {
+            "n": 12548,
+            "weight_fraction": 0.47587250428910755,
+            "actual_mean": -0.8343382558577839,
+            "prediction_mean": -0.9284255976371827,
+            "loss_gt3_fraction": 0.14831048772712782
+          },
+          "exhausted_gate_open": {
+            "n": 1763,
+            "weight_fraction": 0.07204254100328952,
+            "actual_mean": -0.15392454118308502,
+            "prediction_mean": 0.29417814070947385,
+            "loss_gt3_fraction": 0.07770845150311968
+          },
+          "surviving_gate_open": {
+            "n": 11042,
+            "weight_fraction": 0.4520849547076029,
+            "actual_mean": 0.43045325099193654,
+            "prediction_mean": 0.24730977634562062,
+            "loss_gt3_fraction": 0.00923745698243072
+          }
+        },
+        "fit_first60_1000000": {
+          "all": {
+            "n": 33287,
+            "weight_fraction": 1.0,
+            "actual_mean": 0.011599947187747558,
+            "prediction_mean": -0.06411251853561191,
+            "loss_gt3_fraction": 0.05278336888274702
+          },
+          "gate_open": {
+            "n": 20983,
+            "weight_fraction": 0.6510784261948772,
+            "actual_mean": 0.366114759935984,
+            "prediction_mean": 0.24282543711905655,
+            "loss_gt3_fraction": 0.013630081494543202
+          },
+          "gate_closed": {
+            "n": 12304,
+            "weight_fraction": 0.3489215738051228,
+            "actual_mean": -0.6499153149089654,
+            "prediction_mean": -0.636850623914926,
+            "loss_gt3_fraction": 0.11955461638491548
+          },
+          "exhausted_gate_open": {
+            "n": 2045,
+            "weight_fraction": 0.07014787430683919,
+            "actual_mean": 0.4337812911725955,
+            "prediction_mean": 0.26662006060785565,
+            "loss_gt3_fraction": 0.05036674816625917
+          },
+          "surviving_gate_open": {
+            "n": 18938,
+            "weight_fraction": 0.580930551888038,
+            "actual_mean": 0.35794396686521357,
+            "prediction_mean": 0.23995221543662637,
+            "loss_gt3_fraction": 0.009663111204984687
+          }
+        },
+        "beyond_fit_later40_1000000": {
+          "all": {
+            "n": 25348,
+            "weight_fraction": 1.0,
+            "actual_mean": -0.2597206337356213,
+            "prediction_mean": -0.30887373374742394,
+            "loss_gt3_fraction": 0.1299510809531324
+          },
+          "gate_open": {
+            "n": 12802,
+            "weight_fraction": 0.5240935136937793,
+            "actual_mean": 0.3098904451072981,
+            "prediction_mean": 0.25377878824023725,
+            "loss_gt3_fraction": 0.040306202155913136
+          },
+          "gate_closed": {
+            "n": 12546,
+            "weight_fraction": 0.4759064863062207,
+            "actual_mean": -0.887006624449356,
+            "prediction_mean": -0.9284965918553895,
+            "loss_gt3_fraction": 0.22142515542802488
+          },
+          "exhausted_gate_open": {
+            "n": 1763,
+            "weight_fraction": 0.07205447562580344,
+            "actual_mean": -0.2749287177221798,
+            "prediction_mean": 0.29417814070947385,
+            "loss_gt3_fraction": 0.14861032331253546
+          },
+          "surviving_gate_open": {
+            "n": 11039,
+            "weight_fraction": 0.4520390380679759,
+            "actual_mean": 0.403109911934105,
+            "prediction_mean": 0.2473391803465599,
+            "loss_gt3_fraction": 0.023009330555303922
+          }
+        }
+      }
+    },
+    "distribution_long1000": {
+      "name": "distribution_long1000",
+      "rich": true,
+      "horizon_us": 1000000,
+      "clip": 10,
+      "weight_cap": 100,
+      "depletion_weight": 1,
+      "training_rows": 33287,
+      "training_last_label_before_us": 3599997635,
+      "source_sha256": "0c42a8f4ea2c14c403a330c5a5124e304c8107abccbe4e72ad09f7b8e35ded5a",
+      "export_max_error": 0.0,
+      "diagnostics": {
+        "fit_first60_400000": {
+          "all": {
+            "n": 33287,
+            "weight_fraction": 1.0,
+            "actual_mean": 0.07143649326643782,
+            "prediction_mean": 0.032521206501781065,
+            "loss_gt3_fraction": 0.033496560218704
+          },
+          "gate_open": {
+            "n": 23422,
+            "weight_fraction": 0.72,
+            "actual_mean": 0.3864987677141097,
+            "prediction_mean": 0.2678243889250243,
+            "loss_gt3_fraction": 0.006660404747673128
+          },
+          "gate_closed": {
+            "n": 9865,
+            "weight_fraction": 0.28,
+            "actual_mean": -0.7387236410275756,
+            "prediction_mean": -0.5725441197294158,
+            "loss_gt3_fraction": 0.09721236695387735
+          },
+          "exhausted_gate_open": {
+            "n": 2719,
+            "weight_fraction": 0.08966781093213626,
+            "actual_mean": 0.09720177164194928,
+            "prediction_mean": 0.33661075921558864,
+            "loss_gt3_fraction": 0.026480323648400146
+          },
+          "surviving_gate_open": {
+            "n": 20703,
+            "weight_fraction": 0.6303321890678637,
+            "actual_mean": 0.42765266846189554,
+            "prediction_mean": 0.2580391941453584,
+            "loss_gt3_fraction": 0.004057382987972757
+          }
+        },
+        "beyond_fit_later40_400000": {
+          "all": {
+            "n": 25353,
+            "weight_fraction": 1.0,
+            "actual_mean": -0.21352631183041462,
+            "prediction_mean": -0.13521972688912393,
+            "loss_gt3_fraction": 0.08283043426813395
+          },
+          "gate_open": {
+            "n": 14985,
+            "weight_fraction": 0.6083357684084445,
+            "actual_mean": 0.2739183989879534,
+            "prediction_mean": 0.3058628409576446,
+            "loss_gt3_fraction": 0.030096763430096762
+          },
+          "gate_closed": {
+            "n": 10368,
+            "weight_fraction": 0.39166423159155545,
+            "actual_mean": -0.9706290258243706,
+            "prediction_mean": -0.8203124190460533,
+            "loss_gt3_fraction": 0.15904706790123457
+          },
+          "exhausted_gate_open": {
+            "n": 2420,
+            "weight_fraction": 0.09577078083456052,
+            "actual_mean": -0.34348991767993353,
+            "prediction_mean": 0.41924587453038703,
+            "loss_gt3_fraction": 0.09834710743801653
+          },
+          "surviving_gate_open": {
+            "n": 12565,
+            "weight_fraction": 0.512564987573884,
+            "actual_mean": 0.38927874941085827,
+            "prediction_mean": 0.2846776606938688,
+            "loss_gt3_fraction": 0.016951850378034223
+          }
+        },
+        "fit_first60_1000000": {
+          "all": {
+            "n": 33287,
+            "weight_fraction": 1.0,
+            "actual_mean": 0.011599947187747558,
+            "prediction_mean": 0.032521206501781065,
+            "loss_gt3_fraction": 0.05278336888274702
+          },
+          "gate_open": {
+            "n": 23422,
+            "weight_fraction": 0.72,
+            "actual_mean": 0.4385855851890972,
+            "prediction_mean": 0.2678243889250243,
+            "loss_gt3_fraction": 0.014046622833233711
+          },
+          "gate_closed": {
+            "n": 9865,
+            "weight_fraction": 0.28,
+            "actual_mean": -1.08636312195858,
+            "prediction_mean": -0.5725441197294158,
+            "loss_gt3_fraction": 0.1447541814495692
+          },
+          "exhausted_gate_open": {
+            "n": 2719,
+            "weight_fraction": 0.08966781093213626,
+            "actual_mean": 0.48895963153616906,
+            "prediction_mean": 0.33661075921558864,
+            "loss_gt3_fraction": 0.05001838911364472
+          },
+          "surviving_gate_open": {
+            "n": 20703,
+            "weight_fraction": 0.6303321890678637,
+            "actual_mean": 0.43141963278800605,
+            "prediction_mean": 0.2580391941453584,
+            "loss_gt3_fraction": 0.009322320436651692
+          }
+        },
+        "beyond_fit_later40_1000000": {
+          "all": {
+            "n": 25348,
+            "weight_fraction": 1.0,
+            "actual_mean": -0.2597206337356213,
+            "prediction_mean": -0.13526669575209804,
+            "loss_gt3_fraction": 0.1299510809531324
+          },
+          "gate_open": {
+            "n": 14982,
+            "weight_fraction": 0.6083157363982745,
+            "actual_mean": 0.22066687992997985,
+            "prediction_mean": 0.30587672300375374,
+            "loss_gt3_fraction": 0.05940461887598451
+          },
+          "gate_closed": {
+            "n": 10366,
+            "weight_fraction": 0.3916842636017255,
+            "actual_mean": -1.0057993284599274,
+            "prediction_mean": -0.8203962977689614,
+            "loss_gt3_fraction": 0.23191202006559908
+          },
+          "exhausted_gate_open": {
+            "n": 2420,
+            "weight_fraction": 0.09578664629545634,
+            "actual_mean": -0.4298768975152934,
+            "prediction_mean": 0.41924587453038703,
+            "loss_gt3_fraction": 0.16859504132231404
+          },
+          "surviving_gate_open": {
+            "n": 12562,
+            "weight_fraction": 0.5125290901028182,
+            "actual_mean": 0.3422471139365214,
+            "prediction_mean": 0.284689143551592,
+            "loss_gt3_fraction": 0.03836968635567585
+          }
+        }
+      }
+    }
+  },
+  "protocol": "Four predeclared mechanisms, unchanged risk parameters; no server/private scores. Queue depletion changes offline weights only and is NOT a runtime feature."
+}
