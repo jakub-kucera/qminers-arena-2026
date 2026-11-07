@@ -29,7 +29,7 @@ It is registered in `python/arena/formats/__init__.py` `FORMATS`, and may set `S
 - **The `LIMITS` table:** the loader raises on any product without a limit.
 - **`ProsperityBot`:** it builds a `TradingState`, calls `Trader().run(state)`, type-checks the returned `(orders, conversions, traderData)`, and converts the orders.
 
-`prosperity_datamodel.py` is our own copy of IMC's `datamodel` module, without jsonpickle. The day's format is `python/arena/formats/qminers.py`, registered now as a skeleton (`SKELETON = True`, a copy of `snapshots.py` with `# TODO(day)` markers) and filled in by `ON_THE_DAY.md`, "The format swap, step by step". When `python/bots/template.py`'s DEFAULTS, STRATEGY or EXECUTION change, run `uv run python -m experiments.format_drill --sync` to copy them into every `python/bots/<format>/template.py` (`python/tests/test_drill.py` fails until you do).
+`prosperity_datamodel.py` is our own copy of IMC's `datamodel` module, without jsonpickle. The day's format is `python/arena/formats/qminers.py` (`SKELETON = False`): only its `SANDBOX` and `PROVIDED_MODULES` are used, by `arena.validate`'s sandbox and import checks; its loader (`snapshots.py`'s) is unused, since the Arena bot's backtests run on their simulator (`exchange-simulator`, `arena.qgrid`; `ON_THE_DAY.md`, "The format swap, step by step"). When `python/bots/template.py`'s DEFAULTS, STRATEGY or EXECUTION change, run `uv run python -m experiments.format_drill --sync` to copy them into every `python/bots/<format>/template.py` (`python/tests/test_drill.py` fails until you do).
 
 **Bot loading** (`python/arena/botfile.py`). `BotFile` compiles the bot source once. Each `load()` execs it into a fresh module, then:
 - **Injects provided modules:** the format's modules go into `sys.modules`, so `from datamodel import ...` resolves to ours.
@@ -159,7 +159,7 @@ between calls.
 `python/bots/zoo/` holds bots written blind by language models from `python/bots/zoo/SPEC.md` and `PROMPTS.md`: the agent baseline and `--vs` rivals. Never edit a zoo bot or a prompt once used; its README has the protocol for adding other providers' bots. Each zoo bot has a Rust twin (`rust/src/bots/zoo/`), and `python/tests/test_rust.py` fails until a new one has its own.
 
 New strategy logic goes in STRATEGY, order-management changes go in EXECUTION, and format changes go in ADAPTER. `python/bots/datamodel.py` only
-lets editors resolve imports; it is never submitted. `python/bots/probe.py` runs `ON_THE_DAY.md`'s probes in a schedule of tick windows and prints a `PROBE` line per finding and a `SEEN` line per tick (Prosperity format; `python/bots/qminers/probe.py` is its copy for the day, where only its ADAPTER, `PRODUCT` and `LIMIT` change); `python/tests/test_probe.py` checks its findings against the engine's known behaviour in both modes.
+lets editors resolve imports; it is never submitted. `python/bots/probe.py` runs `ON_THE_DAY.md`'s probes in a schedule of tick windows and prints a `PROBE` line per finding and a `SEEN` line per tick (Prosperity format; `python/bots/qminers/probe.py` is its copy for the day, still the Prosperity probe and optional now that their simulator runs locally); `python/tests/test_probe.py` checks its findings against the engine's known behaviour in both modes.
 
 ## Known gaps
 

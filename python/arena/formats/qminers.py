@@ -1,19 +1,13 @@
-"""DAY-OF SKELETON: the Arena's format, already registered as `--format qminers`. Fill it in on the day.
+"""The Arena's format, registered as `--format qminers`: only SANDBOX and PROVIDED_MODULES are used.
 
-Until then it is python/arena/formats/snapshots.py word for word (`diff` shows only the TODO(day) markers and
-this docstring), and SKELETON = True keeps the scaffold tests on it. On the day follow ON_THE_DAY.md, "The format
-swap, step by step": set SKELETON = False, then replace the two halves separately:
-  - the loader (FILES, COLUMNS, DELIMITER, DEPTH, PRICE_SCALE, resolve_data_dir .. _tick): rename the fields for
-    CSV snapshots; for an order-by-order log take orderlog.py's loader, for book changes drill.py's;
-  - the wrapper (PROVIDED_MODULES, RESTING, ENTRY, load_bot, check_source, the bot class): a bot answering a
-    state with orders stays as it is, renamed; a callback API with ids and resting orders takes drill.py's
-    wrapper and RESTING = True.
-Rules for the loader: integer prices in one unit (1 / PRICE_SCALE), `Day.info[p] = {"tick", "unit"}`, a limit for
-every product or raise, books best first with positive volumes, the taker side kept, timestamps mapped onto
-0..999,900 in steps of 100. Their SDK or module file is copied unchanged into python/arena/formats/ and named in
-PROVIDED_MODULES, never retyped.
+They serve arena.validate's sandbox check (validate.sandbox_bans) and its import check. The day's bot,
+python/bots/qminers/template.py (`ArenaBot`, a BaseStrategy subclass), runs on the organisers' own simulator
+(`uv run exchange-simulator`; grids with arena.qgrid), so the rest of this file, snapshots.py's loader and
+wrapper (SKELETON = False since 7 Nov), is unused: its `Strategy` entry is the skeleton's, not theirs, and
+arena.validate FAILs the Arena bot's entry point and replays nothing (ON_THE_DAY.md, "The format swap, step
+by step", step 4). The TODO(day) markers below are the skeleton's, left as they were.
 
-Until then (snapshots.py's layout and API):
+The unused half (snapshots.py's layout and API):
 
 Data layout (the names in FILES and COLUMNS):
     <data>/limits.json        {"KELP": 50, ...}
@@ -43,9 +37,9 @@ from arena.formats import snapshots_api as api
 from arena.model import Book, Cancel, Day, MarketTrade, OpenOrder, Order, Tick
 
 PROVIDED_MODULES = {"simulator", "numpy", "pandas", "scipy", "sklearn"}  # what a submission may import besides the standard library (STARTER.md)
-RESTING = False  # TODO(day): True if their orders rest until cancelled: the CLI then runs as with --resting
+RESTING = False  # unused (their simulator: G orders rest); was TODO(day): True if their orders rest until cancelled
 CREDITS = 1.0  # TODO(day): the credits a lot one unit of their quoted price is worth, if not 1 (formats/__init__.py)
-ENGINE: dict = {}  # TODO(day): the engine settings their rules fix, e.g. {"queue": "prob", "fee": 1, "maker_fee": 0, "mark": "touch"} (arena.cli.format_config)
+ENGINE: dict = {}  # unused (their simulator fixes the rules); was TODO(day): the engine settings their rules fix, e.g. {"queue": "prob", "fee": 1, "maker_fee": 0, "mark": "touch"} (arena.cli.format_config)
 SKELETON = False  # the Arena's bot (python/bots/qminers/template.py) is written; its backtests run on their simulator (exchange-simulator), so this loader half is unused
 FILES = {  # TODO(day): their file names
     "limits": "limits.json", "book": "{day}_book.csv", "trades": "{day}_trades.csv"}
@@ -67,7 +61,7 @@ SANDBOX = {  # what their sandbox rejects before a bot runs (STARTER.md, "Writin
     "public": {"simulator.models": "*", "simulator.strategy": {"BaseStrategy"}},  # module: its public names ("*": any without an underscore)
 }
 
-# ---------------------------------------------------------------------------- data (TODO(day): the loader half)
+# ---------------------------------------------------------------------------- data (unused: the skeleton's loader half)
 
 
 def resolve_data_dir(arg: str) -> Path:
@@ -148,7 +142,7 @@ def _tick(ticks: list[Tick], product: str) -> int:
 # ---------------------------------------------------------------------------- bot
 
 
-# TODO(day): the wrapper half: load_bot, check_source and the bot class below
+# unused for the Arena bot (the skeleton's wrapper half): load_bot, check_source and the bot class below
 def load_bot(path: Path, overrides: dict[str, object], strict: bool, fresh_each_tick: bool = False):
     return SnapshotBot(BotFile(path, {"api": api}, overrides, strict), fresh_each_tick)
 
