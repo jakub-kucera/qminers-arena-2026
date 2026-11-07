@@ -1,0 +1,47 @@
+# Round 1 candidates (7 Nov, 13:00-18:00)
+
+The template (`docs/CANDIDATES_TEMPLATE.md`) for the improvement loop's state (`KICKOFF_PROMPT.md`, "The improvement
+loop"): copy it to `data/arena/round<N>/CANDIDATES.md` once the round's first upload has completed, fill in "Round",
+and leave the template as it is. The loop reads this file at the start of every iteration and writes it at the end,
+so a compacted or restarted session, or the other laptop, picks up where it was. Committed (`.gitignore` keeps it).
+
+## Round
+- Deadline <the dashboard's submission deadline, HH:MM> (the round ends 18:00); freeze <deadline - 0:30>; E = <minutes an evaluation took>.
+- T = 0 on the public data (the portal is byte-identical to `exchange-simulator`; ON_THE_DAY.md, "From the playground"); recheck on the first upload.
+- Data: D = data/arena/round1/<file>.csv (unzipped: `uv run python -m gzip -d`), one hour, one instrument. Training: the first 75% of the hour. Held out: the last 25% (`arena.qgrid --holdout 0.25`), never used to choose a setting. Repeats: none possible (one file).
+- The gate: their simulator, no fill model to choose; a change is kept only if it beats its parent on the first 75% and on the last 25%.
+- Calibrated settings: none needed (their own simulator).
+- Scoring: `0.8·z1 + z2 + z3 + 1.2·z4`, each round's private PnL standardised over the teams with positive PnL, a zero or negative PnL scored as 0 (ON_THE_DAY.md, "How is PnL scored?"); this round's weight: 0.8.
+- Uploads left: 10. The spending rule's budget of disagreeing scores left: 2 (with T = 0 a public score only confirms the local run; it says nothing about the private hour).
+- The final rule, written now: the verified candidate with the best last-25% PnL among those that beat A0 on both parts of the hour and stay within the limit with no breach; between two within 5% of each other, the one with the smaller max drawdown and the fewer settings changed from its file's defaults. A market-making candidate is preferred over a momentum one only if round_start's verdict is not MOMENTUM.
+
+## Board
+At most six live candidates; each must differ in kind from the others (the loop's step 2). Every number comes from a
+command in "Trials". Pluses and minuses are measured facts, not hopes.
+
+| id | file | what it is | pnl per gate mode | held out | worst day | stress worst | max dd | \|pos\| 99.7% | relies on | pluses | minuses | verified | portal |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| A0 | <the first upload's file> | the baseline, as uploaded | | | | | | | | | | n/a | <score> |
+| M1 | python/bots/qminers/candidates/r0_M1_runner.py | the momentum runner, sample's best cell (flow entry, 3-tick trail, ±100) | sample +297,208 | sample +67,065 | | | 1,115 | 100 | the tape's aggressive trades continuing for seconds | biggest on the sample, broad plateau | at ±100 all hour; flips pay the spread on 200 lots; lost 1.7M on a non-momentum synthetic tape | re-measure | |
+| R2 | python/bots/qminers/families/momentum_runner.py --set FLOW_WINDOW_MS=2000 | the runner with a 2 s flow window | sample +305,374 | sample +71,955 | | | 987 | 100 | as M1 | less flip churn | as M1 | re-measure | |
+| T1 | python/bots/qminers/template.py, the momentum PARAMS (lin_momentum 2 / 20 events, take_edge 2.5, clear_edge -1, make_size 0, limit 100) | the template as a momentum taker | sample +211,414 | sample +43,034 | | | | 100 | momentum over 20 events | the template's guards (limit, flatten) | windows count events, not time | re-measure | |
+| P1 | python/bots/qminers/families/protected_maker.py | market maker that pulls quotes after aggressive trades | sample +2,018 | sample +2,592 | | | | 27 | a market that doesn't run after trades | the test of whether making pays here | barely fills on the sample | re-measure | |
+| F1 | python/bots/qminers/candidates/r0_F1_fallback.py | small market maker in their style, ±50 | sample -5,877 | sample -445 | | | | 24 | a spread worth earning | simplest, safe | picked off in momentum | n/a | |
+
+## Dropped
+<!-- id, why (with the numbers), the iteration -->
+
+## Queue
+<!-- the next experiments, best first. Each is pre-registered before it runs: id; the mechanism (why it should work in
+this market, one line, from this data); the exact command; the training days; the rule that keeps it. -->
+1. round_start (pre-registered: no choice made from it beyond which families to grid). `uv run python -m experiments.day.round_start D --jobs 10 --out data/arena/round1/round_start`. Mechanism: tells momentum from reversion on this tape (the mid's move 1/5/30 s after an aggressive trade).
+2. If round_start says MOMENTUM: the runner's grid, `uv run python -m arena.qgrid python/bots/qminers/families/momentum_runner.py D --set SESSION_S=<len> --grid MIN_FLOW=<1,median,p90> --grid TRAIL_TICKS=2,3,5 --grid MAX_POS=50,100 --grid FLOW_WINDOW_MS=0,500,2000 --holdout 0.25 --jobs 10 --sort holdout`. Keep: beats A0 on both parts, no breach, its neighbours within 20%. Mechanism: aggressive trades on this tape are followed by a move their way for seconds.
+3. Whatever the verdict: the protected maker's grid (`--grid PULL_MS=0,500,2000 --grid OFFSET=-1,0,1 --grid QUOTE=5,10`), as the test of whether resting quotes pay on recorded data. Mechanism: if the move after a trade doesn't continue, the spread is worth earning when quotes step out of the way of the trades.
+4. The template as a momentum taker (`arena.qgrid python/bots/qminers/template.py D --set 'PARAMS.ASSET={...T1...}' --set SESSION_US=<len µs> --grid PARAMS.ASSET.lin_window=10,20,50 --grid PARAMS.ASSET.lin_momentum=1,2 --grid PARAMS.ASSET.take_edge=1.5,2.5 --holdout 0.25`), only if 2 confirms momentum.
+
+## Trials
+<!-- every experiment run, in order: time; id; command; cells or bots tried; result; kept or dropped; commit -->
+Trials so far: 0 experiments, 0 cells.
+
+## Verifier verdicts
+<!-- each verifier's report, verbatim, under the candidate's id and the time -->
