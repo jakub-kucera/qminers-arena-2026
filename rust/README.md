@@ -169,11 +169,16 @@ Rust (90x); F1 274 ms, 3.9 ms (70x); parsing the CSV once is 5 ms more. On 4 thr
 (plus the baseline) takes 1.6 s in `arena.qgrid --jobs 4` and 0.2 s in `arena.qsim_rust`, the same table to the
 character; 100 cells take 0.4 s, most of it reading the runs' PnL curves back into Python. The room maker on
 round 1 (4.4M rows, F3 with `SESSION_S` 1e9, 7 Nov, a loaded machine): 0.55 s a run in Rust (parsing the CSV 0.4 s
-more, once a grid) against 26-40 s in Python (`exchange-simulator`), 50-70x; a 6-cell grid on 8 threads takes 1.4 s:
+more, once a grid) against 26-40 s in Python (`exchange-simulator`), 50-70x; a 6-cell grid on 8 threads takes 1.4 s.
+Family 12 on round 1 (7 Nov, `--repeat 5`): R1-F7 as `signal_maker` 0.68 s a run, R1-F6b as `alloc_maker` 0.70 s,
+against 32-38 s in Python (about 50x):
 
 ```sh
 uv run python -m arena.qsim_rust python/bots/qminers/families/room_maker.py data/arena/round1/round1.csv \
     --set SESSION_S=1000000000 --grid DEPLETE_LOTS=0,10,20 --grid BACK_POS=95,1000 --threads 8 --holdout 0.25
+uv run python -m arena.qsim_rust python/bots/qminers/families/signal_maker.py data/arena/round1/round1.csv \
+    --set MOM_LOTS=400 --set MOM_MS=50 --set MOM_BLOCK=0 --set MOM_JOIN=1 --set DEPL_FRAC=0.12 \
+    --grid DYING_DEEP=0,40,80 --grid MOM_SIZE=-1,20 --threads 6     # R1-F7 is the cell DYING_DEEP 80, MOM_SIZE -1
 ```
 
 **A new strategy**: a `Strategy` impl in `src/strategies/`, a name in `strategies::make`, its Python file in
