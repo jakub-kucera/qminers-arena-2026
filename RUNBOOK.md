@@ -41,7 +41,7 @@ here). `D` is `data/arena/round<N>/`, `F` its tape (`D/<file>.csv`), and `BOT` i
 | When | Do |
 |---|---|
 | T+0:00 | Reload the dashboard; download the data (its link goes with the round) and the rules; note the submission deadline (it may come before the end). Write what changed into "Rule changes" and "Products". Unzip the tape. |
-| T+0:15 | Last round's bot (round 1: A0) on the new tape: `uv run exchange-simulator --strategy BOT --backtest F --log-dir logs/<run> --no-logs`, then a full-logs run into `backtest-explorer`; source-check it with `arena.validate`: the first candidate. |
+| T+0:15 | `uv run python -m experiments.day.round_start F --out results/r<N>` (profile, markouts, every candidate ranked, next grids); last round's bot (round 1: A0) on the new tape: `uv run exchange-simulator --strategy BOT --backtest F --log-dir logs/<run> --no-logs`, then a full-logs run into `backtest-explorer`; source-check it with `arena.validate`: the first candidate. |
 | T+0:30 | Rounds 2–4: by T+1:00, one alternative to last round's approach against it, and every setting gridded again; last round's choices are priors, not defaults ["Choose the approach again each round"]. |
 | T+1:00 | `uv run python -m arena.qgrid BOT F --grid PARAMS.ASSET.make_edge=1,2,3 --set 'PARAMS.ASSET={...}' --holdout 0.25 [--out <csv>]` (README.md, "Grid on the Arena's simulator"): take a cell good held out and in its neighbourhood, not the best cell ["Evaluation data"]. |
 | T+1:30 | Size `stop_loss` and `flatten_from` on the PnL path (`logs/<run>/pnl.csv`, qgrid's max drawdown) ["Stress the bot"]. |

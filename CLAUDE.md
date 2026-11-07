@@ -41,6 +41,7 @@ uv run python -m arena.stress python/bots/template.py 1              # perturbed
 uv run python -m arena.sim run python/bots/template.py --days 5      # inside an agent market, against the same days replayed
 uv run python -m arena.analysis results/                             # PNGs and fill tables
 uv run python -m experiments.day.premise --data data/abides --days 1 --engine rust   # Prosperity-like or agent-like, per product
+uv run python -m experiments.day.round_start data/round1.csv.gz [--jobs N] [--out DIR]   # the Arena round's first look: tape profile, markouts, every candidate ranked, next grids
 uv run python -m experiments.day.structure --data D --days all --format qminers      # any day experiment: --data D --days ... --format F --bot BOT
 uv run python -m experiments.format_drill data/drill                # drill-format practice data (--format drill --data data/drill/drill)
 uv run python -m experiments.format_drill --sync                    # the template's DEFAULTS/STRATEGY/EXECUTION into every bots/<format>/template.py
