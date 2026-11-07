@@ -127,6 +127,31 @@ You are verifying one candidate bot for a trading competition. You didn't build 
 Last line: PASS, or FAIL and the one thing to fix first.
 ```
 
+## On the organisers' starter repository alone (7 Nov)
+
+For a teammate's independent attempt in a fresh copy of the organisers' starter (`QminersOrg/qminers-algo-arena`, "Use this template" or a clone), with none of this repo's code: a check on our bot, and a second candidate. Start the agent in that folder.
+
+```text
+You are helping our team in the Qminers Algo Trade Arena, a 24-hour algorithmic trading hackathon in four 5-hour rounds (round 1 13:00-18:00, round 2 19:00-00:00, round 3 01:00-06:00, round 4 07:00-12:00). Each round we upload one Python strategy file; the organisers run it on a private backtest. The score is 0.8*z1 + 1.0*z2 + 1.0*z3 + 1.2*z4, z_r our private PnL in round r standardised against the other teams (a zero or negative PnL counts as 0). This is round <N>; submissions close at <HH:MM>. Run `date` now and keep track of the time.
+
+This folder is the organisers' starter repository. Read README.md in full first: it is the specification (the exchange, the strategy API, matching, latency, limits, scoring, what a submission may import). Then read simulator/ (the exchange: the same code as their scoring) and strategies/ (two examples). Setup: `uv sync`; unzip each data file (`uv run python -m gzip -d data/<file>.csv.gz`); backtest with `uv run exchange-simulator --strategy strategies/<file>.py --backtest data/<file>.csv --log-dir logs/<run> [--no-logs]`; explore a full-logs run with `uv run backtest-explorer --log-dir logs/<run>`. This round's data: data/<file>.csv.gz. Use nothing outside this folder, and no web search, unless I say so.
+
+What we already know (verify it in the code, don't trust it):
+- The portal's evaluation is byte-identical to a local exchange-simulator run on the same data: local results predict the public score exactly. The private run is other data from the same kind of market: don't fit anything to the public hour's particular path.
+- One instrument, a fixed tape (it never reacts to us). Every send, cancel and modify takes effect 5 ms (simulation time) later, so a cancel can lose the race against a fill: count inventory from fills, and count every order that can still fill (sent, resting, being cancelled) against the position limit. |position| > 100 costs 10,000 per second, exactly: never exceed it. Inventory at the end is sold into the book (markout): flatten before the end.
+- Price-time priority: our order joins the back of its price; cancelling and re-posting loses the place. Every tape insert runs as a taker first, so a quote inside the spread is filled by ordinary passive inserts.
+- On the synthetic sample, a market maker's passive fills were picked off (the price moved 3-9 ticks against them within seconds) while their trend follower made money; the rounds are recorded data and look nothing like the sample.
+- Submission rules: one .py file, exactly one BaseStrategy subclass with no constructor arguments; the standard library, numpy, pandas, scipy, scikit-learn, simulator.models and simulator.strategy.BaseStrategy only; no os, sys, io, socket, subprocess, threading, importlib, inspect, gc; no open, eval, exec, getattr, type; no dunder attributes except __init__; no str.format. A real round is about 8.8 million rows and the sandbox allows 15 minutes on 1 CPU: keep each callback light.
+
+Work in this order, and tell me when each step is done:
+1. Read README.md and the simulator; list anything the README leaves open or the code does differently. Look at this round's data: the spread, the depth, how often trades print, how the mid moves after an aggressive trade (continues or reverts, over 1, 5, 30 s), whether it trends or returns to a level.
+2. A first strategy that is safe: within the limit in every case, flat at the end, no errors; run it locally in full. By <T+1h30, HH:MM> give me a file I can upload, with the local PnL and figures the portal should show.
+3. Improve it, one change at a time, choosing on the first 75% of the hour and checking on the last 25% (pnl.csv has the PnL every second); keep a change only if it helps on both, and prefer settings whose neighbours also do well. Keep a log (changes.md): each change, the command, the PnL in both parts, kept or dropped. Commit after each step, and at least every 30 minutes, failed experiments included (the organisers read the history).
+4. At <30 min before the deadline, HH:MM>: stop changing the strategy; give me the final file, its local PnL and figures.
+
+Rules: I upload; never upload yourself. Ask before anything the rules may forbid or any run expected to take over 10 minutes. Every hour, or when blocked, five lines: done, in progress, the current local PnL (both parts), what you need from me, next.
+```
+
 ## Without the repository
 
 For a second, independent attempt: an agent that sees only what the organisers hand out, so it isn't steered (or swamped) by this repo's Prosperity tooling. It is also a check on our own bot: if the clean-room bot beats it, find out why before uploading ours.
