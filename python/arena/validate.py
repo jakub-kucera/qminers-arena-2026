@@ -475,15 +475,19 @@ def sandbox_bans(tree: ast.Module, sandbox: dict | None) -> tuple[list[str], lis
     if not sandbox:
         return [], []
     fails, warns = defaultdict(list), defaultdict(list)
-    modules, builtins = sandbox.get("modules", set()), sandbox.get("builtins", set())
+    modules, builtins, allow = sandbox.get("modules", set()), sandbox.get("builtins", set()), sandbox.get("allow", set())
     public = sandbox.get("public", {})
-    dunder = lambda name: len(name) > 4 and name.startswith("__") and name.endswith("__")
+    dunder = lambda name: len(name) > 4 and name.startswith("__") and name.endswith("__") and name not in allow
+
+    roots = {module.split(".")[0] for module in public}
 
     def module_ban(name: str, line: int) -> None:
         if name.split(".")[0] in modules:
             fails[f"import {name}"].append(line)
-        elif sandbox.get("private_modules") and any(part.startswith("_") for part in name.split(".")):
+        elif sandbox.get("private_modules") and name not in allow and any(part.startswith("_") for part in name.split(".")):
             fails[f"import {name} (a private module)"].append(line)
+        elif name.split(".")[0] in roots and name not in public and name.split(".")[0] != name:
+            fails[f"import {name} (not a public module)"].append(line)
 
     for node in ast.walk(tree):
         line = getattr(node, "lineno", 0)
@@ -492,15 +496,18 @@ def sandbox_bans(tree: ast.Module, sandbox: dict | None) -> tuple[list[str], lis
                 module_ban(alias.name, line)
         elif isinstance(node, ast.ImportFrom) and node.module:
             module_ban(node.module, line)
-            root = node.module.split(".")[0]
-            if root in public:
-                names = [alias.name for alias in node.names]
-                if public[root] is None:
-                    warns[f"from {node.module} import {', '.join(names)} (only its public models and base class are allowed)"].append(line)
-                else:
-                    for name in names:
-                        if name not in public[root]:
-                            fails[f"from {node.module} import {name} (not public)"].append(line)
+            names = [alias.name for alias in node.names]
+            if node.module in public:
+                allowed = public[node.module]
+                if allowed is None:
+                    warns[f"from {node.module} import {', '.join(names)} (its public names aren't listed yet)"].append(line)
+                for name in names:
+                    if allowed == "*" and name.startswith("_") or isinstance(allowed, set) and name not in allowed:
+                        fails[f"from {node.module} import {name} (not public)"].append(line)
+            elif node.module in roots:
+                for name in names:
+                    if f"{node.module}.{name}" not in public:
+                        fails[f"from {node.module} import {name} (not public)"].append(line)
         elif isinstance(node, ast.Name):
             if node.id in builtins:
                 fails[f"{node.id}"].append(line)

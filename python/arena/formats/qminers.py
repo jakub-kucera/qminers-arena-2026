@@ -42,7 +42,7 @@ from arena.botfile import BotFile
 from arena.formats import snapshots_api as api
 from arena.model import Book, Cancel, Day, MarketTrade, OpenOrder, Order, Tick
 
-PROVIDED_MODULES = {"api"}  # TODO(day): the module names their bot file imports
+PROVIDED_MODULES = {"simulator", "numpy", "pandas", "scipy", "sklearn"}  # what a submission may import besides the standard library (STARTER.md)
 RESTING = False  # TODO(day): True if their orders rest until cancelled: the CLI then runs as with --resting
 CREDITS = 1.0  # TODO(day): the credits a lot one unit of their quoted price is worth, if not 1 (formats/__init__.py)
 ENGINE: dict = {}  # TODO(day): the engine settings their rules fix, e.g. {"queue": "prob", "fee": 1, "maker_fee": 0, "mark": "touch"} (arena.cli.format_config)
@@ -57,13 +57,14 @@ DELIMITER = ","  # TODO(day)
 DEPTH = 10  # TODO(day): book levels a side to look for (bid_price_1 .. bid_price_DEPTH)
 PRICE_SCALE = 100  # TODO(day): price units a currency unit: 100 keeps cents
 ENTRY = ("Strategy", "on_tick")  # TODO(day): the class the bot file defines and the method called once a step; (None, "trade") for a module-level function
-SANDBOX = {  # what their sandbox rejects before a bot runs (the site's info page, 7 Nov, "among them"; arena.validate.sandbox_bans)
-    "modules": {"os", "sys", "subprocess", "socket", "io", "pathlib"},
-    "private_modules": True,  # a module name starting with an underscore; `__future__` too, unless the starter's examples use it
-    "builtins": {"open", "getattr", "type"},
+SANDBOX = {  # what their sandbox rejects before a bot runs (STARTER.md, "Writing a strategy"; the site's info page; arena.validate.sandbox_bans)
+    "modules": {"os", "sys", "subprocess", "socket", "io", "pathlib", "threading", "importlib", "inspect", "gc"},
+    "private_modules": True,  # a module name starting with an underscore
+    "builtins": {"open", "getattr", "type", "eval", "exec"},
     "dunders": True,  # dunder attributes and names
     "str_format": True,
-    "public": {"simulator": None},  # TODO(day): the names simulator exports publicly (its models and BaseStrategy)
+    "allow": {"__future__", "__init__"},  # their own examples use `from __future__ import annotations` and `super().__init__()`
+    "public": {"simulator.models": "*", "simulator.strategy": {"BaseStrategy"}},  # module: its public names ("*": any without an underscore)
 }
 
 # ---------------------------------------------------------------------------- data (TODO(day): the loader half)

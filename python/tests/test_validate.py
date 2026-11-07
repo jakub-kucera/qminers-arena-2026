@@ -115,7 +115,7 @@ def test_the_sandbox_bans_are_the_formats():
         """
         from __future__ import annotations
         import os.path
-        from simulator import BaseStrategy, Order
+        from simulator.strategy import BaseStrategy, StrategyContext
 
         class Strategy(BaseStrategy):
             def __init__(self):
@@ -129,13 +129,17 @@ def test_the_sandbox_bans_are_the_formats():
     )
     fails, warns = validate.sandbox_bans(ast.parse(source), qminers.SANDBOX)
     text = " | ".join(fails)
-    for banned in ("import __future__ (a private module) (line 2)", "import os.path (line 3)", "type (line 9)", "getattr (line 12)",
-                   "the dunder attribute .__init__ (line 8)", "the dunder attribute .__name__ (line 9)", ".format (str.format"):
+    for banned in ("import os.path (line 3)", "type (line 9)", "getattr (line 12)", "the dunder attribute .__name__ (line 9)",
+                   ".format (str.format", "eval (line 13)"):
         assert banned in text, banned
-    assert any("from simulator import BaseStrategy, Order" in w for w in warns)  # its public names aren't known yet
-    assert "eval (line 13)" in warns and "a method named __init__ (line 7)" in warns
-    fails, _ = validate.sandbox_bans(ast.parse(source), dict(qminers.SANDBOX, public={"simulator": {"BaseStrategy"}}))
-    assert "from simulator import Order (not public) (line 4)" in fails
+    assert "__future__" not in text and ".__init__" not in text  # their own examples use both
+    assert "from simulator.strategy import StrategyContext (not public) (line 4)" in text  # simulator.strategy.BaseStrategy only
+    fails, warns = validate.sandbox_bans(ast.parse(source), dict(qminers.SANDBOX, allow=set()))
+    assert any("import __future__ (a private module) (line 2)" in f for f in fails) and "a method named __init__ (line 7)" in warns
+    for line, verdict in (("from simulator.models import Side, OrderRequest", []), ("from simulator.simulator import ExchangeSimulator", ["not a public module"]),
+                          ("from simulator import strategy", []), ("from simulator import main", ["not public"])):
+        found, _ = validate.sandbox_bans(ast.parse(line), qminers.SANDBOX)
+        assert all(any(v in f for f in found) for v in verdict) and bool(found) == bool(verdict), (line, found)
     assert validate.sandbox_bans(ast.parse(source), None) == ([], [])  # a format without a sandbox: nothing
 
 
