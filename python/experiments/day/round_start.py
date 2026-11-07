@@ -59,7 +59,16 @@ CANDIDATES = {
     "F1": (CANDIDATE_DIR / "r0_F1_fallback.py", "SESSION_S", {}),
     "tmpl_mom": (TEMPLATE, "SESSION_US", {"PARAMS.ASSET": MOMENTUM_PARAMS}),
     "A0": (TEMPLATE, "SESSION_US", {"PARAMS.ASSET": A0_PARAMS}),
+    # Round 1's makers (7 Nov): their files never wind down (SESSION_S 1e9), whatever the private tape's length, so no session is set
+    "R1_F7": (CANDIDATE_DIR / "r1_F7_signal.py", None, {}),
+    "R1_F6b": (CANDIDATE_DIR / "r1_F6b_alloc.py", None, {}),
+    "R1_F6": (CANDIDATE_DIR / "r1_F6_two_levels.py", None, {}),
+    "R1_F5": (CANDIDATE_DIR / "r1_F5_shrink_react.py", None, {}),
+    "R1_F3": (CANDIDATE_DIR / "r1_F3_full_room.py", None, {}),
+    "M2": (CANDIDATE_DIR / "r0_M2_runner_safe.py", "SESSION_S", {}),
 }
+# The shrink-maker family's grids run on the Rust port (arena.qsim_rust, byte-identical, ~0.5 s a run on 4.4M rows)
+RUST_GRIDS = {"R1_F6", "R1_F5", "R1_F3"}
 
 
 # ---------------------------------------------------------------------------- profile
@@ -263,6 +272,8 @@ def timed_run(bot: str, overrides: dict, data: str) -> tuple[qgrid.Run, float]:
 
 def candidate_overrides(name: str, length_us: int) -> dict:
     _, session, extra = CANDIDATES[name]
+    if session is None:
+        return dict(extra)
     value = max(1, -(-length_us // 1_000_000)) if session == "SESSION_S" else max(1, length_us)
     return {**extra, session: value}
 
@@ -321,6 +332,12 @@ def next_grids(table: list[dict], p: dict | None, data: Path, length_us: int, jo
         "A0": ["--grid PARAMS.ASSET.make_edge=0,1,2 --grid PARAMS.ASSET.make_size=2,5,10 --grid PARAMS.ASSET.take_edge=1,2,3"],
     }
     axes["M1"] = axes["runner"]
+    axes["M2"] = axes["runner"] + ["--grid MAX_SPREAD=1,2,3 --grid FLOW_WINDOW_MS=0,500,2000 --grid MAX_POS=30,100"]
+    shrink = ["--grid LEVELS=1,2 --grid KEEP_DEPTH=1,2 --grid SIZE_TOUCH=65,100,200 --grid SIZE_DEEP=50,80 --grid DEPLETE_LOTS=0,70,100,150 --grid DEPL_FRAC=0.06,0.12 --grid REACT_CANCEL=0,1"]
+    for name in ("R1_F6", "R1_F5", "R1_F3"):
+        axes[name] = shrink
+    axes["R1_F6b"] = ["--grid ALLOC_K=-0.75,-0.5,-0.25,0 --grid SIZE_TOUCH=65,100,115 --grid DEPLETE_LOTS=70,100"]
+    axes["R1_F7"] = ["--grid MOM_JOIN=0,1 --grid MOM_LOTS=200,400,800 --grid MOM_MS=20,50,200 --grid DYING_DEEP=0,80 --grid DEPL_FRAC=0.06,0.12"]
     lines = ["== next grids (the top two by PnL)"]
     chosen, seen = [], set()
     for r in table:  # the top two with different axes (M1 is the runner at its defaults)
@@ -332,7 +349,10 @@ def next_grids(table: list[dict], p: dict | None, data: Path, length_us: int, jo
         name = r["candidate"]
         sets = " ".join(f"--set '{k}={json.dumps(v) if isinstance(v, dict) else v}'" for k, v in candidate_overrides(name, length_us).items())
         for grid in axes[name]:
-            lines.append(f"uv run python -m arena.qgrid {r['bot']} {data} {sets} {grid} --holdout 0.25 --jobs {jobs} --sort holdout")
+            if name in RUST_GRIDS:  # the Rust port of the shrink maker, the same results ~70x faster
+                lines.append(f"uv run python -m arena.qsim_rust python/bots/qminers/families/shrink_maker.py {data} --set SESSION_S=1000000000 {grid} --holdout 0.25 --threads {jobs} --sort holdout")
+            else:
+                lines.append(f"uv run python -m arena.qgrid {r['bot']} {data} {sets} {grid} --holdout 0.25 --jobs {jobs} --sort holdout")
     return "\n".join(lines)
 
 
