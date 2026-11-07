@@ -48,6 +48,7 @@ command in "Trials". Pluses and minuses are measured facts, not hopes.
 - H3 IMB_JOIN (`r1_H3_imb_join.py`): an inside quote on the side whose touch holds 1.5-300x the other's: 355-368k, monotone toward off.
 - INSIDE_POS 80 / 90 on F7: 361.6k / 363.9k (loses on F7, unlike on F6).
 - The non-shifting join (JOIN_LOTS, `r1_H6_combo.py` / `r1_F8_take_join.py` with MOM_JOIN 0): equal to the gated shifting join in 75% (386.9k at 150 lots + JOIN_OWN 400) but 1.5k less on the last 25% and 1.6k less on the full tape: not kept.
+- G3 STEER (`r1_G3_steer.py`, 16:10): an inventory target from a 1 s forecast (imb1, imb5, flow; corr 0.32 in / 0.33 out at 1 s, 0.05 at 30 s): blocking the side moving away (TGT_K x BAND) 343.6k-386.2k in 75%, an IOC toward it (TAKE_EDGE) 335.9k-386.5k, the size skew by the distance to the target 378.5k-386.4k, every axis monotone toward off (F8 386,964). F8's inventory loses within 1 s (corr(position, move) -0.13) and is flat beyond 5 s: no slow lean to take (IDEAS.md, "Inventory as a bet on R1-F8").
 
 ## Queue
 <!-- the next experiments, best first. Each is pre-registered before it runs: id; the mechanism (why it should work in
