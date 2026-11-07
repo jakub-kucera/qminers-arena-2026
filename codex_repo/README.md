@@ -10,6 +10,34 @@ These later scores use repeated tuning on the supplied file; no fresh
 independent holdout remains. The new submission has not been scored by the
 competition server.
 
+## Inventory penalty tradeoff study
+
+The engine charges **10,000 per second while actual absolute inventory exceeds
+100**, regardless of the excess amount. Exactly 100 is free; the separate hard
+potential-exposure cap remains 1,000. We tested fourteen higher-cap and guarded
+recovery candidates plus two controls, without changing the exchange rules.
+None passed the screening gates, so the 554,347 penalty-free baseline remains
+the recommendation.
+
+The least damaging active candidate scored **551,891.77** on the full round:
+1,117 less gross profit and 1,338.23 in penalties, for a **2,455.23 net loss**
+relative to baseline. Its two breaches totalled 0.133823 seconds and reached
+160 lots. It also underperformed at 20 ms and 50 ms latency. Continuous caps
+were much worse: a 101-lot cap paid 28.39 million in the first 100 minutes for
+only 1,633 extra gross profit.
+
+The original guarded probes produced no actual breaches. Five additional
+activation probes were explicitly preregistered after that observation;
+selection accounts for all fourteen candidates. Both public tapes had already
+been consumed, so this is not fresh holdout evidence. Twenty-one replays and
+69 repository tests completed. The exact standalone experimental export
+reproduced every result field and the complete PnL curve using the unmodified
+engine. It remains unpromoted as `strategies/round1_penalty_experimental.py`.
+
+See the [penalty tradeoff report](research/penalty_tradeoff_20261107/report.html),
+[protocols and reproduction notes](research/penalty_tradeoff_20261107/README.txt),
+and [complete results](research/penalty_tradeoff_20261107/summary.json).
+
 ## Latest bounded augmentation study
 
 The 554,347 submission was independently reproduced after merging main commit

@@ -2,3 +2,4 @@
 strategies/round1_depth_advantage.py -text
 strategies/round1_robust_candidate.py -text
 strategies/round1_spread_pressure_experimental.py -text
+strategies/round1_penalty_experimental.py -text

@@ -1,0 +1,977 @@
+{
+  "promoted": false,
+  "recommended": "baseline",
+  "diagnostic_candidate": "active_1000_hold100_edge0p3",
+  "checks": {
+    "screen_passed": false,
+    "first_later_gain": false,
+    "second_later_gain": true,
+    "full_gain_at_least_one_percent": false,
+    "transfer_and_latency_within_one_percent": false,
+    "hard_limits_and_acceptance": true
+  },
+  "screen": [
+    {
+      "name": "continuous_101",
+      "kind": "continuous",
+      "cap": 101,
+      "gross": 276019.0,
+      "penalty": 28391938.72000009,
+      "net": -28115919.72000009,
+      "net_gain": -28390305.72000009,
+      "gross_gain": 1633.0,
+      "breach_seconds": 2839.193872,
+      "episodes": 4603,
+      "max_inventory": 101,
+      "max_potential": 101,
+      "duration_ms_p50_p95_max": [
+        462.225,
+        1721.2767999999996,
+        6699.693
+      ],
+      "break_even_fee_per_second": 0.5751632588758984
+    },
+    {
+      "name": "baseline",
+      "kind": "control",
+      "cap": 100,
+      "gross": 274386.0,
+      "penalty": 0.0,
+      "net": 274386.0,
+      "net_gain": 0.0,
+      "gross_gain": 0.0,
+      "breach_seconds": 0.0,
+      "episodes": 0,
+      "max_inventory": 100,
+      "max_potential": 100,
+      "duration_ms_p50_p95_max": [
+        0,
+        0,
+        0
+      ],
+      "break_even_fee_per_second": null
+    },
+    {
+      "name": "continuous_250",
+      "kind": "continuous",
+      "cap": 250,
+      "gross": 355754.0,
+      "penalty": 42062360.360001534,
+      "net": -41706606.360001534,
+      "net_gain": -41980992.360001534,
+      "gross_gain": 81368.0,
+      "breach_seconds": 4206.236036,
+      "episodes": 3883,
+      "max_inventory": 250,
+      "max_potential": 250,
+      "duration_ms_p50_p95_max": [
+        787.871,
+        3134.0191999999993,
+        10475.495
+      ],
+      "break_even_fee_per_second": 19.344611026008526
+    },
+    {
+      "name": "burst_125_hold0_edge0p5",
+      "kind": "burst",
+      "cap": 125,
+      "gross": 274386.0,
+      "penalty": 0.0,
+      "net": 274386.0,
+      "net_gain": 0.0,
+      "gross_gain": 0.0,
+      "breach_seconds": 0.0,
+      "episodes": 0,
+      "max_inventory": 100,
+      "max_potential": 125,
+      "duration_ms_p50_p95_max": [
+        0,
+        0,
+        0
+      ],
+      "break_even_fee_per_second": null
+    },
+    {
+      "name": "burst_250_hold0_edge0p5",
+      "kind": "burst",
+      "cap": 250,
+      "gross": 274386.0,
+      "penalty": 0.0,
+      "net": 274386.0,
+      "net_gain": 0.0,
+      "gross_gain": 0.0,
+      "breach_seconds": 0.0,
+      "episodes": 0,
+      "max_inventory": 100,
+      "max_potential": 250,
+      "duration_ms_p50_p95_max": [
+        0,
+        0,
+        0
+      ],
+      "break_even_fee_per_second": null
+    },
+    {
+      "name": "burst_500_hold0_edge0p5",
+      "kind": "burst",
+      "cap": 500,
+      "gross": 274386.0,
+      "penalty": 0.0,
+      "net": 274386.0,
+      "net_gain": 0.0,
+      "gross_gain": 0.0,
+      "breach_seconds": 0.0,
+      "episodes": 0,
+      "max_inventory": 100,
+      "max_potential": 500,
+      "duration_ms_p50_p95_max": [
+        0,
+        0,
+        0
+      ],
+      "break_even_fee_per_second": null
+    },
+    {
+      "name": "guard_disabled",
+      "kind": "control",
+      "cap": 100,
+      "gross": 274386.0,
+      "penalty": 0.0,
+      "net": 274386.0,
+      "net_gain": 0.0,
+      "gross_gain": 0.0,
+      "breach_seconds": 0.0,
+      "episodes": 0,
+      "max_inventory": 100,
+      "max_potential": 100,
+      "duration_ms_p50_p95_max": [
+        0,
+        0,
+        0
+      ],
+      "break_even_fee_per_second": null
+    },
+    {
+      "name": "continuous_1000",
+      "kind": "continuous",
+      "cap": 1000,
+      "gross": 103244.0,
+      "penalty": 49862517.42000148,
+      "net": -49759273.42000148,
+      "net_gain": -50033659.42000148,
+      "gross_gain": -171142.0,
+      "breach_seconds": 4986.251742,
+      "episodes": 2053,
+      "max_inventory": 1000,
+      "max_potential": 1000,
+      "duration_ms_p50_p95_max": [
+        1471.621,
+        7764.928999999995,
+        23618.817
+      ],
+      "break_even_fee_per_second": null
+    },
+    {
+      "name": "burst_1000_hold0_edge0p5",
+      "kind": "burst",
+      "cap": 1000,
+      "gross": 274386.0,
+      "penalty": 0.0,
+      "net": 274386.0,
+      "net_gain": 0.0,
+      "gross_gain": 0.0,
+      "breach_seconds": 0.0,
+      "episodes": 0,
+      "max_inventory": 100,
+      "max_potential": 1000,
+      "duration_ms_p50_p95_max": [
+        0,
+        0,
+        0
+      ],
+      "break_even_fee_per_second": null
+    },
+    {
+      "name": "burst_500_hold20_edge0p5",
+      "kind": "burst",
+      "cap": 500,
+      "gross": 274386.0,
+      "penalty": 0.0,
+      "net": 274386.0,
+      "net_gain": 0.0,
+      "gross_gain": 0.0,
+      "breach_seconds": 0.0,
+      "episodes": 0,
+      "max_inventory": 100,
+      "max_potential": 500,
+      "duration_ms_p50_p95_max": [
+        0,
+        0,
+        0
+      ],
+      "break_even_fee_per_second": null
+    },
+    {
+      "name": "burst_1000_hold20_edge1p0",
+      "kind": "burst",
+      "cap": 1000,
+      "gross": 274386.0,
+      "penalty": 0.0,
+      "net": 274386.0,
+      "net_gain": 0.0,
+      "gross_gain": 0.0,
+      "breach_seconds": 0.0,
+      "episodes": 0,
+      "max_inventory": 100,
+      "max_potential": 100,
+      "duration_ms_p50_p95_max": [
+        0,
+        0,
+        0
+      ],
+      "break_even_fee_per_second": null
+    },
+    {
+      "name": "active_1000_hold100_edge0p3",
+      "kind": "burst_active",
+      "cap": 1000,
+      "gross": 273491.0,
+      "penalty": 1338.2299999999993,
+      "net": 272152.77,
+      "net_gain": -2233.2299999999814,
+      "gross_gain": -895.0,
+      "breach_seconds": 0.133823,
+      "episodes": 2,
+      "max_inventory": 160,
+      "max_potential": 1000,
+      "duration_ms_p50_p95_max": [
+        66.91149999999999,
+        85.86864999999999,
+        87.975
+      ],
+      "break_even_fee_per_second": null
+    },
+    {
+      "name": "active_500_hold20_edge0p0",
+      "kind": "burst_active",
+      "cap": 500,
+      "gross": 202143.0,
+      "penalty": 159938.22999999992,
+      "net": 42204.77000000008,
+      "net_gain": -232181.22999999992,
+      "gross_gain": -72243.0,
+      "breach_seconds": 15.993823,
+      "episodes": 457,
+      "max_inventory": 500,
+      "max_potential": 500,
+      "duration_ms_p50_p95_max": [
+        32.18,
+        43.69799999999999,
+        199.522
+      ],
+      "break_even_fee_per_second": null
+    },
+    {
+      "name": "active_500_hold0_edge0p0",
+      "kind": "burst_active",
+      "cap": 500,
+      "gross": 204583.0,
+      "penalty": 36335.36000000003,
+      "net": 168247.63999999996,
+      "net_gain": -106138.36000000004,
+      "gross_gain": -69803.0,
+      "breach_seconds": 3.633536,
+      "episodes": 464,
+      "max_inventory": 500,
+      "max_potential": 500,
+      "duration_ms_p50_p95_max": [
+        5.0,
+        5.0,
+        199.522
+      ],
+      "break_even_fee_per_second": null
+    },
+    {
+      "name": "active_1000_hold20_edge0p0",
+      "kind": "burst_active",
+      "cap": 1000,
+      "gross": 181750.0,
+      "penalty": 163412.7099999999,
+      "net": 18337.290000000095,
+      "net_gain": -256048.7099999999,
+      "gross_gain": -92636.0,
+      "breach_seconds": 16.341271,
+      "episodes": 457,
+      "max_inventory": 1000,
+      "max_potential": 1000,
+      "duration_ms_p50_p95_max": [
+        32.191,
+        46.85179999999999,
+        222.479
+      ],
+      "break_even_fee_per_second": null
+    },
+    {
+      "name": "active_1000_hold0_edge0p0",
+      "kind": "burst_active",
+      "cap": 1000,
+      "gross": 185619.0,
+      "penalty": 41496.57000000003,
+      "net": 144122.42999999996,
+      "net_gain": -130263.57000000004,
+      "gross_gain": -88767.0,
+      "breach_seconds": 4.149657,
+      "episodes": 467,
+      "max_inventory": 1000,
+      "max_potential": 1000,
+      "duration_ms_p50_p95_max": [
+        5.0,
+        13.67489999999995,
+        222.479
+      ],
+      "break_even_fee_per_second": null
+    }
+  ],
+  "comparisons": [
+    {
+      "case": "round1_5ms",
+      "baseline_net": 554347.0,
+      "candidate_gross": 553230.0,
+      "penalty": 1338.2299999999993,
+      "candidate_net": 551891.77,
+      "net_gain": -2455.2299999999814,
+      "breach_seconds": 0.133823,
+      "episodes": 2,
+      "duration_ms_p50_p95_max": [
+        66.91149999999999,
+        85.86864999999999,
+        87.975
+      ],
+      "max_inventory": 160,
+      "max_potential": 1000,
+      "new_order_rejections": 0,
+      "drawdown_1s": 834.0
+    },
+    {
+      "case": "sample_v2",
+      "baseline_net": 272830.0,
+      "candidate_gross": 272830.0,
+      "penalty": 0.0,
+      "candidate_net": 272830.0,
+      "net_gain": 0.0,
+      "breach_seconds": 0.0,
+      "episodes": 0,
+      "duration_ms_p50_p95_max": [
+        0,
+        0,
+        0
+      ],
+      "max_inventory": 100,
+      "max_potential": 1000,
+      "new_order_rejections": 0,
+      "drawdown_1s": 200.0
+    },
+    {
+      "case": "round1_20ms",
+      "baseline_net": 462925.0,
+      "candidate_gross": 460807.0,
+      "penalty": 3739.26,
+      "candidate_net": 457067.74,
+      "net_gain": -5857.260000000009,
+      "breach_seconds": 0.373926,
+      "episodes": 3,
+      "duration_ms_p50_p95_max": [
+        142.131,
+        143.65109999999999,
+        143.82
+      ],
+      "max_inventory": 279,
+      "max_potential": 1000,
+      "new_order_rejections": 0,
+      "drawdown_1s": 1812.3099999999977
+    },
+    {
+      "case": "round1_50ms",
+      "baseline_net": 326485.0,
+      "candidate_gross": 326032.0,
+      "penalty": 4195.8899999999985,
+      "candidate_net": 321836.11,
+      "net_gain": -4648.890000000014,
+      "breach_seconds": 0.419589,
+      "episodes": 3,
+      "duration_ms_p50_p95_max": [
+        202.145,
+        204.4391,
+        204.694
+      ],
+      "max_inventory": 195,
+      "max_potential": 1000,
+      "new_order_rejections": 0,
+      "drawdown_1s": 2524.4499999999825
+    }
+  ],
+  "periods": [
+    {
+      "period": "First 50 minutes",
+      "baseline": 130119.0,
+      "candidate": 129276.25,
+      "gain": -842.75
+    },
+    {
+      "period": "Next 49m 50s",
+      "baseline": 143116.0,
+      "candidate": 141725.52000000002,
+      "gain": -1390.4799999999814
+    },
+    {
+      "period": "Later period to 150m",
+      "baseline": 144590.0,
+      "candidate": 144352.0,
+      "gain": -238.0
+    },
+    {
+      "period": "Final 50 minutes",
+      "baseline": 136522.0,
+      "candidate": 136538.0,
+      "gain": 16.0
+    }
+  ],
+  "selection": {
+    "selected": null,
+    "confirmation_candidate": "active_1000_hold100_edge0p3",
+    "diagnostic_only": true,
+    "scores": {
+      "continuous_101": {
+        "eligible": false,
+        "net_gain": -28348254.760000072,
+        "half_gains": [
+          -14108816.74000005,
+          -14239438.020000022
+        ],
+        "positive_blocks": 0,
+        "lower_bound": -29007669.21208578,
+        "bootstrap_error": 291516.92166957154,
+        "block_gains": [
+          -1424447.359999993,
+          -1478454.0399999572,
+          -1352168.1099999892,
+          -1357923.550000039,
+          -1377920.3100000275,
+          -1451365.5399999255,
+          -1416589.359999774,
+          -1421527.2400002517,
+          -1371693.4999999907,
+          -1456727.730000103,
+          -1312009.0099997576,
+          -1561536.629999945,
+          -1429998.4600000717,
+          -1468335.819999881,
+          -1475133.0699999742,
+          -1334558.4399996623,
+          -1528823.8000001833,
+          -1460399.1200003512,
+          -1347457.0500001311,
+          -1321186.6200000644
+        ]
+      },
+      "continuous_250": {
+        "eligible": false,
+        "net_gain": -41918266.730001494,
+        "half_gains": [
+          -21158775.86000016,
+          -20759490.870001335
+        ],
+        "positive_blocks": 0,
+        "lower_bound": -42695196.82547518,
+        "bootstrap_error": 343468.76849386457,
+        "block_gains": [
+          -2217266.809999987,
+          -2062979.949999997,
+          -2024359.0299998457,
+          -2182476.790000079,
+          -2092187.309999762,
+          -2133563.640000269,
+          -2028302.9199997727,
+          -2190294.4900001064,
+          -2055210.560000468,
+          -2172134.3599998727,
+          -1971615.4700001627,
+          -1971347.0800002292,
+          -2006886.1499999762,
+          -2097808.619999703,
+          -2160010.310000289,
+          -2147061.119999837,
+          -2170262.0300000906,
+          -2090740.3500004932,
+          -2125926.2700008377,
+          -2017833.4699997157
+        ]
+      },
+      "continuous_1000": {
+        "eligible": false,
+        "net_gain": -49944217.810001366,
+        "half_gains": [
+          -25200636.12999993,
+          -24743581.680001438
+        ],
+        "positive_blocks": 0,
+        "lower_bound": -50491786.252496384,
+        "bootstrap_error": 242071.53218231496,
+        "block_gains": [
+          -2445230.3699999955,
+          -2615262.5299999677,
+          -2429369.0199999064,
+          -2505659.9099997804,
+          -2493667.009999819,
+          -2557686.0500001553,
+          -2541108.0699998215,
+          -2464236.470000088,
+          -2592129.2600005977,
+          -2556287.4399997965,
+          -2546892.710000232,
+          -2389227.3800003417,
+          -2562396.469999768,
+          -2469309.009999994,
+          -2564441.1799999177,
+          -2487844.1599994004,
+          -2518647.4800010473,
+          -2466420.170000896,
+          -2403603.2100004405,
+          -2334799.9099994004
+        ]
+      },
+      "burst_125_hold0_edge0p5": {
+        "eligible": false,
+        "net_gain": 0.0,
+        "half_gains": [
+          0.0,
+          0.0
+        ],
+        "positive_blocks": 0,
+        "lower_bound": -2.2620108922292366e-09,
+        "bootstrap_error": 1e-09,
+        "block_gains": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "burst_250_hold0_edge0p5": {
+        "eligible": false,
+        "net_gain": 0.0,
+        "half_gains": [
+          0.0,
+          0.0
+        ],
+        "positive_blocks": 0,
+        "lower_bound": -2.2620108922292366e-09,
+        "bootstrap_error": 1e-09,
+        "block_gains": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "burst_500_hold0_edge0p5": {
+        "eligible": false,
+        "net_gain": 0.0,
+        "half_gains": [
+          0.0,
+          0.0
+        ],
+        "positive_blocks": 0,
+        "lower_bound": -2.2620108922292366e-09,
+        "bootstrap_error": 1e-09,
+        "block_gains": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "burst_1000_hold0_edge0p5": {
+        "eligible": false,
+        "net_gain": 0.0,
+        "half_gains": [
+          0.0,
+          0.0
+        ],
+        "positive_blocks": 0,
+        "lower_bound": -2.2620108922292366e-09,
+        "bootstrap_error": 1e-09,
+        "block_gains": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "burst_500_hold20_edge0p5": {
+        "eligible": false,
+        "net_gain": 0.0,
+        "half_gains": [
+          0.0,
+          0.0
+        ],
+        "positive_blocks": 0,
+        "lower_bound": -2.2620108922292366e-09,
+        "bootstrap_error": 1e-09,
+        "block_gains": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "burst_1000_hold20_edge1p0": {
+        "eligible": false,
+        "net_gain": 0.0,
+        "half_gains": [
+          0.0,
+          0.0
+        ],
+        "positive_blocks": 0,
+        "lower_bound": -2.2620108922292366e-09,
+        "bootstrap_error": 1e-09,
+        "block_gains": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "active_500_hold0_edge0p0": {
+        "eligible": false,
+        "net_gain": -105963.36000000004,
+        "half_gains": [
+          -56153.70999999998,
+          -49809.65000000007
+        ],
+        "positive_blocks": 0,
+        "lower_bound": -117970.95503225987,
+        "bootstrap_error": 5308.371888707486,
+        "block_gains": [
+          -4756.0,
+          -5286.58,
+          -6745.359999999999,
+          -4192.289999999997,
+          -7977.139999999999,
+          -6973.869999999995,
+          -4813.229999999996,
+          -4591.000000000007,
+          -5318.999999999993,
+          -5499.239999999991,
+          -4677.000000000015,
+          -3969.75,
+          -4212.0,
+          -4415.910000000018,
+          -4275.499999999985,
+          -7402.700000000012,
+          -5874.970000000001,
+          -2318.1900000000023,
+          -8226.630000000005,
+          -4437.000000000029
+        ]
+      },
+      "active_1000_hold0_edge0p0": {
+        "eligible": false,
+        "net_gain": -130088.57000000004,
+        "half_gains": [
+          -72282.3,
+          -57806.27000000003
+        ],
+        "positive_blocks": 0,
+        "lower_bound": -151202.89069463892,
+        "bootstrap_error": 9334.314333840575,
+        "block_gains": [
+          -6058.0,
+          -6454.58,
+          -9053.659999999998,
+          -4847.559999999998,
+          -11660.380000000012,
+          -9187.619999999988,
+          -4966.230000000003,
+          -4756.0,
+          -6482.0,
+          -8816.270000000004,
+          -4779.0,
+          -3969.7500000000146,
+          -4712.0,
+          -4503.9100000000035,
+          -5457.419999999998,
+          -11209.73999999999,
+          -5911.969999999987,
+          -3780.8499999999913,
+          -8881.63000000002,
+          -4600.000000000029
+        ]
+      },
+      "active_500_hold20_edge0p0": {
+        "eligible": false,
+        "net_gain": -232006.22999999992,
+        "half_gains": [
+          -119643.11999999998,
+          -112363.10999999994
+        ],
+        "positive_blocks": 0,
+        "lower_bound": -252044.55041585182,
+        "bootstrap_error": 8858.631266847658,
+        "block_gains": [
+          -14565.239999999989,
+          -12062.719999999996,
+          -13001.789999999957,
+          -9253.269999999975,
+          -14507.229999999989,
+          -13339.780000000013,
+          -9418.890000000014,
+          -11409.430000000044,
+          -11686.25999999998,
+          -10398.510000000024,
+          -10692.510000000184,
+          -10756.539999999935,
+          -9816.940000000002,
+          -9003.219999999987,
+          -13487.629999999815,
+          -15712.62999999999,
+          -12033.149999999747,
+          -6780.130000000005,
+          -14767.230000000156,
+          -9313.130000000121
+        ]
+      },
+      "active_1000_hold20_edge0p0": {
+        "eligible": false,
+        "net_gain": -255873.7099999999,
+        "half_gains": [
+          -134775.32999999993,
+          -121098.37999999998
+        ],
+        "positive_blocks": 0,
+        "lower_bound": -282755.8044412811,
+        "bootstrap_error": 11884.157823302348,
+        "block_gains": [
+          -15848.239999999989,
+          -11804.67,
+          -15100.089999999953,
+          -9967.539999999986,
+          -17710.90999999996,
+          -14898.069999999992,
+          -10009.330000000009,
+          -11948.43000000011,
+          -13957.609999999928,
+          -13530.440000000002,
+          -10750.510000000184,
+          -10930.539999999935,
+          -10494.940000000002,
+          -9361.219999999987,
+          -15055.579999999827,
+          -18865.819999999992,
+          -12159.149999999849,
+          -7250.879999999976,
+          -15669.680000000139,
+          -10560.060000000085
+        ]
+      },
+      "active_1000_hold100_edge0p3": {
+        "eligible": false,
+        "net_gain": -2233.2299999999814,
+        "half_gains": [
+          -842.75,
+          -1390.4799999999814
+        ],
+        "positive_blocks": 2,
+        "lower_bound": -4383.2039524083275,
+        "bootstrap_error": 950.4702032135324,
+        "block_gains": [
+          111.0,
+          0.0,
+          -1.0,
+          -22.0,
+          -15.0,
+          -91.0,
+          -844.75,
+          -55.0,
+          77.0,
+          -2.0,
+          -108.0,
+          0.0,
+          -89.0,
+          -11.0,
+          -431.4800000000105,
+          0.0,
+          0.0,
+          -214.0,
+          -70.0,
+          -466.9999999999709
+        ]
+      }
+    },
+    "bootstrap_critical": 2.2620108922292363,
+    "source": {
+      "kind": "burst_active",
+      "cap": 1000,
+      "hold_us": 100000,
+      "edge": 0.3,
+      "minimum_aligned_inventory": 0,
+      "source": "logs\\penalty_tradeoff\\sources\\active_1000_hold100_edge0p3.py",
+      "sha256": "0f320ecde635145c133e4fb6a0f2c8fc9f50a30f1bfb7b52d6aa583ba6af7222"
+    },
+    "created_utc": "2026-11-07T14:52:01Z"
+  },
+  "export": {
+    "file": "strategies\\round1_penalty_experimental.py",
+    "sha256": "b775bd14d6ce7a82e0ca8d2b0ab74cadceb8185833fc88955da11a68375f0bec",
+    "candidate": "active_1000_hold100_edge0p3",
+    "frozen_source_sha256": "0f320ecde635145c133e4fb6a0f2c8fc9f50a30f1bfb7b52d6aa583ba6af7222",
+    "executable_ast_equal": true
+  },
+  "official_export": {
+    "result": {
+      "fills": 36865,
+      "traded_volume": 2191178,
+      "inventory": 100,
+      "cash": -449670.0,
+      "mark_price": 10029.0,
+      "breach_penalty": 1338.2299999999993,
+      "pnl": 551891.77,
+      "pnl_se": 11231.504374853052,
+      "abs_inventory_q50": 96,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "cpu_seconds": 241.53125,
+    "wall_seconds": 242.62733499985188,
+    "peak_working_set_bytes": 45375488,
+    "source_bytes": 14731,
+    "source_sha256": "b775bd14d6ce7a82e0ca8d2b0ab74cadceb8185833fc88955da11a68375f0bec",
+    "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+    "curve_sha256": "b0b1844b062d9a0ceafa9875f18bc7e064a0d4748f779ef24c9845f448fa6c7c",
+    "engine_sha256": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    }
+  },
+  "official_result_exact_parity": true,
+  "official_curve_exact_parity": true,
+  "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+  "engine_sha256": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+  "tests_passed": 69,
+  "new_replays": 21,
+  "limitations": [
+    "Previously consumed public tapes; no new independent holdout.",
+    "Five activation probes were added after initial gated variants produced no breaches; this adaptive extension is disclosed and all fourteen trials are included in selection.",
+    "Only the specified admission, cap and recovery policies were tested; this is not a proof that every penalty-paying strategy is unprofitable.",
+    "No website submission or private-round result is claimed.",
+    "Configured hold duration is a recovery trigger, not a guarantee of exit time."
+  ]
+}
