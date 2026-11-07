@@ -32,6 +32,10 @@ command in "Trials". Pluses and minuses are measured facts, not hopes.
 | F2 | python/bots/qminers/candidates/r0_F2_maker_v2.py | F1 with QUOTE 100, SKEW 80, LIMIT 100: join the touch, keep the queue place | sample_v2 +212,831 (portal identical) | sample_v2 +48,200 | | | 232 | 100 | a market where trades don't run (sample_v2) | no adverse selection on sample_v2, linear PnL, 44 s on the server for 2M rows | -25k to -28k where markets trend (sample 1, ABIDES); sits at the limit 5% of the time | uploaded on the playground | +212,831 |
 | F1 | python/bots/qminers/candidates/r0_F1_fallback.py | small market maker in their style, ±50 | sample -5,877 | sample -445 | | | | 24 | a spread worth earning | simplest, safe | picked off in momentum | n/a | |
 
+## F5 or F6 (the user: decide before the 17:30 freeze; F5 uploaded as the final meanwhile)
+- F6 against F5 on round1 in twelve 1,000 s segments (both runs' pnl.csv): F6 ahead in 8 of 12, mean +2,271 a segment (sd 2,566, t = 3.1), worst -1,025, best +5,700: a steady edge on round 1's market, not one stretch.
+- Against it: sample_v2 (2-tick spread 58% of the time) -35k for F6. The private round-1 tape is most likely from round1.csv's generator (1-tick 93%), where F6 leads.
+
 ## Dropped
 <!-- id, why (with the numbers), the iteration -->
 
