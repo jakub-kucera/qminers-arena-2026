@@ -7,12 +7,13 @@ from strategies.round1_depth_524k import PassiveStrategy as DepthStrategy
 from strategies.round1_depth_nonlinear_534k import PassiveStrategy as NonlinearDepthStrategy
 from strategies.round1_nonlinear_498k import PassiveStrategy as NonlinearStrategy
 from strategies.round1_queue_545k import PassiveStrategy as QueueStrategy
+from strategies.round1_inside_551k import PassiveStrategy as InsideStrategy
 from test_strategy import Gateway
 
 
 class PreservedRound1Tests(unittest.TestCase):
     def test_mature_labels_and_solver_for_expanded_models(self):
-        for cls in (NonlinearStrategy, DepthStrategy, NonlinearDepthStrategy, QueueStrategy):
+        for cls in (NonlinearStrategy, DepthStrategy, NonlinearDepthStrategy, QueueStrategy, InsideStrategy):
             with self.subTest(model=cls.__name__, dimensions=cls.FEATURE_COUNT):
                 s = cls()
                 features = (1,) + (0,) * (s.FEATURE_COUNT - 1)
@@ -53,6 +54,7 @@ class PreservedRound1Tests(unittest.TestCase):
             ('strategies/round1_depth_524k.py', DepthStrategy),
             ('strategies/round1_depth_nonlinear_534k.py', NonlinearDepthStrategy),
             ('strategies/round1_queue_545k.py', QueueStrategy),
+            ('strategies/round1_inside_551k.py', InsideStrategy),
         ):
             self.assertEqual(check(path), [])
             for inventory in range(-100, 101):
@@ -65,6 +67,36 @@ class PreservedRound1Tests(unittest.TestCase):
                 sells = sum(r[2] for r in s._orders.values() if r[0] < 0)
                 self.assertLessEqual(inventory + buys, 100)
                 self.assertGreaterEqual(inventory - sells, -100)
+
+    def test_inside_quotes_require_spread_and_edge_and_never_cross(self):
+        for spread, weight, inventory, expected_buy, expected_sell in (
+            (1, 1.0, 0, 100, 102),
+            (2, 0.5, 0, 100, 102),  # Prediction exactly 0.25: no improvement.
+            (2, 1.0, 0, 101, 102),
+            (2, -1.0, 0, 100, 101),
+            (3, 1.0, 0, 101, 103),
+            (2, 1.0, 100, None, 102),
+        ):
+            s = InsideStrategy()
+            gateway = Gateway(s)
+            s.inventory = inventory
+            s._labels = s.MIN_LABELS
+            s._last_fit_us = 0
+            s._weights[2] = weight
+            snapshot = OrderBookSnapshot(1,
+                [BookOrderView('b', Side.BUY, 100, 300, 'market')],
+                [BookOrderView('a', Side.SELL, 100+spread, 100, 'market')])
+            s.on_order_book_change(snapshot, [])
+            buys = [r for r in gateway.sent if r.side == Side.BUY]
+            sells = [r for r in gateway.sent if r.side == Side.SELL]
+            self.assertEqual(buys[0].price if buys else None, expected_buy)
+            self.assertEqual(sells[0].price if sells else None, expected_sell)
+            for order in buys:
+                self.assertLess(order.price, 100+spread)
+            for order in sells:
+                self.assertGreater(order.price, 100)
+            self.assertLessEqual(inventory+sum(r.quantity for r in buys), 100)
+            self.assertGreaterEqual(inventory-sum(r.quantity for r in sells), -100)
 
     def test_overlapping_replacements_reserve_pending_cancels_and_survive_fill_races(self):
         s = QueueStrategy()

@@ -499,3 +499,11 @@ not independent validation. Their metrics are saved in
 `results/round1_534k_transfer.json`; the round-1 candidates are specialized for
 the denser round-1 market. Forty-three tests pass, including 10,000 randomized
 fill/cancel/reject transitions with overlapping quote replacements.
+
+`strategies/round1_inside_551k.py` preserves an audited **550,873** round-1
+replay: zero penalty, maximum actual/potential inventory 100 / 100, sampled
+maximum drawdown 744. It quotes one tick inside spreads of at least two ticks
+only when predicted price edge after inventory skew exceeds 0.25 ticks.
+The 0.10 threshold scored 520,553; the 0.50 threshold scored 545,129. The
+threshold is selected from the same already evaluated round-1 file.
+Metrics and verification status are tracked in `results/round1_550873.json`.
