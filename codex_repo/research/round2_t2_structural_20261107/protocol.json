@@ -1,0 +1,70 @@
+{
+  "goal": {
+    "reference_audit": "logs/round2_t2_liquidity_supplied/full_audit.json",
+    "reference_source_sha256": "54658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4",
+    "increment": 50000
+  },
+  "candidates": [
+    {
+      "name": "flow_bias0.2",
+      "file": "logs\\round2_t2_structural\\sources\\flow_bias0.2.py",
+      "source_sha256": "4ec0417e6b917c5772426ec6790339027319623e420a17a102cbc18275062403",
+      "risk": "strict100"
+    },
+    {
+      "name": "flow_bias0.3",
+      "file": "logs\\round2_t2_structural\\sources\\flow_bias0.3.py",
+      "source_sha256": "34939681e6d4406dd0dcc06d7596f2af83b992c9b3390fdde0f8c5e96cdb1715",
+      "risk": "strict100"
+    },
+    {
+      "name": "ridge3x",
+      "file": "logs\\round2_t2_structural\\sources\\ridge3x.py",
+      "source_sha256": "250553f56151e13846bc3a0599b5c8e05a6fd9c9578eeac27bfdc09fdee3ac0f",
+      "risk": "strict100"
+    },
+    {
+      "name": "memory1800s",
+      "file": "logs\\round2_t2_structural\\sources\\memory1800s.py",
+      "source_sha256": "df8696faaaa19f61977fba69c6ff18675ef78469a17e032ee4f0156518b96f19",
+      "risk": "strict100"
+    },
+    {
+      "name": "horizon800ms",
+      "file": "logs\\round2_t2_structural\\sources\\horizon800ms.py",
+      "source_sha256": "31e59171263f8bd3ced758e0562660b9901a97e401de3ad672b3cc399e063f01",
+      "risk": "strict100"
+    },
+    {
+      "name": "age_concentration",
+      "file": "logs\\round2_t2_structural\\sources\\age_concentration.py",
+      "source_sha256": "21ec7fd3a77be32df5a85b44d11d856f24c2642993d8718509f676eb097b134c",
+      "risk": "strict100"
+    }
+  ],
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "scope": "Consumed public first80%; no new holdout and no server access.",
+  "hypothesis": "Supplied33feature liquidity taker: add H1 flow bias0.2/0.3, or independently ridge3x, memory1800s, horizon800ms, or age/concentration/liquidity interaction. Strict100, six frozen cases. Select positive30-60 and60-80 by combined gain before full. Target supplied full native net plus50000, not previous250k.",
+  "selection": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "reference": "Frozen 167412 composite remains unchanged; no automatic promotion from prefix alone."
+}

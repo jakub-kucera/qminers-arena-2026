@@ -1,0 +1,27 @@
+{
+  "result": {
+    "fills": 117072,
+    "traded_volume": 382525,
+    "inventory": -95,
+    "cash": 1190470.0,
+    "mark_price": 9690.0,
+    "breach_penalty": 0.0,
+    "pnl": 269920.0,
+    "pnl_se": 21626.245048512224,
+    "abs_inventory_q50": 92,
+    "abs_inventory_q68": 92,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "goal": 319920,
+  "required_increment": 50000,
+  "source_sha256": "54658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4",
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "native_cli_parity": true,
+  "max_abs_inventory": 100,
+  "max_potential_inventory": 100,
+  "sampled_drawdown": 4658.0,
+  "first80": 209280,
+  "last20": 60640,
+  "limitations": "Supplied reference unchanged; consumed public tape. Not an improvement or unseen validation."
+}

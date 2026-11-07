@@ -1,4 +1,82 @@
-# Round 2: work toward 250,000 local net PnL
+# Round 2: supplied liquidity model plus50,000 (target319,920)
+
+## New user target and supplied reference
+
+The user superseded250k with **at least50,000 above the supplied liquidity T2**.
+Its unchanged source reproduced269920 in both native CLI and audit, so the
+target is319920. Source SHA256:
+`54658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4`.
+Archive `research/round2_t2_liquidity_supplied_20261107` contains exact source,
+full audit, native results and curve. Fees0, actual/potential100, drawdown4658,
+first80=209280,final20=60640. This is a supplied baseline, not our improvement.
+
+The33feature online ridge adds young-order imbalance and interactions with
+far-order-count to the earlier29feature price model. Its variable named
+dispersion is far-order count, not price volatility. Order age is first seen
+in observed snapshots, not guaranteed exchange insertion age. No fixed trees.
+
+Six structural cases were frozen and evaluated on consumed first80:
+
+|Case|First80|30–60 gain|60–80 gain|
+|---|---:|---:|---:|
+|Reference|209280|79345|94688|
+|Ridge3x|207915|80879|90133|
+|Memory1800s|192259|76812|81749|
+|Horizon800ms|173219|71130|82373|
+|Flow bias0.3|207840|69990|100085|
+|Flow bias0.2|210634|72945|96587|
+|Age/concentration features|197614|74056|88655|
+
+Ridge3x won among modifications by the frozen later-period criterion, but did
+not beat the baseline. Full replay268433, final20=60518, fee0, drawdown3751;
+native CLI exact parity. It is archived, not promoted for the PnL objective.
+Its lower drawdown is useful evidence, not achievement of the new target.
+
+Six independent execution cases retained the supplied33feature model:
+
+|Case|First80|30–60 gain|60–80 gain|
+|---|---:|---:|---:|
+|IOC gap10ms|199017|72286|88235|
+|IOC gap25ms|197243|73539|88316|
+|IOC gap100ms|194383|73001|83084|
+|Take edge0|180137|57733|85509|
+|Take edge0.3|181008|68746|85757|
+|No passive quotes|223851|78849|106500|
+
+No-passive won before full replay. It removes the one-lot passive orders while
+keeping online learning and IOC execution. The changed live trade history also
+changes own-fill features and available room; attribution solely to avoiding
+passive losses is not established. All candidate runs assert strict100.
+
+The study/checkpoint tools now retain the declared goal in the report rather
+than hardcoding250k. Reference-relative targets verify source identity, same
+tape, and native/audit parity before resolving the required numerical score.
+All133 tests pass, including feature dimensions and causal maturity across all
+six structural variants. Repeated public data remains selection-biased.
+
+### Verified execution winner:294,098
+
+Full audit and independent native CLI agree on every result field for
+`strategies/round2/round2_local_294098.py`, SHA256
+`06acfa3b209a6a3ccbf7beb08ec0715774c87bf98becdeae07f52465c3380f09`.
+Net294098, fees0, actual/potential100, sampled drawdown6222, fills2492,
+volume288516, final inventory-100, final20 gain70247. Compared with supplied
+269920: **+24178 (+8.96%)**, still **25822 below target319920**.
+Drawdown rose from4658 to6222; better PnL does not mean lower risk here.
+The selected source was frozen before full replay. Archive:
+`research/round2_t2_execution_20261107`; exact user copy in outputs/round2-local-294098.
+
+The model removes passive quotes (QUOTE_SIZE0), caps POSITION_LIMIT100 and
+reserves all live quantities. Other forecast/execution parameters remain as
+supplied. Fills drop from117072 to2492 while profit increases, illustrating
+why filled-order count alone is not an optimization objective.
+
+All scheduled experiments finished. Next hypothesis: calibrate forecast-taker
+edge causally using stored past forecasts and matured400ms outcomes, or test
+limited combinations of no-passive with flow bias/regularization. Do not assume
+combination gains add. Keep target319920, no server/email, no unseen-data claims.
+
+## Historical250k research
 
 The user raised the target after the verified 167,412 composite. Preserve that
 standalone source and its exact hash. No competition website/server access is

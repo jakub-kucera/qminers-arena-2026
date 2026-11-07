@@ -35,7 +35,16 @@ def main():
     else:shutil.copyfile(source,target)
     args.output.mkdir(exist_ok=True,parents=True)
     shutil.copyfile(source,args.output/name)
-    report=dict(goal=250000,goal_reached=native['pnl']>=250000,result=native,
+    goal=selection['goal']
+    if isinstance(goal,dict):
+        reference_path=Path(goal['reference_audit'])
+        reference=json.loads(reference_path.read_text())
+        reference_native=json.loads((reference_path.parent/'official_cli/result.json').read_text())
+        assert reference['result']==reference_native
+        assert reference['source_sha256']==goal['reference_source_sha256']
+        assert reference['data_sha256']==audit['data_sha256']
+        goal=reference_native['pnl']+goal['increment']
+    report=dict(goal=goal,goal_reached=native['pnl']>=goal,result=native,
         source_sha256=digest(source),data_sha256=audit['data_sha256'],
         engine_sha256=digest('simulator/simulator.py'),last20=audit['last20'],
         max_abs_inventory=audit['max_abs_inventory'],max_potential_inventory=audit['max_potential_inventory_at_submission'],

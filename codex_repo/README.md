@@ -1,10 +1,12 @@
 # ThatsMyQuant: Algo Trade Arena
 
-Current user objective: **250,000 local net PnL**. The previous 150k objective
-was achieved; the higher objective is still active. See
-[250k research](docs/ROUND2_250K_RESEARCH.md). Competition server access remains off.
-Current verified local best: **230,611**, with zero penalties; see
-[the exact candidate](strategies/round2/round2_local_230611.py).
+Current user objective: beat the supplied liquidity-feature T2 by **at least50,000**
+local native net PnL. Its unchanged verified score is **269,920**, so the target
+is **319,920**, superseding the earlier250k goal. The target remains active.
+See [research](docs/ROUND2_250K_RESEARCH.md). Competition server access remains off.
+Current verified best: **294,098**, **+24,178** above the supplied reference,
+with zero penalties. [Exact candidate](strategies/round2/round2_local_294098.py).
+Still25,822 below the requested319,920; no unseen-data superiority is claimed.
 
 Start with [HANDOFF.md](HANDOFF.md). The next-round workflow is in
 [docs/ROUND2_PLAN.md](docs/ROUND2_PLAN.md); the organizer's original documentation

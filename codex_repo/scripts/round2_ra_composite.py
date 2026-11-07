@@ -59,7 +59,7 @@ def build():
     return cases
 
 
-def main(root=ROOT,cases=None,hypothesis='Aggregate short-window flow, consume signals, and stop adverse trends inside the existing shared-budget maker/taker composite.'):
+def main(root=ROOT,cases=None,hypothesis='Aggregate short-window flow, consume signals, and stop adverse trends inside the existing shared-budget maker/taker composite.',goal=250000):
     ROOT=root
     m=load_manifest(Path('logs/round2_local_intake'))
     ROOT.mkdir(exist_ok=True);(ROOT/'sources').mkdir(exist_ok=True)
@@ -70,7 +70,7 @@ def main(root=ROOT,cases=None,hypothesis='Aggregate short-window flow, consume s
         else:p.write_text(text)
         assert not check(p),check(p)
         candidates.append(dict(name=name,file=str(p),source_sha256=digest(p),risk='strict100'))
-    protocol=dict(goal=250000,candidates=candidates,native=m['native'],
+    protocol=dict(goal=goal,candidates=candidates,native=m['native'],
         scope='Consumed public first80%; no new holdout and no server access.',
         hypothesis=hypothesis,
         selection='Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.',

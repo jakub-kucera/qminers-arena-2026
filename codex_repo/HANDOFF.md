@@ -1,39 +1,40 @@
 # Handoff for the next session
 
-## Active objective: 250,000 locally
+## Active objective: supplied liquidity T2 plus50,000
 
-The user raised the goal after the verified 167,412 model. Continue local-only
-research; competition server access remains prohibited. The 167,412 file was
-sent to Jakub at the user's explicit request; do not send further models without
-another instruction. See [250k research](docs/ROUND2_250K_RESEARCH.md) for new
-experiments. The sections below describe the completed earlier 150k objective.
+The user superseded the250k goal with beating their supplied
+`t2_liquidity_features` file by at least50,000. Unchanged reference verified
+**269,920**, hence target **319,920**. Do not complete merely at250k.
+Exact supplied source: research/round2_t2_liquidity_supplied_20261107/original_submission.py.
+SHA25654658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4.
+Native CLI/audit match all fields; actual/potential100, fees0, drawdown4658,
+first80=209280,final20=60640. All public data consumed; no new holdout.
+Current improved best **294,098** (+24,178), still25,822 short of319,920.
+Source strategies/round2/round2_local_294098.py, SHA256
+06acfa3b209a6a3ccbf7beb08ec0715774c87bf98becdeae07f52465c3380f09.
+No-passive variant of supplied T2: QUOTE_SIZE0, strict all-live reservations,
+POSITION_LIMIT100. All other forecast and execution settings remain supplied.
+Native CLI/audit parity; fees0, maxactual/potential100, drawdown6222,
+first80=223851,final20=70247, filled orders2492, volume288516.
 
-Current verified best: **230,611**, exact standalone file
-`strategies/round2/round2_local_230611.py`, SHA256
-`21ce75eb06000e908667813324c870c208e615940406ce4c9f63045bc5a4fb32`.
-Native CLI and audit match every result field. Actual/potential<=100, fees0,
-first80=179,883, final20=50,728, sampled drawdown6,444. All132 tests pass.
-All scheduled replays finished. The250k goal remains unmet by19,389.
+Six structural variants completed: best later-prefix ridge3x full268433,
+zero fees, drawdown3751, not promoted. Six execution variants completed:
+no_passive was best by later30-80 before full; gap10/25/100ms and edge0/.3
+all worse. All133 tests pass. All scheduled runs terminal; no live sessions.
+Archives: research/round2_t2_structural_20261107 and round2_t2_execution_20261107.
 
-This is supplied H1 with strict pending-order reservations and BIAS_AGREE0.2.
-It retains online29-feature ridge,400ms price target, clipped labels20,50ms
-IOC pacing, spread1 gate, one-lot maker quotes, RA250ms flow500/stop3 and
-cumulative shadow gate10. No fixed tree or maker residual calibration.
-Unmodified supplied H1 scored223,794 with fees50, actual101,potential104;
-exact source and audit archived in research/round2_h1_supplied_20261107.
-Six-case refinement selected bias020 by later30-80 profit135,146 before full.
+Next useful hypothesis: causal calibration of forecast-taker edge using stored
+past forecasts and matured400ms outcomes; or a small combination of no-passive
+with flow bias/regularization. Do not assume additive gains. Reference-relative
+goal is recorded in protocols and resolved by checkpoint tool after validating
+reference source/tape/native parity. The system goal string may still say250k;
+the user's latest319920 requirement takes precedence, and remains incomplete.
 
-Four H1+calibrated-maker variants failed badly (prefix23,402–38,579), none
-promoted or run on full. Four200ms+residual-ridge combinations also failed
-reference later-prefix criterion. Protocols, sources and results preserved.
-Previous222,966 maker/follower remains unchanged, and outperformed H1 early
-but not over full tape. Do not claim H1 superiority on unseen tapes.
-
-All public data is consumed. Next useful research: causal calibration of
-forecast-taker edge, or a small execution-pacing sensitivity study. Avoid
-blindly enlarging passive quotes: that already failed. Preserve pending
-reservations, native fees/latency and frozen candidate selection. No new
-emails or competition server use/submissions are authorized.
+Current studies and completion are documented at the top of
+[research](docs/ROUND2_250K_RESEARCH.md). Native matching, latency and fees stay
+unchanged. No competition server, email or submission is authorized. Research
+branch Git pushes remain authorized. An earlier167412 file was emailed once
+at explicit request; do not email newer models.
 
 ## Historical checkpoint: 167,412 local result, no server access
 
