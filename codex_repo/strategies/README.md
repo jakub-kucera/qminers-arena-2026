@@ -27,11 +27,13 @@ a strict 100-lot bound. The native acceptance wall remains 1,000.
 ## Round-2 hypotheses
 
 The verified local public checkpoint is [round2_submission.py](round2_submission.py),
-byte-identical to [round2_volatility_144580.py](round2_volatility_144580.py).
-It earns 144,580.19 net including 636.81 penalties, with exact native CLI equality.
+byte-identical to [round2_fill_value_162253.py](round2_fill_value_162253.py).
+It earns 162,253.08 net including 989.92 penalties, with exact native CLI equality.
+The earlier 144K archive remains at [round2_volatility_144580.py](round2_volatility_144580.py).
+[The model table](../docs/ROUND2_MODEL_COMPARISON.md) compares seven saved candidates.
 Its middle-public 20% and frozen final-public 20% increments were both positive.
 This is not a server/private score; see the
-[research report](../docs/ROUND2_VOLATILITY_RESEARCH.md).
+[research report](../docs/ROUND2_FILL_VALUE_RESEARCH.md).
 
 The [registry](round2/manifest.json) records exact source hashes, intended roles
 and risk contracts for the original preparation controls.

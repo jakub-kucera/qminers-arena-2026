@@ -26,7 +26,11 @@ Run modules from the repository root with `.venv/bin/python -m scripts.NAME`.
 | `round2_next_move.py`, `round2_nextmove_timing.py` | Event-time prediction targets and latency-eligible label frames |
 | `round2_conditional_with_fixed_risk.py` | Conditional public-fill models on the unchanged saved risk policy |
 | `round2_dislocation_taker.py` | Independent fixed20-lot IOC family, with no volatility sizing |
-| `round2_pretrained_alpha.py` | Symmetric offline tree forecasts trained only on public first60%; later40% comparisons explicitly separated and reused |
+| `round2_pretrained_alpha.py` | Symmetric offline tree forecasts trained only on public first 60%; later 40% comparisons explicitly separated and reused |
+| `round2_pretrained_fill_value.py` | Conditional maker-fill markouts with pre-fill 5 ms frames, pretrained only on public first 60% |
+| `round2_full_public_study.py` | Immutable-source native audits for reused-full-public follow-up studies |
+| `round2_fresh_quote_alpha.py` | Faster fresh-quote centers and observable near-touch age features, with risk sizing fixed |
+| `round2_fill_value_followups.py` | Fixed-weight fill-value margins, score refresh and fresh-quote combinations |
 | `check_submission.py` | Conservative local check of documented export restrictions |
 | `benchmark.py` | Native-config replay and diagnostic metrics for explicit sources |
 

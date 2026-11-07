@@ -1,8 +1,14 @@
 # Round-2 evaluation plan
 
+Current checkpoint:162,253.08 net with exact organizer CLI match; its fill-value
+model uses first 60% public training data. All public data is now reused for
+model selection. See [the model comparison](ROUND2_MODEL_COMPARISON.md) and
+[conditional-fill research](ROUND2_FILL_VALUE_RESEARCH.md). No server/private
+score has been supplied. The original chronological protocol follows.
+
 Round-2 public data is now at `data/round2_public.csv`. Read the
 [initial findings](ROUND2_INITIAL_FINDINGS.md): all active reference candidates
-lost on its first 60%, and volatility changed materially. The first frozen selection and final public check have completed: 144,580.19 net
+lost on its first 60%, and volatility changed materially. The first frozen selection and final public check completed at144,580.19 net
 with exact organizer CLI agreement. All public segments are now consumed. See
 [the volatility research report](ROUND2_VOLATILITY_RESEARCH.md). No server or
 private score exists. The workflow below documents the chronological procedure;

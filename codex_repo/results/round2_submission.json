@@ -1,93 +1,108 @@
 {
-  "selection": {
-    "name": "absolute_variance_tau3_risk200",
-    "frozen_file": "logs/round2_selection_v1/frozen_submission.py",
-    "source_sha256": "4080cb3fc553d91a2849b6434e6dc563081b42d710b74c5bbcf2d0c4e1e62cba",
-    "evaluation_scope": "local_public_only",
-    "organizer_private_evaluated": false,
-    "risk": "native",
-    "criterion": "Highest next-20% net PnL increment; lower sampled drawdown breaks ties.",
-    "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
-    "final_segment_inspected": false
+  "status": "Verified current checkpoint. Chosen using reused PUBLIC outcomes; no fresh local/server/private score.",
+  "submission_source": "strategies/round2_submission.py",
+  "immutable_source": "strategies/round2_fill_value_162253.py",
+  "source_sha256": "1e06031145b06a67bd0b661c27af3d338b46b19b2514d29f1c9cd06046da3c49",
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "29e4442aa5ada17de2d754a64ddda3fd8c5c1f1068b5eec3b70f968b9debb179",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
   },
   "result": {
     "result": {
-      "fills": 13117,
-      "traded_volume": 950692,
+      "fills": 12931,
+      "traded_volume": 908420,
       "inventory": -100,
-      "cash": 1114217.0,
+      "cash": 1132243.0,
       "mark_price": 9690.0,
-      "breach_penalty": 636.8100000000001,
-      "pnl": 144580.19,
-      "pnl_se": 18642.81889761581,
-      "abs_inventory_q50": 68,
+      "breach_penalty": 989.9200000000001,
+      "pnl": 162253.08,
+      "pnl_se": 18299.875327049533,
+      "abs_inventory_q50": 67,
       "abs_inventory_q68": 100,
       "abs_inventory_q95": 100,
       "abs_inventory_q997": 100
     },
-    "runtime_seconds": 83.25667895795777,
-    "max_abs_inventory": 162,
+    "runtime_seconds": 112.74134304211475,
+    "max_abs_inventory": 300,
     "max_potential_inventory_at_submission": 300,
-    "max_drawdown_1s": 14179.0,
-    "submissions": 48009,
+    "max_drawdown_1s": 12656.0,
+    "submissions": 50838,
     "order_status_counts": {
-      "accepted": 48009,
-      "canceled": 37713,
-      "filled": 10295,
-      "partially_filled": 8273,
-      "modified": 193,
-      "rejected": 184
+      "accepted": 50838,
+      "canceled": 40544,
+      "partially_filled": 7913,
+      "filled": 10293,
+      "modified": 898,
+      "rejected": 204
     },
     "blocks": [
       {
         "start_s": 0.0,
         "end_s": 600.0,
-        "pnl_increment": 11102.0
+        "pnl_increment": 14605.0
       },
       {
         "start_s": 600.0,
         "end_s": 1200.0,
-        "pnl_increment": 25341.0
+        "pnl_increment": 25838.0
       },
       {
         "start_s": 1200.0,
         "end_s": 1800.0,
-        "pnl_increment": 24042.0
+        "pnl_increment": 25834.0
       },
       {
         "start_s": 1800.0,
         "end_s": 2400.0,
-        "pnl_increment": 10879.0
+        "pnl_increment": 13808.0
       },
       {
         "start_s": 2400.0,
         "end_s": 3000.0,
-        "pnl_increment": 25045.0
+        "pnl_increment": 26401.0
       },
       {
         "start_s": 3000.0,
         "end_s": 3600.0,
-        "pnl_increment": 15970.0
+        "pnl_increment": 16675.89
       },
       {
         "start_s": 3600.0,
         "end_s": 4200.0,
-        "pnl_increment": 2746.0
+        "pnl_increment": 7792.0
       },
       {
         "start_s": 4200.0,
         "end_s": 4800.0,
-        "pnl_increment": 16306.190000000002
+        "pnl_increment": 16551.189999999988
       },
       {
         "start_s": 4800.0,
         "end_s": 5400.0,
-        "pnl_increment": 5424.0
+        "pnl_increment": 5478.0
       },
       {
         "start_s": 5400.0,
         "end_s": 5999.995946,
-        "pnl_increment": 7725.0
+        "pnl_increment": 9270.0
       }
     ],
     "config": {
@@ -105,39 +120,35 @@
       "progress_fd": 2
     },
     "boundary_pnl": {
-      "3599997635": 112379.0,
-      "4799996824": 131431.19
+      "3599997635": 123161.89,
+      "4799996824": 147505.08
     },
-    "source": "logs/round2_selection_v1/frozen_submission.py",
-    "source_sha256": "4080cb3fc553d91a2849b6434e6dc563081b42d710b74c5bbcf2d0c4e1e62cba",
+    "source": "logs/round2/pretrained_fill_value/sources/latency_fill_value_threshold0.0.py",
+    "source_sha256": "1e06031145b06a67bd0b661c27af3d338b46b19b2514d29f1c9cd06046da3c49",
     "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
     "strategy_state": {
       "_labels": 260603,
-      "_mass": 252940.53023103616
+      "_mass": 252940.5302322331
     },
     "rates": {
       "observed_duration_seconds": 5999.995946,
-      "net_pnl_per_minute": 1445.8028768808106,
-      "volume_per_minute": 9506.926423513287,
+      "net_pnl_per_minute": 1622.5318962907177,
+      "volume_per_minute": 9084.20613789528,
       "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
-    }
+    },
+    "training_prefix_pnl": 123161.89,
+    "post_fit_last40_pnl": 39091.18999999999
   },
   "official_cli_match": true,
-  "evaluation_scope": "local_public_only",
+  "evaluation_scope": "reused_public_sample_tuning",
   "organizer_private_evaluated": false,
-  "final_segment_evaluated": true,
-  "source_sha256": "4080cb3fc553d91a2849b6434e6dc563081b42d710b74c5bbcf2d0c4e1e62cba",
-  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
-  "final_segment_pnl_increment": 13149.0,
-  "limitation": "This is only the PUBLIC tape. Its last 20% is an internal chronological check if not previously inspected. It is not the organizer private backtest; server validation feedback and post-deadline private scoring are separate.",
-  "submission_source": "strategies/round2_submission.py",
-  "immutable_source": "strategies/round2_volatility_144580.py",
-  "status": "Verified local PUBLIC checkpoint; organizer server-validation/private scores unknown.",
-  "training_and_evaluation_scope": "Source chosen from first60% development and six-candidate next20% selection. Frozen final20% check passed; later research must not call public data untouched.",
-  "development_candidates_evaluated_before_selection": 56,
+  "training_scope": "Pretrained conditional fill-profit model fit only first60% public fills, with features at least5ms before fill. Native online forecast continues causally. Later40% globally reused, outside fitting.",
   "full_public_period_pnl": {
-    "first60": 112379.0,
-    "next20": 19052.190000000002,
-    "last20": 13149.0
-  }
+    "first60": 123161.89,
+    "next20": 24343.189999999988,
+    "last20": 14748.0
+  },
+  "baseline_source": "strategies/round2_volatility_144580.py",
+  "baseline_net": 144580.19,
+  "pending_server_feedback": "Do not attach a server PnL without identifying the exact uploaded immutable source; the earlier question named the144580 checkpoint."
 }

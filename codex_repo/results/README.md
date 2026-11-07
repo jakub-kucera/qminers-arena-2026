@@ -1,5 +1,14 @@
 # Result manifests
 
+`round2_model_comparison.csv` / JSON compare seven saved source files, full
+public PnL, later-period PnL, fees, inventory, drawdown and exact source hashes.
+The current independently CLI-verified source earns 162,253.08; the highest
+audited candidate earns163,429.08 and remains a separate unpromoted model.
+`round2_162253.json` is immutable evidence for the current checkpoint.
+`round2_pretrained_fill_value_results.json`, `round2_fill_value_followups_results.json`
+and `round2_fresh_quote_alpha_results.json` preserve the later full-public
+comparisons. Their fitting overlap/reused-data scope is explicit.
+
 `round2_submission.json` and immutable `round2_144580.json` identify the first
 verified full-public checkpoint: 144,580.19 net, with exact organizer CLI match.
 `round2_selection_v1.json` records six-candidate chronological selection;
@@ -8,8 +17,8 @@ There is no server/private result yet. All public segments are now consumed.
 
 `round2_alternative_mechanisms.json` records24 later development cases with risk
 sizing fixed or a separate fixed-size IOC policy. The queue-wait prototype's
-full-public143,252.19 did not improve the checkpoint. `round2_pretrained_specs.json`
-freezes four pretrained nonlinear-alpha candidates; first60% is fitting data,
+full-public 143,252.19 did not improve the checkpoint. `round2_pretrained_specs.json`
+freezes four pretrained nonlinear-alpha candidates; first 60% is fitting data,
 so their full-public scores must not be mistaken for held-out results.
 
 `round2_development_progress.json` records later first-60% tuning studies;

@@ -24,10 +24,25 @@ later tuning results are sample-tuned, not independent holdouts.
 498,056, 523,999 and 605,752.82. Full historical notes are archived in
 [docs/ROUND1_RESEARCH.md](docs/ROUND1_RESEARCH.md).
 
-## Round-2 preparation
+## Round-2 current checkpoint
+
+[Seven-model comparison](docs/ROUND2_MODEL_COMPARISON.md) includes stable source
+paths, scores, risk metrics and CLI verification. Machine-readable:
+[CSV](results/round2_model_comparison.csv), [JSON](results/round2_model_comparison.json).
+
+The current source [round2_submission.py](strategies/round2_submission.py) earns
+**162,253.08 net** on the public tape, including 989.92 penalties, with exact
+organizer CLI agreement. The named archive is
+[round2_fill_value_162253.py](strategies/round2_fill_value_162253.py).
+It adds a latency-aligned conditional maker-fill value model while keeping
+volatility sizing fixed. See [the research report](docs/ROUND2_FILL_VALUE_RESEARCH.md).
+This model fits first 60% public data; later 40% is beyond fitting but globally
+reused. No server/private result is established.
+
+## Earlier round-2 checkpoint and preparation
 
 The first verified public checkpoint scores **144,580.19 net**, including
-636.81 in penalties. Use [round2_submission.py](strategies/round2_submission.py).
+636.81 in penalties. Its immutable source is [round2_volatility_144580.py](strategies/round2_volatility_144580.py).
 The separate organizer CLI replay matched all fields; the selected source
 earned +19,052.19 on the middle public 20% and +13,149 on the final public 20%.
 It uses the user's absolute-volatility exposure idea with native queue-preserving

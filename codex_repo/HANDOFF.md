@@ -4,10 +4,34 @@ Updated 7 November 2026 after the first verified round-2 public checkpoint.
 Team: **ThatsMyQuant**.
 
 Current round-2 source: **strategies/round2_submission.py**, byte-identical to
-`strategies/round2_volatility_144580.py`. It earns **144,580.19 net on the full
-PUBLIC tape**, including **636.81** native position penalties. All native
-fields matched a separate unmodified organizer CLI replay. Source SHA-256:
-`4080cb3fc553d91a2849b6434e6dc563081b42d710b74c5bbcf2d0c4e1e62cba`.
+`strategies/round2_fill_value_162253.py`. It earns **162,253.08 net on the full
+PUBLIC tape**, including **989.92** native position penalties. Every result field
+matched a separate unmodified organizer CLI replay. Source SHA-256:
+`1e06031145b06a67bd0b661c27af3d338b46b19b2514d29f1c9cd06046da3c49`.
+Read [the conditional-fill report](docs/ROUND2_FILL_VALUE_RESEARCH.md).
+This model keeps all volatility-sizing parameters unchanged and adds a
+pretrained nonlinear conditional maker-fill value gate. Fit uses 33,296 public
+first 60% fills with feature frames at least 5 ms before execution. Runtime quote
+budgets can close but not reverse inventory when predicted fill edge is negative.
+Full actual/potential exposure maxima were 300/300; fees are fully included.
+The later 40%, beyond fitting but previously inspected globally, earned 39,091.19
+versus 32,201.19 for the earlier checkpoint. All public comparisons are reused
+sample tuning; no server/private score is available.
+The previous 144,580.19 source remains immutable at
+`strategies/round2_volatility_144580.py`, with `results/round2_144580.json`.
+An earlier pending server-PnL question named that 144K file: identify the exact
+uploaded immutable source before recording any server result.
+There are 100 passing tests, 86 separate development-prefix replays, and 14
+new full-public candidate replays. All batches have completed. The highest
+public audited result is 163,429.08 at `strategies/round2_fill_fresh_163429.py`;
+its later 40% is 39,005.19, slightly below the current 162K source's 39,091.19.
+It has not received an independent CLI replay or promotion. The +0.1 edge
+margin alternative earns 163,043.19 with 336.81 penalties and median exposure 63.
+Use [the model table](docs/ROUND2_MODEL_COMPARISON.md), machine-readable
+`results/round2_model_comparison.csv` / JSON, and immutable named files when
+handing candidates to another session. No experiments remain running.
+
+Historical first 144K checkpoint and earlier research follow.
 
 Read [the volatility research report](docs/ROUND2_VOLATILITY_RESEARCH.md) and
 `results/round2_submission.json`. Public data is `data/round2_public.csv`:
@@ -43,18 +67,19 @@ Keep all sizing constants fixed in this session's further maker experiments.
 Twenty-four alternative-mechanism development replays completed: passive exit
 quotes, queue-priority retention, conditional fill edges, queue waiting-time
 gates, event-time price forecasts and a separate fixed-size IOC family without
-volatility sizing. Queue-wait0.1s made114,996 on development but143,252.19 on
-the full public tape, below144,580.19, so it was not promoted.
-There are now86 completed development replays and96 passing tests. See
+volatility sizing. Queue-wait0.1s made114,996 on development but 143,252.19 on
+the full public tape, below 144,580.19, so it was not promoted.
+There are now 86 completed development replays and 96 passing tests. See
 `results/round2_alternative_mechanisms.json`.
-Four new symmetric pretrained nonlinear-alpha candidates are evaluating the
-full public tape under `logs/round2/pretrained_alpha`. They fit only first60%
+Four symmetric pretrained nonlinear-alpha candidates completed full public
+replays under `logs/round2/pretrained_alpha`:140,647.19--144,168.19 net, with no
+promotion. They fit only first 60%
 public flow/book features, with no price/time/IDs. Exported tree predictions
-match the fitted estimator. Risk parameters are unchanged. First60% PnL is
-in-sample and later40% is beyond fitting but previously inspected globally;
+match the fitted estimator. Risk parameters are unchanged. First 60% PnL is
+in-sample and later 40% is beyond fitting but previously inspected globally;
 neither is fresh organizer validation. Frozen candidate sources are tracked
 under `strategies/round2_research/pretrained`, with fit specs in
-`results/round2_pretrained_specs.json`. The submission is unchanged.
+`results/round2_pretrained_specs.json`. The conditional-fill checkpoint above is now the current submission.
 There are now 62 development replays and 87 passing tests. Exact study sources,
 native hashes and results are in `results/round2_development_progress.json`;
 the first frozen shortlist is tracked under `strategies/round2_shortlist_v1`.
