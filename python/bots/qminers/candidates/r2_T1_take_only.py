@@ -28,7 +28,7 @@ from math import exp, ceil, floor, isfinite
 from simulator.models import OrderRequest, OrderStatus, OrderType, Side
 from simulator.strategy import BaseStrategy
 
-TAKE_MAXSPREAD = 99  # the forecast take fires only while the spread is at most this many ticks (99: no limit)
+TAKE_MAXSPREAD = 1  # the forecast take fires only while the spread is at most this many ticks (99: no limit)
 
 
 class PassiveStrategy(BaseStrategy):
