@@ -8,15 +8,16 @@ is preserved in [docs/ORGANIZER_GUIDE.md](docs/ORGANIZER_GUIDE.md).
 
 The verified local best is **624,076.00 net PnL** on `data/round1.csv`, including
 **1,700.00** in inventory penalties. The unmodified organizer CLI reproduces
-every result field. The competition-server result has not been recorded here.
+every result field. The user subsequently reported **8th of 61**, with **602,526.53** on the server.
+The exact uploaded source and scored dataset have not been matched to that score.
 
 - Submission: [strategies/round1_submission.py](strategies/round1_submission.py).
 - Immutable named copy: [strategies/round1_quote_flow_624076.py](strategies/round1_quote_flow_624076.py).
 - Metrics, hashes and verification: [results/round1_624076.json](results/round1_624076.json).
 - Git tag: `round1-624076`; final round-1 commit: `77bc241`.
 
-This improved the supplied 595,441.83 strategy by **28,634.17**. The reported
-650K competitor target was not reached. Round-1 data was repeatedly consumed;
+This improved the supplied 595,441.83 strategy by **28,634.17**. The reported leaderboard winner scored **792,696.00**, leaving a **190,169.47**
+gap to our reported server score. The earlier 650K target was not reached. Round-1 data was repeatedly consumed;
 later tuning results are sample-tuned, not independent holdouts.
 
 [Strategies index](strategies/README.md) lists preserved versions, including
@@ -37,15 +38,17 @@ After the new tape arrives, run these commands from the repository root:
 .venv/bin/python -m scripts.profile_round --backtest logs/round2/development.csv --output logs/round2/profile
 .venv/bin/python -m scripts.round2_workbench screen --workers 3
 .venv/bin/python -m scripts.round2_workbench select --workers 3
-.venv/bin/python -m scripts.round2_workbench final
+.venv/bin/python -m scripts.round2_workbench public-check
 ```
 
-The workflow snapshots source files, screens the first 60%, selects using the
-next 20%, freezes the winner, and then evaluates the final 20%. Model state and
+These are internal splits of the **public** tape. The organizer separately
+provides server validation PnL and scores an unseen private tape after the
+deadline. Public data is roughly half their size; size does not imply duration.
+The local workflow screens 60%, selects on 20%, and checks the remaining 20%. Model state and
 inventory remain continuous within each replay. Final evaluation also invokes
 the unmodified organizer CLI and checks every result field exactly.
 
-`final` writes `logs/round2/frozen_submission.py` and `final_report.json`.
+`public-check` (legacy alias `final`) writes `logs/round2/frozen_submission.py` and `final_report.json`.
 It does not overwrite the round-1 submission. Do not profile the full new tape
 before preserving the final evaluation segment. Read the plan before tuning
 beyond the predeclared candidates.

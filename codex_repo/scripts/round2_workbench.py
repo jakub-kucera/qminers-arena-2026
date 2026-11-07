@@ -1,7 +1,8 @@
-"""Snapshot candidates, compare 60/20 chronological prefixes, then evaluate a frozen winner.
+"""Local PUBLIC-tape checks; these never evaluate the organizer's private dataset.
 
 Commands: prepare --backtest PATH; screen; select; final. All commands accept
---output (default logs/round2). The final 20% is replayed only by `final`.
+--output (default logs/round2). `public-check` evaluates the last public 20%;
+`final` remains a compatibility alias. Server validation/private are separate.
 Preparing timestamps/hashes does not make an already inspected dataset fresh.
 """
 import argparse
@@ -22,6 +23,13 @@ from simulator import main as cli
 
 REPO=Path(__file__).resolve().parents[1]
 REGISTRY=REPO/'strategies/round2/manifest.json'
+COMPETITION_PROTOCOL={
+    'source':'Organizer announcement supplied by the user on 2026-11-07',
+    'public':{'downloadable':True,'purpose':'training and local diagnostics','relative_size_approx':0.5},
+    'server_validation':{'feedback':['pnl'],'full_logs_available':False,'purpose':'submission feedback and selection'},
+    'private':{'score_released':'after submission deadline','purpose':'competition scoring'},
+    'validation_and_private_same_size':True,
+    'size_metric':'Unspecified; half size does not establish half elapsed duration or doubled expected PnL.'}
 
 
 def write_json(path,value):
@@ -105,12 +113,13 @@ def prepare(data,output,sources=None):
     if not 0<counts[0]<counts[1]<rows:raise ValueError('Chronological segments must each contain rows')
     if digest(data)!=stamp:raise ValueError('Input changed during preparation')
     manifest={'data':str(data),'data_sha256':stamp,'first_us':first,'last_us':last,'rows':rows,
+        'dataset_role':'public','competition_protocol':COMPETITION_PROTOCOL,
         'development_cutoff_us':cut60,'validation_cutoff_us':cut80,
         'development':str(dev),'development_sha256':digest(dev),'development_rows':counts[0],
         'validation_prefix':str(validation),'validation_prefix_sha256':digest(validation),
         'validation_prefix_rows':counts[1],'candidates':candidates,'native':native_stamp(),
-        'protocol':'Predeclared source snapshots; screen first 60%, select on next 20%, freeze before final 20%.',
-        'limitation':'A fresh holdout requires genuinely new data not inspected during earlier work.'}
+        'protocol':'Local PUBLIC 60/20/20 diagnostic; organizer server validation and private backtests are distinct datasets.',
+        'limitation':'The last public 20% is only a local chronological check, never the organizer private backtest. Freshness requires no earlier inspection.'}
     write_json(output/'manifest.json',manifest)
     return manifest
 
@@ -174,6 +183,11 @@ def run_candidate(candidate,data,output,boundaries=()):
     r['strategy_state']={name:getattr(strategy,name) for name in
         ('_labels','_mass','_fast_mix','_fast_loss','_long_loss','_guard_scale','_guard_score')
         if hasattr(strategy,name)}
+    duration=r['blocks'][-1]['end_s'] if r['blocks'] else 0
+    r['rates']={'observed_duration_seconds':duration,
+        'net_pnl_per_minute':r['result']['pnl']*60/duration if duration>0 else None,
+        'volume_per_minute':r['result']['traded_volume']*60/duration if duration>0 else None,
+        'limitation':'Observed-tape diagnostics, not a projection for a larger or different dataset.'}
     return r
 
 
@@ -228,6 +242,7 @@ def select(manifest,output,workers):
     frozen=output/'frozen_submission.py';shutil.copy2(candidate['file'],frozen)
     assert digest(frozen)==candidate['source_sha256']
     report={'name':winner,'frozen_file':str(frozen),'source_sha256':candidate['source_sha256'],
+        'evaluation_scope':'local_public_only','organizer_private_evaluated':False,
         'risk':candidate['risk'],'criterion':'Highest next-20% net PnL increment; lower sampled drawdown breaks ties.',
         'data_sha256':manifest['data_sha256'],'final_segment_inspected':False}
     write_json(path,report)
@@ -261,17 +276,18 @@ def final(manifest,output):
     actual=json.loads((official/'result.json').read_text())
     if actual!=audit['result']:raise AssertionError('Unmodified CLI disagrees with audited result')
     report={'selection':selected,'result':audit,'official_cli_match':True,
+        'evaluation_scope':'local_public_only','organizer_private_evaluated':False,
         'final_segment_evaluated':True,
         'source_sha256':digest(source),'data_sha256':manifest['data_sha256'],
         'final_segment_pnl_increment':actual['pnl']-audit['boundary_pnl'][str(manifest['validation_cutoff_us'])],
-        'limitation':'Full PnL includes development/selection periods. Only the final-segment increment is held out, provided no earlier inspection occurred.'}
+        'limitation':'This is only the PUBLIC tape. Its last 20% is an internal chronological check if not previously inspected. It is not the organizer private backtest; server validation feedback and post-deadline private scoring are separate.'}
     write_json(report_path,report)
     return report
 
 
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command',choices=('prepare','screen','select','final'))
+    parser.add_argument('command',choices=('prepare','screen','select','public-check','final'))
     parser.add_argument('--backtest',type=Path)
     parser.add_argument('--strategy',type=Path,action='append')
     parser.add_argument('--output',type=Path,default=REPO/'logs/round2')

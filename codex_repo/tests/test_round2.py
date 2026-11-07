@@ -163,6 +163,8 @@ class Round2WorkbenchTests(unittest.TestCase):
                 'from simulator.models import OrderRequest, OrderStatus, OrderType, Side\n\n'
                 +inspect.getsource(PaidOnce))
             out=Path(folder)/'run';m=prepare(self.tape(folder),out,[source])
+            self.assertEqual(m['dataset_role'],'public')
+            self.assertEqual(m['competition_protocol']['server_validation']['feedback'],['pnl'])
             batch(m,out,'development',1)
             selected=select(m,out,1)
             self.assertFalse(selected['final_segment_inspected'])
@@ -171,11 +173,55 @@ class Round2WorkbenchTests(unittest.TestCase):
             self.assertAlmostEqual(validation['validation_pnl_increment'],-20000)
             report=final(m,out)
             self.assertTrue(report['official_cli_match'])
+            self.assertEqual(report['evaluation_scope'],'local_public_only')
+            self.assertFalse(report['organizer_private_evaluated'])
             self.assertGreater(report['result']['result']['breach_penalty'],0)
             self.assertAlmostEqual(report['final_segment_pnl_increment'],-20000)
             stamp=(out/'final_report.json').stat().st_mtime_ns
             self.assertEqual(final(m,out),report)
             self.assertEqual((out/'final_report.json').stat().st_mtime_ns,stamp)
+
+
+class ServerLedgerTests(unittest.TestCase):
+    def test_validation_and_private_are_distinct_and_retain_exact_source(self):
+        from scripts.round2_server_results import record,load
+        with tempfile.TemporaryDirectory() as folder:
+            ledger=Path(folder)/'server.json';source=DESTINATION/'round2_flat.py'
+            a=record(ledger,source,123.0,'validation','upload-1')
+            b=record(ledger,source,234.0,'private','upload-1')
+            self.assertEqual(a['source_sha256'],b['source_sha256'])
+            self.assertEqual([e['dataset'] for e in load(ledger)['entries']],['validation','private'])
+            self.assertIsNone(a['net_pnl_per_minute'])
+            self.assertEqual((ledger.parent/a['source_snapshot']).read_bytes(),source.read_bytes())
+
+    def test_public_scores_nonfinite_pnl_and_guessed_invalid_duration_are_rejected(self):
+        from scripts.round2_server_results import record
+        with tempfile.TemporaryDirectory() as folder:
+            ledger=Path(folder)/'server.json';source=DESTINATION/'round2_flat.py'
+            for pnl,role,duration in ((1.0,'public',None),(float('nan'),'validation',None),
+                                      (float('inf'),'private',None),(1.0,'validation',0)):
+                with self.assertRaises(ValueError):record(ledger,source,pnl,role,duration_seconds=duration)
+            self.assertFalse(ledger.exists())
+
+    def test_one_upload_id_cannot_silently_change_source(self):
+        from scripts.round2_server_results import record,load
+        with tempfile.TemporaryDirectory() as folder:
+            ledger=Path(folder)/'server.json';source=Path(folder)/'candidate.py'
+            source.write_bytes((DESTINATION/'round2_flat.py').read_bytes())
+            original=record(ledger,source,1.0,'validation','upload-1')
+            source.write_text(source.read_text()+'\n# later revision\n')
+            with self.assertRaisesRegex(ValueError,'another source'):record(ledger,source,2.0,'private','upload-1')
+            self.assertEqual(len(load(ledger)['entries']),1)
+            self.assertEqual(digest(ledger.parent/original['source_snapshot']),original['source_sha256'])
+
+    def test_changed_snapshot_and_duplicate_submission_are_detected(self):
+        from scripts.round2_server_results import record,load
+        with tempfile.TemporaryDirectory() as folder:
+            ledger=Path(folder)/'server.json';source=DESTINATION/'round2_flat.py'
+            entry=record(ledger,source,1.0,'validation','upload-1')
+            with self.assertRaisesRegex(ValueError,'already recorded'):record(ledger,source,1.0,'validation','upload-1')
+            (ledger.parent/entry['source_snapshot']).write_text('corrupted')
+            with self.assertRaisesRegex(ValueError,'snapshot changed'):load(ledger)
 
 
 if __name__=='__main__':unittest.main()

@@ -1,5 +1,11 @@
 # Result manifests
 
+`round1_reported_leaderboard.json` records the user's reported 602,526.53,
+rank 8/61, with no source/dataset attribution. It must not be silently attached
+to the 624,076 local replay. `round2_competition_protocol.json` records the
+three-dataset announcement. `round2_server_results.json` is the separate server
+feedback ledger; it is currently empty. Local public checks are not private scores.
+
 - [round1_submission.json](round1_submission.json) identifies the frozen current
   round-1 source, exact native result, hashes and verification.
 - [round1_624076.json](round1_624076.json) preserves its named archive evidence.

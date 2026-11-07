@@ -1,8 +1,11 @@
 # Handoff for the next session
 
 Prepared 7 November 2026 after round 1. Team: **ThatsMyQuant**. The user expects
-the next session about an hour after round 1. No round-2 CSV or new rules have
-been provided yet. Continue actual implementation and evaluation when they arrive.
+the next session about an hour after round 1. No round-2 CSV has been provided.
+The organizer has announced three separate datasets: downloadable public,
+server validation with PnL-only feedback, and private scoring after the deadline.
+Public is roughly half the size of either hidden dataset; the size metric is
+unspecified. Internal public splits are not those organizer datasets.
 
 ## Start here
 
@@ -31,7 +34,11 @@ resolution through `uv sync` failed earlier; no environment rebuild is needed.
 | Final round-1 commit / tag | `77bc241` / `round1-624076` |
 
 Every result field matched a separate replay using the unmodified organizer
-CLI. This is a **local result**; no competition-server outcome is recorded.
+CLI. This is a **local result**. The user subsequently reported rank **8/61**
+and server PnL **602,526.53**, versus Team 2's **792,696.00**. The exact
+uploaded file, submission ID and scored dataset are not established; do not
+bind that score to the 624K file or diagnose its difference without evidence.
+See `results/round1_reported_leaderboard.json`.
 The user said the round had basically ended. Do not claim we won: the reported
 650K target was not beaten. The input Claude strategy scored 595,441.83 exactly;
 our extension gained 28,634.17 net.
@@ -128,6 +135,8 @@ forecasts are scored using predictions recorded before their future labels.
 The faster model gets more weight only after those outcomes mature.
 
 `scripts/round2_workbench.py` provides prepare / screen / select / final.
+Use `public-check` rather than the legacy `final` command name. Every result
+from this tool is local public-data evidence, never organizer private scoring.
 It snapshots sources, hashes data and evaluator, preserves chronological time
 groups, resumes incomplete identical comparisons, freezes the selected source,
 and verifies the final replay against the original CLI. It leaves round 1 intact.
@@ -135,7 +144,8 @@ and verifies the final replay against the original CLI. It leaves round 1 intact
 The workflow has a synthetic end-to-end smoke test and a forced paid-breach
 integration test. The latter checks exact native equality and exact-split
 penalty accounting; modifying a frozen source is rejected. The test suite has
-**66 passing tests** at this preparation checkpoint.
+**66 passing tests** at the original preparation checkpoint; **70** after the
+organizer-protocol update and server-score ledger tests.
 The recorded checks are in `results/round2_preparation_checks.json`.
 Preparation checkpoint tag: `round2-preparation-20261107`.
 The final preparation history is also backed up in the workspace parent at
@@ -150,6 +160,16 @@ thin original sample. These are historical checks, not fresh round-2 evidence. N
 `logs/round2` experiment has been prepared, and no round-2 submission is selected.
 If an experiment has `final_report.json`, its final segment has been evaluated;
 the selection file's flag records the state at selection time, not current freshness.
+This segment is internal to the PUBLIC tape. Organizer private scoring happens
+only after the deadline. Server validation PnL is model-selection feedback;
+log every query and exact source using `scripts/round2_server_results.py`.
+No round-2 server scores are recorded yet. A repeated query of the same fixed
+validation tape is not an independent sample. Do not multiply public PnL by two
+and present that as an expected private score.
+
+The next structural research priorities are in
+[ROUND2_STRUCTURAL_IDEAS.md](docs/ROUND2_STRUCTURAL_IDEAS.md). The prepared six
+candidates do not yet implement those new queue-value or latent-flow models.
 
 ## Lessons that should save time
 

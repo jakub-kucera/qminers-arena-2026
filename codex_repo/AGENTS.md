@@ -2,6 +2,11 @@
 
 Read [HANDOFF.md](HANDOFF.md) first and [docs/ROUND2_PLAN.md](docs/ROUND2_PLAN.md)
 before evaluating new round data. The existing `.venv/bin/python` works.
+Round 2 has three organizer datasets: public training, server validation with
+PnL-only feedback, and post-deadline private scoring. Local public splits are
+only internal diagnostics. Do not call a local `public-check` private evaluation.
+Record server feedback separately, tied to exact source snapshots; validation
+feedback used for tuning is not an untouched final assessment.
 
 Preserve the round-1 submission, immutable named strategies, result manifests,
 Git history, and data. Its final verified source is

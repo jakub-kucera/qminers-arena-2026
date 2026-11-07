@@ -2,6 +2,47 @@
 
 No round-2 data has arrived yet. These candidates are prepared hypotheses;
 historical results do not establish performance in the next round.
+The [structural research backlog](ROUND2_STRUCTURAL_IDEAS.md) prioritizes new
+mechanisms beyond the six prepared reference/adaptation candidates.
+
+## Organizer protocol: three different backtests
+
+The organizer announcement supplied by the user establishes:
+
+| Dataset | Access and purpose |
+| --- | --- |
+| Public | Downloadable; available for training and local checks |
+| Server validation | Submissions receive PnL feedback, without full logs |
+| Private | Competition score is evaluated after the submission deadline |
+
+Public is roughly half the size of validation/private; those hidden datasets
+retain their previous size. "Size" was not defined as elapsed time, so do not
+assume doubled duration or doubled PnL. Compare local rates only over observed
+durations and stress online adaptation over longer historical runs. Avoid
+session-end hardcoding, fixed price paths, and models whose edge only occurs
+in a short startup interval.
+
+The 60/20/20 procedure below splits the **public** dataset for internal diagnostics.
+Its last 20% is not the organizer private backtest. After local architecture
+selection, the full public tape may be used for final fitting; that makes any
+previously reserved public segment training data, and must be recorded as such.
+Prefer a small predeclared batch of distinct server submissions, record every
+query, and use validation feedback without treating repeated queries as new
+independent evidence. No official submission/query limit was provided.
+
+Record a server observation with the exact file that was uploaded:
+
+```bash
+.venv/bin/python -m scripts.round2_server_results record \
+  --strategy PATH_TO_UPLOADED_FILE.py --dataset validation \
+  --pnl REPORTED_NUMBER --submission-id SERVER_ID
+```
+
+The ledger snapshots the source and keeps validation/private observations
+separate. It records operator-reported PnL; it does not upload, fetch results,
+or independently verify the server's file identity. Use `--dataset private`
+only for the organizer's post-deadline result. Supply duration only if actually
+known; the tool makes no half-size PnL projection.
 
 ## Predeclared candidates
 
@@ -29,7 +70,7 @@ exact bytes, registry and local submission restrictions. It does not claim
 new-round performance. Deliberate edits should use new candidate files and
 updated provenance, rather than quietly rewriting frozen snapshots.
 
-## When data arrives
+## When the public data arrives
 
 Confirm the CSV identity and review any new organizer rules or engine version.
 The current engine uses 5 ms order/cancel/modify latency, a 100-lot free
@@ -75,7 +116,7 @@ does not change the experiment. Editing a snapshot is rejected.
 A new directory does not make previously inspected data fresh. Do not profile
 the full new tape or repeatedly inspect the final segment while tuning.
 
-## Selection: next 20%
+## Local selection: next public 20%
 
 ```bash
 .venv/bin/python -m scripts.round2_workbench select --workers 3
@@ -98,19 +139,20 @@ frozen, changing the source is rejected. The no-trade control may win if the
 other candidates lose on validation. That is evidence to reconsider the
 development hypotheses, not a reason to search the final segment.
 
-## Final evaluation: last 20%, after freezing
+## Local public check: last public 20%, after freezing
 
 ```bash
-.venv/bin/python -m scripts.round2_workbench final
+.venv/bin/python -m scripts.round2_workbench public-check
 ```
 
-This runs only the frozen source on the full tape, reports the last-20% PnL
+This runs only the frozen source on the full **public** tape, reports the last-20% PnL
 increment separately, and repeats the full replay with the unmodified organizer
 CLI. All native result fields must match exactly. A completed final report is
 reused rather than rerunning or reranking candidates.
 
-Full-session PnL includes development and selection periods. The last-20%
-increment is a chronological evaluation only if those outcomes were not
+Full-session PnL includes development and selection periods. This last-20%
+increment is only an internal public-data chronological check, not the organizer
+private backtest. It is locally held out only if those outcomes were not
 inspected previously. The online strategy may still learn causally as labels
 mature during that period; source and hyperparameters remain frozen.
 

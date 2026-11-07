@@ -7,6 +7,7 @@ Run modules from the repository root with `.venv/bin/python -m scripts.NAME`.
 | `build_round2_candidates.py` | Build/check the six predeclared standalone sources and registry |
 | `round2_workbench.py` | Snapshot, develop, select, freeze, audit and verify new round data |
 | `round2_characterize.py` | Historical transfer checks; no round-2 model selection |
+| `round2_server_results.py` | Record operator-reported validation/private PnL against immutable upload-source snapshots |
 | `profile_round.py` | Read-only market diagnostics; use development data before selection |
 | `check_submission.py` | Conservative local check of documented export restrictions |
 | `benchmark.py` | Native-config replay and diagnostic metrics for explicit sources |
