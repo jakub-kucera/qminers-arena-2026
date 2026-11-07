@@ -179,3 +179,7 @@ Trials so far (this worktree): 4 experiments, 34 cells.
 - Why T1 breaches (107 episodes of 5-25 ms on round 2 public, |inv| 101-108, 0.88 s = 8,829): the take's room was EXPOSURE - pos, ignoring up to 8 resting one-lot quotes on its side that fill during its 5-ms flight (46 episodes at |inv| 108), and CANCEL_FREE 1.0 let a new one-lot quote go out while the old one was still being cancelled (21 episodes).
 - The fix, two named constants: TAKE_ROOM_LIVE 1 (the take's room also subtracts every live same-side order, those being cancelled and the hedge included) and CANCEL_FREE 0.0. TAKE_ROOM_LIVE 0 with CANCEL_FREE 1.0 is T1 to the cent. The forecast, features, thresholds and TAKE_GAP_MS untouched; validate OK; no extra run time.
 - T1 / T2 pnl (breach): round2_public 191,984 (8,829) / 194,391 (0); the mirror 187,246 (8,410) / 192,774 (0); round1 164,194 (7,512) / 171,802 (0); the rebuilt round-1 private 187,327 (4,576) / 191,502 (0). Net +2.4k to +7.6k on every tape; T2 fills +13-14% at the same traded volume. On validation T1 paid 21,956 of breach, which T2 should save most of.
+
+### 21:40: a colleague's `round2_composite_local.py` on validation (uploaded 21:35; results in `data/arena/round2/round2_composite_local_res_pep/`; the bot file is not in the repo)
+- +247,165.00 (fills 14,532, volume 1,013,972, end +100, breach 0, pnl_se 47,886, |pos| 100 throughout, 5 min 47 s): below T1 (+485,667), RA (+467,703) and M2 (+376,082).
+- It is now the last upload: the final must be re-uploaded after it.
