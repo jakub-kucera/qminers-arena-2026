@@ -1,0 +1,119 @@
+{
+  "status": "Development checkpoint; frozen shortlist will consume the next public20%. No server/private result.",
+  "source": "strategies/round2_research/round2_absolute_variance_112379.py",
+  "source_sha256": "4080cb3fc553d91a2849b6434e6dc563081b42d710b74c5bbcf2d0c4e1e62cba",
+  "scope": "Round-2 public first60%, roughly one hour.",
+  "absolute_volatility_rule": "EW 100ms preceding-midpoint squared returns, tau3sec; planned cap=floor_5(200/sigma_squared), clipped10..100; native priority-preserving shrinks.",
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "29e4442aa5ada17de2d754a64ddda3fd8c5c1f1068b5eec3b70f968b9debb179",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
+  },
+  "evaluation": {
+    "result": {
+      "fills": 7668,
+      "traded_volume": 599145,
+      "inventory": 85,
+      "cash": -732646.0,
+      "mark_price": 9945.0,
+      "breach_penalty": 300.00000000000006,
+      "pnl": 112379.0,
+      "pnl_se": 11844.905793144635,
+      "abs_inventory_q50": 75,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 50.92980795796029,
+    "max_abs_inventory": 106,
+    "max_potential_inventory_at_submission": 300,
+    "max_drawdown_1s": 5483.0,
+    "submissions": 28305,
+    "order_status_counts": {
+      "accepted": 28305,
+      "canceled": 22371,
+      "filled": 5931,
+      "partially_filled": 5213,
+      "modified": 122,
+      "rejected": 84
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 600.0,
+        "pnl_increment": 11102.0
+      },
+      {
+        "start_s": 600.0,
+        "end_s": 1200.0,
+        "pnl_increment": 25341.0
+      },
+      {
+        "start_s": 1200.0,
+        "end_s": 1800.0,
+        "pnl_increment": 24042.0
+      },
+      {
+        "start_s": 1800.0,
+        "end_s": 2400.0,
+        "pnl_increment": 10879.0
+      },
+      {
+        "start_s": 2400.0,
+        "end_s": 3000.0,
+        "pnl_increment": 25045.0
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 3599.997465,
+        "pnl_increment": 15970.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "boundary_pnl": {
+      "3599997635": 112379.0
+    },
+    "source": "logs/round2/absolute_variance_followups/sources/absolute_variance_tau3_risk200.py",
+    "source_sha256": "4080cb3fc553d91a2849b6434e6dc563081b42d710b74c5bbcf2d0c4e1e62cba",
+    "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+    "strategy_state": {
+      "_labels": 156343,
+      "_mass": 153562.90115508612
+    },
+    "rates": {
+      "observed_duration_seconds": 3599.997465,
+      "net_pnl_per_minute": 1872.9846522266926,
+      "volume_per_minute": 9985.757031637244,
+      "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+    }
+  }
+}

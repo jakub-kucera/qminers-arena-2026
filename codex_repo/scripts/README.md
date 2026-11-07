@@ -18,6 +18,8 @@ Run modules from the repository root with `.venv/bin/python -m scripts.NAME`.
 | `round2_fill_attribution.py` | Exact native PnL decomposition and descriptive post-run fill markouts |
 | `round2_regime_features.py` | Development comparisons of jump-state features and order-size cohorts |
 | `round2_volatility_exposure.py` | User-proposed absolute-volatility sizing; causal 100 ms sampling, inverse-volatility/variance caps |
+| `round2_volatility_followups.py`, `round2_variance_followups.py` | Small development batches testing faster absolute-volatility adaptation |
+| `round2_shortlist.py` | Freeze six development-chosen candidates and reuse exact audited prefixes before continuous middle-public20% selection |
 | `check_submission.py` | Conservative local check of documented export restrictions |
 | `benchmark.py` | Native-config replay and diagnostic metrics for explicit sources |
 

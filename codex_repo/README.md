@@ -35,7 +35,7 @@ The public tape has arrived at `data/round2_public.csv` (100 minutes, 2.19M
 events). Its first-hour diagnostics show about **3.65x** the old 25-second
 price volatility; all active reference strategies lost on that prefix. Read
 [the initial findings](docs/ROUND2_INITIAL_FINDINGS.md). The later public
-segments are still unreplayed; no server score has been received.
+segments were initially unreplayed; no server score has been received.
 
 Follow-up development research has reached **93,679 net** using exposure
 inversely proportional to absolute realized volatility, versus **45,698**
@@ -43,6 +43,10 @@ for the corresponding fixed-50-lot jump-aware maker. This is first-60%
 sample tuning, not a selected submission or a server result. The source is
 [round2_absolute_vol_93679.py](strategies/round2_research/round2_absolute_vol_93679.py);
 its evidence is [round2_development_93679.json](results/round2_development_93679.json).
+The current development best is **112,379** with inverse-variance sizing
+and three-second adaptation. Six candidates were frozen before selection on
+the middle public20% at `logs/round2_selection_v1`; that comparison is now
+running. The last public20% remains untouched.
 
 The reference workflow below is for a fresh study directory. The default
 `logs/round2` intake, profile and screen have already completed; do not overwrite

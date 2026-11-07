@@ -10,13 +10,19 @@ that prefix. Four further inventory/entry prototypes also lost; their naive
 resizing caused large queue churn and does not isolate the effect of smaller
 positions. See the findings and source hashes before reusing these prototypes.
 The user's absolute-volatility exposure idea improved the DEVELOPMENT best to
-**93,679 net** (`strategies/round2_research/round2_absolute_vol_93679.py`).
+**112,379 net** (`strategies/round2_research/round2_absolute_variance_112379.py`).
+The current development leader uses a three-second variance decay and
+planned cap floor-to-five(200/sigma_squared), bounded 10..100. Six sources
+were frozen before the next public20% evaluation at `logs/round2_selection_v1`;
+that middle segment is now being consumed for selection. The last public20%
+remains untouched. No server or private result exists.
+The earlier 93,679 checkpoint (`round2_absolute_vol_93679.py`) uses:
 Volatility is EW 100 ms preceding-midpoint returns in ticks/sqrt(second),
 10-second decay; planned exposure is 100/sigma, rounded down to 5-lot steps
 and bounded 10..100. It keeps the jump-aware quote logic and native
 priority-preserving shrinks. Slower 60-second volatility scored 63,992.
 See `results/round2_development_93679.json`; remaining variants are running.
-Later40% public and server validation remain unused at this checkpoint.
+The 93,679 result was recorded before any later public evaluation.
 Follow-up research has also found positive DEVELOPMENT candidates: native
 queue-preserving sizing with planned bounds +/-50 scored 31,840 net without
 penalty (`strategies/round2_research/round2_queue_fixed50_31840.py`), and a
