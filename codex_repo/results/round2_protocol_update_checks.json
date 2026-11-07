@@ -1,0 +1,54 @@
+{
+  "updated_at_utc": "2026-11-07T17:52:52.660259+00:00",
+  "unit_tests_passed": 70,
+  "previous_preparation_commit": "2900910",
+  "competition_protocol": {
+    "source": "Organizer announcement supplied by the user on 2026-11-07",
+    "public": {
+      "downloadable": true,
+      "purpose": "training and local diagnostics",
+      "relative_size_approx": 0.5
+    },
+    "server_validation": {
+      "feedback": [
+        "pnl"
+      ],
+      "full_logs_available": false,
+      "purpose": "submission feedback and selection"
+    },
+    "private": {
+      "score_released": "after submission deadline",
+      "purpose": "competition scoring"
+    },
+    "validation_and_private_same_size": true,
+    "size_metric": "Unspecified; half size does not establish half elapsed duration or doubled expected PnL."
+  },
+  "public_check_is_not_organizer_private": true,
+  "server_ledger_scope_and_source_snapshot_tests_passed": true,
+  "frozen_round1_source_sha256": "0aaff6caee4c8708afb0f3bc54a8f1d3beaa5a641477db192be09cfeb6993b45",
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "29e4442aa5ada17de2d754a64ddda3fd8c5c1f1068b5eec3b70f968b9debb179",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
+  },
+  "strategy_exports_changed": false,
+  "new_round2_server_scores_recorded": 0,
+  "test_source_sha256": "4cbc98b9032f90ba899b80e3f32952209664be356ee9d2fba1a8944d7178e7e5",
+  "server_ledger_tool_sha256": "43f8c67b93796693acdaf7e0da86196e35c91266dbcc1b562a278ee87f0b47da"
+}

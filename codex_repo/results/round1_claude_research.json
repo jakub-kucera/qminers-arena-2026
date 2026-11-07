@@ -1,0 +1,1028 @@
+{
+  "generated_at_utc": "2026-11-07T16:55:41.534275+00:00",
+  "input_file": "strategies/round1_claude_595k.py",
+  "input_source_sha256": "964531acc36a7209fa965a1a045a28e76c79b0f797fe46861f58392b28a04e2b",
+  "input_verified_net_pnl": 595441.83,
+  "data_file": "data/round1.csv",
+  "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+  "best_audited": {
+    "family": "claude_final_polish",
+    "name": "width045",
+    "pnl": 624076.0,
+    "penalty": 1700.0000000000002,
+    "source": "logs/round1/claude_final_polish/sources/width045.py",
+    "source_sha256": "ce4f767d287aa3f8eb9e8317096fe8348d2161e2d7d199aa976c2f01def117cf",
+    "max_abs_inventory": 256,
+    "max_potential_inventory_at_submission": 303
+  },
+  "current_verified_submission": {
+    "name": "width045",
+    "file": "strategies/round1_submission.py",
+    "source_sha256": "0aaff6caee4c8708afb0f3bc54a8f1d3beaa5a641477db192be09cfeb6993b45",
+    "result": {
+      "result": {
+        "fills": 21517,
+        "traded_volume": 2120528,
+        "inventory": 100,
+        "cash": -377124.0,
+        "mark_price": 10029.0,
+        "breach_penalty": 1700.0000000000002,
+        "pnl": 624076.0,
+        "pnl_se": 11189.828899204203,
+        "abs_inventory_q50": 97,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 188.2241443330422,
+      "max_abs_inventory": 256,
+      "max_potential_inventory_at_submission": 303,
+      "max_drawdown_1s": 894.0,
+      "submissions": 73142,
+      "order_status_counts": {
+        "accepted": 73142,
+        "partially_filled": 17869,
+        "canceled": 57473,
+        "filled": 15668,
+        "rejected": 130
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 600.0,
+          "pnl_increment": 27248.0
+        },
+        {
+          "start_s": 600.0,
+          "end_s": 1200.0,
+          "pnl_increment": 31336.0
+        },
+        {
+          "start_s": 1200.0,
+          "end_s": 1800.0,
+          "pnl_increment": 29042.0
+        },
+        {
+          "start_s": 1800.0,
+          "end_s": 2400.0,
+          "pnl_increment": 31401.0
+        },
+        {
+          "start_s": 2400.0,
+          "end_s": 3000.0,
+          "pnl_increment": 29195.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3600.0,
+          "pnl_increment": 36128.0
+        },
+        {
+          "start_s": 3600.0,
+          "end_s": 4200.0,
+          "pnl_increment": 31975.0
+        },
+        {
+          "start_s": 4200.0,
+          "end_s": 4800.0,
+          "pnl_increment": 30881.0
+        },
+        {
+          "start_s": 4800.0,
+          "end_s": 5400.0,
+          "pnl_increment": 33409.0
+        },
+        {
+          "start_s": 5400.0,
+          "end_s": 6000.0,
+          "pnl_increment": 31848.0
+        },
+        {
+          "start_s": 6000.0,
+          "end_s": 6600.0,
+          "pnl_increment": 31681.0
+        },
+        {
+          "start_s": 6600.0,
+          "end_s": 7200.0,
+          "pnl_increment": 34387.0
+        },
+        {
+          "start_s": 7200.0,
+          "end_s": 7800.0,
+          "pnl_increment": 31328.0
+        },
+        {
+          "start_s": 7800.0,
+          "end_s": 8400.0,
+          "pnl_increment": 31810.0
+        },
+        {
+          "start_s": 8400.0,
+          "end_s": 9000.0,
+          "pnl_increment": 32503.0
+        },
+        {
+          "start_s": 9000.0,
+          "end_s": 9600.0,
+          "pnl_increment": 29685.0
+        },
+        {
+          "start_s": 9600.0,
+          "end_s": 10200.0,
+          "pnl_increment": 28307.0
+        },
+        {
+          "start_s": 10200.0,
+          "end_s": 10800.0,
+          "pnl_increment": 31468.0
+        },
+        {
+          "start_s": 10800.0,
+          "end_s": 11400.0,
+          "pnl_increment": 30953.0
+        },
+        {
+          "start_s": 11400.0,
+          "end_s": 11999.990364,
+          "pnl_increment": 29491.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "source": "logs/round1/claude_final_polish/sources/width045.py",
+      "source_sha256": "ce4f767d287aa3f8eb9e8317096fe8348d2161e2d7d199aa976c2f01def117cf",
+      "gross_pnl_before_penalty": 625776.0
+    },
+    "ast_equivalent_except_module_docstring": true,
+    "official_cli_match": true,
+    "verification": "Every result field exactly matches the unmodified organizer CLI.",
+    "limitation": "Sample tuning on previously consumed round1.csv. All native fees and latency included.",
+    "official_cli_result": "logs/round1/claude_final_polish/official_624076/result.json",
+    "data_file": "data/round1.csv",
+    "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+    "python_version": "3.13.16",
+    "engine_sha256": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+    "cli_sha256": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+    "models_sha256": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+    "base_strategy_sha256": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5",
+    "input_verified_pnl": 595441.83,
+    "improvement_vs_input": 28634.17,
+    "archive_file": "strategies/round1_quote_flow_624076.py",
+    "comparison_threshold": 650000,
+    "margin_vs_threshold": -25924.0,
+    "tests_passed": 56,
+    "local_submission_check_passed": true
+  },
+  "full_candidates_completed": 77,
+  "screen_candidates_completed": 121,
+  "families": [
+    {
+      "family": "claude_capped_flow",
+      "generator": "scripts/round1_claude_capped_flow.py",
+      "generator_sha256": "899599b30a304e5b63049c20b5f337c1abda62d80ab2fe5a62c21c8bfb4eb577",
+      "completed": true,
+      "screened_candidates": 13,
+      "full_replay_candidates": [
+        {
+          "name": "cap_5_tau_1000000",
+          "pnl": 618934.0,
+          "penalty": 1649.9999999999998,
+          "source": "logs/round1/claude_capped_flow/sources/cap_5_tau_1000000.py",
+          "source_sha256": "8f21a4929db3e8ca82d4cc4ed676259ada69c8b9b058ab2f442e66e8c21dc370",
+          "max_abs_inventory": 203,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "cap_10_tau_1000000",
+          "pnl": 618252.0,
+          "penalty": 1599.9999999999995,
+          "source": "logs/round1/claude_capped_flow/sources/cap_10_tau_1000000.py",
+          "source_sha256": "b5840b5563593aa2f3de3ab292095ee7e1fa2f9e879fd3209cd4eae741f4b2f8",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "cap_20_tau_1000000",
+          "pnl": 617694.95,
+          "penalty": 2185.0499999999997,
+          "source": "logs/round1/claude_capped_flow/sources/cap_20_tau_1000000.py",
+          "source_sha256": "49d4f15d944565bb0563d312bf9bd5e9c0342f11e12ed6c4e7d673826552a539",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "cap_20_tau_500000",
+          "pnl": 605549.95,
+          "penalty": 2585.05,
+          "source": "logs/round1/claude_capped_flow/sources/cap_20_tau_500000.py",
+          "source_sha256": "f5e39ef27c62d35a8196421a8023942385a3033ab59f7f23d80b603bbca7c1de",
+          "max_abs_inventory": 241,
+          "max_potential_inventory_at_submission": 356
+        }
+      ]
+    },
+    {
+      "family": "claude_combo",
+      "generator": "scripts/round1_claude_combo.py",
+      "generator_sha256": "a52a2fb0e99be71a5c5b340e4b3dbecd8b78c26de21ce2f4f8ff06bcccfb6dd5",
+      "completed": true,
+      "screened_candidates": 9,
+      "full_replay_candidates": [
+        {
+          "name": "groups100_500",
+          "pnl": 605343.0,
+          "penalty": 1750.0,
+          "source": "logs/round1/claude_combo/sources/groups100_500.py",
+          "source_sha256": "4ca8524e2f6514c4e359ff71fa4a39d60d7604814067d0d31d044dc4a8f91086",
+          "max_abs_inventory": 202,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "groups500_cap1",
+          "pnl": 604993.83,
+          "penalty": 1270.17,
+          "source": "logs/round1/claude_combo/sources/groups500_cap1.py",
+          "source_sha256": "f6a937cf9dfb3282b3971e715e9d357c49b34133f79176d33e2f9aa150af0f25",
+          "max_abs_inventory": 219,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "groups100_band022",
+          "pnl": 597138.48,
+          "penalty": 2033.5199999999995,
+          "source": "logs/round1/claude_combo/sources/groups100_band022.py",
+          "source_sha256": "d6ffbc733ab5d4d5003b92323c297e42b5f98bd00b4de63fc7e03642abce6429",
+          "max_abs_inventory": 250,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "buckets_groups100",
+          "pnl": 596446.95,
+          "penalty": 1685.05,
+          "source": "logs/round1/claude_combo/sources/buckets_groups100.py",
+          "source_sha256": "a62ea37ce1490b28f9c1d580948f56b4101a07e870f33fa0331af5a2628d8d5e",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 300
+        }
+      ]
+    },
+    {
+      "family": "claude_count_polish",
+      "generator": "scripts/round1_claude_count_polish.py",
+      "generator_sha256": "d4220d5e057604a6622988f3b05bab4400966e456be31a7a40c63db489ae3727",
+      "completed": true,
+      "screened_candidates": 0,
+      "full_replay_candidates": [
+        {
+          "name": "memory_3000000000",
+          "pnl": 618635.63,
+          "penalty": 2313.37,
+          "source": "logs/round1/claude_count_polish/sources/memory_3000000000.py",
+          "source_sha256": "ef3748cda9c1c446c396c4506488038e4ec2f55ad1f3b3d3b02e0626edc7af6c",
+          "max_abs_inventory": 208,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "memory_10000000000",
+          "pnl": 617752.63,
+          "penalty": 2413.3699999999994,
+          "source": "logs/round1/claude_count_polish/sources/memory_10000000000.py",
+          "source_sha256": "d933a3cf41e3b35c60741ed8c3300ef510abc8644ee8dd2b8fc87ff6c66199bf",
+          "max_abs_inventory": 208,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "width045",
+          "pnl": 617470.63,
+          "penalty": 2463.3699999999985,
+          "source": "logs/round1/claude_count_polish/sources/width045.py",
+          "source_sha256": "650cd5cf8a3c3c7ce8af8c905ca7ed843543cf999be034b06e76e74cd69ecaff",
+          "max_abs_inventory": 203,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "cap1",
+          "pnl": 616936.0,
+          "penalty": 1299.9999999999998,
+          "source": "logs/round1/claude_count_polish/sources/cap1.py",
+          "source_sha256": "4b81decc638323c59f0a27d5f3b05593a7a754b76aa8e8562710a8a91d233214",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "memory_1000000000",
+          "pnl": 616341.99,
+          "penalty": 1660.0099999999995,
+          "source": "logs/round1/claude_count_polish/sources/memory_1000000000.py",
+          "source_sha256": "52b8d452aa395fec1f61fffd69d4df9614b75d33749b9756732de7d78388c612",
+          "max_abs_inventory": 203,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "horizon_500000",
+          "pnl": 612913.83,
+          "penalty": 1920.1699999999996,
+          "source": "logs/round1/claude_count_polish/sources/horizon_500000.py",
+          "source_sha256": "78c95aa7516732593e05ee239e9a273b390141d5fe638fdd62ee996453b8cab3",
+          "max_abs_inventory": 229,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "band_0.22",
+          "pnl": 607724.48,
+          "penalty": 2183.519999999999,
+          "source": "logs/round1/claude_count_polish/sources/band_0.22.py",
+          "source_sha256": "4660be0da03f9b757264a9e8cb2d99228f6bc690c3353d0e0f34d77190271e30",
+          "max_abs_inventory": 287,
+          "max_potential_inventory_at_submission": 433
+        },
+        {
+          "name": "horizon_300000",
+          "pnl": 606688.91,
+          "penalty": 1862.0899999999997,
+          "source": "logs/round1/claude_count_polish/sources/horizon_300000.py",
+          "source_sha256": "40bc41de191b87af068db26a2be5b19dae251226f7a75cf65d3b8b4df72569ee",
+          "max_abs_inventory": 265,
+          "max_potential_inventory_at_submission": 356
+        },
+        {
+          "name": "band_0.14",
+          "pnl": 605714.95,
+          "penalty": 1735.0500000000002,
+          "source": "logs/round1/claude_count_polish/sources/band_0.14.py",
+          "source_sha256": "bf5d610682ec8adad5da98e0626105758b91c39a05cc38d338f3fccf3e5169d5",
+          "max_abs_inventory": 272,
+          "max_potential_inventory_at_submission": 300
+        }
+      ]
+    },
+    {
+      "family": "claude_count_refine",
+      "generator": "scripts/round1_claude_count_refine.py",
+      "generator_sha256": "7b03b82c706e8fdbd01fccc508a74ed6e3611cdaeefd59e3657477c0fff255c4",
+      "completed": true,
+      "screened_candidates": 8,
+      "full_replay_candidates": [
+        {
+          "name": "count500_newquotes",
+          "pnl": 619281.99,
+          "penalty": 1610.0100000000004,
+          "source": "logs/round1/claude_count_refine/sources/count500_newquotes.py",
+          "source_sha256": "305004b72069287981bfff9c2852355481b32524e344752192b99a4d59c33ae9",
+          "max_abs_inventory": 239,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "count_tau_1000000",
+          "pnl": 617441.63,
+          "penalty": 2363.369999999999,
+          "source": "logs/round1/claude_count_refine/sources/count_tau_1000000.py",
+          "source_sha256": "ec81f3e71ae144f57cfe55dd2cd9f239e194bdba353baa57fab8d3a2a79b0bed",
+          "max_abs_inventory": 203,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "count_tau_800000",
+          "pnl": 614475.0,
+          "penalty": 1850.0,
+          "source": "logs/round1/claude_count_refine/sources/count_tau_800000.py",
+          "source_sha256": "467e28f9d5d1fbf3dc37ecb7df334b77942740e1cfb4284fac5c5973db633ee0",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "count500_raw500",
+          "pnl": 612340.0,
+          "penalty": 1599.9999999999998,
+          "source": "logs/round1/claude_count_refine/sources/count500_raw500.py",
+          "source_sha256": "07ac4f7a083cdd0f4c53d0f675b89d702f334344a76fcf23f92c57a3ac6bb1d5",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 300
+        }
+      ]
+    },
+    {
+      "family": "claude_execution",
+      "generator": "scripts/round1_claude_execution.py",
+      "generator_sha256": "173125953e091929fb923ba9f00043f4df57035c78198f9817bc87b4b733e53e",
+      "completed": true,
+      "screened_candidates": 25,
+      "full_replay_candidates": [
+        {
+          "name": "width_0.45",
+          "pnl": 596600.83,
+          "penalty": 1770.1699999999996,
+          "source": "logs/round1/claude_execution/sources/width_0.45.py",
+          "source_sha256": "2b60be68f6ec8b2cd654fd20e3950c0f9b78b665059c2cc45978d5d1da90cb99",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 378
+        },
+        {
+          "name": "width_0.35",
+          "pnl": 596541.83,
+          "penalty": 1770.1699999999996,
+          "source": "logs/round1/claude_execution/sources/width_0.35.py",
+          "source_sha256": "5e803e065bb34c01a4198aab89c8b8d8293abe7e0014ce38bfa05a34840cda5c",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 378
+        },
+        {
+          "name": "hedge_target_80",
+          "pnl": 595569.83,
+          "penalty": 1720.1699999999998,
+          "source": "logs/round1/claude_execution/sources/hedge_target_80.py",
+          "source_sha256": "2cc0f3657f3a6bf1bca3fd3e15dca95f713703ca2fcea449b65671fbe4669f2f",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 358
+        },
+        {
+          "name": "band_0.22",
+          "pnl": 593394.83,
+          "penalty": 1820.17,
+          "source": "logs/round1/claude_execution/sources/band_0.22.py",
+          "source_sha256": "3e4a815af6c958d6b0de9826b28b749de6a7ca635ce85b68160369c4bdc165bd",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 339
+        },
+        {
+          "name": "gain_0.8",
+          "pnl": 591518.83,
+          "penalty": 1870.1699999999996,
+          "source": "logs/round1/claude_execution/sources/gain_0.8.py",
+          "source_sha256": "f0ef3c1fd52e403c73044417d760a3a39693f8660bcd3d8b102c889c5da64e2d",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 339
+        }
+      ]
+    },
+    {
+      "family": "claude_final_combos",
+      "generator": "scripts/round1_claude_final_combos.py",
+      "generator_sha256": "1d801a6b0e52031d3f4179d103b7f1f3ce217197d5d0a9122757b812b0973679",
+      "completed": true,
+      "screened_candidates": 0,
+      "full_replay_candidates": [
+        {
+          "name": "group_tau1000000_cap20",
+          "pnl": 622920.99,
+          "penalty": 1810.0100000000002,
+          "source": "logs/round1/claude_final_combos/sources/group_tau1000000_cap20.py",
+          "source_sha256": "ce115fbcd92c999ae8b03b37cfb60f5f24af7618dc4412a347e337d0993d534e",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "group1s_quote1s_cap20",
+          "pnl": 621442.0,
+          "penalty": 1800.0000000000002,
+          "source": "logs/round1/claude_final_combos/sources/group1s_quote1s_cap20.py",
+          "source_sha256": "9bce383fc1ec5855e516ce1286362360bb9803b9295aeb666821682b558aa3ff",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "group_tau1000000_cap100",
+          "pnl": 621431.83,
+          "penalty": 1670.1700000000003,
+          "source": "logs/round1/claude_final_combos/sources/group_tau1000000_cap100.py",
+          "source_sha256": "86f4f14a070f92c65c7457fc6bb063030692df2e4da33c5e3eaf4c35b309b61a",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 305
+        },
+        {
+          "name": "group_tau500000_cap100",
+          "pnl": 620928.74,
+          "penalty": 1432.2599999999998,
+          "source": "logs/round1/claude_final_combos/sources/group_tau500000_cap100.py",
+          "source_sha256": "596a8b8d6621206057e0e41d601121805f43d26f2d4383869bd2e4650c1df5c6",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 320
+        },
+        {
+          "name": "group_tau1000000_cap5",
+          "pnl": 620009.99,
+          "penalty": 1710.0099999999998,
+          "source": "logs/round1/claude_final_combos/sources/group_tau1000000_cap5.py",
+          "source_sha256": "80a75dcd96af2d1dfb3b8dbf4a97e80e77ceb6f48d8ecdc9fbc61030b6f7c06e",
+          "max_abs_inventory": 265,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "group_tau1000000_cap1",
+          "pnl": 619639.0,
+          "penalty": 1100.0,
+          "source": "logs/round1/claude_final_combos/sources/group_tau1000000_cap1.py",
+          "source_sha256": "d46ac177d47ddc6fe376bcab0fccc69cef9165ec5935cf7c98531c3a29d84fd3",
+          "max_abs_inventory": 202,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "group_tau500000_cap5",
+          "pnl": 618521.0,
+          "penalty": 1200.0,
+          "source": "logs/round1/claude_final_combos/sources/group_tau500000_cap5.py",
+          "source_sha256": "6a4fd3d09925f6f2e195612e98b7d43360850c3fd7b0ea9fab78fd10b4fbc546",
+          "max_abs_inventory": 204,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "group1s_quote1s_cap1",
+          "pnl": 615616.83,
+          "penalty": 1320.1699999999998,
+          "source": "logs/round1/claude_final_combos/sources/group1s_quote1s_cap1.py",
+          "source_sha256": "409395c236f03c3a31f7e1148c1d6ebf36087822522cfe97beb7c5b7e03c14ee",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 300
+        }
+      ]
+    },
+    {
+      "family": "claude_final_polish",
+      "generator": "scripts/round1_claude_final_polish.py",
+      "generator_sha256": "a54eec636131455b1965bf05498c5ef17276962c360ba3d4d60ea4e375a0354b",
+      "completed": true,
+      "screened_candidates": 0,
+      "full_replay_candidates": [
+        {
+          "name": "width045",
+          "pnl": 624076.0,
+          "penalty": 1700.0000000000002,
+          "source": "logs/round1/claude_final_polish/sources/width045.py",
+          "source_sha256": "ce4f767d287aa3f8eb9e8317096fe8348d2161e2d7d199aa976c2f01def117cf",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "ridge_0.003",
+          "pnl": 622977.0,
+          "penalty": 1550.0000000000005,
+          "source": "logs/round1/claude_final_polish/sources/ridge_0.003.py",
+          "source_sha256": "262dd07b4f123af52f84d209abcde96d09847e75a82c1e8fb7f1f250cf0a5ed8",
+          "max_abs_inventory": 201,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "memory_10000000000",
+          "pnl": 622310.99,
+          "penalty": 1460.0100000000002,
+          "source": "logs/round1/claude_final_polish/sources/memory_10000000000.py",
+          "source_sha256": "a3d8010c432a681bd7c2d94fde49dbe0c279883a0040f205635606f4c3a2c12a",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "ridge_0.0003",
+          "pnl": 619989.99,
+          "penalty": 1610.01,
+          "source": "logs/round1/claude_final_polish/sources/ridge_0.0003.py",
+          "source_sha256": "959bdbf98e34dc860d87b0893797ad3be54b9a7ef68de55e04d657f512fa0582",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "cap1",
+          "pnl": 619603.91,
+          "penalty": 1712.0900000000001,
+          "source": "logs/round1/claude_final_polish/sources/cap1.py",
+          "source_sha256": "9a3d4a478ce5bce8569b3865edf9254f2c2416908ce88d10acf130e9ff1e6cd1",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 320
+        },
+        {
+          "name": "memory_3000000000",
+          "pnl": 619312.99,
+          "penalty": 1410.0100000000002,
+          "source": "logs/round1/claude_final_polish/sources/memory_3000000000.py",
+          "source_sha256": "a04ef6eeb89a28a985c14dd094f614c05d28cf88a818b173db0bf578e3bbb758",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "gain_0.8",
+          "pnl": 614155.95,
+          "penalty": 1985.0499999999997,
+          "source": "logs/round1/claude_final_polish/sources/gain_0.8.py",
+          "source_sha256": "39e10c2d235e498fec89d091521969fca470bb2ba2377a720668f8a73d6417db",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "gain_1.2",
+          "pnl": 611663.63,
+          "penalty": 2013.3700000000001,
+          "source": "logs/round1/claude_final_polish/sources/gain_1.2.py",
+          "source_sha256": "a0cf4dbe0ad913bd4582f0f1231577377f3172dbc7ed50ca70019cf136f16eb7",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 300
+        }
+      ]
+    },
+    {
+      "family": "claude_flow",
+      "generator": "scripts/round1_claude_flow.py",
+      "generator_sha256": "acd0e3cfd8f9e2dcdd8136e3a949a3a56fe690fd90007c3416c4f2f17fbf375f",
+      "completed": true,
+      "screened_candidates": 10,
+      "full_replay_candidates": [
+        {
+          "name": "groups_tau_200000",
+          "pnl": 606298.94,
+          "penalty": 1545.0599999999997,
+          "source": "logs/round1/claude_flow/sources/groups_tau_200000.py",
+          "source_sha256": "06faab36eef3530375370ca24e1f8364445c516be6ed548e9d445565adf9641d",
+          "max_abs_inventory": 176,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "groups_h_300000",
+          "pnl": 599312.0,
+          "penalty": 1050.0,
+          "source": "logs/round1/claude_flow/sources/groups_h_300000.py",
+          "source_sha256": "c1397e818ae832f72ef31ee1164d865749e11c5ea42f073bb9c76ed40411db8b",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "groups_tau_100000",
+          "pnl": 598182.0,
+          "penalty": 1300.0,
+          "source": "logs/round1/claude_flow/sources/groups_tau_100000.py",
+          "source_sha256": "37a365e9e824b0caa76088004ca64a79184eff80b81d2b8d413ec181fe253979",
+          "max_abs_inventory": 180,
+          "max_potential_inventory_at_submission": 300
+        }
+      ]
+    },
+    {
+      "family": "claude_flow_anchors",
+      "generator": "scripts/round1_claude_flow_anchors.py",
+      "generator_sha256": "2e0da40a02730cb59f074bcbe616c5394901ee82f0a2e1ce7a5a34e9b78c53be",
+      "completed": true,
+      "screened_candidates": 9,
+      "full_replay_candidates": [
+        {
+          "name": "event_cap_100_tau_500000",
+          "pnl": 616534.83,
+          "penalty": 1420.1699999999998,
+          "source": "logs/round1/claude_flow_anchors/sources/event_cap_100_tau_500000.py",
+          "source_sha256": "608a25d074cffadd705ac3eda532cbc3908508655a3e6986bf71e89cf4c204ec",
+          "max_abs_inventory": 250,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "event_cap_1_tau_500000",
+          "pnl": 606200.99,
+          "penalty": 1910.0099999999995,
+          "source": "logs/round1/claude_flow_anchors/sources/event_cap_1_tau_500000.py",
+          "source_sha256": "649a969814d4774cf3ced2217c715845a7a712be494b3730aa20fd0edafa2c66",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "event_cap_20_tau_500000",
+          "pnl": 605549.95,
+          "penalty": 2585.05,
+          "source": "logs/round1/claude_flow_anchors/sources/event_cap_20_tau_500000.py",
+          "source_sha256": "f5e39ef27c62d35a8196421a8023942385a3033ab59f7f23d80b603bbca7c1de",
+          "max_abs_inventory": 241,
+          "max_potential_inventory_at_submission": 356
+        }
+      ]
+    },
+    {
+      "family": "claude_horizon_scale",
+      "generator": "scripts/round1_claude_horizon_scale.py",
+      "generator_sha256": "81200550108bbd39cf0431e498f6f9feff80afb20170443f985db7a733407aa8",
+      "completed": true,
+      "screened_candidates": 0,
+      "full_replay_candidates": [
+        {
+          "name": "horizon800000_gain0.75",
+          "pnl": 599549.46,
+          "penalty": 1595.5400000000006,
+          "source": "logs/round1/claude_horizon_scale/sources/horizon800000_gain0.75.py",
+          "source_sha256": "2ac33ac82cf17373d19a89157baa649c79beb3025a32ffab8408e466f3839a86",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "horizon800000_gain0.5",
+          "pnl": 567669.8,
+          "penalty": 1353.1999999999998,
+          "source": "logs/round1/claude_horizon_scale/sources/horizon800000_gain0.5.py",
+          "source_sha256": "10b853692fb60b9ba83a4ed8984e87bc6c6b123b15d483d58973e98f9cf263e4",
+          "max_abs_inventory": 210,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "horizon1200000_gain0.5",
+          "pnl": 564937.0,
+          "penalty": 1550.0000000000007,
+          "source": "logs/round1/claude_horizon_scale/sources/horizon1200000_gain0.5.py",
+          "source_sha256": "41d5e4a7169840891049e89915a0f2f0f2c82440707328f5aa2068e5904f8855",
+          "max_abs_inventory": 225,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "horizon2000000_gain0.4",
+          "pnl": 534560.0,
+          "penalty": 1100.0,
+          "source": "logs/round1/claude_horizon_scale/sources/horizon2000000_gain0.4.py",
+          "source_sha256": "de24c9619f01bfdeea60143abb3ef2b287408827fe8c48e164016e8bbf6c60c2",
+          "max_abs_inventory": 205,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "horizon1200000_gain0.3333333333333333",
+          "pnl": 513736.0,
+          "penalty": 1650.0,
+          "source": "logs/round1/claude_horizon_scale/sources/horizon1200000_gain0.3333333333333333.py",
+          "source_sha256": "d06df495deca2b1c74dcd4b50343a4d12b911202332957aa59ad7762b6c6e400",
+          "max_abs_inventory": 179,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "horizon2000000_gain0.2",
+          "pnl": 463231.1,
+          "penalty": 1785.9,
+          "source": "logs/round1/claude_horizon_scale/sources/horizon2000000_gain0.2.py",
+          "source_sha256": "097e3f9592e7633b0a13e0fe353178e4965519b9b59463a1ce6cc07a9804f763",
+          "max_abs_inventory": 223,
+          "max_potential_inventory_at_submission": 364
+        }
+      ]
+    },
+    {
+      "family": "claude_improvements",
+      "generator": "scripts/round1_claude_improvements.py",
+      "generator_sha256": "262ccb2d79431d8922f2395c85f164c1faa79f1709e3da0508747d2fbaf0bc2e",
+      "completed": true,
+      "screened_candidates": 18,
+      "full_replay_candidates": [
+        {
+          "name": "groups_slow",
+          "pnl": 605752.82,
+          "penalty": 1280.1800000000003,
+          "source": "logs/round1/claude_improvements/sources/groups_slow.py",
+          "source_sha256": "53e70987f60a5444e2e3ce3ec2759f1330383abba45cb2703204eb7e0eb12a8a",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "new_quotes",
+          "pnl": 602298.83,
+          "penalty": 1420.17,
+          "source": "logs/round1/claude_improvements/sources/new_quotes.py",
+          "source_sha256": "15b31b1eb2cf56513b2cc7b96c384c45d276aebd6d3632ab07f2bf85ffa11f22",
+          "max_abs_inventory": 265,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "memory_1000000000",
+          "pnl": 596092.83,
+          "penalty": 1420.17,
+          "source": "logs/round1/claude_improvements/sources/memory_1000000000.py",
+          "source_sha256": "78c4a3a202798f70ef144d5a177999a3f117235d56517cf029893982e156ca16",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "memory_10000000000",
+          "pnl": 595932.83,
+          "penalty": 1820.1699999999996,
+          "source": "logs/round1/claude_improvements/sources/memory_10000000000.py",
+          "source_sha256": "d9e874a48ae34ddb538dc20e8fd3458d2b72ac65f0765e5eac55c2d8a42b07c7",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 378
+        },
+        {
+          "name": "buckets",
+          "pnl": 595496.83,
+          "penalty": 1320.1699999999996,
+          "source": "logs/round1/claude_improvements/sources/buckets.py",
+          "source_sha256": "f7ffcd367283aa1dd2c7d3203ecc85c25a672dbf29a39bbf654d5f5e96ef43b9",
+          "max_abs_inventory": 237,
+          "max_potential_inventory_at_submission": 378
+        },
+        {
+          "name": "baseline",
+          "pnl": 595441.83,
+          "penalty": 1720.1699999999998,
+          "source": "logs/round1/claude_improvements/sources/baseline.py",
+          "source_sha256": "964531acc36a7209fa965a1a045a28e76c79b0f797fe46861f58392b28a04e2b",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 378
+        }
+      ]
+    },
+    {
+      "family": "claude_labels",
+      "generator": "scripts/round1_claude_labels.py",
+      "generator_sha256": "76f587c8edca238ef96b6b34efa2295cbdb22a9d91e20694b97fea15f060e3c0",
+      "completed": true,
+      "screened_candidates": 16,
+      "full_replay_candidates": [
+        {
+          "name": "label_cap_1.0",
+          "pnl": 598157.0,
+          "penalty": 1349.9999999999998,
+          "source": "logs/round1/claude_labels/sources/label_cap_1.0.py",
+          "source_sha256": "06382e1ac96f216acb60ae0d8ba26d8c3af2cda3c0be267aa4e09ace2111343e",
+          "max_abs_inventory": 250,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "cubes_0.0001",
+          "pnl": 596966.0,
+          "penalty": 1850.0,
+          "source": "logs/round1/claude_labels/sources/cubes_0.0001.py",
+          "source_sha256": "dbcf3661231826860edb1d3230e46b8212dec827af8b0b99e91402fbfba964fd",
+          "max_abs_inventory": 250,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "interactions_0.001",
+          "pnl": 596543.0,
+          "penalty": 1199.9999999999998,
+          "source": "logs/round1/claude_labels/sources/interactions_0.001.py",
+          "source_sha256": "a16f237baba7ab764d7a4e1ea06ab34250da451026a883ebb3415d2b7cb99872",
+          "max_abs_inventory": 202,
+          "max_potential_inventory_at_submission": 353
+        },
+        {
+          "name": "interactions_0.0001",
+          "pnl": 592119.0,
+          "penalty": 1599.9999999999995,
+          "source": "logs/round1/claude_labels/sources/interactions_0.0001.py",
+          "source_sha256": "52c7a07537f71661dbf8500c8da9b0dc8b6aed8a3c50899f6ad7577c6cbbdfa2",
+          "max_abs_inventory": 236,
+          "max_potential_inventory_at_submission": 353
+        }
+      ]
+    },
+    {
+      "family": "claude_quote_combo",
+      "generator": "scripts/round1_claude_quote_combo.py",
+      "generator_sha256": "5d315af8f4d60af07827fa895295855b7a717f8b276ef17485568d8de435bf70",
+      "completed": true,
+      "screened_candidates": 7,
+      "full_replay_candidates": [
+        {
+          "name": "quotes500000_groups500000_cap1",
+          "pnl": 614700.83,
+          "penalty": 1120.17,
+          "source": "logs/round1/claude_quote_combo/sources/quotes500000_groups500000_cap1.py",
+          "source_sha256": "54dfdd35d24be2b7084be618ffa5d658e7d8b063718ca6ac34a7c7272229cd55",
+          "max_abs_inventory": 219,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "quotes500000_groups100000",
+          "pnl": 611923.0,
+          "penalty": 1800.0,
+          "source": "logs/round1/claude_quote_combo/sources/quotes500000_groups100000.py",
+          "source_sha256": "a4e47efdd5467457896982303ed3f585988cd2bd0484b17225bc2a16dcaa9488",
+          "max_abs_inventory": 229,
+          "max_potential_inventory_at_submission": 353
+        },
+        {
+          "name": "quotes500000_groups100000_width045",
+          "pnl": 611105.0,
+          "penalty": 1900.0,
+          "source": "logs/round1/claude_quote_combo/sources/quotes500000_groups100000_width045.py",
+          "source_sha256": "7e8b67c42cddab39ab4eb6f479833da9813f73fe9074be9d451e7b7639234e13",
+          "max_abs_inventory": 229,
+          "max_potential_inventory_at_submission": 301
+        }
+      ]
+    },
+    {
+      "family": "claude_quote_refine",
+      "generator": "scripts/round1_claude_quote_refine.py",
+      "generator_sha256": "9f2ffbcfc87944deb46b70272943a16e4035b27876f7b8eb479ca756ebd243ed",
+      "completed": true,
+      "screened_candidates": 0,
+      "full_replay_candidates": [
+        {
+          "name": "fresh_size_100",
+          "pnl": 622989.0,
+          "penalty": 1549.9999999999998,
+          "source": "logs/round1/claude_quote_refine/sources/fresh_size_100.py",
+          "source_sha256": "76a21eae00dfa0fe07ce9f5b331be1821f56276a612fbfbf259d1522a159f78c",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "fresh_size_5",
+          "pnl": 621738.0,
+          "penalty": 1450.0,
+          "source": "logs/round1/claude_quote_refine/sources/fresh_size_5.py",
+          "source_sha256": "decf1b338fd4e92697976a595b77ace036f3efdcfd9f955795c7368feed2e170",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 300
+        },
+        {
+          "name": "fresh_depth_8",
+          "pnl": 621658.99,
+          "penalty": 1710.01,
+          "source": "logs/round1/claude_quote_refine/sources/fresh_depth_8.py",
+          "source_sha256": "7bd6a43fdbf1eecac96b60b4f685bad418f196802c66970ccb18fa677135b79c",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "fresh_size_200",
+          "pnl": 621586.0,
+          "penalty": 1700.0000000000002,
+          "source": "logs/round1/claude_quote_refine/sources/fresh_size_200.py",
+          "source_sha256": "d7199d84835cf9cd324d98f18299a7f8f673c39e7635e0bffdb18e06b900b36b",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "fresh_depth_5",
+          "pnl": 621560.99,
+          "penalty": 1710.01,
+          "source": "logs/round1/claude_quote_refine/sources/fresh_depth_5.py",
+          "source_sha256": "99478fbb75dd7fcacebd48609a887cea69d3bfe3620dc25dd3ea5a84b777f9fd",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "fresh_size_20",
+          "pnl": 619136.99,
+          "penalty": 1410.0099999999998,
+          "source": "logs/round1/claude_quote_refine/sources/fresh_size_20.py",
+          "source_sha256": "33fdee9972c8fa0bbf6b0ae48b6516c188b4f529280be85b7575a8fe43c9fb22",
+          "max_abs_inventory": 256,
+          "max_potential_inventory_at_submission": 303
+        },
+        {
+          "name": "fresh_memory_2s",
+          "pnl": 618503.0,
+          "penalty": 1900.0000000000002,
+          "source": "logs/round1/claude_quote_refine/sources/fresh_memory_2s.py",
+          "source_sha256": "137168a96b22141129a53d3ef72413880b1e19d245445b2258d8a5773aa14c84",
+          "max_abs_inventory": 300,
+          "max_potential_inventory_at_submission": 300
+        }
+      ]
+    },
+    {
+      "family": "claude_residual_flow",
+      "generator": "scripts/round1_claude_residual_flow.py",
+      "generator_sha256": "4e92fab487553a93c46a9963bc8b07302afba1c871950a9788ba02bda360c741",
+      "completed": true,
+      "screened_candidates": 6,
+      "full_replay_candidates": [
+        {
+          "name": "count_memory_3000000000",
+          "pnl": 612863.0,
+          "penalty": 1700.0000000000007,
+          "source": "logs/round1/claude_residual_flow/sources/count_memory_3000000000.py",
+          "source_sha256": "61ee2485c611d1f4026c3625e47f339f8a645809099d1f69d3c669d150a3fb45",
+          "max_abs_inventory": 210,
+          "max_potential_inventory_at_submission": 319
+        },
+        {
+          "name": "count_memory_1000000000",
+          "pnl": 609623.0,
+          "penalty": 1950.0,
+          "source": "logs/round1/claude_residual_flow/sources/count_memory_1000000000.py",
+          "source_sha256": "386911187be6401f6fbd3cfa3b44e0276d622eb068c8334cd9965228aefd41c6",
+          "max_abs_inventory": 229,
+          "max_potential_inventory_at_submission": 319
+        },
+        {
+          "name": "count_memory_300000000",
+          "pnl": 604636.83,
+          "penalty": 1820.1699999999994,
+          "source": "logs/round1/claude_residual_flow/sources/count_memory_300000000.py",
+          "source_sha256": "226019efc1826539cb05512d409e3651f2f2f6ead0903ce5c0007005cbd78342",
+          "max_abs_inventory": 203,
+          "max_potential_inventory_at_submission": 319
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "All data has been consumed during tuning. No independent holdout remains.",
+    "Audit runners use original matching engine and unchanged 5 ms latency, 100-lot free threshold, 1000-lot acceptance wall, and 10000/second breach fee.",
+    "Selected submission results are separately reproduced by the unmodified organizer CLI.",
+    "No exact competition-server result is available for the new files."
+  ],
+  "all_experiments_finished": true
+}

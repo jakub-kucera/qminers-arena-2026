@@ -1,0 +1,58 @@
+{
+  "source": "Leaderboard pasted by user after round 1; not independently fetched",
+  "round_context": "Round 1, inferred from conversation timing",
+  "total_teams": 61,
+  "team": "ThatsMyQuant",
+  "rank": 8,
+  "reported_server_pnl": 602526.53,
+  "submission_source_sha256": null,
+  "submission_id": null,
+  "server_dataset_identity": null,
+  "local_verified_round1_pnl": 624076.0,
+  "local_minus_reported_server_pnl": 21549.47,
+  "gap_to_first": 190169.47,
+  "gap_to_first_percent_of_team_pnl": 31.56,
+  "top_eight": [
+    {
+      "rank": 1,
+      "team": "Team 2",
+      "pnl": 792696.0
+    },
+    {
+      "rank": 2,
+      "team": "Team 5",
+      "pnl": 701373.62
+    },
+    {
+      "rank": 3,
+      "team": "Team 4",
+      "pnl": 667357.0
+    },
+    {
+      "rank": 4,
+      "team": "Team 10",
+      "pnl": 657359.0
+    },
+    {
+      "rank": 5,
+      "team": "Team 3",
+      "pnl": 655443.91
+    },
+    {
+      "rank": 6,
+      "team": "Team 6",
+      "pnl": 615391.0
+    },
+    {
+      "rank": 7,
+      "team": "Team 15",
+      "pnl": 603501.0
+    },
+    {
+      "rank": 8,
+      "team": "ThatsMyQuant",
+      "pnl": 602526.53
+    }
+  ],
+  "limitation": "Do not attribute the local/server difference to dataset shift or a bug until the exact submitted source and scored dataset are established."
+}

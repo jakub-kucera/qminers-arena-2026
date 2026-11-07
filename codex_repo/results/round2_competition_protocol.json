@@ -1,0 +1,21 @@
+{
+  "source": "Organizer announcement supplied by the user on 2026-11-07",
+  "public": {
+    "downloadable": true,
+    "purpose": "training and local diagnostics",
+    "relative_size_approx": 0.5
+  },
+  "server_validation": {
+    "feedback": [
+      "pnl"
+    ],
+    "full_logs_available": false,
+    "purpose": "submission feedback and selection"
+  },
+  "private": {
+    "score_released": "after submission deadline",
+    "purpose": "competition scoring"
+  },
+  "validation_and_private_same_size": true,
+  "size_metric": "Unspecified; half size does not establish half elapsed duration or doubled expected PnL."
+}

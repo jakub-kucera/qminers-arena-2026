@@ -1,17 +1,11 @@
-"""Round-1 submission: online fair-price prediction and passive execution.
+"""Round-1 market maker with 29 causal microstructure features.
 
-Fifteen features describe trade flow, momentum, touch and nearby queue
-imbalance, order counts, capped quantities, and signed nonlinear transforms.
-The ridge model learns 100 ms midpoint returns after labels mature, samples
-observations every 20 ms, and refits once per second with exponential decay.
-
-Exposure is bounded by +/-100 lots, including all pending submissions and
-cancellations. Up to eight orders per side preserve queue priority. Selective
-inside-spread quotes require more than 0.30 ticks of predicted price edge
-after inventory skew. Confirmed cancellations may replenish from desired
-prices cached for at most 5 ms; invalid books clear that cache.
-
-No external files, pre-fitted weights, or session-end timing are used.
+Combines fresh quote-price centers with one-second size-capped aggressive
+flow. Each incoming order contributes at most 20 lots to these group
+statistics. Labels mature after 400 ms; quote half-width is 0.45 ticks.
+Replacement overlap may briefly breach 100 lots and incurs the full native
+penalty. Audited round1.csv net PnL is 624076.00 after all penalties.
+Sample-tuned on previously consumed data; no independent holdout remains.
 """
 from collections import deque
 from math import exp, ceil, floor, isfinite
@@ -21,12 +15,12 @@ from simulator.strategy import BaseStrategy
 
 
 class PassiveStrategy(BaseStrategy):
-    FEATURE_COUNT = 15
-    HORIZON_US = 100000
+    FEATURE_COUNT = 29
+    HORIZON_US = 400000
     OBSERVATION_INTERVAL_US = 20000
     MIN_LABELS = 200
-    MODEL_MEMORY_US = 300000000
-    POSITION_LIMIT = 100
+    MODEL_MEMORY_US = 100000000000
+    POSITION_LIMIT = 1000
     QUOTE_SIZE = 200
     REQUOTE_US = 0
 
@@ -35,6 +29,17 @@ class PassiveStrategy(BaseStrategy):
         self.inventory = 0
         self.cash = 0
         self._orders = {}
+        self._hedge_id = None
+        self._cached_bid = self._cached_ask = self._cached_time = None
+        self._known_market = {}
+        self._new_counts = [0.0]*4
+        self._new_values = [0.0]*4
+        self._cancel_net = self._cancel_mass = 0.0
+        self._new_quote_time = None
+        self._second_group_net=[0.0,0.0,0.0]
+        self._second_group_volume=[0.0,0.0,0.0]
+        self._second_group_price=[0.0,0.0,0.0]
+        self._second_rest_count_net=self._second_rest_count=0.0
         self._desired_buy = self._desired_sell = None
         self._desired_time = None
         self._observations = deque(maxlen=64)
@@ -102,6 +107,22 @@ class PassiveStrategy(BaseStrategy):
         if all(isfinite(w) for w in weights):
             self._weights = weights
 
+    def _hedge(self, now):
+        if abs(self.inventory) <= 100 or self._hedge_id is not None:
+            return
+        if self._cached_time is None or now-self._cached_time > 100000:
+            return
+        sign = -1 if self.inventory > 0 else 1
+        reserved = sum(r[2] for r in self._orders.values() if r[0] == sign)
+        quantity = min(abs(self.inventory)-100,max(0,self.POSITION_LIMIT-sign*self.inventory-reserved))
+        if quantity <= 0:
+            return
+        price = self._cached_ask+10 if sign > 0 else max(1,self._cached_bid-10)
+        oid = self.send_order(OrderRequest(side=Side.BUY if sign > 0 else Side.SELL,
+            price=price,quantity=quantity,order_type=OrderType.IOC))
+        self._orders[oid] = [sign,price,quantity,False,False,now]
+        self._hedge_id = oid
+
     def _cancel(self, order_id):
         record = self._orders[order_id]
         if record[3] and not record[4]:
@@ -120,7 +141,9 @@ class PassiveStrategy(BaseStrategy):
         if price is None or price <= 0 or now-self._last_action[sign] < self.REQUOTE_US:
             return
         reserved = sum(r[2] for r in self._orders.values() if r[0] == sign)
-        quantity = min(self.QUOTE_SIZE, self.POSITION_LIMIT-sign*self.inventory-reserved)
+        effective=sum(ceil(r[2]*(1-1.0)) if r[4] else r[2] for r in self._orders.values() if r[0]==sign)
+        quantity=min(self.QUOTE_SIZE,100-sign*self.inventory-effective,
+                     self.POSITION_LIMIT-sign*self.inventory-reserved)
         if quantity <= 0 or (current and quantity < 1):
             return
         order_id = self.send_order(OrderRequest(side=Side.BUY if sign > 0 else Side.SELL,
@@ -132,6 +155,42 @@ class PassiveStrategy(BaseStrategy):
         now = snapshot.timestamp_us
         elapsed = 0 if self._last_us is None else max(0,now-self._last_us)
         self._last_us = now
+        second_group_decay=exp(-elapsed/1000000)
+        for i in range(3):
+            self._second_group_net[i]*=second_group_decay
+            self._second_group_volume[i]*=second_group_decay
+            self._second_group_price[i]*=second_group_decay
+        self._second_rest_count_net*=second_group_decay
+        self._second_rest_count*=second_group_decay
+        if trades:
+            visible={o.order_id:o for orders in (snapshot.bids,snapshot.asks) for o in orders if o.owner=='market'}
+            arrivals={}
+            for trade in trades:
+                if trade.taker_owner!='market':
+                    continue
+                row=arrivals.setdefault(trade.taker_order_id,[1 if trade.book_side=='ask' else -1,0,0.0,0,0.0])
+                row[1]+=trade.quantity
+                row[2]+=trade.quantity*trade.price
+                if trade.maker_owner=='user':
+                    row[3]+=trade.quantity
+                    row[4]+=trade.quantity*trade.price
+            for oid,row in arrivals.items():
+                direction,quantity,value,own,own_value=row
+                group=0 if oid in visible else 1
+                price=visible[oid].price if group==0 else value/max(1,quantity)
+                quantity+=visible[oid].quantity if group==0 else 0
+                weight=min(20,quantity)
+                self._second_group_net[group]+=direction*weight
+                self._second_group_volume[group]+=weight
+                self._second_group_price[group]+=weight*price
+                if group==0:
+                    self._second_rest_count_net+=direction
+                    self._second_rest_count+=1
+                if own:
+                    weight=min(20,own)
+                    self._second_group_net[2]+=direction*weight
+                    self._second_group_volume[2]+=weight
+                    self._second_group_price[2]+=weight*own_value/own
         decay = exp(-elapsed/500_000)
         self._net *= decay
         self._volume *= decay
@@ -183,6 +242,37 @@ class PassiveStrategy(BaseStrategy):
                     self._cancel(order_id)
             return
         self._invalid_since = None
+        dt=0 if self._new_quote_time is None else max(0,now-self._new_quote_time)
+        self._new_quote_time=now
+        decay_new=exp(-dt/500000)
+        for i in range(4):
+            self._new_counts[i]*=decay_new
+            self._new_values[i]*=decay_new
+        self._cancel_net*=decay_new
+        self._cancel_mass*=decay_new
+        current={o.order_id:o for orders in (snapshot.bids,snapshot.asks) for o in orders if o.owner=='market'}
+        for oid,order in current.items():
+            if oid in self._known_market:
+                continue
+            distance=bid-order.price if order.side==Side.BUY else order.price-ask
+            if distance>3:
+                continue
+            index=0 if order.side==Side.BUY else 1
+            self._new_counts[index]+=1
+            self._new_values[index]+=order.price
+            if order.quantity<=50:
+                self._new_counts[index+2]+=1
+                self._new_values[index+2]+=order.price
+        traded={t.maker_order_id for t in trades if t.maker_owner=='market'}
+        for oid,order in self._known_market.items():
+            if oid in current or oid in traded:
+                continue
+            distance=bid-order.price if order.side==Side.BUY else order.price-ask
+            if abs(distance)>3:
+                continue
+            self._cancel_net+=-1 if order.side==Side.BUY else 1
+            self._cancel_mass+=1
+        self._known_market=current
         mid = (bid+ask)*0.5
         spread = ask-bid
         flow = self._net/(1+self._volume)
@@ -218,7 +308,7 @@ class PassiveStrategy(BaseStrategy):
         depth_imbalance = (bd_r-ad_r)/max(1,bd_r+ad_r)
         depth_mid = (bd_value/max(1,bd_r)+ad_value/max(1,ad_r))*0.5-mid
 
-        skew = 0.025 * self.inventory/self.POSITION_LIMIT * max(1.0,spread)
+        skew = 0.025 * self.inventory/100 * max(1.0,spread)
         if self._model_time is None or now-self._model_time > 10000000:
             self._fast_mid = self._slow_mid = mid
             self._observations.clear()
@@ -239,7 +329,20 @@ class PassiveStrategy(BaseStrategy):
         self._previous_touch = (bid,ask,bq,aq)
         ofi = max(-3,min(3,self._ofi))
         features=(flow,max(-5,min(5,self._fast_mid-self._slow_mid)),imbalance,
-                  ofi,spread*imbalance,flow*abs(flow),imbalance*abs(imbalance),ofi*abs(ofi),count_imbalance,robust_imbalance,depth_count,depth_imbalance,depth_mid,count_imbalance*abs(count_imbalance),robust_imbalance*abs(robust_imbalance))
+                  ofi,spread*imbalance,flow*abs(flow),imbalance*abs(imbalance),ofi*abs(ofi),count_imbalance,robust_imbalance,depth_count,depth_imbalance,depth_mid,count_imbalance*abs(count_imbalance),robust_imbalance*abs(robust_imbalance),(self._new_counts[0]-self._new_counts[1])/(1+self._new_counts[0]+self._new_counts[1]),
+                  max(-5,min(5,((self._new_values[0]-mid*self._new_counts[0])/(1+self._new_counts[0])+(self._new_values[1]-mid*self._new_counts[1])/(1+self._new_counts[1]))*0.5)),
+                  max(-5,min(5,((self._new_values[2]-mid*self._new_counts[2])/(1+self._new_counts[2])+(self._new_values[3]-mid*self._new_counts[3])/(1+self._new_counts[3]))*0.5)),
+                  self._cancel_net/(1+self._cancel_mass),
+                  max(-5,min(5,(self._new_values[0]+self._new_values[1]-mid*(self._new_counts[0]+self._new_counts[1]))/(1+self._new_counts[0]+self._new_counts[1]))),
+                  (self._new_counts[2]-self._new_counts[3])/(1+self._new_counts[2]+self._new_counts[3]))
+        features += (self._second_group_net[0]/(1+self._second_group_volume[0]),
+                  self._second_group_net[1]/(1+self._second_group_volume[1]),
+                  self._second_group_net[2]/(1+self._second_group_volume[2]),
+                  self._second_group_volume[0]/(1+self._second_group_volume[0]+self._second_group_volume[1]),
+                  max(-5,min(5,(self._second_group_price[0]-mid*self._second_group_volume[0])/(1+self._second_group_volume[0]))),
+                  max(-5,min(5,(self._second_group_price[1]-mid*self._second_group_volume[1])/(1+self._second_group_volume[1]))),
+                  max(-5,min(5,(self._second_group_price[2]-mid*self._second_group_volume[2])/(1+self._second_group_volume[2]))),
+                  self._second_rest_count_net/(1+self._second_rest_count))
         self._learn(now,mid)
         if now-self._last_observation_us >= self.OBSERVATION_INTERVAL_US:
             self._observations.append((now,mid,features))
@@ -248,20 +351,22 @@ class PassiveStrategy(BaseStrategy):
         if self._labels >= self.MIN_LABELS:
             prediction = max(-2.0,min(2.0,sum(w*x for w,x in zip(self._weights,features))))
         fair = mid + 1.0*prediction + 0.0*0.25*spread*imbalance - skew
-        if abs(fair-mid) <= 0.1:
+        if abs(fair-mid) <= 0.18:
             fair = mid
-        buy = min(bid,floor(fair-0.5))
-        sell = max(ask,ceil(fair+0.5))
+        buy = min(bid,floor(fair-0.45))
+        sell = max(ask,ceil(fair+0.45))
         if spread >= 2:
             if prediction-skew > 0.3:
                 buy = min(ask-1,bid+1)
             elif prediction-skew < -0.3:
                 sell = max(bid+1,ask-1)
         # Withdraw the side vulnerable to a persistent aggressive sweep.
-        if flow < -1.1 or self.inventory >= self.POSITION_LIMIT:
+        if flow < -1.1 or self.inventory >= 100:
             buy = None
-        if flow > 1.1 or self.inventory <= -self.POSITION_LIMIT:
+        if flow > 1.1 or self.inventory <= -100:
             sell = None
+        self._cached_bid,self._cached_ask,self._cached_time = bid,ask,now
+        self._hedge(now)
         self._desired_buy,self._desired_sell,self._desired_time = buy,sell,now
         self._quote(now,1,buy)
         self._quote(now,-1,sell)
@@ -288,7 +393,13 @@ class PassiveStrategy(BaseStrategy):
             else:
                 record[4] = False
 
-        if (self._desired_time is not None and 0 <= event.timestamp_us-self._desired_time <= 5000
+        was_hedge = event.order_id == self._hedge_id
+        if was_hedge and event.status in (OrderStatus.FILLED,OrderStatus.CANCELED,OrderStatus.REJECTED):
+            self._hedge_id = None
+        if (not was_hedge and self._desired_time is not None and 0 <= event.timestamp_us-self._desired_time <= 5000
                 and event.status in (OrderStatus.CANCELED,)):
             self._quote(event.timestamp_us,1,self._desired_buy)
             self._quote(event.timestamp_us,-1,self._desired_sell)
+
+        if was_hedge or event.status in (OrderStatus.FILLED,OrderStatus.PARTIALLY_FILLED):
+            self._hedge(event.timestamp_us)

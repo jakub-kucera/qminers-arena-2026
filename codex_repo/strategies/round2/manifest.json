@@ -1,0 +1,49 @@
+{
+  "status": "Predeclared candidates; round-2 performance unknown.",
+  "base_file": "strategies/round1_quote_flow_624076.py",
+  "base_sha256": "0aaff6caee4c8708afb0f3bc54a8f1d3beaa5a641477db192be09cfeb6993b45",
+  "candidates": [
+    {
+      "name": "round2_transfer",
+      "file": "strategies/round2/round2_transfer.py",
+      "source_sha256": "c87f92f1de5c4cab5e18f0aff1c4112a3f4cee808343ce696aea5535435527e7",
+      "risk": "native",
+      "intent": "Direct transfer reference"
+    },
+    {
+      "name": "round2_strict100",
+      "file": "strategies/round2/round2_strict100.py",
+      "source_sha256": "877df4848527e64a6d21e5fb9bf23dc0c5b81d3e5fc28cba71cc7e883a33255c",
+      "risk": "strict100",
+      "intent": "No paid breaches or overlapping released reservations"
+    },
+    {
+      "name": "round2_fast_adapt",
+      "file": "strategies/round2/round2_fast_adapt.py",
+      "source_sha256": "8149296827f682c3c7a939bb9e747c30522553601be18a0564daa8fb01367819",
+      "risk": "native",
+      "intent": "Shorter labels and faster parameter adaptation"
+    },
+    {
+      "name": "round2_dual_memory",
+      "file": "strategies/round2/round2_dual_memory.py",
+      "source_sha256": "9da7815ffdd95ee07f2af0768f9e2565784a910f3a2205e2d0e88bd03a6ad371",
+      "risk": "native",
+      "intent": "Causal error-weighted long/fast forecast mixture"
+    },
+    {
+      "name": "round2_guarded_trend",
+      "file": "strategies/round2/round2_guarded_trend.py",
+      "source_sha256": "e75344f2c049e3f30141dcca0751b1809eb15288e4fd11ad258a0ae5c2744e41",
+      "risk": "strict80",
+      "intent": "Guarded IOC execution; different market hypothesis"
+    },
+    {
+      "name": "round2_flat",
+      "file": "strategies/round2/round2_flat.py",
+      "source_sha256": "2e386e9f37b28e88f664fccd614f71b1f84bc11ea39be4dfe0f3a045ac00612d",
+      "risk": "strict100",
+      "intent": "No-trade control"
+    }
+  ]
+}
