@@ -61,6 +61,8 @@ SHRINK_NARROW = 0  # 1: shrink resting touch orders to SIZE_NARROW (modify keeps
 DEPLETE_LOTS = 0  # a touch whose market queue holds fewer lots than this is about to clear (0: off)
 DEPLETE_SIZE = 0  # ... our lots kept there (shrunk with modify_order; 0: cancelled)
 REACT_CANCEL = 0  # 1: re-quote from the last snapshot as soon as one of our cancels lands (the queue maker's knob)
+MOM_LOTS = 0  # >0: after an aggressive order of at least this many lots, post nothing new on the side it hit for MOM_MS (round 1's trades run on)
+MOM_MS = 1000
 DEPL_FRAC = 0.0  # >0: the depletion guard fires only on a touch that has shrunk below this share of its peak since it became the touch (a new level never fires)
 BACK_POS = 1000  # beyond this |position|, the side that adds to it quotes one tick behind the touch (1000: never)
 FLAT_S = 0  # this many seconds before the end, one IOC at the touch flattens the position (0: never)
@@ -75,6 +77,7 @@ class LadderMakerStrategy(BaseStrategy):
         self._orders: dict[str, list] = {}  # id -> [side, price, quantity left, cancelling, is_ioc, modify target]
         self._start_us: None | int = None
         self._snap: None | OrderBookSnapshot = None
+        self._hold_until: dict = {'bid': 0, 'ask': 0}  # book side -> the time until which nothing new is posted there
         self._peak: dict = {}  # side -> [touch price, the market lots there at their most since it became the touch]
         self._ioc_pending: bool = False
         self._flattened: bool = False
@@ -120,8 +123,19 @@ class LadderMakerStrategy(BaseStrategy):
             self._send(Side.SELL, best_bid, position - UNWIND_TO, True)
         elif not self._ioc_pending and position < -UNWIND:
             self._send(Side.BUY, best_ask, -position - UNWIND_TO, True)
-        want_bid = position < SKEW and not (winding_down and position >= 0) and bid_ok
-        want_ask = position > -SKEW and not (winding_down and position <= 0) and ask_ok
+        if MOM_LOTS > 0 and trades:
+            swept: dict = {}
+            for trade in trades:
+                if trade.taker_owner == 'market':
+                    key = (trade.taker_order_id, trade.book_side)
+                    swept[key] = swept.get(key, 0) + trade.quantity
+            for (taker, book_side), lots in swept.items():
+                if lots >= MOM_LOTS:
+                    self._hold_until[book_side] = snapshot.timestamp_us + MOM_MS * 1000
+        hold_bid = snapshot.timestamp_us < self._hold_until['bid']
+        hold_ask = snapshot.timestamp_us < self._hold_until['ask']
+        want_bid = position < SKEW and not (winding_down and position >= 0) and bid_ok and not hold_bid
+        want_ask = position > -SKEW and not (winding_down and position <= 0) and ask_ok and not hold_ask
         cancel_bid = (winding_down and position >= 0) or (SKEW_CANCEL and position >= SKEW) or not bid_ok
         cancel_ask = (winding_down and position <= 0) or (SKEW_CANCEL and position <= -SKEW) or not ask_ok
         spread = best_ask - best_bid
