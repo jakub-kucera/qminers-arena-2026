@@ -22,6 +22,7 @@ Before the round (the playground, 7 Nov): the portal's results folder is byte-id
 
 ## Private run against public
 <!-- the private (hidden) run's PnL against the public one, per product -->
+- **R1-C12 (v6) on round 1's private tape** (the portal's full log, run 17:10 UTC = 18:10 CET, saved in `data/arena/round1/r1_C12_v6_private_res/`, ignored by git): pnl **602,526.53** against 622,920.99 on the public tape (**0.967**), fills 20,662 (public 21,462), traded volume 2,063,619 (2,247,040), breach 1,173.47 (1,810), end inventory +21 at a mark of 9,939 (the public tape ends at 10,029), pnl_se 11,088, |inv| q50 99. Same rules (limit 100, wall 1,000, 10,000/s, 5 ms) and the same length (12,000 s). The drop of 20k is about 1.8 pnl_se: a different draw, not a collapse; the learned model carried over.
 
 ## Fill model and mark
 <!-- the engine settings that matched the portal: --resting/--queue, --match-trades, --mark, --limit-penalty, --fee -->
