@@ -64,6 +64,8 @@ FLAT_S = 0  # this many seconds before the end, one IOC at the touch flattens th
 DRIFT_S = 0  # EMA horizon of the mid in seconds for a slow position target (0: off)
 DRIFT_K = 0.0  # target position = DRIFT_K * (mid - EMA), in lots a tick (negative: lean against the move)
 DRIFT_BAND = 20  # new orders only on the side toward the target once the position is this far from it
+REV_LOTS = 0  # after aggressive trades of this many lots in one event, no new order on the side the reversion goes against (0: off)
+REV_MS = 1000  # ... for this many ms
 
 
 class LadderMakerStrategy(BaseStrategy):
@@ -78,6 +80,8 @@ class LadderMakerStrategy(BaseStrategy):
         self._flattened: bool = False
         self._ema: None | float = None
         self._ema_us: int = 0
+        self._rev_until: int = 0
+        self._rev_sign: int = 0
 
     def on_order_book_change(self, snapshot: OrderBookSnapshot, trades: list[Trade]) -> None:
         """Keep the ladder on each side."""
@@ -130,6 +134,18 @@ class LadderMakerStrategy(BaseStrategy):
         target = max(-LIMIT, min(LIMIT, DRIFT_K * (mid - self._ema))) if DRIFT_S else 0.0
         lean_bid = not DRIFT_S or position < target + DRIFT_BAND
         lean_ask = not DRIFT_S or position > target - DRIFT_BAND
+        if REV_LOTS and trades:
+            qty = 0
+            for trade in trades:
+                qty += trade.quantity
+            if qty >= REV_LOTS:
+                self._rev_sign = 1 if trades[0].book_side == "ask" else -1
+                self._rev_until = snapshot.timestamp_us + REV_MS * 1000
+        if REV_LOTS and snapshot.timestamp_us < self._rev_until:
+            if self._rev_sign > 0:
+                lean_bid = False
+            else:
+                lean_ask = False
         want_bid = position < SKEW and not (winding_down and position >= 0) and bid_ok and -imb < NEW_IMB and lean_bid
         want_ask = position > -SKEW and not (winding_down and position <= 0) and ask_ok and imb < NEW_IMB and lean_ask
         cancel_bid = (winding_down and position >= 0) or (SKEW_CANCEL and position >= SKEW) or not bid_ok
