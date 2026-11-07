@@ -24,6 +24,19 @@ class AttributionEngine(CandidateEngine):
         self.execution_edge=self.holding_small=self.holding_jump=0.0
         self.previous_cash=self.previous_inventory=0
         self.jump_contributions=[]
+        self.volatility_exposure=defaultdict(lambda:[0,0.0,0.0])
+
+    def _advance_time(self,timestamp_us):
+        elapsed=max(0,timestamp_us-self.current_ts_us)
+        if elapsed and hasattr(self.strategy,'_vol_sigma'):
+            sigma=self.strategy._vol_sigma
+            boundary=next((v for v in (.5,1,2,4,8) if sigma<=v),None)
+            key='sigma<= '+str(boundary) if boundary is not None else 'sigma>8'
+            row=self.volatility_exposure[key]
+            row[0]+=elapsed
+            row[1]+=elapsed*abs(self._inventory)
+            row[2]+=elapsed*self.strategy._upper_target
+        super()._advance_time(timestamp_us)
 
     def _private_notify(self,event):
         hedge=event.order_id==getattr(self.strategy,'_hedge_id',None)
@@ -79,6 +92,9 @@ class AttributionEngine(CandidateEngine):
             final_native_liquidation_adjustment=adjustment,identity_net_pnl=total,
             worst_jump_contributions=sorted(self.jump_contributions,key=lambda r:r[-1])[:20],
             fill_markouts=markouts,
+            volatility_exposure={k:dict(seconds=r[0]/1e6,
+                mean_absolute_actual_inventory=r[1]/r[0],mean_planned_cap=r[2]/r[0])
+                for k,r in self.volatility_exposure.items() if r[0]},
             limitation='Descriptive post-run markouts at the last valid midpoint strictly before the horizon. Includes fills already closed before that horizon. Hedge classification uses the strategy hedge ID; marketable LIMIT orders are in maker group.')
 
 
