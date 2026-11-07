@@ -57,6 +57,7 @@ SANDBOX = {  # what their sandbox rejects before a bot runs (STARTER.md, "Writin
     "builtins": {"open", "getattr", "type", "eval", "exec"},
     "dunders": True,  # dunder attributes and names
     "str_format": True,
+    "no_except_pass": True,  # a warning: their static analysis ran a linter that rejected `except ...: pass` until they turned it off (7 Nov)
     "allow": {"__future__", "__init__"},  # their own examples use `from __future__ import annotations` and `super().__init__()`
     "public": {"simulator.models": "*", "simulator.strategy": {"BaseStrategy"}},  # module: its public names ("*": any without an underscore)
 }

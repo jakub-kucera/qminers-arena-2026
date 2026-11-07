@@ -1062,10 +1062,7 @@ class ArenaBot(BaseStrategy):
                 last[PRODUCT] = repr(error)
                 print(f"{snapshot.timestamp_us} {PRODUCT}: {error!r}")
             # Don't leave stale quotes resting while the bot is broken.
-            for order_id, order in list(self.orders.items()):
+            for order_id, order in list(self.orders.items()):  # cancelling a live order of ours doesn't raise
                 if order[3] == "live":
-                    try:
-                        self.cancel_order(order_id)
-                        order[3] = "cancelling"
-                    except Exception:
-                        pass
+                    self.cancel_order(order_id)
+                    order[3] = "cancelling"

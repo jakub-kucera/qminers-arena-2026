@@ -140,6 +140,8 @@ def test_the_sandbox_bans_are_the_formats():
                           ("from simulator import strategy", []), ("from simulator import main", ["not public"])):
         found, _ = validate.sandbox_bans(ast.parse(line), qminers.SANDBOX)
         assert all(any(v in f for f in found) for v in verdict) and bool(found) == bool(verdict), (line, found)
+    found, warned = validate.sandbox_bans(ast.parse("try:\n    x = 1\nexcept Exception:\n    pass\n"), qminers.SANDBOX)
+    assert found == [] and warned == ["an except handler that only passes (their linter rejected it until they turned it off, 7 Nov) (line 3)"]
     assert validate.sandbox_bans(ast.parse(source), None) == ([], [])  # a format without a sandbox: nothing
 
 

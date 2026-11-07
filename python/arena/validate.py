@@ -520,6 +520,8 @@ def sandbox_bans(tree: ast.Module, sandbox: dict | None) -> tuple[list[str], lis
                 fails[f"the dunder attribute .{node.attr}"].append(line)
             elif sandbox.get("str_format") and node.attr == "format":
                 fails[".format (str.format; an f-string instead)"].append(line)
+        elif isinstance(node, ast.ExceptHandler) and sandbox.get("no_except_pass") and len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
+            warns["an except handler that only passes (their linter rejected it until they turned it off, 7 Nov)"].append(line)
         elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and sandbox.get("dunders") and dunder(node.name):
             warns[f"a method named {node.name}"].append(line)
 
