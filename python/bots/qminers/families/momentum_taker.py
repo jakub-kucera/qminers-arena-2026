@@ -28,10 +28,10 @@ from simulator.strategy import BaseStrategy
 
 WINDOW_MS = 0  # flow window; 0: only the trades since the previous call
 MIN_FLOW = 1  # lots of net aggressive flow that open (or add to) a trade
-SIZE = 10  # lots per entry order
+SIZE = 40  # lots per entry order
 MAX_POS = 50  # |position| cap, every order that can still fill counted
-ENTRY_MS = 0  # after the first entry, keep adding while the flow agrees for this long
-HOLD_MS = 4000  # close the trade this long after the first entry
+ENTRY_MS = 3000  # after the first entry, keep adding while the flow agrees for this long
+HOLD_MS = 6000  # close the trade this long after the first entry
 TP_TICKS = 0  # >0: rest a passive exit this many ticks beyond each entry fill
 STOP_TICKS = 0  # >0: close when the mid has gone this many ticks against the entry
 REVERSE = 1  # 1: close on flow the other way

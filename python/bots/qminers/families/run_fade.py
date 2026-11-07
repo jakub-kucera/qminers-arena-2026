@@ -23,12 +23,12 @@ from simulator.strategy import BaseStrategy
 MIN_FLOW = 1  # lots of net aggressive flow in one call that start watching a run
 DELAY_MS = 4000  # fade no earlier than this after the run's trade
 MAX_DELAY_MS = 15000  # and no later than this
-RUN_TICKS = 6  # the mid must have run at least this far from the trade's mid
+RUN_TICKS = 4  # the mid must have run at least this far from the trade's mid
 SIZE = 20  # lots per entry
 MAX_POS = 50  # |position| cap, every order that can still fill counted
-HOLD_MS = 8000  # close the fade this long after the entry
+HOLD_MS = 10000  # close the fade this long after the entry
 TP_TICKS = 0  # >0: rest a passive exit this many ticks beyond each entry fill
-STOP_TICKS = 4  # >0: close when the mid has gone this many ticks against the entry
+STOP_TICKS = 0  # >0: close when the mid has gone this many ticks against the entry
 REVERSE = 1  # 1: close on a new aggressive trade the run's way
 CROSS = 0  # ticks through the touch for the IOC price
 WIND_DOWN_S = 30  # no new fades in the last this many seconds, and close what is open

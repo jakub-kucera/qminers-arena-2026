@@ -25,11 +25,11 @@ from simulator.strategy import BaseStrategy
 
 
 LOOKBACK = 20  # book events the mid's move is measured over
-MOVE_TICKS = 2  # a move of at least this many ticks starts a run (0: off)
+MOVE_TICKS = 0  # a move of at least this many ticks starts a run (0: off)
 FLOW_ENTRY = 1  # 1: an aggressive trade starts a run too
 MIN_FLOW = 1  # lots of net aggressive flow in one call that count as a trade signal
 MAX_POS = 100  # |position| cap, every order that can still fill counted
-TRAIL_TICKS = 0  # >0: end the run when the mid is this far back from its best since the entry
+TRAIL_TICKS = 3  # >0: end the run when the mid is this far back from its best since the entry
 TP_TICKS = 0  # >0: end the run when the mid is this far past the entry's mid
 HOLD_MS = 0  # >0: end the run this long after it started
 FLIP = 1  # 1: a signal the other way starts the opposite run at once

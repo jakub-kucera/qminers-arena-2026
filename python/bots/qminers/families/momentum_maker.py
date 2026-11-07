@@ -23,13 +23,13 @@ from simulator.models import (
 from simulator.strategy import BaseStrategy
 
 
-WINDOW_MS = 1000  # flow window
+WINDOW_MS = 2000  # flow window
 MIN_FLOW = 1  # lots of net aggressive flow that set the direction
-SIGNAL_MS = 3000  # how long a direction lasts after its last confirming flow
+SIGNAL_MS = 1000  # how long a direction lasts after its last confirming flow
 QUOTE = 10  # lots of the resting order
-IMPROVE = 0  # ticks inside the touch (where the spread allows)
+IMPROVE = 1  # ticks inside the touch (where the spread allows)
 MAX_POS = 50  # |position| cap, every order that can still fill counted
-FLAT_MS = 5000  # with no signal for this long, close the position with an IOC (0: never)
+FLAT_MS = 2000  # with no signal for this long, close the position with an IOC (0: never)
 WIND_DOWN_S = 60  # add no new position in the last this many seconds
 FLAT_S = 10  # close the rest with an IOC in the last this many seconds
 SESSION_S = 3600  # the session's length in seconds (set it from the round's data)

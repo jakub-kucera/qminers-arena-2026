@@ -21,13 +21,13 @@ from simulator.models import (
 from simulator.strategy import BaseStrategy
 
 
-QUOTE = 5  # lots a side
+QUOTE = 10  # lots a side
 MAX_POS = 50  # |position| cap, every order that can still fill counted
 SKEW = 20  # beyond this many lots, stop quoting the side that adds to the position
-OFFSET = 0  # ticks outside the touch (negative: inside it, where the spread allows)
-PULL_MS = 3000  # how long a threatened side stays pulled
+OFFSET = -1  # ticks outside the touch (negative: inside it, where the spread allows)
+PULL_MS = 6000  # how long a threatened side stays pulled
 PULL_ON_MOVE = 1  # 1: a move of the touch also pulls (not only a market trade)
-PULL_SIDE = 1  # 1: pull only the side the move runs at; 0: pull both sides
+PULL_SIDE = 0  # 1: pull only the side the move runs at; 0: pull both sides
 WIND_DOWN_S = 60  # quote only the reducing side in the last this many seconds
 FLAT_S = 10  # close the rest with an IOC in the last this many seconds
 SESSION_S = 3600  # the session's length in seconds (set it from the round's data)
