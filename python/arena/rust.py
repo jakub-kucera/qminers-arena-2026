@@ -39,6 +39,7 @@ import itertools
 import json
 import shutil
 import subprocess
+import sys
 import weakref
 from collections import defaultdict
 from dataclasses import fields
@@ -112,7 +113,9 @@ def code_hash(source: str, reads: list[str] | tuple[str, ...] = ()) -> str:
             node.body = node.body[1:] or [ast.Pass()]
     if reads:
         tree.body = [node for node in tree.body if not _sets_only(node, set(reads))]
-    return hashlib.sha256(ast.dump(tree).encode()).hexdigest()
+    # Python 3.13's ast.dump leaves out empty fields unless show_empty: with it, the dump (and every recorded hash) is 3.12's.
+    dumped = ast.dump(tree, show_empty=True) if sys.version_info >= (3, 13) else ast.dump(tree)
+    return hashlib.sha256(dumped.encode()).hexdigest()
 
 
 def _docstring(body: list[ast.stmt]) -> bool:
