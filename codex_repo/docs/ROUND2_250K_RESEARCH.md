@@ -253,3 +253,102 @@ No competition-server access or additional email occurred. The next hypothesis
 is a small regularized online residual model that augments the existing four
 calibration groups with flow alignment and signed prediction, with features
 stored before labels mature and a predeclared bounded experiment.
+
+## Online residual model and fill diagnostics
+
+Four candidates fit a six-feature ridge model to matured fill-value residuals:
+four direction/spread indicators, lagged RA-flow alignment, and signed price
+prediction. Features are stored with the pending label, never reconstructed
+using future state. The fit has300-second memory, quantity weights, a one-second
+fit cadence and a +/-0.5 output cap. Ridge strengths5/25 and blends50%/100% were
+declared before replay. The current209,795 model remains unchanged.
+
+| Ridge / model blend | First 80% | Minutes 30-60 | Minutes 60-80 |
+| --- | ---: | ---: | ---: |
+| 5 / 50% | 186,355 | 53,068 | 97,164 |
+| 5 / 100% | 167,857 | 35,140 | 94,878 |
+| 25 / 50% | 165,228 | 36,385 | 91,485 |
+| 25 / 100% | 167,686 | 35,497 | 94,035 |
+
+Ridge5/blend50% won the predeclared later-period rule and was frozen for full
+audit/native CLI checks. Replacing calibration entirely did not improve it.
+
+Completed full audit/native CLI: **212,912 net**, exact field parity, zero fees,
+actual/potential exposure <=100, final20 gain26,557, sampled drawdown10,719.
+The source is strategies/round2/round2_local_212912.py, SHA256
+`d15c8979b2539cb77af89b3de1d2db34cd397094b8eb67a35ffb5d54726b2712`.
+It improves209,795 by3,117; it does not establish unseen-data superiority.
+
+Independent read-only instrumentation of the209,795 reference reproduced every
+native first80 result field, including184,980 net. The following per-lot means
+cover eligible, matured maker-fill observations and are quantity-weighted:
+
+| Side / cached spread | Predicted value | Clipped400ms mid markout | Raw400ms mid markout | Future-touch markout |
+| --- | ---: | ---: | ---: | ---: |
+| Buy / <2 | 0.258 | 0.233 | 0.203 | -0.340 |
+| Sell / <2 | 0.287 | 0.277 | 0.280 | -0.263 |
+| Buy / >=2 | 0.124 | 0.096 | -0.346 | -1.129 |
+| Sell / >=2 | 0.123 | 0.283 | 0.355 | -0.450 |
+
+No observed correction reached its0.5 bound, including the4,786 event samples
+of quote gates. Increasing that bound is not supported by this diagnostic.
+The difference between raw and clipped wide-buy markouts motivates testing
+tail treatment, without hardcoding a buy-side restriction. These overlapping
+markouts are descriptive, not independent returns or realized round trips;
+future-touch values hypothetically cross the book and are not actual exits.
+Taker observations are recorded separately; the maker prediction is not a
+calibrated taker forecast. See logs/round2_calibration_diagnostics/diagnostics.json.
+
+Two further bounded protocols were declared before their replays:
+
+- Fill-calibration horizons100/200/800/2,000ms, each with one-second stale
+  tolerance after maturity. The fixed tree and price learner remain400ms.
+- Calibration-label clipping at+/-6, +/-12, downside6/upside3, or unclipped,
+  applied identically to buy and sell directions. The learned correction
+  remains bounded0.5 with rate0.01. These test the measured tail discrepancy.
+
+The original public tape is fully consumed. These are causal research probes,
+not an untouched validation set. All candidates and failures must be retained.
+
+The horizon screen completed as follows; the200ms candidate won the later-period
+rule and was frozen before full replay:
+
+| Fill-label horizon | First 80% | Minutes 30-60 | Minutes 60-80 |
+| --- | ---: | ---: | ---: |
+| 100ms | 188,693 | 47,796 | 96,895 |
+| **200ms** | **189,889** | **53,318** | **97,105** |
+| 800ms | 186,248 | 51,308 | 95,002 |
+| 2,000ms | 164,000 | 34,426 | 96,350 |
+
+Tail treatment did not beat the reference's148,868 combined minutes30-80 gain,
+despite some higher totals including the first30 training minutes:
+
+| Calibration label treatment | First 80% | Minutes 30-60 | Minutes 60-80 |
+| --- | ---: | ---: | ---: |
+| +/-6 | 186,162 | 51,028 | 95,444 |
+| +/-12 | 176,750 | 43,339 | 93,850 |
+| Downside6 / upside3 | 186,339 | 52,598 | 95,485 |
+| Unclipped | 169,338 | 39,169 | 91,577 |
+
+No tail candidate is promoted or selected for full replay. The diagnostic's
+tail discrepancy is real, but changing label clipping alone did not convert it
+into a better later-period native score.
+
+The frozen200ms candidate completed at **222,966 net**, with every native CLI
+result field matching its full audit. Final20% contributed33,077; sampled
+drawdown10,262; fills10,838; volume763,978; fees0; maximum actual/potential
+exposure100. Exact file: strategies/round2/round2_local_222966.py, SHA256
+`85a53b3f77b71d1b642c796fb67f17b61c7263031a5763967fbac5e4aada4c67`.
+This is +13,171 over209,795 and +10,054 over the separately tested residual
+ridge model. It changes only fill-calibration maturity/stale tolerance;
+the price learner and fixed tree keep their400ms target. The two improvements
+have not yet been combined.
+
+All128 tests pass and all replays in this stage finished. All12 candidates
+plus parity-checked diagnostics are archived. The250k objective remains active,
+with27,034 left. Next: a predeclared small combination study, then possibly
+price-aware deeper maker quotes when the entry gate would otherwise withdraw.
+Quote-price improvements must be reflected in calibration targets so the
+learner does not confuse a different execution price with predictive alpha.
+No competition-server access or additional email occurred. Public-data reuse
+remains a material limitation; no unseen-data profit guarantee is established.

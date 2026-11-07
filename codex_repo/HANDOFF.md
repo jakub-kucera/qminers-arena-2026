@@ -8,22 +8,25 @@ sent to Jakub at the user's explicit request; do not send further models without
 another instruction. See [250k research](docs/ROUND2_250K_RESEARCH.md) for new
 experiments. The sections below describe the completed earlier 150k objective.
 
-Current verified best: **209,795**, exact standalone file
-`strategies/round2/round2_local_209795.py`, SHA256
-`df93cf43167894a1fe00a67b459f32d655ecbc8a5d5a2e4f036f54645e05af90`.
-Native CLI and audit agree; exposure <=100, fees0, final20 gain24,815,
-sampled drawdown10,557. All124 tests pass. All scheduled replays finished.
-The latest improvement separates fill-value calibration by direction and
-spread, with update rate0.01, 400ms matured labels,300s decay and0.5 clipping.
-Rate0.03 scored205,350. A native-fee burst probe scored199,870.10 after770.90
-fees, actual peak183, and no900-lot burst; it was not promoted.
+Current verified best: **222,966**, exact standalone file
+`strategies/round2/round2_local_222966.py`, SHA256
+`85a53b3f77b71d1b642c796fb67f17b61c7263031a5763967fbac5e4aada4c67`.
+Native CLI and audit agree; exposure <=100, fees0, final20 gain33,077,
+sampled drawdown10,262. All128 tests pass. All scheduled replays finished.
+This model changes fill-calibration label maturity to200ms (stale cutoff1.2s),
+while the price learner and fixed tree remain400ms. Direction/spread calibration
+uses rate0.01,300s decay and0.5 correction cap. It does not include the new
+residual ridge model. Separately, ridge5/blend50% at400ms scored212,912 with
+native parity; full replacement and stronger ridge were worse. Tail-label
+variants failed to beat the reference's later-prefix score and were not promoted.
 
-The250k target remains unmet by40,205. All public data is consumed. Next useful
-hypothesis: a small regularized online residual model using the four existing
-calibration groups plus flow alignment and signed price prediction. Store
-features at prediction/fill time, mature labels causally, shrink toward zero,
-and predeclare a small parameter set. Do not hardcode favorable time intervals
-or relax native scoring. No new email or competition submission is authorized.
+The250k target remains unmet by27,034. All public data is consumed. Next useful
+experiment: combine the independently tested200ms target with the residual
+model in a small predeclared set; do not assume their gains add. Another
+hypothesis is price-aware deeper quotes instead of withdrawing a blocked side,
+with actual quote-price offsets included in calibration labels. Preserve
+pending reservations and causal feature snapshots. No hardcoded time regimes,
+native scoring changes, new emails or competition submissions are authorized.
 
 ## Historical checkpoint: 167,412 local result, no server access
 

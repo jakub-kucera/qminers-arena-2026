@@ -1,0 +1,11 @@
+{
+  "candidate": {
+    "name": "fill_horizon200ms",
+    "file": "logs\\round2_calibration_horizon\\sources\\fill_horizon200ms.py",
+    "source_sha256": "85a53b3f77b71d1b642c796fb67f17b61c7263031a5763967fbac5e4aada4c67",
+    "risk": "strict100"
+  },
+  "selection_rule": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "goal": 250000,
+  "scope": "Consumed public first80%; no new holdout and no server access."
+}
