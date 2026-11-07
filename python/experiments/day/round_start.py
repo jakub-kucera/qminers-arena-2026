@@ -60,6 +60,15 @@ CANDIDATES = {
     "tmpl_mom": (TEMPLATE, "SESSION_US", {"PARAMS.ASSET": MOMENTUM_PARAMS}),
     "A0": (TEMPLATE, "SESSION_US", {"PARAMS.ASSET": A0_PARAMS}),
     # Round 1's makers (7 Nov): their files never wind down (SESSION_S 1e9), whatever the private tape's length, so no session is set
+    # Round 2's winners on the server's validation tape (data/arena/round2/HANDOVER.md, "Round 2 results, marked"):
+    # the forecast takers first (R2-L3 the final, +804,018), then the composite, the big-order follower, the maker
+    "R2_L8": (CANDIDATE_DIR / "r2_L8_quote_switch.py", None, {}),
+    "R2_L3": (CANDIDATE_DIR / "r2_L3_taker_pure.py", None, {}),
+    "R2_L1": (CANDIDATE_DIR / "r2_L1_taker_liquidity.py", None, {}),
+    "R2_H1": (CANDIDATE_DIR / "r2_H1_flow_bias.py", None, {}),
+    "R2_T2": (CANDIDATE_DIR / "r2_T2_take_only_safe.py", None, {}),
+    "R2_M4": (CANDIDATE_DIR / "r2_M4_flow_window.py", None, {}),
+    "R2_V2": (CANDIDATE_DIR / "r2_V2_vol_exposure_dz18.py", None, {}),
     # Round 1's learned makers (the online ridge line; R1-C11 the uploaded final)
     "R1_C11": (CANDIDATE_DIR / "r1_C11_codex_v5_29feat.py", None, {}),
     "R1_C5": (CANDIDATE_DIR / "r1_C5_long_horizon.py", None, {}),
@@ -79,6 +88,12 @@ RUST_FAMILY = {"R1_F7": "signal_maker.py", "R1_F6b": "alloc_maker.py"}  # the re
 RIDGE_C5 = ("--set POSITION_LIMIT=1000 --set EXPOSURE=100 --set CANCEL_FREE=1.0 --set HEDGE=1"
             " --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000 --set DEAD_ZONE=0.18")
 RUST_RIDGE = {"R1_C11": RIDGE_C5 + " --set QUOTEFEAT=1 --set FLOWGRP=2 --set FLOWGRP_CAP=1", "R1_C5": RIDGE_C5, "R1_C1": ""}
+# R2-V2 (the speed-scaled maker) in ridge_maker: R2-E2's sets with EXPOSURE 100 and the VOL_REF exposure
+RUST_RIDGE["R2_V2"] = ("--set POSITION_LIMIT=1000 --set CANCEL_FREE=1.0 --set HEDGE=1 --set MODEL_MEMORY_US=100000000000"
+                       " --set HORIZON_US=400000 --set QUOTEFEAT=1 --set FLOWGRP=2 --set FLOWGRP_CAP=20 --set FLOWGRP_US=1000000"
+                       " --set FT_SZ=200 --set FT_GAP_MS=50 --set SKEW_K=0.025 --set FT_EDGE=0.25 --set QUOTE_SIZE=200"
+                       " --set DEAD_ZONE=0.18 --set KEEP_LOTS=20 --set KEEP_TH=0.3 --set EXPOSURE=100 --set VOL_REF=2.5"
+                       " --set VOL_EXP=2 --set VOL_US=5000000 --set VOL_MIN=10 --set VOL_MAX=100 --set VOL_NOHEDGE=1")
 
 
 # ---------------------------------------------------------------------------- profile
@@ -350,6 +365,12 @@ def next_grids(table: list[dict], p: dict | None, data: Path, length_us: int, jo
     ridge = ["--grid HORIZON_US=100000,250000,400000,600000 --grid DEAD_ZONE=0.1,0.14,0.18,0.22,0.26 --grid INSIDE_TH=0.2,0.3,0.4"]
     for name in RUST_RIDGE:
         axes[name] = ridge
+    # the round-2 takers: their forecast settings are class constants (edit the file to change them); the module knobs here
+    axes["R2_L8"] = ["--grid QS_RATE=1.5,2.5,3.5 --grid TAKE_MAXSPREAD=1,2"]
+    for name in ("R2_L3", "R2_L1", "R2_T2"):
+        axes[name] = ["--grid TAKE_MAXSPREAD=1,2"]
+    axes["R2_H1"] = ["--grid BIAS_AGREE=0.15,0.3,0.45 --grid FLOW_MS=125,250 --grid MIN_LOTS=500,575"]
+    axes["R2_M4"] = ["--grid FLOW_MS=100,125,150 --grid MIN_LOTS=500,575,650"]
     axes["R1_F8"] = ["--grid TAKE_LOTS=0,30,60 --grid TAKE_OWN=400,800 --grid JOIN_OWN=0,400 --grid ALLOC_K=-0.5,0"]
     axes["R1_F7"] = ["--grid MOM_JOIN=0,1 --grid MOM_LOTS=200,400,800 --grid MOM_MS=20,50,200 --grid DYING_DEEP=0,80 --grid DEPL_FRAC=0.06,0.12"]
     lines = ["== next grids (the top two by PnL)"]
