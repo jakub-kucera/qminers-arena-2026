@@ -220,3 +220,46 @@ For rounds 2–4, add this to the prompt above, after the list of files:
 ```text
 This is not the first round. Also in this folder: our final bot from round <N-1> (<file>), its portal score (<score>) against what our backtester predicted (<number>), the leaderboard (<what it shows>), and last round's notes (rules_summary.md, data_notes.md, changes.md). Start with step 1 as a diff: what changed in the rules, products, limits and data since last round, and stop to show me. Then run last round's bot on the new data as the baseline and first upload candidate. The rounds get harder by design, so treat its choices as priors: test them again on this round's data, and try at least one other approach, rather than keeping what worked last round.
 ```
+
+## Round 3 starter prompt (written 8 Nov, 00:00, after round 2)
+
+Paste this to start round 3's session, once the round's public tape is downloaded. It replaces nothing above; the
+improvement loop and the verifier brief still apply.
+
+```text
+Round 3 of the Qminers Algo Trade Arena has started. The repository is this folder; read CLAUDE.md first, then
+RUNBOOK.md, then data/arena/round3/HANDOVER.md ("Start here" and "Ideas to try in round 3"), then round 2's marked
+results in data/arena/round2/HANDOVER.md ("Round 2 results, marked"). The round's public tape is <path>; move it to
+data/arena/round3/ (data/ is ignored by git).
+
+What we know: the server scores each upload on a VALIDATION tape (PnL plus a 1-s pnl.csv, no logs) and the final on a
+different PRIVATE tape, each about twice the public tape's length; any earlier submission can be marked final; the
+deadline is <HH:MM Prague> (round 2's was 00:14, not 24:00). Round 2's winner was the forecast taker
+(python/bots/qminers/candidates/r2_L3_taker_pure.py, +804,018 on validation); R2-L8 (r2_L8_quote_switch.py) adds
+one-lot quotes in calm markets. Makers with size lost on volatile tapes; the edge was in the bursts.
+
+First actions (report after each):
+1. The first look: uv run python -m experiments.day.round_start data/arena/round3/<file>.csv --jobs 8 --out
+   data/arena/round3/round_start; the tape's character (experiments.day.tape_character profile, experiments.day.wide_spread,
+   the price speed against round 1's 1.23 and round 2's 3.22 ticks/s); pick the starting family from the decision table.
+2. Build validation-like stitched tapes from the public tape's fast segments (experiments.day.tape_character stitch) and
+   a mirrored copy of the public tape; run L8, L3, L1 and the references on all of them, and check each bot's run time
+   (the server is ~1.75x slower than local; the limit is 15 min on the full tape).
+3. Tell me which file to upload first (one upload, the likely final), then work down "Ideas to try in round 3".
+
+Protocol: choose every setting on the public tape's first 75% only; check on the last 25%, the mirror, the stitched
+tapes and round 1's tape (data/arena/round1/round1.csv) before calling anything better; prefer structural changes and
+learned weights to tuned constants; grid the ridge family in Rust (uv run python -m arena.qsim_rust ridge_maker ...,
+~3 s a run, byte-identical to the Python files) and port a winner to Python checked to the cent. Treat each validation
+upload as a paired experiment against the current best (compare per-1,000-s segments of the two pnl.csv files); switch
+the final only for a clear margin (~25k+). Every bot: one file, exactly one BaseStrategy subclass, imports only stdlib,
+numpy, pandas, scipy, sklearn, simulator.models, simulator.strategy; never os, sys, io, socket, subprocess, threading,
+importlib, inspect, gc, open, eval, exec, getattr, type, dunders other than __init__, str.format; validate with
+uv run python -m arena.validate FILE all --format qminers.
+
+Constraints: commit as the configured author (Jakub) with no Co-Authored-By or any other Claude attribution, at least
+every 30 minutes, failed experiments too, never squash, rebase or force-push (the organisers read the history); file
+every result in data/arena/round3/CANDIDATES.md and IDEAS.md; never upload yourself (I upload and paste the results;
+move each results folder into data/arena/round3/); up to 5 subagents at once; read the Arena site only as public
+material (no API calls, no guessed URLs); the neuralwatt key stays in an environment variable.
+```
