@@ -484,3 +484,18 @@ of touch order-count imbalance and capped-quantity imbalance, for fifteen
 features in total. Metrics and verification status are tracked in
 `results/round1_534332.json`. This is another sample-tuned version; the earlier
 498,056 and 523,999 files remain separately preserved.
+
+Later sample-tuned milestones are preserved as `strategies/round1_queue_538k.py`
+(**538,075**) and `strategies/round1_queue_545k.py` (**544,764**). The latter
+samples training observations every 20 ms and may replenish free exposure
+while cancels are pending. Pending cancellations still reserve their remaining
+quantity until confirmation. Both actual and potential inventory stay within
+100 lots; all replay penalties are zero. Result manifests are tracked in
+`results/round1_538075.json` and `results/round1_544764.json`.
+
+Transfer checks for the 534,332 model returned 270,735 on sample v2 and -13,506
+on the original thin-book sample. These are checks on previously consumed data,
+not independent validation. Their metrics are saved in
+`results/round1_534k_transfer.json`; the round-1 candidates are specialized for
+the denser round-1 market. Forty-three tests pass, including 10,000 randomized
+fill/cancel/reject transitions with overlapping quote replacements.

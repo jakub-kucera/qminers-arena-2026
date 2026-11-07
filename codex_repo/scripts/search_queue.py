@@ -9,9 +9,9 @@ from scripts.benchmark import digest
 ROOT=Path('logs/sample_v2/queue_search')
 
 
-def batch(names,data,stage):
+def batch(names,data,stage,workers=3):
     results={}
-    with ProcessPoolExecutor(max_workers=3) as pool:
+    with ProcessPoolExecutor(max_workers=workers) as pool:
         jobs={pool.submit(run,ROOT/'sources'/(n+'.py'),data,ROOT/stage/n):n for n in names}
         for job in as_completed(jobs):
             n=jobs[job]; r=job.result(); results[n]=r
