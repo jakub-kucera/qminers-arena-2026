@@ -63,3 +63,21 @@ Trials so far: 0 experiments, 0 cells.
 
 ## Verifier verdicts
 <!-- each verifier's report, verbatim, under the candidate's id and the time -->
+
+### R2-E1, 19:35 (`python/bots/qminers/candidates/r2_E1_low_exposure.py`): the first round-2 upload
+- R2-FT1 (R1-C12 + the forecast take) with its literals named; EXPOSURE 30 (the hedge sells back above 30 lots), DEAD_ZONE 0.3, the take at 0.25 ticks over half the spread, 200 lots, one per 50 ms.
+- round2_public.csv (`uv run exchange-simulator --strategy python/bots/qminers/candidates/r2_E1_low_exposure.py --backtest data/arena/round2/round2_public.csv --log-dir logs/e1 --no-logs`): pnl 28,418.00 (first 75% 23,430 / last 25% 4,988), 14,068 fills, breach 0, |inv| q997 30; byte-identical to the Rust ridge_maker; 81.6 s (about 165 s on a 12,000-s tape; limit 900 s); validate OK.
+- Chosen on the first 75% from a plateau (EXPOSURE 20-45 x DEAD_ZONE 0.3-0.45 x FT_EDGE 0.1-0.25: in 21-23.6k). Every round-1 bot loses on this tape (R1-C11 -263k, R1-F8 -86k).
+- Expect the validation PnL near twice the public (about 57k) if the tape is the same kind; much less means the regime differs.
+
+### 19:45: exposure x dead zone x queue-keeping on three tapes (Rust ridge_maker, R2-FT1's sets; `--grid EXPOSURE=30,100 --grid DEAD_ZONE=0.18,0.3 --grid KEEP_LOTS=0,20 --set KEEP_TH=0.3 --holdout 0.25`)
+| EXPOSURE / DZ / KEEP | round 2 public (in / out) | round 1 public | round 1 private (rebuilt) |
+|---|---|---|---|
+| 30 / 0.18 / 0 | 31,066 (19,871 / 11,195) | 290,938 | 282,541 |
+| **30 / 0.18 / 20** | **47,098 (35,094 / 12,004)** | 294,949 | 287,960 |
+| 30 / 0.3 / 0 (R2-E1) | 28,418 (23,430 / 4,988) | 287,058 | 281,395 |
+| 30 / 0.3 / 20 | 47,311 (34,673 / 12,638) | 287,948 | 280,843 |
+| 100 / 0.18 / 0 (R2-FT1) | -88,431 (-76,201 / -12,231) | 688,311 | 663,746 |
+| 100 / 0.18 / 20 | -87,574 | 699,697 | 684,271 |
+- The exposure is the regime choice: 30 lots wins on round 2's trending tape and costs ~400k on round 1's; the validation upload tells which regime the server's tapes are. Queue-keeping (KEEP 20) adds +16-19k on round 2 at exposure 30 and +4-20k on round 1 at 100. R2-E2 (30 / 0.18 / KEEP 20) is being written as a Python file.
+- The momentum agent (interim, 19:37): holding 100 lots on the side of the last 500+ lot aggressor makes +118,374 on round 2 public (in 97,133 / out 21,241; pnl_se 30.6k), flat over MIN_LOTS 333-650 (`r2_M2_flow_trend.py`, in its worktree): big orders move the mid +1.3-2.0 ticks by 5 s on this tape (round 1: +0.5).
