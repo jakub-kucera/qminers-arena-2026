@@ -41,6 +41,8 @@ Answered before the round: ON_THE_DAY.md, "Known so far", the 7 Nov blocks (site
 
 ## Leaderboard
 - **Round 1's private leaderboard** (18:50, `data/arena/round1/leaderboard.json`, ranks and PnL only, no curves): **8th of 61** with 602,526.53 (R1-C12, v6). 60 teams positive: mean 434,481, sd 137,534, median 447,797, so our z = +1.22 (weight 0.8 in the final score). Above us: Team 2 792,696 (z +2.60), Team 5 701,374, Team 4 667,357, Team 10 657,359, Team 3 655,444, Team 6 615,391, Team 15 603,501. The leader made +32% over us on the same tape, so something structurally better exists (round 1's ceilings: a front-of-queue maker 790k; IDEAS.md, "Round 1 ceilings on R1-F8").
+- **The leaderboard's PnL curves** (read off the page's chart at 18:55: 61 curves of 481 points, 25 s apart; our curve matches our own private pnl.csv exactly: mean +1,255 a step, sd 461): every team's PnL grows linearly (each team's quartiles at 0.24-0.26 / 0.49-0.51 / 0.74-0.76 of its final), no team has a drawdown worth the name, so the field is all steady market making. Per 25-s step, the leader Team 2 +1,651 (sd 392), #2 +1,461 (446), #3 +1,390 (394), #4 +1,369 (409), #5 Team 3 +1,366 (310), us +1,255 (461): **the top teams earn more with less variance**. The price's 25-s step sd is 4.83 ticks, so our sd is 100 lots x 4.83 = 483: our variance is almost all the ±100 inventory (|inv| median 99). The leaders hold less inventory (roughly 60-80 lots of exposure by the same arithmetic) and trade more spread. Teams' steps correlate 0.35-0.65 with each other and ~0 with the price's step (inventory signs vary), so the chart can't show their direction.
+
 <!-- leaderboard.json saved here; experiments.day.leaderboard_curves --read verdict; our standing -->
 
 ## Next round
