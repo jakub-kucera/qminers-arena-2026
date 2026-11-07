@@ -1,9 +1,9 @@
 """Compares several bots, or variants of them, against one baseline, in parallel.
 
-    uv run python -m arena.compare python/bots/template.py 1 --bot python/bots/zoo/claude/*.py --modes all,worse
+    uv run python -m arena.compare python/bots/template.py 1 --bot python/bots/prosperity/zoo/claude/*.py --modes all,worse
     uv run python -m arena.compare python/bots/template.py 1 --bot python/bots/mine.py "python/bots/template.py@PARAMS.KELP.make_edge=1"
-    uv run python -m arena.compare python/bots/template.py 1 2 --data p4 --resting --bot python/bots/a.py python/bots/b.py --vs python/bots/rivals/sniper.py
-    uv run python -m arena.compare python/bots/template.py 1 --bot python/bots/zoo/*/*.py --engine rust     # the same, on rust/ (bots with a Rust twin)
+    uv run python -m arena.compare python/bots/template.py 1 2 --data p4 --resting --bot python/bots/a.py python/bots/b.py --vs python/bots/prosperity/rivals/sniper.py
+    uv run python -m arena.compare python/bots/template.py 1 --bot python/bots/prosperity/zoo/*/*.py --engine rust     # the same, on rust/ (bots with a Rust twin)
 
 The first bot is the baseline, the bot as is (`--set` applies to it alone). Each `--bot` is a
 file, or a variant of one: FILE@PATH=VALUE@PATH=VALUE sets globals as `--set` does, and a leading

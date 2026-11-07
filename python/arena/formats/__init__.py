@@ -27,7 +27,7 @@ Optional:
         overrides its field. Without it, Prosperity's settings (EngineConfig's defaults).
     CREDITS: float
         The credits a lot one unit of the competition's quoted prices is worth, where it isn't 1 (a
-        contract multiplier: points worth 2 credits a lot). experiments.day.calibrate and --metrics turn
+        contract multiplier: points worth 2 credits a lot). experiments.prosperity.calibrate and --metrics turn
         the engine's figures into the portal's credits with it (arena.cli.credits_per_unit). A fee or
         penalty the rules give in credits goes into ENGINE divided by it: ENGINE's are in price units.
 

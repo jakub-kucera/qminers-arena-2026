@@ -19,8 +19,8 @@ is shared. The curves can, from how pairs of teams' PnL changes move together (`
      two would split the fills.
 
 Without --read it calibrates that rule on fields where the answer is known: the template and a copy
-of it (two teams submitting the same bot), every bot in python/bots/zoo/, and python/bots/mm.py at
-make_edge 0.5, 1 and 2, then the same without the zoo's local models (python/bots/zoo/local.py),
+of it (two teams submitting the same bot), every bot in python/bots/prosperity/zoo/, and python/bots/mm.py at
+make_edge 0.5, 1 and 2, then the same without the zoo's local models (python/bots/prosperity/zoo/local.py),
 in five cases:
   - replay, shared: all in one market, per tick, on P3 round 1's three days (arena.engine);
   - replay, alone: each alone on the same days;
@@ -55,7 +55,7 @@ from arena import rust, sim
 from arena.cli import add_engine_argument, backtest, backtest_days
 from arena.engine import EngineConfig
 from arena.formats import prosperity
-from experiments.study.zoo import TEMPLATE, is_local, label, zoo_bots
+from experiments.prosperity.zoo import TEMPLATE, is_local, label, zoo_bots
 
 MM = Path("python/bots/mm.py")
 DATA, DAYS = "p3", ["1"]

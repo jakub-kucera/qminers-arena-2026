@@ -63,7 +63,7 @@ def test_every_experiment_named_exists():
 def test_the_experiments_readme_lists_every_module_once():
     readme = text("python/experiments/README.md")
     base = ROOT / "python" / "experiments"
-    modules = [p.stem for folder in (base, base / "day", base / "study") for p in folder.glob("*.py")]
+    modules = [p.stem for folder in (base, base / "day", base / "study", base / "prosperity") for p in folder.glob("*.py")]
     rows = re.findall(r"^\| `([a-z_0-9]+)/?` \|", readme, re.M)
     assert sorted(m for m in modules) == sorted(r for r in rows if r != "mock_round"), "python/experiments/README.md's tables"
 

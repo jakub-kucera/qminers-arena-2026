@@ -198,7 +198,7 @@ def _wall_jumps(day, product, size=50):
 
 
 def test_the_robot_dishes_preset_looks_like_prosperity_4s_jumping_day():
-    # P4 round 5 day 4, from tick 1,153 (`experiments.day.p4_jumps`): 741 jumps of 50 or more, 87%
+    # P4 round 5 day 4, from tick 1,153 (`experiments.prosperity.p4_jumps`): 741 jumps of 50 or more, 87%
     # reversing the one before, the wall mid on a multiple of 100 on 88% of ticks, spread 8, 249
     # trades. diagnose's jump share (moves past half the spread) is 0.158 there, since its first
     # 1,153 ticks were an ordinary noisy walk that the preset leaves out.

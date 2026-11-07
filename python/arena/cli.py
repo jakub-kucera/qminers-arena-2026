@@ -193,7 +193,7 @@ VARIED = ("trade_matching", "resting", "delay")
 def under_rules(config: EngineConfig, format_name: str) -> EngineConfig:
     """An experiment's config under the format's rules: each field the format's ENGINE sets, other than the
     matching, resting and delay the experiments vary as their modes, replaces the config's where the config
-    leaves it at EngineConfig's default. So `experiments.day.premise` on their data pays their fees and is
+    leaves it at EngineConfig's default. So `experiments.prosperity.premise` on their data pays their fees and is
     marked as their rules say, while its own modes stay its own (Prosperity's ENGINE is empty: no change)."""
     engine, default = getattr(FORMATS[format_name], "ENGINE", {}), EngineConfig()
     rules = format_config(format_name)
@@ -262,7 +262,7 @@ def backtest(day: Day, bots: list[tuple[str, Path, dict, bool]], config: EngineC
     (Prosperity's by default), on either engine, under the format's rules (under_rules): each one's DayResult. With engine "rust" the day may
     be a day file (arena.rust.sim_day_file), `fields` limits what is read back, and `strict` is moot
     (a Rust twin can't raise from a bug)."""
-    config = under_rules(config, format_name) if rules else config  # rules=False: the config exactly (experiments.day.calibrate)
+    config = under_rules(config, format_name) if rules else config  # rules=False: the config exactly (experiments.prosperity.calibrate)
     if engine == "rust":
         from arena import rust
 

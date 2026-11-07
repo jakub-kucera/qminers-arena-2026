@@ -22,7 +22,7 @@ its results are priors.
 | `references/` | Reference repos and the Prosperity data; see [references/README.md](references/README.md) |
 | `literature_md/` | Market-microstructure papers and books as markdown with LaTeX equations, for learning the theory; only its README and scripts are in git, the converted papers are local only; see [literature_md/README.md](literature_md/README.md) |
 | `python/tests/` | Unit tests, plus a regression test pinned to jmerle's backtester |
-| `python/experiments/` | `day/`: the experiments re-run on the day's data (`--data`, `--format`); `study/`: Prosperity one-offs whose results are in `IDEAS.md`; the tools at the top. [Its README](python/experiments/README.md) lists all of them |
+| `python/experiments/` | `day/`: the Arena's round tools (`round_start`, `run_review`, the standings) and the few the bots' comments name; `prosperity/`: the Prosperity-era experiments on our engine (moved 7 Nov); `study/`: two one-offs; the tools at the top. [Its README](python/experiments/README.md) lists all of them |
 | `rust/` | The Rust twins of the engine, the simulator, the grid's statistics and the bots, laid out as `python/` is (`rust/src/arena/engine.rs` for `python/arena/engine.py`); see [rust/README.md](rust/README.md) |
 | [`ON_THE_DAY.md`](ON_THE_DAY.md) | What to find out about the real Arena at the event, and what each answer changes here |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | How the code fits together: the engine, the formats, the matching rules and their modes, the grid and its statistics, the simulator, the Rust port |
@@ -183,7 +183,7 @@ The first thing to run on a new data download: it needs no bot. Per product it m
 - **The drift:** how far the wall mid moves over a day.
 - **The market trades:** which side they hit, whether their signs persist (`C(1)`), what the taker paid, how far the wall mid moves after them, and the margin per unit a market maker would make on them (Bouchaud et al. eqs. 17.13–17.14).
 
-`--suggest` turns the notes into a PARAMS entry per product, as the day-one table reads them: `fixed` for a pegged price, `wall_mid` smoothed at the Kalman value where both mids are noisy, `level` where it reverts (and swings at least two spreads), a `target` for a drift every day, the jump mode where jumps snap back, `make_edge` from the margin, no quotes where Gao & Wang's condition fails, `make_size` where the limit dwarfs the depth, and a `stop_loss` from the wall mid's moves. `uv run python -m experiments.day.suggest_check` scores it against the hand-tuned PARAMS on held-out days.
+`--suggest` turns the notes into a PARAMS entry per product, as the day-one table reads them: `fixed` for a pegged price, `wall_mid` smoothed at the Kalman value where both mids are noisy, `level` where it reverts (and swings at least two spreads), a `target` for a drift every day, the jump mode where jumps snap back, `make_edge` from the margin, no quotes where Gao & Wang's condition fails, `make_size` where the limit dwarfs the depth, and a `stop_loss` from the wall mid's moves. `uv run python -m experiments.prosperity.suggest_check` scores it against the hand-tuned PARAMS on held-out days.
 
 The notes under the table name the regime. [Reading the data on day one](references/wiki/concepts/reading-the-data-on-day-one.md) maps each one to a strategy choice. `--csv` writes every number, against both the mid and the wall mid.
 
@@ -403,7 +403,7 @@ held out 859,139 against 1,001,084 for the best combination (-14%); 2 different 
 ```
 
 This only covers the gridded values. A setting the bot takes from the data itself, such as a
-level from the days' mean, needs its own held-out test (`python/experiments/day/p4_level_template.py` does
+level from the days' mean, needs its own held-out test (`python/experiments/prosperity/p4_level_template.py` does
 both). Days whose data repeats are flagged, product by product, since holding one out still trains on its
 copy. Prosperity reuses days across rounds: P4's round 4 days 1–2 are round 3's, and P3's round 3
 days 0–1 are round 2's for every product round 2 had. It reuses them across editions too, under a new
@@ -437,16 +437,16 @@ Then two bootstrap tests, on each cell's gain over the bot as is per block of 10
 - **StepM** (Romano and Wolf's step-down test): every cell that beats the bot as is, with the
   chance of naming even one false cell held at 5% (the tests are read at 4%, `arena.stats.TEST_ALPHA`, which keeps it near 5% on null grids). Each is then checked under the other `--modes`.
 - **pick**: StepM's best cell that beats the bot as is under every mode, else the bot as is. Ten
-  ways of choosing a cell were scored on unseen days. On Prosperity's (`python/experiments/day/selection_rules.py`)
+  ways of choosing a cell were scored on unseen days. On Prosperity's (`python/experiments/prosperity/selection_rules.py`)
   it was the only one that never lost money under either fill mode. On fresh simulated days
-  (`python/experiments/study/selection_rules_sim.py`) it lost in 2 of 120 runs, where the rules that gained as
+  (`python/experiments/prosperity/selection_rules_sim.py`) it lost in 2 of 120 runs, where the rules that gained as
   much lost in 10 to 22. From the template's defaults it found most of the gain the best cell on
   those days had. From the committed settings, though, it moved in none of the eight studies.
 
 Both studentize each bootstrap resample by its own standard error, as Romano and Wolf do. On null
 grids (no cell with an edge) they then named a cell in 6–8% of grids at a nominal 5%; with the
 data's standard error in every resample, as before 2026-10-26, it was about 10%, and 20% when the
-gains are strongly autocorrelated (`python/experiments/study/snooping_null_rates.py`). So both are
+gains are strongly autocorrelated (`python/experiments/prosperity/snooping_null_rates.py`). So both are
 read at 4% (`stats.TEST_ALPHA`, since 2026-11-02), where null grids name a cell in 4.5–5.2% (7% when
 strongly autocorrelated); longer bootstrap blocks made it worse. That costs Python
 about 0.8 s a cell at 300 blocks, so a grid takes its statistics from Rust whenever the binary
@@ -519,9 +519,9 @@ if every combination failed.
 them, against one baseline, with the same checks:
 
 ```sh
-uv run python -m arena.compare python/bots/template.py 1 --bot python/bots/zoo/claude/*.py --modes all,worse
+uv run python -m arena.compare python/bots/template.py 1 --bot python/bots/prosperity/zoo/claude/*.py --modes all,worse
 uv run python -m arena.compare python/bots/template.py 1 --bot python/bots/mine.py "python/bots/template.py@PARAMS.KELP.make_edge=1@PARAMS.KELP.take_edge=2"
-uv run python -m arena.compare python/bots/template.py 1 2 --data p4 --resting --bot python/bots/a.py python/bots/b.py --vs python/bots/rivals/sniper.py --out results/compare.csv
+uv run python -m arena.compare python/bots/template.py 1 2 --data p4 --resting --bot python/bots/a.py python/bots/b.py --vs python/bots/prosperity/rivals/sniper.py --out results/compare.csv
 ```
 
 - **The baseline** is the first bot, the bot as is. `--set` applies to it alone.
@@ -640,16 +640,16 @@ under `worse` fills when trading alone. Against one copy of the baseline it lose
 under `worse`). Its quotes at fair get crossed by the next snapshot, and the rival picks them
 off: the rival's `wall_mid` treats your large quote as the market maker's level. Against the teams' own P4 bots the same trap cost the template 374k on Osmium in one round, and `fair: sized_mid` turned that into +17k (`IDEAS.md`).
 
-**Adversarial rivals** (`python/bots/rivals/`, for `--resting`): `trapper.py` baits with a large order
+**Adversarial rivals** (`python/bots/prosperity/rivals/`, for `--resting`): `trapper.py` baits with a large order
 one tick inside the best and sells into whoever steps in front of it (Harris); `spoofer.py` rests
 a large order `OFFSET` ticks behind the best and takes what that mispricing brings; `sniper.py`
 takes any order left through its fair; `taker.py` takes at the touch, on momentum and at random
-(seeded draws that don't depend on the other bots). `uv run python -m experiments.day.adversaries` runs the
+(seeded draws that don't depend on the other bots). `uv run python -m experiments.prosperity.adversaries` runs the
 template against each. On P3 round 1 the trap and the near spoof barely cost it; a large order 10
 ticks behind the best took Kelp from 16.8k to −2.1k through `wall_mid`, and `sized_mid` is immune
 (`IDEAS.md`, "Adversarial rivals").
 
-`uv run python -m experiments.day.rival_field --engine rust` puts candidate settings against fields of
+`uv run python -m experiments.prosperity.rival_field --engine rust` puts candidate settings against fields of
 these archetypes, `mm.py` at three edges and a copy, per tick and resting, and prints the payoff
 matrix, the best reply to each field, and the max-min and mean choices. On P3 round 1 the best
 reply changed with the field, and the reply to one copy was neither of the two robust choices
@@ -665,7 +665,7 @@ of its own, alone on the same data, or in one market. On simulated fields whose 
 correlations of pairs of curves' changes told them apart in 88 of 90 cases; on the day, `--read FILE --team NAME`
 reads the saved leaderboard (`IDEAS.md`, "Reading the leaderboard's curves").
 
-`uv run python -m experiments.study.quote_inside --engine rust` tests `make_inside` against rivals that quote nearer
+`uv run python -m experiments.prosperity.quote_inside --engine rust` tests `make_inside` against rivals that quote nearer
 fair than the template's one tick inside the book. Per tick nobody's orders rest, so the template can't see
 them, and with price priority they take the trades first. On Resin, `make_inside` 3 took the template from
 5.7k to 24.8k in a field of 12 zoo bots, for 4–10k alone; with resting orders the template already steps in
@@ -775,13 +775,13 @@ What it doesn't match: the takers' signs don't persist (`C(1)` about 0, against 
 
 ### The LLM zoo
 
-`python/bots/zoo/` holds bots that language models wrote from a Prosperity-style spec alone: the
+`python/bots/prosperity/zoo/` holds bots that language models wrote from a Prosperity-style spec alone: the
 baseline an agent-using team starts from, and rivals for `--vs`. `uv run python -m
-experiments.study.zoo` scores each one alone, against the template, inside `arena.sim` and all
-together. `python/bots/zoo/README.md` explains how to add bots from other providers (Gemini,
+experiments.prosperity.zoo` scores each one alone, against the template, inside `arena.sim` and all
+together. `python/bots/prosperity/zoo/README.md` explains how to add bots from other providers (Gemini,
 ChatGPT, ...) cleanly. On P3 round 1, the best Claude-written market makers come close to the template
 alone on Kelp and Resin and beat it head to head, all of it on Squid Ink, which the template
-doesn't trade. `uv run python -m experiments.study.zoo_h2h` splits each pairing by product and fill
+doesn't trade. `uv run python -m experiments.prosperity.zoo_h2h` splits each pairing by product and fill
 mode (`IDEAS.md`, "The LLM zoo" and "Why the zoo beat the template head to head").
 
 ### Known gaps
