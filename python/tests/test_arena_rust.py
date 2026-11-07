@@ -289,6 +289,32 @@ def test_ridge_maker_v2(tmp_path):
         assert line in lines
 
 
+# The codex v4-v6 candidates (R1-C9..C12, each R1-C5 plus features): ridge_maker with C5's knobs and the feature
+# knobs, every result line as each Python file's run printed it (pnl.csv and result.json matched byte for byte,
+# 2026-11-07)
+C5 = {**V2, "MODEL_MEMORY_US": 100000000000, "HORIZON_US": 400000, "DEAD_ZONE": 0.18}
+CODEX = [
+    ("C5", {}, "595441.83", 21120),
+    ("C9", {"FLOWGRP": 1}, "605752.82", 21371),
+    ("C10", {"FLOWGRP": 2, "FLOWGRP_CAP": 100}, "616534.83", 21436),
+    ("C11", {"QUOTEFEAT": 1, "FLOWGRP": 2, "FLOWGRP_CAP": 1}, "619281.99", 21460),
+    ("C12", {"QUOTEFEAT": 1, "FLOWGRP": 2, "FLOWGRP_CAP": 20, "FLOWGRP_US": 1000000}, "622920.99", 21462),
+]
+
+
+@pytest.mark.parametrize("name, knobs, pnl, fills", CODEX)
+def test_ridge_maker_codex_features(tmp_path, name, knobs, pnl, fills):
+    data = ARENA_DATA / "round1" / "round1.csv"
+    if not data.exists():
+        pytest.skip(f"no {data}")
+    qsim_rust.build()
+    ours = subprocess.run([str(qsim_rust.BINARY), "--backtest", str(data), "--strategy", "ridge_maker", "--params",
+                           json.dumps({**C5, **knobs}), "--log-dir", str(tmp_path / "rs")], capture_output=True, text=True,
+                          check=True)
+    lines = ours.stdout.splitlines()
+    assert f"pnl={pnl}" in lines and f"fills={fills}" in lines
+
+
 def test_grid_table(sample, capsys):
     assert qsim_rust.main(["fallback_maker", str(sample), "--grid", "QUOTE=3,5", "--grid", "LIMIT=30,50", "--threads", "2"]) == 0
     out = capsys.readouterr().out

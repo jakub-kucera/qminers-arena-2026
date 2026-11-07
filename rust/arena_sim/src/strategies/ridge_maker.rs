@@ -46,14 +46,30 @@
 //! change at its `LABEL_K`-th (1) change after the observation, dropped if not within `LABEL_CAP_US` (5000000), its
 //! observations unbounded by the 64 cap; 2: the sign of that change), the blend's second model staying on clock
 //! time; `PRED_SCALE` (1.0), a multiplier on the first model's output before its clamp.
+//! The codex v4-v6 features (R1-C9..C12), off by default, appended after the features above, quotes first:
+//! `QUOTEFEAT` (0; 1 adds six: fresh market orders within 3 ticks of the touch, counts and price centres, bids /
+//! asks, all and those of at most 50 lots, and the cancels within 3 ticks, decayed over `QUOTEFEAT_US` 500000
+//! between valid books); `FLOWGRP` (0; 1 adds eight, C9's per-trade groups: market takers still resting after
+//! executing, those gone, and those that hit us, their signed lots, share and price offset, decayed over
+//! `FLOWGRP_US` 500000; 2, C10's per-taker-order groups, each order's lots capped at `FLOWGRP_CAP` 100).
+//! Each candidate on round1.csv, pnl.csv and result.json the same bytes as its Python run (7 Nov):
+//!   C5  (r1_C5_long_horizon.py, 595441.83, 21,120 fills): --set POSITION_LIMIT=1000 --set EXPOSURE=100
+//!       --set CANCEL_FREE=1.0 --set HEDGE=1 --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000
+//!       --set DEAD_ZONE=0.18
+//!   C9  (r1_C9_codex_v4_flow_groups.py, 605752.82, 21,371): C5's and --set FLOWGRP=1
+//!   C10 (r1_C10_codex_v4_capped.py, 616534.83, 21,436): C5's and --set FLOWGRP=2 --set FLOWGRP_CAP=100
+//!   C11 (r1_C11_codex_v5_29feat.py, 619281.99, 21,460): C5's and --set QUOTEFEAT=1 --set FLOWGRP=2
+//!       --set FLOWGRP_CAP=1
+//!   C12 (r1_C12_codex_v6.py, 622920.99, 21,462): C5's and --set QUOTEFEAT=1 --set FLOWGRP=2 --set FLOWGRP_CAP=20
+//!       --set FLOWGRP_US=1000000
 
-use std::collections::{HashSet, VecDeque};
+use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::params::Params;
-use crate::sim::{Ctx, Owner, PrivateEvent, Side, Snapshot, Status, Strategy, Trade};
+use crate::sim::{BookOrder, Ctx, Owner, PrivateEvent, Side, Snapshot, Status, Strategy, Trade};
 
 const N: usize = 15;
-const NM: usize = 24;
+const NM: usize = 40;
 const OBS_MAXLEN: usize = 64;
 
 struct Record {
@@ -226,9 +242,30 @@ pub struct RidgeMaker {
     fill_q: i64,
     /// per side: the market lots ahead of our first order at the touch, from the last book
     front_ahead: [Option<i64>; 2],
+    /// R1-C9..C12's aggressive-flow groups: 0 off, 1 v4 (per trade, the visible remainder once), 2 v4 capped
+    flowgrp: i64,
+    flowgrp_cap: i64,
+    flowgrp_us: i64,
+    /// per group (taker still visible, taker gone, our makers): signed lots, lots, lots * price, decayed together
+    grp_net: [f64; 3],
+    grp_vol: [f64; 3],
+    grp_price: [f64; 3],
+    rest_net: f64,
+    rest_cnt: f64,
+    /// R1-C11's fresh quote-price centres and cancellation pressure
+    quotefeat: i64,
+    quotefeat_us: i64,
+    known: Vec<BookOrder>,
+    known_ids: HashSet<u64>,
+    /// [bid new, ask new, bid new <= 50 lots, ask new <= 50 lots]: counts and price sums
+    new_counts: [f64; 4],
+    new_values: [f64; 4],
+    cancel_net: f64,
+    cancel_mass: f64,
+    new_quote_time: Option<i64>,
 }
 
-pub const KEYS: [&str; 54] = [
+pub const KEYS: [&str; 59] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -237,6 +274,7 @@ pub const KEYS: [&str; 54] = [
     "EXPOSURE", "CANCEL_FREE", "HEDGE", "HEDGE_TICKS", "HEDGE_STALE_US",
     "FILL_LEARN", "FILL_H_US", "FILL_MIN", "FILL_WARM", "FILL_MEM_US", "FILL_BIN", "FILL_Q",
     "LABEL_MODE", "LABEL_K", "LABEL_CAP_US", "PRED_SCALE",
+    "FLOWGRP", "FLOWGRP_CAP", "FLOWGRP_US", "QUOTEFEAT", "QUOTEFEAT_US",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -300,7 +338,9 @@ impl RidgeMaker {
             n: N + if params.int("PLACE", 0)? > 0 { 2 } else { 0 }
                 + if params.int("DEPTH5", 0)? > 0 { 1 } else { 0 }
                 + if params.int("FLOW2", 0)? > 0 { 2 } else { 0 }
-                + if params.int("LAST_AGG", 0)? > 0 { 1 } else { 0 },
+                + if params.int("LAST_AGG", 0)? > 0 { 1 } else { 0 }
+                + if params.int("QUOTEFEAT", 0)? > 0 { 6 } else { 0 }
+                + if params.int("FLOWGRP", 0)? > 0 { 8 } else { 0 },
             last_observation_us: -100_000,
             place: params.int("PLACE", 0)?,
             place_us1: params.int("PLACE_US1", 100_000)?,
@@ -348,6 +388,23 @@ impl RidgeMaker {
             fill_q: params.int("FILL_Q", 0)?,
             front_ahead: [None, None],
             bins_time: None,
+            flowgrp: params.int("FLOWGRP", 0)?,
+            flowgrp_cap: params.int("FLOWGRP_CAP", 100)?,
+            flowgrp_us: params.int("FLOWGRP_US", 500_000)?,
+            grp_net: [0.0; 3],
+            grp_vol: [0.0; 3],
+            grp_price: [0.0; 3],
+            rest_net: 0.0,
+            rest_cnt: 0.0,
+            quotefeat: params.int("QUOTEFEAT", 0)?,
+            quotefeat_us: params.int("QUOTEFEAT_US", 500_000)?,
+            known: Vec::new(),
+            known_ids: HashSet::new(),
+            new_counts: [0.0; 4],
+            new_values: [0.0; 4],
+            cancel_net: 0.0,
+            cancel_mass: 0.0,
+            new_quote_time: None,
         })
     }
 
@@ -504,6 +561,163 @@ impl RidgeMaker {
         Some(b[2] / b[1])
     }
 
+    /// R1-C9 / C10 / C11's aggressive-flow groups, decayed over FLOWGRP_US: each market taker's lots by whether it
+    /// still rests in the book (0) or not (1), and the lots it took from us (2). FLOWGRP 1 (C9): per trade, the
+    /// visible remainder added once at its price; 2 (C10): per taker order, its executed plus visible lots capped at
+    /// FLOWGRP_CAP (C10 100, C11 1, C12 20), priced at the remainder's price or the executed mean.
+    fn flow_groups(&mut self, snapshot: &Snapshot, trades: &[Trade], elapsed: i64) {
+        let d = ((-elapsed) as f64 / self.flowgrp_us as f64).exp();
+        for i in 0..3 {
+            self.grp_net[i] *= d;
+            self.grp_vol[i] *= d;
+            self.grp_price[i] *= d;
+        }
+        self.rest_net *= d;
+        self.rest_cnt *= d;
+        if trades.is_empty() {
+            return;
+        }
+        let mut visible: HashMap<u64, BookOrder> = HashMap::new();
+        for side in [Side::Buy, Side::Sell] {
+            for order in snapshot.side(side) {
+                if order.owner == Owner::Market {
+                    visible.insert(order.order_id, order);
+                }
+            }
+        }
+        if self.flowgrp == 1 {
+            let mut counted: HashSet<u64> = HashSet::new();
+            for trade in trades {
+                if trade.taker_owner != Owner::Market {
+                    continue;
+                }
+                let direction: i64 = if trade.book_side == Side::Sell { 1 } else { -1 };
+                let rest = visible.get(&trade.taker_order_id).copied();
+                let g = if rest.is_some() { 0 } else { 1 };
+                self.grp_net[g] += (direction * trade.quantity) as f64;
+                self.grp_vol[g] += trade.quantity as f64;
+                self.grp_price[g] += (trade.quantity * trade.price) as f64;
+                if let Some(r) = rest {
+                    if counted.insert(trade.taker_order_id) {
+                        self.grp_net[0] += (direction * r.quantity) as f64;
+                        self.grp_vol[0] += r.quantity as f64;
+                        self.grp_price[0] += (r.quantity * r.price) as f64;
+                        self.rest_net += direction as f64;
+                        self.rest_cnt += 1.0;
+                    }
+                }
+                if trade.maker_owner == Owner::User {
+                    self.grp_net[2] += (direction * trade.quantity) as f64;
+                    self.grp_vol[2] += trade.quantity as f64;
+                    self.grp_price[2] += (trade.quantity * trade.price) as f64;
+                }
+            }
+            return;
+        }
+        // (taker id, direction, lots, lots * price, our lots, our lots * price), in first-seen order
+        let mut arrivals: Vec<(u64, i64, i64, f64, i64, f64)> = Vec::new();
+        for trade in trades {
+            if trade.taker_owner != Owner::Market {
+                continue;
+            }
+            let index = match arrivals.iter().position(|a| a.0 == trade.taker_order_id) {
+                Some(i) => i,
+                None => {
+                    arrivals.push((trade.taker_order_id, if trade.book_side == Side::Sell { 1 } else { -1 }, 0, 0.0, 0, 0.0));
+                    arrivals.len() - 1
+                }
+            };
+            let row = &mut arrivals[index];
+            row.2 += trade.quantity;
+            row.3 += (trade.quantity * trade.price) as f64;
+            if trade.maker_owner == Owner::User {
+                row.4 += trade.quantity;
+                row.5 += (trade.quantity * trade.price) as f64;
+            }
+        }
+        let cap = self.flowgrp_cap;
+        for &(oid, direction, quantity, value, own, own_value) in &arrivals {
+            let rest = visible.get(&oid);
+            let g = if rest.is_some() { 0 } else { 1 };
+            let (price, quantity) = match rest {
+                Some(r) => (r.price as f64, quantity + r.quantity),
+                None => (value / quantity.max(1) as f64, quantity),
+            };
+            let weight = cap.min(quantity);
+            self.grp_net[g] += (direction * weight) as f64;
+            self.grp_vol[g] += weight as f64;
+            self.grp_price[g] += weight as f64 * price;
+            if g == 0 {
+                self.rest_net += direction as f64;
+                self.rest_cnt += 1.0;
+            }
+            if own != 0 {
+                let weight = cap.min(own);
+                self.grp_net[2] += (direction * weight) as f64;
+                self.grp_vol[2] += weight as f64;
+                self.grp_price[2] += weight as f64 * own_value / own as f64;
+            }
+        }
+    }
+
+    /// R1-C11's new market orders within 3 ticks of the touch (counts and price sums, bids / asks, all and those of
+    /// at most 50 lots) and the cancels within 3 ticks (vanished, not traded), decayed over QUOTEFEAT_US between
+    /// valid books.
+    fn quote_centres(&mut self, snapshot: &Snapshot, trades: &[Trade], now: i64, bid: i64, ask: i64) {
+        let dt = match self.new_quote_time {
+            None => 0,
+            Some(t) => (now - t).max(0),
+        };
+        self.new_quote_time = Some(now);
+        let d = ((-dt) as f64 / self.quotefeat_us as f64).exp();
+        for i in 0..4 {
+            self.new_counts[i] *= d;
+            self.new_values[i] *= d;
+        }
+        self.cancel_net *= d;
+        self.cancel_mass *= d;
+        let mut current: Vec<BookOrder> = Vec::new();
+        let mut current_ids: HashSet<u64> = HashSet::new();
+        for side in [Side::Buy, Side::Sell] {
+            for order in snapshot.side(side) {
+                if order.owner == Owner::Market && current_ids.insert(order.order_id) {
+                    current.push(order);
+                }
+            }
+        }
+        for order in &current {
+            if self.known_ids.contains(&order.order_id) {
+                continue;
+            }
+            let distance = if order.side == Side::Buy { bid - order.price } else { order.price - ask };
+            if distance > 3 {
+                continue;
+            }
+            let index = if order.side == Side::Buy { 0 } else { 1 };
+            self.new_counts[index] += 1.0;
+            self.new_values[index] += order.price as f64;
+            if order.quantity <= 50 {
+                self.new_counts[index + 2] += 1.0;
+                self.new_values[index + 2] += order.price as f64;
+            }
+        }
+        let traded: HashSet<u64> =
+            trades.iter().filter(|t| t.maker_owner == Owner::Market).map(|t| t.maker_order_id).collect();
+        for order in &self.known {
+            if current_ids.contains(&order.order_id) || traded.contains(&order.order_id) {
+                continue;
+            }
+            let distance = if order.side == Side::Buy { bid - order.price } else { order.price - ask };
+            if distance.abs() > 3 {
+                continue;
+            }
+            self.cancel_net += if order.side == Side::Buy { -1.0 } else { 1.0 };
+            self.cancel_mass += 1.0;
+        }
+        self.known = current;
+        self.known_ids = current_ids;
+    }
+
     fn cancel(&mut self, index: usize, ctx: &mut Ctx) {
         let record = &mut self.orders[index];
         if record.accepted && !record.cancelling {
@@ -596,6 +810,9 @@ impl Strategy for RidgeMaker {
             Some(t) => (now - t).max(0),
         };
         self.last_us = Some(now);
+        if self.flowgrp > 0 {
+            self.flow_groups(snapshot, trades, elapsed);
+        }
         let decay = ((-elapsed) as f64 / self.flow_us as f64).exp();
         self.net *= decay;
         self.volume *= decay;
@@ -656,6 +873,9 @@ impl Strategy for RidgeMaker {
             }
         };
         self.invalid_since = None;
+        if self.quotefeat > 0 {
+            self.quote_centres(snapshot, trades, now, bid, ask);
+        }
         let mid = (bid + ask) as f64 * 0.5;
         let spread = ask - bid;
         let flow = self.net / (1.0 + self.volume);
@@ -830,6 +1050,30 @@ impl Strategy for RidgeMaker {
         }
         if self.last_agg > 0 {
             features[k] = self.last_agg_value;
+            k += 1;
+        }
+        if self.quotefeat > 0 {
+            let (c, v) = (self.new_counts, self.new_values);
+            features[k] = (c[0] - c[1]) / (1.0 + c[0] + c[1]);
+            features[k + 1] =
+                clamp(((v[0] - mid * c[0]) / (1.0 + c[0]) + (v[1] - mid * c[1]) / (1.0 + c[1])) * 0.5, -5.0, 5.0);
+            features[k + 2] =
+                clamp(((v[2] - mid * c[2]) / (1.0 + c[2]) + (v[3] - mid * c[3]) / (1.0 + c[3])) * 0.5, -5.0, 5.0);
+            features[k + 3] = self.cancel_net / (1.0 + self.cancel_mass);
+            features[k + 4] = clamp((v[0] + v[1] - mid * (c[0] + c[1])) / (1.0 + c[0] + c[1]), -5.0, 5.0);
+            features[k + 5] = (c[2] - c[3]) / (1.0 + c[2] + c[3]);
+            k += 6;
+        }
+        if self.flowgrp > 0 {
+            let (g, v, p) = (self.grp_net, self.grp_vol, self.grp_price);
+            features[k] = g[0] / (1.0 + v[0]);
+            features[k + 1] = g[1] / (1.0 + v[1]);
+            features[k + 2] = g[2] / (1.0 + v[2]);
+            features[k + 3] = v[0] / (1.0 + v[0] + v[1]);
+            for i in 0..3 {
+                features[k + 4 + i] = clamp((p[i] - mid * v[i]) / (1.0 + v[i]), -5.0, 5.0);
+            }
+            features[k + 7] = self.rest_net / (1.0 + self.rest_cnt);
         }
         let n = self.n;
         if self.std_on > 0 {
