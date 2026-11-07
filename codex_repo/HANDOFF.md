@@ -1,5 +1,21 @@
 # Handoff for the next session
 
+## Active objective: 250,000 locally
+
+The user raised the goal after the verified 167,412 model. Continue local-only
+research; competition server access remains prohibited. The 167,412 file was
+sent to Jakub at the user's explicit request; do not send further models without
+another instruction. See [250k research](docs/ROUND2_250K_RESEARCH.md) for new
+experiments. The sections below describe the completed earlier 150k objective.
+
+Current verified best: **195,721**, exact standalone file
+`strategies/round2/round2_local_195721.py`. Native CLI and audit agree. The selected
+900-second ridge-memory variant completed at195,460 (CLI parity verified), so
+the195,721 file remains the best verified result. All replay processes from
+these three studies have finished. Next explore selector/exit logic, with
+predeclared bounded changes and unchanged native risk rules. No new email or
+competition submission has been authorized.
+
 ## Current checkpoint: 167,412 local result, no server access
 
 The user prohibits all competition website/server access, including read-only

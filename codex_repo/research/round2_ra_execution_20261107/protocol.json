@@ -1,0 +1,29 @@
+{
+  "goal": 250000,
+  "candidates": [
+    {
+      "name": "wait20_improve0",
+      "file": "logs\\round2_ra_execution\\sources\\wait20_improve0.py",
+      "source_sha256": "f02a59467049f70044ecf067fec7eda2d2ba3a3ea168b71eb86e1baa209f65fa"
+    },
+    {
+      "name": "wait20_improve1",
+      "file": "logs\\round2_ra_execution\\sources\\wait20_improve1.py",
+      "source_sha256": "dc87b655df05dd8f674c45e27dd8fe962867a4c13afa56fa97de3ed2365badd5"
+    },
+    {
+      "name": "wait100_improve0",
+      "file": "logs\\round2_ra_execution\\sources\\wait100_improve0.py",
+      "source_sha256": "f0ea3b6f5cfedbf4085c681c4f572d1b83851b477d4f66f641b30bf1ceaf3db1"
+    },
+    {
+      "name": "wait100_improve1",
+      "file": "logs\\round2_ra_execution\\sources\\wait100_improve1.py",
+      "source_sha256": "8592e09f6de86d9f3b1569a63470d5c552f67c2a07777fd3ee1388f8a056e826"
+    }
+  ],
+  "scope": "Consumed first80% local public data.",
+  "hypothesis": "Reduce entry spread cost with 20/100ms passive grace and 0/1 tick improvement, then cross. Stops remain immediate IOC.",
+  "safeguards": "One outstanding order. Cancellations remain reserved until terminal confirmation.",
+  "selection": "Positive later30 and last20; maximize combined gain; freeze before full replay."
+}

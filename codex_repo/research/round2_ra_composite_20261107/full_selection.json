@@ -1,0 +1,11 @@
+{
+  "candidate": {
+    "name": "flow250_stop3_gate20_maker",
+    "file": "logs\\round2_ra_composite\\sources\\flow250_stop3_gate20_maker.py",
+    "source_sha256": "e2d55a7d606b1a679070bc386182c38d7bf8b35da8b5a77d6a55ae408b0118e2",
+    "risk": "strict100"
+  },
+  "selection_rule": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "goal": 250000,
+  "scope": "Consumed public first80%; no new holdout and no server access."
+}

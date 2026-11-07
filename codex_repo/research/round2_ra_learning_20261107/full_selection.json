@@ -1,0 +1,11 @@
+{
+  "candidate": {
+    "name": "signal_features0_memory900",
+    "file": "logs\\round2_ra_learning\\sources\\signal_features0_memory900.py",
+    "source_sha256": "155c8bf7ec846f27dbebbab57b8ce528a31ec4f0c83859cc01adb57a5d8dbc81",
+    "risk": "strict100"
+  },
+  "selection_rule": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "goal": 250000,
+  "scope": "Consumed public first80%; no new holdout and no server access."
+}
