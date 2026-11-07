@@ -248,3 +248,8 @@ Trials so far (this worktree): 4 experiments, 34 cells.
 | 3.5 | 293,527 | 913,601 | 835,105 | 174,713 |
 | 5.0 | 291,053 | 909,679 | 819,842 | 174,686 |
 - A broad plateau from 2.0 to 3.5 (public 290-296k, hi_vol_fast 914-933k, hi_vol 828-840k, round1 168-175k); below 2 the calm tape loses (quotes off too often), above 3.5 the fast tapes lose a little. 2.5-3.0 is the centre: L8's 2.5 stays. Round 3: re-run this curve on the new tape first (its price speed may differ).
+
+### 00:25: R2-L9, the stats session's last taker (`python/bots/qminers/candidates/r2_L9_taker_huber.py`, was the repo root's `round2_local_317057.py`; 317,057 on the public tape per its name)
+- R2-L3's pure liquidity taker (QUOTE_SIZE 0) evolved by the stats session: 36 features (L3's 33 plus impact features at IMPACT_HORIZONS 500 ms), a Huber-robust fit (HUBER_DELTA 6: the heavy-tailed moves no longer dominate the regression), POSITION_LIMIT 100; validate OK.
+- **Validation (uploaded 8 Nov 00:14, submission bc0a2c50-d4bd-46ae-bc23-ee556d21ffe5): +873,719.00** (fills 8,612, volume 999,654, end +100, breach 0, pnl_se 51,892, |pos| 100, 6 min 57.5 s): +46.9k over L8, +69.7k over L3, the best of the round. Submitted at the deadline minute: if the dashboard accepted it and it can be marked, it is the better final.
+- The lesson for round 3: a robust (Huber) fit of the same forecast, i.e. a better learner, beat every execution tweak tried on L3 tonight.
