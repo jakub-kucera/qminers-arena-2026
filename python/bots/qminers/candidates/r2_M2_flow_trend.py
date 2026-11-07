@@ -14,7 +14,8 @@ bid), and the real target is 0 unless the shadow's PnL since the start is above 
 these signals lose (the big orders move the mid +0.5 ticks, under the spread), the gate never opens; on round 2's it
 costs about 1-2k.
 Round 2's public tape at these defaults: +116,620 (in 95,379 / out 21,241; 1,940 fills, 276,900 lots, breach 0, 11 s);
-round 1's: -1,242 with the gate (-157,078 without it).
+round 1's: -1,242 with the gate (-157,078 without it). The trend is off (W_TREND 0): blended in, it only lowered the
+PnL. Speed matters: at an order delay of 10 / 20 / 50 ms instead of the rules' 5, 111,195 / 91,114 / 38,121.
 """
 
 from __future__ import annotations
