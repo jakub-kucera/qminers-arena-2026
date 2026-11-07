@@ -37,6 +37,12 @@ COOLDOWN_MS = 0  # no new run this long after an exit
 CROSS = 0  # ticks through the touch for the IOC price
 WIND_DOWN_S = 30  # no new runs in the last this many seconds, and close what is open
 SESSION_S = 3600  # the session's length in seconds (set it from the round's data)
+# Protections for a recorded tape, all off by default (the sample's result is the same with them off):
+FLOW_WINDOW_MS = 0  # >0: the flow signal is the net aggressive flow over this many ms, not one call's
+MIN_TRADE = 0  # >0: trades smaller than this many lots don't count as flow
+MAX_SPREAD = 0  # >0: send no taker order while the spread is wider than this many ticks
+MAX_RUNS_PER_MIN = 0  # >0: no new run (and no flip) once this many have started in the last 60 s
+LOSS_STOP = 0  # >0: once the PnL (cash + position at the mid) is below -LOSS_STOP, flatten and stop for the session
 
 
 class MomentumRunnerStrategy(BaseStrategy):
@@ -54,6 +60,11 @@ class MomentumRunnerStrategy(BaseStrategy):
         self._best_mid: float = 0.0
         self._cool_until: int = 0
         self._taker_id: None | str = None
+        self._flow: deque = deque()  # (time, signed lots) of the aggressive trades within FLOW_WINDOW_MS
+        self._flow_sum: int = 0
+        self._runs: deque = deque()  # start times of the runs within the last 60 s
+        self._cash: float = 0.0
+        self._stopped: bool = False
 
     def _room(self, sign: int) -> int:
         exposure = 0
@@ -106,14 +117,30 @@ class MomentumRunnerStrategy(BaseStrategy):
         if FLOW_ENTRY:
             net = 0
             for trade in trades:
-                if trade.taker_owner == 'market':
+                if trade.taker_owner == 'market' and trade.quantity >= MIN_TRADE:
                     net += trade.quantity if trade.book_side == 'ask' else -trade.quantity
+            if FLOW_WINDOW_MS > 0:
+                if net != 0:
+                    self._flow.append((now, net))
+                    self._flow_sum += net
+                while self._flow and self._flow[0][0] < now - FLOW_WINDOW_MS * 1000:
+                    self._flow_sum -= self._flow.popleft()[1]
+                net = self._flow_sum
             if net >= MIN_FLOW:
                 signal = 1
             elif net <= -MIN_FLOW:
                 signal = -1
 
         late = (now - self._start_us) / 1_000_000 > SESSION_S - WIND_DOWN_S
+        if LOSS_STOP > 0 and not self._stopped and self._cash + self._pos * mid < -LOSS_STOP:
+            self._stopped = True
+        if self._stopped:
+            late = True  # flatten and start nothing, as at the end
+        if MAX_RUNS_PER_MIN > 0:
+            while self._runs and self._runs[0] < now - 60_000_000:
+                self._runs.popleft()
+            if len(self._runs) >= MAX_RUNS_PER_MIN:
+                signal = 0
         if self._dir != 0:
             if (mid - self._best_mid) * self._dir > 0:
                 self._best_mid = mid
@@ -136,6 +163,8 @@ class MomentumRunnerStrategy(BaseStrategy):
 
         if self._taker_id is not None:
             return
+        if MAX_SPREAD > 0 and best_ask - best_bid > MAX_SPREAD and self._dir != 0:
+            return
         target = self._dir * MAX_POS
         want = target - self._pos
         if want > 0:
@@ -144,6 +173,7 @@ class MomentumRunnerStrategy(BaseStrategy):
             self._taker_id = self._send(-1, best_bid - CROSS, -want)
 
     def _start_run(self, sign: int, now: int, mid: float) -> None:
+        self._runs.append(now)
         self._dir = sign
         self._entry_us = now
         self._entry_mid = mid
@@ -157,6 +187,7 @@ class MomentumRunnerStrategy(BaseStrategy):
         if status == OrderStatus.PARTIALLY_FILLED or status == OrderStatus.FILLED:
             filled = event.filled_quantity
             self._pos += filled if order[0] > 0 else -filled
+            self._cash -= (filled if order[0] > 0 else -filled) * event.fill_price
             order[2] = event.remaining_quantity
             if status == OrderStatus.FILLED or event.remaining_quantity == 0:
                 self._orders.pop(event.order_id, None)
