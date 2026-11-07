@@ -127,6 +127,24 @@ You are verifying one candidate bot for a trading competition. You didn't build 
 Last line: PASS, or FAIL and the one thing to fix first.
 ```
 
+## An open-ended search for a round's best strategy (7 Nov, round 1)
+
+For a fresh, stronger model during a round: the goal, the rules and the bar, with no approach prescribed, so it doesn't anchor on our families. Fill in the round, its file and the bar.
+
+```text
+You are working in a trading competition repository (the Qminers Algo Trade Arena). Goal: write the strategy that will score highest in round 1, whose submissions close at 18:00 CET today. Run `date` now and keep track of the time; give me your final file by 17:25.
+
+The exchange and the rules: read STARTER.md (the organisers' README) in full, and simulator/ (their exchange simulator, the same code that scores submissions). One instrument, an order-by-order tape replayed, price-time priority, 5 ms latency on everything we send, |position| above 100 costs 10,000 per second, PnL = cash + the end position marked against the book. A submission is one Python file with exactly one BaseStrategy subclass; STARTER.md lists the allowed imports and the banned constructs.
+
+Data: data/arena/round1/round1.csv (round 1's public tape, ~4.4M rows, 12,000 s). Run a strategy with `uv run exchange-simulator --strategy FILE --backtest data/arena/round1/round1.csv --log-dir DIR --no-logs` (pnl.csv holds the PnL every second; without --no-logs you get full logs for `uv run backtest-explorer --log-dir DIR`). The portal reproduces a local run exactly on this tape.
+
+What counts: the score is the PnL on a PRIVATE tape from the same round, different data, run after the deadline, ranked against the other teams. So a strategy fitted to this particular file's path is worth nothing; choose your settings on part of the tape and confirm them on a part you did not use, and prefer what holds up across the whole tape over the single best number. The bar to beat: python/bots/qminers/candidates/r1_F7_signal.py makes +496,564 on round1.csv (+127,975 in its last 25%); other teams report up to ~534k on the public tape.
+
+This repository has tools that may help (README.md, "The Arena path": a grid search on their simulator, a Rust port of it, data and fill reviews) and earlier strategies in python/bots/qminers/; use them or not, as you judge. Use as much compute and as many parallel workers as helps.
+
+Deliverable: one strategy file under python/bots/qminers/candidates/ that passes `uv run python -m arena.validate FILE all --format qminers`, with its exact `exchange-simulator --no-logs` figures on round1.csv, a short note on what it does and why you believe it will hold on the private tape, and the evidence for that. Commit your work as you go (author: the repository's git user; no AI attribution lines). Don't upload anything: I do.
+```
+
 ## On the organisers' starter repository alone (7 Nov)
 
 For a teammate's independent attempt in a fresh copy of the organisers' starter (`QminersOrg/qminers-algo-arena`, "Use this template" or a clone), with none of this repo's code: a check on our bot, and a second candidate. Start the agent in that folder.
