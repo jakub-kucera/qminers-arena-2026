@@ -1,10 +1,11 @@
 """Round-1 market maker with 29 causal microstructure features.
 
-Combines fresh quote-price centers with one-second aggressive-flow groups,
-capping each incoming order at 20 lots in those flow statistics. Labels
-mature after 400 ms. Replacement overlap may cause inventory breaches,
-charged at the unchanged native rate. Audited round1.csv PnL is 622920.99
-net after penalties. Sample-tuned; no independent holdout remains.
+Combines fresh quote-price centers with one-second size-capped aggressive
+flow. Each incoming order contributes at most 20 lots to these group
+statistics. Labels mature after 400 ms; quote half-width is 0.45 ticks.
+Replacement overlap may briefly breach 100 lots and incurs the full native
+penalty. Audited round1.csv net PnL is 624076.00 after all penalties.
+Sample-tuned on previously consumed data; no independent holdout remains.
 """
 from collections import deque
 from math import exp, ceil, floor, isfinite
@@ -352,8 +353,8 @@ class PassiveStrategy(BaseStrategy):
         fair = mid + 1.0*prediction + 0.0*0.25*spread*imbalance - skew
         if abs(fair-mid) <= 0.18:
             fair = mid
-        buy = min(bid,floor(fair-0.5))
-        sell = max(ask,ceil(fair+0.5))
+        buy = min(bid,floor(fair-0.45))
+        sell = max(ask,ceil(fair+0.45))
         if spread >= 2:
             if prediction-skew > 0.3:
                 buy = min(ask-1,bid+1)

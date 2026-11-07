@@ -7,10 +7,10 @@ Sol
 
 ===
 
-This Codex session only, approximately as of 2026-11-07T16:42:35.816Z:
-81.79 million total reported tokens.
-81.16 million input tokens, including 80.50 million cached input tokens.
-0.658 million uncached input tokens.
-0.628 million output tokens, including 0.409 million reasoning tokens.
+This Codex session only, approximately as of 2026-11-07T16:55:04.296Z:
+83.97 million total reported tokens.
+83.32 million input tokens, including 82.66 million cached input tokens.
+0.664 million uncached input tokens.
+0.653 million output tokens, including 0.428 million reasoning tokens.
 Counts are reported session usage counters, not billable-token estimates; cached tokens are a subset of input, and reasoning tokens are a subset of output.
 Subscription plan and monetary cost are not available to the agent.
