@@ -116,6 +116,10 @@
 //! (`LEAN_SRC` 0: m2 at H2_US, learning even with BLEND_W 0), the quoting's (1), or the side of the last market
 //! order of at least `BIG_LOTS` (500) lots, decayed over `BIG_US` (10000000) (2); `FT_SRC` (0: the quoting's
 //! prediction, the blend included; 1: the second model's alone) drives the forecast take.
+//!   R2-V1 (r2_V1_vol_exposure.py; round2_public.csv 169262.76 / 19,249 fills, round1.csv 670461.77 / 32,167, pnl.csv
+//!       the same bytes): FT1's sets with --set DEAD_ZONE=0.3 --set SKEW_K=0.025 --set QUOTE_SIZE=200 --set KEEP_LOTS=20
+//!       --set KEEP_TH=0.3 --set OBS_CAP=2000 --set TREND=1 --set TREND_US1=2000000 --set TREND_US2=60000000
+//!       --set EXPOSURE=100 --set VOL_EXP=2 --set VOL_REF=2.5 --set VOL_US=5000000 --set VOL_MAX=100 --set VOL_NOHEDGE=1
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
