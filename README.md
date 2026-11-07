@@ -1,5 +1,9 @@
 # Qminers Algo Trade Arena prep
 
+This repository is our team's copy of the Qminers starter, `QminersOrg/qminers-algo-arena` (its README, as they wrote it, is
+[`STARTER.md`](STARTER.md); its `simulator/`, `explorer/`, `strategies/` and `data/sample.csv.gz` are at the root as they
+wrote them), merged with our prep for the Arena: the tools below, built before the event on IMC Prosperity data.
+
 Tooling for the Qminers Algo Trade Arena (7–8 Nov 2026, MFF UK, Prague): a backtester, a
 parameter grid search, charts and fill statistics, a pre-submission validator and a
 single-file bot template. Until the real API is known,

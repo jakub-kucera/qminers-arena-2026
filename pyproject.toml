@@ -1,10 +1,27 @@
 [project]
 name = "qminers-arena"
 version = "0.1.0"
-description = "Backtester, submission validator and bot template for the Qminers Algo Trade Arena."
+description = "The Qminers starter (exchange simulator and backtest explorer) and our backtester, submission validator and bot template for the Algo Trade Arena."
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = []
+requires-python = ">=3.13,<3.14"
+dependencies = [
+    # The starter's (STARTER.md), pinned as they pinned them: the evaluation sandbox has these versions.
+    "pydantic>=2.8.0",
+    "numpy==2.5.4",
+    "pandas==3.0.6",
+    "scipy==1.18.1",
+    "scikit-learn==1.9.1",
+    # The starter's backtest explorer.
+    "dash>=4.3.0",
+    "plotly>=6.8.0",
+    "plotly-resampler>=0.11.0",
+    # Imported by plotly-resampler, which does not declare it; pandas 3 stopped pulling it in.
+    "pytz>=2026.3.post1",
+]
+
+[project.scripts]
+exchange-simulator = "simulator.main:main"
+backtest-explorer = "explorer.main:main"
 
 [dependency-groups]
 analysis = [
@@ -12,19 +29,24 @@ analysis = [
 ]
 dev = [
     "matplotlib>=3.11.2",
-    "pandas>=3.0.6",
     "pytest>=8",
 ]
 
-[build-system]
-requires = ["uv_build>=0.12,<0.13"]
-build-backend = "uv_build"
+[tool.uv]
+package = true
 
-# The Python code is under python/ (rust/ holds its Rust twins): an editable install puts python/ on
-# the path, so `uv run python -m arena.backtest ...` works from the repository's root.
-[tool.uv.build-backend]
-module-root = "python"
-module-name = "arena"
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+# The starter's packages are at the root; ours are under python/ (rust/ holds its Rust twins). The editable install
+# puts both folders on the path, so `uv run exchange-simulator ...` and `uv run python -m arena.backtest ...` both work
+# from the repository's root. Our engine still needs only the standard library.
+[tool.hatch.build]
+dev-mode-dirs = [".", "python"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["simulator", "explorer", "python/arena", "python/experiments"]
 
 [tool.pytest.ini_options]
 testpaths = ["python/tests"]
