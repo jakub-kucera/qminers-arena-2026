@@ -114,3 +114,10 @@ R1-F8b against R1-F8, the same paired block bootstrap (logs/r1_F8b, logs/r1_F8_f
 - arena.validate: Result OK (13,365 bytes; imports collections, math, simulator).
 - Risks: it sits at the limit (|inv| q50 96), so its PnL has more variance (pnl_se 11.2k vs 8.5k); its thresholds (0.3, 1.1, skew 0.025, 100 ms) may have been tuned on round1.csv by the other session, but sample_v2's +38k says the gain is not round1's alone.
 - Verdict: above every replacement bar against R1-F8 on round1.csv alone (+35k full, +4.6k last 25%, 11 of 12 segments, bootstrap p5 +23k). The round 1 upload. (sample_v2 decides nothing: a different tape.)
+
+### R1-C1b, 16:55 (`python/bots/qminers/candidates/r1_C1b_codex_pipelined.py`, a byte copy of the user's `strategy_codex_best_v2_571k.py` from the codex session)
+- What changed from R1-C1 (about 40 lines): orders being cancelled count 0 toward the 100-lot exposure, so replacements go out while cancels are in flight (a cancel lands before an order sent after it); when a cancel loses the race to a fill and |inventory| passes 100, an IOC 10 ticks through the cached touch hedges the excess (one at a time, from book updates and from fills); the acceptance wall (1,000) is the hard cap.
+- round1.csv (`uv run exchange-simulator --strategy python/bots/qminers/candidates/r1_C1b_codex_pipelined.py --backtest data/arena/round1/round1.csv --log-dir logs/codex_v2_571k`): pnl 571,237.25, breach_penalty 1,869.75 (187 ms over 100 in the hour), fills 24,015, traded_volume 2,247,040, end inventory +100, pnl_se 11,199; validate OK.
+- Against R1-C1 (`uv run python -m experiments.pnl_segments logs/codex_v2_571k/pnl.csv logs/codex_r1/pnl.csv`): +16,890 full, ahead in 12 of 12 segments (t 7.42, worst +285), last 25% 140,114 vs 136,522 (+3,592); paired block bootstrap +16.3k to +16.9k, p5 +12.7k to +13.1k, no draw below 0.
+- Risk: the penalty is paid on purpose; on round1 it is 1.9k against +18.8k gained, and each breach is bounded by the hedge (5 ms latency, ~50 a breach). A tape with more sweeps through our cancelled orders pays more.
+- Verdict: above the bar against R1-C1 on round1.csv. The round 1 upload.
