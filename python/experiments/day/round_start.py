@@ -78,7 +78,7 @@ RUST_FAMILY = {"R1_F7": "signal_maker.py", "R1_F6b": "alloc_maker.py"}  # the re
 # The ridge line's grids run on ridge_maker, the Rust twin of R1-C1 whose knobs reproduce R1-C5 (and C1b, C3, C4, C7)
 RIDGE_C5 = ("--set POSITION_LIMIT=1000 --set EXPOSURE=100 --set CANCEL_FREE=1.0 --set HEDGE=1"
             " --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000 --set DEAD_ZONE=0.18")
-RUST_RIDGE = {"R1_C11": RIDGE_C5, "R1_C5": RIDGE_C5, "R1_C1": ""}
+RUST_RIDGE = {"R1_C11": RIDGE_C5 + " --set QUOTEFEAT=1 --set FLOWGRP=2 --set FLOWGRP_CAP=1", "R1_C5": RIDGE_C5, "R1_C1": ""}
 
 
 # ---------------------------------------------------------------------------- profile
@@ -363,7 +363,7 @@ def next_grids(table: list[dict], p: dict | None, data: Path, length_us: int, jo
         name = r["candidate"]
         sets = " ".join(f"--set '{k}={json.dumps(v) if isinstance(v, dict) else v}'" for k, v in candidate_overrides(name, length_us).items())
         for grid in axes[name]:
-            if name in RUST_RIDGE:  # ridge_maker: R1-C5's knobs (R1-C11's extra features are not in the twin)
+            if name in RUST_RIDGE:  # ridge_maker: its knobs reproduce R1-C1, R1-C5 and R1-C11 byte for byte
                 lines.append(f"uv run python -m arena.qsim_rust ridge_maker {data} {RUST_RIDGE[name]} {grid} --holdout 0.25 --threads {jobs} --sort holdout")
             elif name == "R1_F8":  # take_maker, R1-F8's twin
                 lines.append(f"uv run python -m arena.qsim_rust {r['bot']} {data} {grid} --holdout 0.25 --threads {jobs} --sort holdout")
