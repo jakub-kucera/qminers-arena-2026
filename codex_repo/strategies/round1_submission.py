@@ -1,11 +1,10 @@
 """Round-1 market maker with 29 causal microstructure features.
 
-Extends the supplied 595K strategy with fresh quote-price centers,
-cancellation pressure, and count-weighted aggressive-order groups.
-Labels mature after 400 ms; forecasts train online with a long memory.
-Pipelined replacements may briefly breach 100 lots and incur the full
-native fee. Audited round1.csv PnL is 619281.99 net after penalties.
-Sample-tuned on consumed data; no independent holdout remains.
+Combines fresh quote-price centers with one-second aggressive-flow groups,
+capping each incoming order at 20 lots in those flow statistics. Labels
+mature after 400 ms. Replacement overlap may cause inventory breaches,
+charged at the unchanged native rate. Audited round1.csv PnL is 622920.99
+net after penalties. Sample-tuned; no independent holdout remains.
 """
 from collections import deque
 from math import exp, ceil, floor, isfinite
@@ -155,7 +154,7 @@ class PassiveStrategy(BaseStrategy):
         now = snapshot.timestamp_us
         elapsed = 0 if self._last_us is None else max(0,now-self._last_us)
         self._last_us = now
-        second_group_decay=exp(-elapsed/500000)
+        second_group_decay=exp(-elapsed/1000000)
         for i in range(3):
             self._second_group_net[i]*=second_group_decay
             self._second_group_volume[i]*=second_group_decay
@@ -179,7 +178,7 @@ class PassiveStrategy(BaseStrategy):
                 group=0 if oid in visible else 1
                 price=visible[oid].price if group==0 else value/max(1,quantity)
                 quantity+=visible[oid].quantity if group==0 else 0
-                weight=min(1,quantity)
+                weight=min(20,quantity)
                 self._second_group_net[group]+=direction*weight
                 self._second_group_volume[group]+=weight
                 self._second_group_price[group]+=weight*price
@@ -187,7 +186,7 @@ class PassiveStrategy(BaseStrategy):
                     self._second_rest_count_net+=direction
                     self._second_rest_count+=1
                 if own:
-                    weight=min(1,own)
+                    weight=min(20,own)
                     self._second_group_net[2]+=direction*weight
                     self._second_group_volume[2]+=weight
                     self._second_group_price[2]+=weight*own_value/own

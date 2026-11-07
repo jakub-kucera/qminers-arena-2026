@@ -1,15 +1,16 @@
 # Qminers trading hackathon starter
 
 **Round 1: current verified leader is `strategies/round1_submission.py`,
-619,281.99 NET PnL.** Identical named copy: `strategies/round1_quote_flow_619282.py`.
+622,920.99 NET PnL.** Identical named copy: `strategies/round1_quote_flow_622921.py`.
 The unmodified organizer CLI reproduces this score exactly. It extends the
-user-supplied 595,441.83 model with fresh quote-price centers and count-weighted
-aggressive-flow groups. It includes 1,610.01 in inventory penalties and uses
+user-supplied 595,441.83 model with fresh quote-price centers and size-capped
+aggressive-flow groups. It includes 1,810.01 in inventory penalties and uses
 the native 1,000-lot acceptance wall and latency-bound IOC
 hedges. Both `strategies/round1_claude_595k.py` (595,441.83) and the previous
 `strategies/round1_pipeline_571k.py` (571,237.25) remain preserved, as do
 `strategies/round1_flow_606k.py` (605,752.82) and
-`strategies/round1_flow_616535.py` (616,534.83).
+`strategies/round1_flow_616535.py` (616,534.83), along with
+`strategies/round1_quote_flow_619282.py` (619,281.99).
 The earlier zero-penalty candidate is `strategies/round1_size_555389.py`
 (555,389, actual/potential inventory at most 100).
 
