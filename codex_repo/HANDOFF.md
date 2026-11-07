@@ -9,6 +9,19 @@ and four development diagnostics have completed. Every active policy lost on
 that prefix. Four further inventory/entry prototypes also lost; their naive
 resizing caused large queue churn and does not isolate the effect of smaller
 positions. See the findings and source hashes before reusing these prototypes.
+Follow-up research has found positive DEVELOPMENT candidates: native
+queue-preserving sizing with planned bounds +/-50 scored 31,840 net without
+penalty (`strategies/round2_research/round2_queue_fixed50_31840.py`), and a
+500 ms jump-pause maker scored 34,388. These are first-60% tuning results,
+not selected submissions or later-segment checks. New study scripts and
+`results/round2_development_progress.json` preserve provenance. Further queue/jump
+combinations and conditional-fill studies are in progress; inspect their logs.
+The transfer attribution exactly reproduced all native fields: 394,111 of
+execution edge at the preceding midpoint was offset by -431,202 of inventory
+midpoint changes, 1,063.33 fees and a -50 final liquidation adjustment.
+This decomposition depends on the policy's visible book and carried valid
+midpoint; components are not independent causes. Post-run fill markouts are
+research diagnostics only, never exposed to the trading policy.
 No round-2 winner or server score is established. The provisional
 deadline is Sunday **00:15 CET** with a planned ready-by time of **23:45 CET**.
 The organizer has announced three separate datasets: downloadable public,

@@ -1,5 +1,11 @@
 # Result manifests
 
+`round2_development_progress.json` records later first-60% tuning studies;
+`round2_development_31840.json` preserves a positive inventory-policy checkpoint.
+Neither is a selected submission or a later-public/server result.
+`round2_transfer_attribution.json` is an exact native-verified decomposition
+of the original transfer loss, with descriptive future fill markouts.
+
 [round2_initial_investigation.json](round2_initial_investigation.json) is the
 current public-data intake comparison and first-60% test evidence. It records
 the new data hash, volatility/signal changes, all six reference results, four

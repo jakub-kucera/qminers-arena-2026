@@ -12,6 +12,10 @@ Run modules from the repository root with `.venv/bin/python -m scripts.NAME`.
 | `compare_market_dynamics.py` | No-trade spread tails and pre-event sampled price dynamics on explicit development tapes |
 | `round2_development_diagnostics.py` | Four controlled alpha/quote-width ablations on the existing public development prefix |
 | `round2_inventory_probes.py` | Four public-development target/entry prototypes; inspect the recorded queue-churn limitations |
+| `round2_jump_models.py`, `round2_jump_followups.py` | Robust-label and jump/spread mechanism experiments, with immutable source snapshots |
+| `round2_queue_inventory.py`, `round2_queue_combinations.py` | Native queue-preserving shrinks and causal inventory targets; planned bounds permit paid overlap |
+| `round2_conditional_market_fills.py` | Forecast public-fill markouts using preceding features and causally matured labels |
+| `round2_fill_attribution.py` | Exact native PnL decomposition and descriptive post-run fill markouts |
 | `check_submission.py` | Conservative local check of documented export restrictions |
 | `benchmark.py` | Native-config replay and diagnostic metrics for explicit sources |
 

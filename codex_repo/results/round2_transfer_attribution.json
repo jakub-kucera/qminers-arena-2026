@@ -1,0 +1,274 @@
+{
+  "source": "strategies/round2/round2_transfer.py",
+  "source_sha256": "c87f92f1de5c4cab5e18f0aff1c4112a3f4cee808343ce696aea5535435527e7",
+  "data": "logs/round2/development.csv",
+  "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+  "native_result": {
+    "fills": 6797,
+    "traded_volume": 677654,
+    "inventory": 100,
+    "cash": -1031641.0,
+    "mark_price": 9945.0,
+    "breach_penalty": 1063.33,
+    "pnl": -38204.33,
+    "pnl_se": 16283.372219536323,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "instrumentation_verified_against_reference": true,
+  "attribution": {
+    "execution_edge_at_previous_mid": 394111.0,
+    "inventory_pnl_mid_changes_below2": -350232.0,
+    "inventory_pnl_mid_changes_at_least2": -80970.0,
+    "native_breach_penalty": 1063.33,
+    "final_native_liquidation_adjustment": -50.0,
+    "identity_net_pnl": -38204.33,
+    "worst_jump_contributions": [
+      [
+        2763175144,
+        -53.0,
+        100,
+        -5300.0
+      ],
+      [
+        3423178429,
+        -53.0,
+        100,
+        -5300.0
+      ],
+      [
+        1559923083,
+        -31.0,
+        100,
+        -3100.0
+      ],
+      [
+        1559969406,
+        -29.5,
+        100,
+        -2950.0
+      ],
+      [
+        3056237640,
+        29.5,
+        -100,
+        -2950.0
+      ],
+      [
+        1560210717,
+        -28.5,
+        100,
+        -2850.0
+      ],
+      [
+        1560245547,
+        -26.0,
+        100,
+        -2600.0
+      ],
+      [
+        1560593943,
+        26.0,
+        -100,
+        -2600.0
+      ],
+      [
+        1559729696,
+        56.5,
+        -44,
+        -2486.0
+      ],
+      [
+        1560268076,
+        24.5,
+        -94,
+        -2303.0
+      ],
+      [
+        1560278008,
+        24.5,
+        -94,
+        -2303.0
+      ],
+      [
+        2468116097,
+        -20.5,
+        100,
+        -2050.0
+      ],
+      [
+        1560566922,
+        -24.0,
+        75,
+        -1800.0
+      ],
+      [
+        2467567085,
+        17.5,
+        -100,
+        -1750.0
+      ],
+      [
+        2467568152,
+        17.0,
+        -100,
+        -1700.0
+      ],
+      [
+        2264194170,
+        -14.5,
+        100,
+        -1450.0
+      ],
+      [
+        2264225894,
+        -14.5,
+        100,
+        -1450.0
+      ],
+      [
+        3208885972,
+        14.5,
+        -100,
+        -1450.0
+      ],
+      [
+        3208886872,
+        14.5,
+        -100,
+        -1450.0
+      ],
+      [
+        498871123,
+        -10.0,
+        100,
+        -1000.0
+      ]
+    ],
+    "fill_markouts": {
+      "0": {
+        "all": {
+          "lots": 677654,
+          "weighted_edge": 394111.0,
+          "ticks_per_lot": 0.5815814560232803,
+          "fill_events": 10362
+        },
+        "maker": {
+          "lots": 676836,
+          "weighted_edge": 394973.5,
+          "ticks_per_lot": 0.583558646407697,
+          "fill_events": 10315
+        },
+        "hedge": {
+          "lots": 818,
+          "weighted_edge": -862.5,
+          "ticks_per_lot": -1.05440097799511,
+          "fill_events": 47
+        }
+      },
+      "5000": {
+        "all": {
+          "lots": 677654,
+          "weighted_edge": 251169.0,
+          "ticks_per_lot": 0.37064490138035044,
+          "fill_events": 10362
+        },
+        "maker": {
+          "lots": 676836,
+          "weighted_edge": 251489.5,
+          "ticks_per_lot": 0.37156637649297614,
+          "fill_events": 10315
+        },
+        "hedge": {
+          "lots": 818,
+          "weighted_edge": -320.5,
+          "ticks_per_lot": -0.3918092909535452,
+          "fill_events": 47
+        }
+      },
+      "100000": {
+        "all": {
+          "lots": 677654,
+          "weighted_edge": 112053.0,
+          "ticks_per_lot": 0.1653542958500946,
+          "fill_events": 10362
+        },
+        "maker": {
+          "lots": 676836,
+          "weighted_edge": 112977.0,
+          "ticks_per_lot": 0.16691931280251052,
+          "fill_events": 10315
+        },
+        "hedge": {
+          "lots": 818,
+          "weighted_edge": -924.0,
+          "ticks_per_lot": -1.1295843520782396,
+          "fill_events": 47
+        }
+      },
+      "400000": {
+        "all": {
+          "lots": 677454,
+          "weighted_edge": -29253.5,
+          "ticks_per_lot": -0.043181529668435054,
+          "fill_events": 10361
+        },
+        "maker": {
+          "lots": 676636,
+          "weighted_edge": -28391.5,
+          "ticks_per_lot": -0.0419597833990506,
+          "fill_events": 10314
+        },
+        "hedge": {
+          "lots": 818,
+          "weighted_edge": -862.0,
+          "ticks_per_lot": -1.0537897310513447,
+          "fill_events": 47
+        }
+      },
+      "2000000": {
+        "all": {
+          "lots": 677181,
+          "weighted_edge": -52480.5,
+          "ticks_per_lot": -0.07749848268040598,
+          "fill_events": 10358
+        },
+        "maker": {
+          "lots": 676363,
+          "weighted_edge": -51050.5,
+          "ticks_per_lot": -0.07547796079915667,
+          "fill_events": 10311
+        },
+        "hedge": {
+          "lots": 818,
+          "weighted_edge": -1430.0,
+          "ticks_per_lot": -1.7481662591687042,
+          "fill_events": 47
+        }
+      },
+      "25000000": {
+        "all": {
+          "lots": 672175,
+          "weighted_edge": -31427.5,
+          "ticks_per_lot": -0.046754937330308326,
+          "fill_events": 10291
+        },
+        "maker": {
+          "lots": 671357,
+          "weighted_edge": -27812.0,
+          "ticks_per_lot": -0.04142654355283404,
+          "fill_events": 10244
+        },
+        "hedge": {
+          "lots": 818,
+          "weighted_edge": -3615.5,
+          "ticks_per_lot": -4.419926650366748,
+          "fill_events": 47
+        }
+      }
+    },
+    "limitation": "Descriptive post-run markouts at the last valid midpoint strictly before the horizon. Includes fills already closed before that horizon. Hedge classification uses the strategy hedge ID; marketable LIMIT orders are in maker group."
+  }
+}
