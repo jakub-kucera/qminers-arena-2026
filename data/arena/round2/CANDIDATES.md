@@ -19,6 +19,29 @@ so a compacted or restarted session, or the other laptop, picks up where it was.
 - The final rule, written now: <default: StepM's pick from `arena.compare` over the verified candidates against A0
   under the gate; between candidates within T of each other, the better stress worst, then the fewer changed settings>.
 
+## Ready before the tape (18:15, from round 1)
+Three files in `python/bots/qminers/candidates/`, R1-C11's model, every tunable constant at the top of the class with a
+comment (LIMIT, POSITION_LIMIT the 1,000 wall, CANCEL_FREE, HEDGE, HEDGE_TICKS, DEAD_ZONE, INSIDE_TH, FLOW_CUT,
+HORIZON_US, MODEL_MEMORY_US, QUOTE_SIZE, ...): change one there if round 2's rules move. round1.csv only
+(`uv run exchange-simulator --strategy FILE --backtest data/arena/round1/round1.csv --log-dir logs/x --no-logs`, ~3 min
+each); `arena.validate FILE all --format qminers` OK for all three. Segments: `experiments.pnl_segments` against B5.
+
+| id | file | round1 pnl | penalty | fills | against B5 | use it when |
+|---|---|---|---|---|---|---|
+| R2-B5 | `r2_base_v5.py` | 619,281.99 | 1,610 | 21,460 | = R1-C11 to the cent | the default: rules unchanged (limit 100, 10,000/s, 5 ms) |
+| R2-S5 | `r2_safe_v5.py` | 605,983.00 | 0 | 35,071 | -13.3k, behind in 12 of 12 (t -4.64) | no breach possible: the penalty is harsher, latency longer, or B5's hedge misbehaves on the portal |
+| R2-L5 | `r2_learned_dz_v5.py` | 611,454.62 | 1,526 | 22,343 | -7.8k, ahead in 4 of 12 (t -2.13) | not as the upload on round1's evidence; a cheap second look if round 2's tape is 1-tick and B5's fills mark out worse |
+
+- R2-S5: CANCEL_FREE 0.0, HEDGE False: every live order, being cancelled or not, counts toward LIMIT (R1-C1's rule), so
+  inventory + one side's orders never pass it, and nothing crosses the spread.
+- R2-L5: the Rust ridge_maker's FILL_LEARN (FILL_Q 0) ported line for line, FILL_H_US 400000, FILL_MIN -0.2, FILL_WARM
+  200, FILL_BIN 0.1; FILL_LEARN False gives B5. The port, checked on R1-C5's base, reproduces
+  `uv run python -m arena.qsim_rust ridge_maker data/arena/round1/round1.csv --set POSITION_LIMIT=1000 --set EXPOSURE=100
+  --set CANCEL_FREE=1.0 --set HEDGE=1 --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000 --set DEAD_ZONE=0.18
+  --set FILL_LEARN=1 --set FILL_H_US=400000 --set FILL_MIN=-0.2 --set FILL_WARM=200 --set FILL_BIN=0.1` to the cent
+  (597,805.83, 21,975 fills, penalty 1,770.17). On C5 it was +2.4k over C5 (595,442); on v5's 29 features it costs 7.8k:
+  the richer forecast already does what the learned zone did.
+
 ## Board
 At most six live candidates; each must differ in kind from the others (the loop's step 2). Every number comes from a
 command in "Trials". Pluses and minuses are measured facts, not hopes.
