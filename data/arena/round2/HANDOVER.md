@@ -6,7 +6,7 @@ run's results and `leaderboard.json` go in this folder too.
 
 ## Round 2 results, marked (00:00)
 
-**The final: R2-L3** (`python/bots/qminers/candidates/r2_L3_taker_pure.py`, submission `d319b090-4d40-41c4-a8ed-7648f7b630ae`, **+804,018.00 on validation**), unless R2-L8 (uploaded ~23:54, result pending at the time of writing) beats it; mark the higher one final by 00:14. Every file, number and command is on `data/arena/round2/CANDIDATES.md`; the server's result folders are in `data/arena/round2/*_res/` (ignored by git: result.json, metadata.json, the 1-s pnl.csv; no logs).
+**The final: R2-L8** (`python/bots/qminers/candidates/r2_L8_quote_switch.py`, submission `5c00a472-759f-42cf-8cb3-e9557734f081`, **+826,778.00 on validation**): R2-L3 (the pure forecast taker, +804,018) with one-lot quotes switched on only while the 5-s price speed is below 2.5 ticks/s. +22.8k over L3 on validation, and at least L3 on every local tape (+69k on round 1's calm tape). Every file, number and command is on `data/arena/round2/CANDIDATES.md`; the server's result folders are in `data/arena/round2/*_res/` (ignored by git: result.json, metadata.json, the 1-s pnl.csv; no logs).
 
 ### (a) Every upload, on the server's validation tape (12,000 s; the public tape is 6,000 s, so "ratio" = validation / (2 x public))
 
@@ -23,9 +23,9 @@ run's results and `leaderboard.json` go in this folder too.
 | 9 | 22:00 | R2-M4 `r2_M4_flow_window.py` | M2 + 125-ms window, 575 lots | 9cd32a00-b8ff-45eb-934e-11ce84ce7699 | +441,088 | 175,116 | 1.26 | 38 s | stitched tapes over-rated it (0.62) |
 | 10 | 22:10 | R2-H1 `r2_H1_flow_bias.py` | T1 + big-flow bias (signal composite) | 8f29efb0-69c6-421f-a517-25f104f73afa | +567,740 | 223,794 | 1.27 | 6 m 2 s | composite +77k over T2 (t 2.96) |
 | 11 | 22:33 | R2-L1 `r2_L1_taker_liquidity.py` | T2 + 4 liquidity / young-order features | fb8478b0-2239-4e26-bdb6-f56d01c11ebe | +771,770 | 269,920 | 1.43 | **7 m 47 s** | +204k over H1, 12 of 12 segments (t 7.5) |
-| 12 | 22:58 | **R2-L3** `r2_L3_taker_pure.py` | **L1 without the one-lot quotes** | **d319b090-4d40-41c4-a8ed-7648f7b630ae** | **+804,018** | 294,098 | 1.37 | 6 m 40 s | **the final**: +32k over L1 (11 of 12) |
+| 12 | 22:58 | **R2-L3** `r2_L3_taker_pure.py` | **L1 without the one-lot quotes** | d319b090-4d40-41c4-a8ed-7648f7b630ae | **+804,018** | 294,098 | 1.37 | 6 m 40 s | +32k over L1 (11 of 12) |
 | 13 | 23:18 | R2-L6 `r2_L6_pure_flowbias.py` | L3 + big-flow bias 0.15 | a631c405-b9b2-4a39-8563-968dd79fb3bb | +798,269 | 294,522 | 1.36 | 6 m 48 s | a tie (-5.7k) |
-| 14 | ~23:54 | R2-L8 `r2_L8_quote_switch.py` | L1 with quotes only below 2.5 ticks/s | pending | pending | 296,181 | - | - | at least L3 on every local tape, +69k on calm round 1 |
+| 14 | 23:53 | **R2-L8** `r2_L8_quote_switch.py` | **L1 with quotes only below 2.5 ticks/s of price speed** | **5c00a472-759f-42cf-8cb3-e9557734f081** | **+826,778** | 296,181 | 1.40 | 7 m 1 s | **the final**: +22.8k over L3 (fills 108,379, volume 1,092,586, breach 0, pnl_se 48,501) |
 
 ### (b) Local-only candidates and the variant tables (round2_public / hi_vol_fast1.25 / hi_vol stitched / round1 where run)
 - **Makers** (the round-1 line): R1-C11 -263k on public; R2-E1 (30 lots) 28,418; E2 47,098; E3 (confidence exposure) 58,361; V1 169,263; the stats agent's fill-value / distribution makers 144-181k public (606-618k on round 1). The family that fails on the server's tape.
@@ -39,7 +39,7 @@ run's results and `leaderboard.json` go in this folder too.
 - **The validation tape was the public tape's high-volatility half, about 1.25x faster** (`experiments.day.tape_character`: a maker's segment PnL correlates -0.91 with the 1-s mid sd; E2's validation footprint matches the stitched high-vol tape). The property that matters is price movement per lot of order flow, not trend or direction (the mirrored tape gives the same results).
 - **Makers with size die where volatility per lot is high**: E2 -41k, V2 0.21 of its public rate; FT1 at 100 lots was predicted -450k to -700k there.
 - **The forecast take wins**: the same 29-feature ridge used to TAKE (an IOC within the 100-lot limit when the 400-ms forecast beats half the spread by 0.15, only at a 1-tick spread) went from T1 +485k to L3 +804k as features and sizing improved.
-- **Quotes cost in bursts and pay in calm**: L3 (no quotes) beat L1 by +111k on the fast stitched tape and +32k on validation, but lost 69k on calm round 1; L8 switches them by the 5-s price speed.
+- **Quotes cost in bursts and pay in calm**: L3 (no quotes) beat L1 by +111k on the fast stitched tape and +32k on validation, but lost 69k on calm round 1; L8 switches them on only below 2.5 ticks/s of 5-s price speed and beat both on validation (+826,778, +22.8k over L3).
 - **The edge is in the bursts**: a volatility gate that raises the take's bar in bursts lost 174k on the validation-like tape; L1 made a third of its public PnL in the crash (3,600-4,500 s), L3 about 103k there; jump exits, stops and half sizing all lowered the mean.
 - **Sizing must count every live order**: T1's 22k of breach came from the take ignoring resting one-lot quotes and orders being cancelled (TAKE_ROOM_LIVE 1, CANCEL_FREE 0.0 fixed it with no PnL cost).
 - **Signal composites beat their parts**: H1 (T1 + the big-flow signal lowering the take's bar 0.3 toward it) +77k over T2 on validation (t 2.96); once the liquidity features came (L1, L3), the same bias added only noise (L2, L6).

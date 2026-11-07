@@ -234,9 +234,9 @@ data/arena/round3/ (data/ is ignored by git).
 
 What we know: the server scores each upload on a VALIDATION tape (PnL plus a 1-s pnl.csv, no logs) and the final on a
 different PRIVATE tape, each about twice the public tape's length; any earlier submission can be marked final; the
-deadline is <HH:MM Prague> (round 2's was 00:14, not 24:00). Round 2's winner was the forecast taker
-(python/bots/qminers/candidates/r2_L3_taker_pure.py, +804,018 on validation); R2-L8 (r2_L8_quote_switch.py) adds
-one-lot quotes in calm markets. Makers with size lost on volatile tapes; the edge was in the bursts.
+deadline is <HH:MM Prague> (round 2's was 00:14, not 24:00). Round 2's winner was the forecast taker with quotes only in calm markets
+(python/bots/qminers/candidates/r2_L8_quote_switch.py, +826,778 on validation; R2-L3, r2_L3_taker_pure.py, the pure
+taker, +804,018). Tune L8's QS_RATE (the price-speed threshold for quoting) on the new tape first. Makers with size lost on volatile tapes; the edge was in the bursts.
 
 First actions (report after each):
 1. The first look: uv run python -m experiments.day.round_start data/arena/round3/<file>.csv --jobs 8 --out

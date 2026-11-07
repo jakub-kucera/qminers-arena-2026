@@ -20,7 +20,7 @@ so a compacted or restarted session, or the other laptop, picks up where it was.
   under the gate; between candidates within T of each other, the better stress worst, then the fewer changed settings>.
 
 ## Ready before the tape (00:00, from round 2)
-- Base: `python/bots/qminers/candidates/r2_L8_quote_switch.py` (R2-L8: quotes only below 2.5 ticks/s of price speed) and `r2_L3_taker_pure.py` (R2-L3, +804,018 on round 2's validation, the round-2 final).
+- Base: `python/bots/qminers/candidates/r2_L8_quote_switch.py` (R2-L8: quotes only below 2.5 ticks/s of price speed; **+826,778 on round 2's validation, the round-2 final**), with `r2_L3_taker_pure.py` (R2-L3, +804,018) beside it. First experiment: QS_RATE on the new tape.
 - References: `r2_L1_taker_liquidity.py` (+771,770), `r2_H1_flow_bias.py` (+567,740), `r2_M4_flow_window.py` (+441,088), `r2_V2_vol_exposure_dz18.py` (+71,864 on round 2's volatile tape, ~700k on round 1's calm one).
 - `experiments.day.round_start` runs all of them (R2_L8, R2_L3, R2_L1, R2_H1, R2_T2, R2_M4, R2_V2); the triage, the decision table and the ranked ideas: `data/arena/round3/HANDOVER.md`, "Start here".
 
