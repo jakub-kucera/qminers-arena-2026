@@ -25,6 +25,13 @@
 //! lots and under DEPL_FRAC of its peak; without both, the guard's test) with at most TAKE_MAX lots while ours holds
 //! TAKE_OWN or more and we still quote our side, a limit order of TAKE_LOTS (within the limit) at the other side's
 //! touch, at most one a side per TAKE_MS, exempt from the re-quote's cancels for TAKE_MS (take_maker's `take`).
+//!
+//! Rust-only additions from v2 (strategy_codex_best_v2_571k.py, 571k), off by default: `EXPOSURE` (0: the
+//! POSITION_LIMIT), the lots the quoting, the skew and the withdrawal aim at, while POSITION_LIMIT stays the
+//! acceptance wall (v2: POSITION_LIMIT=1000 EXPOSURE=100); `CANCEL_FREE` (0.0): the share of an order being
+//! cancelled that no longer counts toward EXPOSURE (v2: 1.0, `ceil(q * (1 - CANCEL_FREE))`); `HEDGE` (0: off), an
+//! IOC HEDGE_TICKS (10) through the cached touch (at most HEDGE_STALE_US, 100000, old) for |inventory| - EXPOSURE
+//! whenever |inventory| > EXPOSURE, one at a time, from book updates and from private fills (v2's `_hedge`).
 
 use std::collections::VecDeque;
 
@@ -106,6 +113,13 @@ pub struct RidgeMaker {
     take_max: i64,
     take_ms: i64,
     take_block: [i64; 2],
+    exposure: i64,
+    cancel_free: f64,
+    hedge: bool,
+    hedge_ticks: i64,
+    hedge_stale_us: i64,
+    hedge_id: Option<u64>,
+    cached: Option<(i64, i64, i64)>,
     /// per side (bid, ask): [touch price, the market's lots there at their most since]
     peak: [Option<(i64, i64)>; 2],
 
@@ -136,11 +150,12 @@ pub struct RidgeMaker {
     invalid_since: Option<i64>,
 }
 
-pub const KEYS: [&str; 28] = [
+pub const KEYS: [&str; 33] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
     "DEPLETE_LOTS", "DEPL_FRAC", "TAKE_LOTS", "TAKE_OWN", "TAKE_DEPLETE", "TAKE_MAX", "TAKE_MS",
+    "EXPOSURE", "CANCEL_FREE", "HEDGE", "HEDGE_TICKS", "HEDGE_STALE_US",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -154,12 +169,21 @@ fn side_index(sign: i64) -> usize {
 impl RidgeMaker {
     pub fn new(params: &Params) -> Result<RidgeMaker, String> {
         params.check_keys(&KEYS)?;
+        let position_limit = params.int("POSITION_LIMIT", 100)?;
+        let exposure = params.int("EXPOSURE", 0)?;
         Ok(RidgeMaker {
+            exposure: if exposure > 0 { exposure } else { position_limit },
+            cancel_free: params.float("CANCEL_FREE", 0.0)?,
+            hedge: params.int("HEDGE", 0)? != 0,
+            hedge_ticks: params.int("HEDGE_TICKS", 10)?,
+            hedge_stale_us: params.int("HEDGE_STALE_US", 100_000)?,
+            hedge_id: None,
+            cached: None,
             horizon_us: params.int("HORIZON_US", 100_000)?,
             observation_interval_us: params.int("OBSERVATION_INTERVAL_US", 20_000)?,
             min_labels: params.int("MIN_LABELS", 200)?,
             model_memory_us: params.int("MODEL_MEMORY_US", 300_000_000)?,
-            position_limit: params.int("POSITION_LIMIT", 100)?,
+            position_limit,
             quote_size: params.int("QUOTE_SIZE", 200)?,
             requote_us: params.int("REQUOTE_US", 0)?,
             inside_th: params.float("INSIDE_TH", 0.3)?,
@@ -311,13 +335,43 @@ impl RidgeMaker {
             return;
         }
         let reserved: i64 = self.orders.iter().filter(|r| r.sign == sign).map(|r| r.quantity).sum();
-        let quantity = self.quote_size.min(self.position_limit - sign * self.inventory - reserved);
+        let effective: i64 = self
+            .orders
+            .iter()
+            .filter(|r| r.sign == sign)
+            .map(|r| if r.cancelling { (r.quantity as f64 * (1.0 - self.cancel_free)).ceil() as i64 } else { r.quantity })
+            .sum();
+        let quantity = self
+            .quote_size
+            .min(self.exposure - sign * self.inventory - effective)
+            .min(self.position_limit - sign * self.inventory - reserved);
         if quantity <= 0 {
             return;
         }
         let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, false);
         self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: 0 });
         self.last_action[side_index(sign)] = now;
+    }
+
+    /// v2's `_hedge`: an IOC for |inventory| - EXPOSURE, HEDGE_TICKS through the cached touch, one at a time.
+    fn hedge(&mut self, now: i64, ctx: &mut Ctx) {
+        if !self.hedge || self.inventory.abs() <= self.exposure || self.hedge_id.is_some() {
+            return;
+        }
+        let Some((bid, ask, time)) = self.cached else { return };
+        if now - time > self.hedge_stale_us {
+            return;
+        }
+        let sign = if self.inventory > 0 { -1 } else { 1 };
+        let reserved: i64 = self.orders.iter().filter(|r| r.sign == sign).map(|r| r.quantity).sum();
+        let quantity = (self.inventory.abs() - self.exposure).min(0i64.max(self.position_limit - sign * self.inventory - reserved));
+        if quantity <= 0 {
+            return;
+        }
+        let price = if sign > 0 { ask + self.hedge_ticks } else { 1i64.max(bid - self.hedge_ticks) };
+        let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, true);
+        self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: 0 });
+        self.hedge_id = Some(id);
     }
 
     /// take_maker's `take`: TAKE_LOTS (within the limit) at `price`, one a side per TAKE_MS, exempt that long.
@@ -417,7 +471,7 @@ impl Strategy for RidgeMaker {
             (bd_value as f64 / bd_r.max(1) as f64 + ad_value as f64 / ad_r.max(1) as f64) * 0.5 - mid;
 
         let spread_f = spread as f64;
-        let skew = self.skew_k * self.inventory as f64 / self.position_limit as f64 * spread_f.max(1.0);
+        let skew = self.skew_k * self.inventory as f64 / self.exposure as f64 * spread_f.max(1.0);
         match self.model_time {
             Some(t) if now - t <= 10_000_000 => {
                 let dt = (now - t).max(0) as f64;
@@ -487,10 +541,10 @@ impl Strategy for RidgeMaker {
                 sell = Some((bid + 1).max(ask - 1));
             }
         }
-        if flow < -self.flow_cut || self.inventory >= self.position_limit {
+        if flow < -self.flow_cut || self.inventory >= self.exposure {
             buy = None;
         }
-        if flow > self.flow_cut || self.inventory <= -self.position_limit {
+        if flow > self.flow_cut || self.inventory <= -self.exposure {
             sell = None;
         }
         if self.deplete_lots > 0 || self.take_lots > 0 {
@@ -527,6 +581,8 @@ impl Strategy for RidgeMaker {
                 sell = Some(ask + 1);
             }
         }
+        self.cached = Some((bid, ask, now));
+        self.hedge(now, ctx);
         self.desired_buy = buy;
         self.desired_sell = sell;
         self.desired_time = Some(now);
@@ -558,13 +614,20 @@ impl Strategy for RidgeMaker {
             }
             Status::Modified => {}
         }
+        let was_hedge = self.hedge_id == Some(event.order_id);
+        if was_hedge && matches!(event.status, Status::Filled | Status::Canceled | Status::Rejected) {
+            self.hedge_id = None;
+        }
         if let Some(t) = self.desired_time {
             let d = event.timestamp_us - t;
-            if 0 <= d && d <= self.replenish_us && event.status == Status::Canceled {
+            if !was_hedge && 0 <= d && d <= self.replenish_us && event.status == Status::Canceled {
                 let (buy, sell) = (self.desired_buy, self.desired_sell);
                 self.quote(event.timestamp_us, 1, buy, ctx);
                 self.quote(event.timestamp_us, -1, sell, ctx);
             }
+        }
+        if was_hedge || matches!(event.status, Status::Filled | Status::PartiallyFilled) {
+            self.hedge(event.timestamp_us, ctx);
         }
     }
 }
