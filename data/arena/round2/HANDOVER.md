@@ -32,6 +32,13 @@ run's results and `leaderboard.json` go in this folder too.
 ## Next round
 <!-- round N+1's first candidate, and its first three actions -->
 
+## Start here (18:25, from round 1)
+- **Upload first:** `python/bots/qminers/candidates/r2_base_v5.py` (R1-C11, every constant at the top of the class) once round_start has run it on the new tape; then `r2_safe_v5.py` (no breach possible) as the second, different upload. Their two portal (private-tape) scores against their local ones are the first out-of-sample check.
+- **What round 1's private tape said** (rebuilt from the portal's log, `uv run python -m experiments.day.tape_from_logs RESULTS_DIR PUBLIC.csv OUT.csv`; C12 reproduced within 0.07%): every ridge candidate kept 94-98% of its public PnL, F8 93%. The steps that generalised: C1 -> C5 (the in-flight cancels, the hedge, the 400-ms horizon; +41k public, +56k private) and the flow groups (C5 -> C9, +10k / +17k). The knob steps under ~10k (the cap, the quote features) moved the private PnL by noise. So on round 2: trust structural changes and the learned weights, distrust public gains under ~10k from constants.
+- **Fast tuning:** `arena.qsim_rust ridge_maker D <R1-C11's --set line, round_start prints it> --grid ...` (~3 s a run, byte-identical to the Python files).
+- **Which family** if the tape differs: the table "If the tape looks like X" at the end of this file (thin touch, big sweeps or informed flow: R1-F8 beside the ridge; 2-tick-heavy, deep, trending or weak impact: the ridge).
+- **After each upload's portal log:** rebuild that private tape with `tape_from_logs` and rank the round's candidates on it.
+
 ## Experiments to run on round 2's tape
 Round 2 is generated differently, so round 1's settings are priors, not answers. D = `data/arena/round2/<file>.csv` (unzip first). `C5` below = `--set POSITION_LIMIT=1000 --set EXPOSURE=100 --set CANCEL_FREE=1.0 --set HEDGE=1 --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000 --set DEAD_ZONE=0.18` on `uv run python -m arena.qsim_rust ridge_maker D --threads 6 --holdout 0.25` (Rust, ~3 s a run; defaults = R1-C1).
 
