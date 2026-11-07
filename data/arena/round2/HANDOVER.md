@@ -4,6 +4,54 @@ The template (`docs/HANDOVER_TEMPLATE.md`): copy it to `data/arena/round<N>/HAND
 fill it in during the round and finish it by deadline − 0:10; the template itself stays as it is. Committed and pushed so the other laptop has it (ON_THE_DAY.md, "Handover note"); the private
 run's results and `leaderboard.json` go in this folder too.
 
+## Round 2 results, marked (00:00)
+
+**The final: R2-L3** (`python/bots/qminers/candidates/r2_L3_taker_pure.py`, submission `d319b090-4d40-41c4-a8ed-7648f7b630ae`, **+804,018.00 on validation**), unless R2-L8 (uploaded ~23:54, result pending at the time of writing) beats it; mark the higher one final by 00:14. Every file, number and command is on `data/arena/round2/CANDIDATES.md`; the server's result folders are in `data/arena/round2/*_res/` (ignored by git: result.json, metadata.json, the 1-s pnl.csv; no logs).
+
+### (a) Every upload, on the server's validation tape (12,000 s; the public tape is 6,000 s, so "ratio" = validation / (2 x public))
+
+| # | Time | Bot (file in `python/bots/qminers/candidates/`) | Family | Submission ID | Validation | Public | Ratio | Server time | Verdict |
+|---|---|---|---|---|---:|---:|---:|---|---|
+| 1 | 19:54 | R2-E2 `r2_E2_low_exposure_keep.py` | learned maker, 30 lots, queue-keeping | 9f4843cd-8d59-4e2d-b020-879177fe7ef5 | **-41,499** | 47,098 | -0.44 | 5 m 14 s | makers with size die on this tape |
+| 2 | 20:12 | R2-V2 `r2_V2_vol_exposure_dz18.py` | learned maker, speed-scaled exposure | 04625898-3938-40b1-923b-54d7b9711fa5 | +71,864 | 167,288 | 0.21 | 5 m 38 s | positive but 0.21 of its public rate |
+| 3 | 20:28 | R2-M2 `r2_M2_flow_trend.py` | big-order follower, self-gated | 7042cde4-9196-468b-83c6-3a3af1c76d8b | +376,082 | 116,620 | 1.61 | 37 s | big-order momentum is real on the server |
+| 4 | 20:40 | R2-M3 `r2_M3_flow_stop_gated.py` | M2 + 3-tick stop | 9f1d18b6-5792-46a9-93c7-2cef42ec9a09 | +366,342 | 130,251 | 1.41 | 38 s | the stop: no difference (t -0.69) |
+| 5 | 21:09 | R2-T1 `r2_T1_take_only.py` | forecast taker, one-lot quotes | 3565b31f-807c-4d4b-8423-1d85a33cf172 | +485,667 | 191,984 | 1.26 | 5 m 44 s | the forecast take wins; breach 21,956 |
+| 6 | 21:19 | R2-RA `r2_RA_flow_window.py` | M3 + 250-ms flow window | 1dfb680a-ce3e-4917-b432-26fed8c97814 | +467,703 | 165,459 | 1.41 | 39 s | the window beats M2/M3; ties T1 |
+| 7 | 21:35 | a colleague's `round2_composite_local.py` (not in the repo) | composite | e1827f34-6668-486c-9707-d1dc42c48e41 | +247,165 | - | - | 5 m 47 s | below the takers |
+| 8 | 21:43 | R2-T2 `r2_T2_take_only_safe.py` | T1 without breaches | 2d72ef32-8561-4299-8aaf-f8168bb6d003 | +490,359 | 194,391 | 1.26 | 5 m 50 s | breach 0: the sizing fix works |
+| 9 | 22:00 | R2-M4 `r2_M4_flow_window.py` | M2 + 125-ms window, 575 lots | 9cd32a00-b8ff-45eb-934e-11ce84ce7699 | +441,088 | 175,116 | 1.26 | 38 s | stitched tapes over-rated it (0.62) |
+| 10 | 22:10 | R2-H1 `r2_H1_flow_bias.py` | T1 + big-flow bias (signal composite) | 8f29efb0-69c6-421f-a517-25f104f73afa | +567,740 | 223,794 | 1.27 | 6 m 2 s | composite +77k over T2 (t 2.96) |
+| 11 | 22:33 | R2-L1 `r2_L1_taker_liquidity.py` | T2 + 4 liquidity / young-order features | fb8478b0-2239-4e26-bdb6-f56d01c11ebe | +771,770 | 269,920 | 1.43 | **7 m 47 s** | +204k over H1, 12 of 12 segments (t 7.5) |
+| 12 | 22:58 | **R2-L3** `r2_L3_taker_pure.py` | **L1 without the one-lot quotes** | **d319b090-4d40-41c4-a8ed-7648f7b630ae** | **+804,018** | 294,098 | 1.37 | 6 m 40 s | **the final**: +32k over L1 (11 of 12) |
+| 13 | 23:18 | R2-L6 `r2_L6_pure_flowbias.py` | L3 + big-flow bias 0.15 | a631c405-b9b2-4a39-8563-968dd79fb3bb | +798,269 | 294,522 | 1.36 | 6 m 48 s | a tie (-5.7k) |
+| 14 | ~23:54 | R2-L8 `r2_L8_quote_switch.py` | L1 with quotes only below 2.5 ticks/s | pending | pending | 296,181 | - | - | at least L3 on every local tape, +69k on calm round 1 |
+
+### (b) Local-only candidates and the variant tables (round2_public / hi_vol_fast1.25 / hi_vol stitched / round1 where run)
+- **Makers** (the round-1 line): R1-C11 -263k on public; R2-E1 (30 lots) 28,418; E2 47,098; E3 (confidence exposure) 58,361; V1 169,263; the stats agent's fill-value / distribution makers 144-181k public (606-618k on round 1). The family that fails on the server's tape.
+- **Momentum family**: M1 (minute trend) 87,156 on 75 fills; FH1 (M2 + stop, ungated) 132,005 public but -159,378 on round 1; the cascade taker -30,198 (1 of 54 cells positive); the burst taker (round 1) lost everywhere.
+- **Hybrids**: H1b (H1's bias on T2's code) 223,773; H2 (T2 + ungated big-flow side, BIG_W 0.25) 210,545 / 732,480 / 635,638; H3 (H1 + a jump term) +2k to +27k.
+- **The liquidity-taker line**: L1 269,920 / 811,727 / 743,175 / 174,686; L2 (L1 + bias 0.15) 277,766 / 825,456 / 746,868 / 172,917; **L3** 294,098 / 922,872 / 804,815 / 105,428; L4 (L1 + large-aggressor features) 263,059 / 851,382 / 821,631 / 188,971; L5 (L4 without quotes) 266,263 / 927,545 / 819,230 / 122,631; L6 294,522 / 930,380 / 814,944; **L8 (quotes below 2.5 ticks/s) 296,181 / 923,993 / 840,191 / 174,109**.
+- **The 22 variants of L3** (none beats it on all three round-2 tapes by more than noise): take spacing 20 / 10 ms (291,046 / 934,685 / 799,451; 291,848 / 935,778 / 801,763), threshold 0.10 (281,263 / 878,445 / 801,300), both (281,089 / 888,605 / 784,837), horizon 300 / 600 ms (288,114 / 921,352 / 815,914; 254,826 / 867,283 / 734,336), flip bar +0.05 / +0.15 (288,800 / 908,703 / 831,475; 260,116 / 912,706 / 770,706), half size on weak signals 0.10 / 0.25 (274,576 / 905,190 / 780,650; 269,480 / 842,416 / 768,328), **volatility gate up (262,289 / 748,799 / 660,336)** and down (289,760 / 875,467 / 816,602), the L3+L5 forecast ensemble at 0.3 / 0.5 / 0.7 (281,020 / 880,875 / 816,462; 288,187 / 842,942 / 815,709; 294,169 / 886,631 / 800,670), a jump exit at 4 / 8 ticks and spread 2 / 3 (273-287k / 854-900k / 747-782k), the bias (L6), the large-aggressor features (L5), and quote switching (L8, the one that beats it).
+- **L3's dips on validation**: 3-4-s jumps against the full position (-7.8k to -11.6k) and 30-270-s whipsaw grinds (-7k to -19k); every rule that targets them lowers the mean.
+
+### (c) What round 2 taught
+- **The validation tape was the public tape's high-volatility half, about 1.25x faster** (`experiments.day.tape_character`: a maker's segment PnL correlates -0.91 with the 1-s mid sd; E2's validation footprint matches the stitched high-vol tape). The property that matters is price movement per lot of order flow, not trend or direction (the mirrored tape gives the same results).
+- **Makers with size die where volatility per lot is high**: E2 -41k, V2 0.21 of its public rate; FT1 at 100 lots was predicted -450k to -700k there.
+- **The forecast take wins**: the same 29-feature ridge used to TAKE (an IOC within the 100-lot limit when the 400-ms forecast beats half the spread by 0.15, only at a 1-tick spread) went from T1 +485k to L3 +804k as features and sizing improved.
+- **Quotes cost in bursts and pay in calm**: L3 (no quotes) beat L1 by +111k on the fast stitched tape and +32k on validation, but lost 69k on calm round 1; L8 switches them by the 5-s price speed.
+- **The edge is in the bursts**: a volatility gate that raises the take's bar in bursts lost 174k on the validation-like tape; L1 made a third of its public PnL in the crash (3,600-4,500 s), L3 about 103k there; jump exits, stops and half sizing all lowered the mean.
+- **Sizing must count every live order**: T1's 22k of breach came from the take ignoring resting one-lot quotes and orders being cancelled (TAKE_ROOM_LIVE 1, CANCEL_FREE 0.0 fixed it with no PnL cost).
+- **Signal composites beat their parts**: H1 (T1 + the big-flow signal lowering the take's bar 0.3 toward it) +77k over T2 on validation (t 2.96); once the liquidity features came (L1, L3), the same bias added only noise (L2, L6).
+- **Big-order momentum is real on this generator**: 500-800-lot aggressors move the mid +1.3 ticks by 5 s, 800-1,500 +2.1 (round 1: under the spread); the self-gate (a one-lot shadow of the signal must be up 10 ticks) kept M2/RA/M4 out of round 1's calm tape.
+- **Stitched validation-like tapes rate takers well (~0.9 of their level: T1 547k -> 486k, H1 611k -> 568k) but over-rate flow-window bots (M4 715k -> 441k, 0.62)**: they reuse the public tape's events, so the knobs tuned on public look better there.
+- **Validation uploads are paired experiments**: two bots on the same tape differ by much less noise than either score; compare per-1,000-s segments of the server's pnl.csv; and any submission can be marked final, so an experiment costs one upload.
+- **The field's best-of-many inflation**: by 23:41, 59 teams had made 443 uploads (7.5 each); best-validation median 347k, 75th percentile 940k. A single run's noise is ~50k, so a team's best of 8 sits ~50-75k above its true level; the private score of a team's marked final regresses.
+- **Server run times**: the ridge takers took 5.7-7.8 min (L1 7 m 47 s), the flow bots under 40 s, against a 15-min limit; the server runs ~1.75x slower than a local run.
+- **Untested families with evidence behind them**: a non-linear forecast for the taker, a profit-after-execution target, separate entry and exit models, multi-horizon forecasts for the taker (round 3's "Ideas to try").
+
+**The field over time** (the organisers' deck, best validation per team): 20:31 20 teams, median 55k, p75 387k; 21:37 48 teams, median 123k, p75 525k; 22:53 58 teams / 287 uploads, median 288k, p75 860k; 23:41 59 teams / 443 uploads, median 347k, p25 74k, p75 940k.
+
 ## Round 2's public tape against round 1's (19:20, `data/arena/round2/round2_public.csv`, ignored by git; `uv run python -m experiments.day.round_start data/arena/round2/round2_public.csv --jobs 8 --out data/arena/round2/round_start`)
 - **The same order flow:** 6,000 s (half of round 1's 12,000), 2,193,064 rows; G inserts 178/s (round 1 180), F (IOC) 8.9/s (8.0), F sizes median / p90 / p99 61 / 367 / 1,543 (61 / 360 / 1,543), G sizes 14 / 143 (the same); touch depth median 878 lots (1,065).
 - **A different price process:** the mid changes 4.85 times a second (round 1: 2.57); the spread is 1 tick 83.9%, 2 ticks 11.6%, 3+ 4.4% (93 / 7 / 0); the price wanders about 550 ticks (10,000 -> 9,850 -> 10,000 at 3,000 s -> 9,480 at 4,200-4,500 s -> 9,765 -> 9,689 at the end; round 1's whole range was 107 ticks). Moves persist: after a trade the mid moves +0.44 ticks its way at 1 s and +0.39 at 60 s (trades over 58 lots +0.69 / +0.97); after a 1-tick move with no trade +0.60 at 1 s, +0.95 at 5 s, +1.47 at 60 s.
@@ -18,6 +66,7 @@ run's results and `leaderboard.json` go in this folder too.
 
 ## Uploaded
 <!-- each upload: file, time, why; local PnL under all / worse / --resting; the metrics expected (arena.backtest --metrics) -->
+- All 14 uploads with their submission IDs, validation scores and verdicts: "Round 2 results, marked" (a), above.
 
 ## Portal against local
 <!-- the portal's figures against our backtest of the same file on the same days; the ratio (T); which fill mode and mark fit -->
@@ -49,6 +98,7 @@ run's results and `leaderboard.json` go in this folder too.
 
 ## Next round
 <!-- round N+1's first candidate, and its first three actions -->
+- Round 3 starts from `data/arena/round3/HANDOVER.md`, "Start here": R2-L8 / R2-L3 as the base on the new tape, the first look with `experiments.day.round_start`, then the ranked "Ideas to try in round 3".
 
 ## Start here (18:25, from round 1)
 - **Upload first:** `python/bots/qminers/candidates/r2_base_v5.py` (R1-C11, every constant at the top of the class) once round_start has run it on the new tape; then `r2_safe_v5.py` (no breach possible) as the second, different upload. Their two portal (private-tape) scores against their local ones are the first out-of-sample check.
