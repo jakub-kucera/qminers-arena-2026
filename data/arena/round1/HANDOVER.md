@@ -40,6 +40,7 @@ Answered before the round: ON_THE_DAY.md, "Known so far", the 7 Nov blocks (site
 <!-- which of last round's choices were tested again this round, which were kept untested ("Choose the approach again each round") -->
 
 ## Leaderboard
+- **Round 1's private leaderboard** (18:50, `data/arena/round1/leaderboard.json`, ranks and PnL only, no curves): **8th of 61** with 602,526.53 (R1-C12, v6). 60 teams positive: mean 434,481, sd 137,534, median 447,797, so our z = +1.22 (weight 0.8 in the final score). Above us: Team 2 792,696 (z +2.60), Team 5 701,374, Team 4 667,357, Team 10 657,359, Team 3 655,444, Team 6 615,391, Team 15 603,501. The leader made +32% over us on the same tape, so something structurally better exists (round 1's ceilings: a front-of-queue maker 790k; IDEAS.md, "Round 1 ceilings on R1-F8").
 <!-- leaderboard.json saved here; experiments.day.leaderboard_curves --read verdict; our standing -->
 
 ## Next round
