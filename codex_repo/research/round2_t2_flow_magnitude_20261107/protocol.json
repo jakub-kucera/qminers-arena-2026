@@ -1,0 +1,58 @@
+{
+  "goal": {
+    "reference_audit": "logs/round2_t2_liquidity_supplied/full_audit.json",
+    "reference_source_sha256": "54658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4",
+    "increment": 50000
+  },
+  "candidates": [
+    {
+      "name": "horizon100ms",
+      "file": "logs\\round2_t2_flow_magnitude\\sources\\horizon100ms.py",
+      "source_sha256": "f200fb18013c44b28a02a10d8fc2cfd6df05a2a1cb824cda5a19b53db9b8c92d",
+      "risk": "strict100"
+    },
+    {
+      "name": "horizon500ms",
+      "file": "logs\\round2_t2_flow_magnitude\\sources\\horizon500ms.py",
+      "source_sha256": "bbf2558137756bc7ce1f0daf332c4438fa1ef3afb74f1cd1bcd8f5dfac5f1780",
+      "risk": "strict100"
+    },
+    {
+      "name": "horizon2000ms",
+      "file": "logs\\round2_t2_flow_magnitude\\sources\\horizon2000ms.py",
+      "source_sha256": "725d213575bd16534f6802aa993b69f2ec898871584d675b45e86a1427064724",
+      "risk": "strict100"
+    },
+    {
+      "name": "multiscale",
+      "file": "logs\\round2_t2_flow_magnitude\\sources\\multiscale.py",
+      "source_sha256": "af48933c3f12586bd7fdae3533e6b604e3e48c1014ed00d595a075e6e7b067d0",
+      "risk": "strict100"
+    }
+  ],
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "scope": "Consumed public first80%; no new holdout and no server access.",
+  "hypothesis": "From296715: two bounded signed magnitude features at100/500/2000ms decay or all3 horizons. Net-volume/500 clipped3 and normalized direction times sqrt gross intensity clipped3. Market takers only, past/current trades only. Four fixed cases; unchanged execution and learner settings. Reference later30-80=188941.",
+  "selection": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "reference": "Frozen 167412 composite remains unchanged; no automatic promotion from prefix alone."
+}

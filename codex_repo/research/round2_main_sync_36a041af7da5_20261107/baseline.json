@@ -1,0 +1,12 @@
+{
+  "name": "round2_flat",
+  "pnl": 0.0,
+  "upstream_commit": "36a041af7da57060f5cafe5bcc4f4772c23cd31b",
+  "active_name": "round2_guarded_trend",
+  "active_pnl": -6116.0,
+  "active_source_sha256": "e75344f2c049e3f30141dcca0751b1809eb15288e4fd11ad258a0ae5c2744e41",
+  "source_sha256": "2e386e9f37b28e88f664fccd614f71b1f84bc11ea39be4dfe0f3a045ac00612d",
+  "target": 306715,
+  "objective": "Improve current upstream-main models by at least10000; additionally require10000 over existing local296715 to avoid claiming stale-main progress.",
+  "scope": "Current fetched main active registry; no unseen data"
+}

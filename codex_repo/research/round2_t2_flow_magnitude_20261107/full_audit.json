@@ -1,0 +1,112 @@
+{
+  "result": {
+    "fills": 2442,
+    "traded_volume": 305834,
+    "inventory": -100,
+    "cash": 1273476.0,
+    "mark_price": 9690.0,
+    "breach_penalty": 0.0,
+    "pnl": 304476.0,
+    "pnl_se": 28032.329424380445,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "runtime_seconds": 237.09886980010197,
+  "max_abs_inventory": 100,
+  "max_potential_inventory_at_submission": 100,
+  "max_drawdown_1s": 10880.0,
+  "submissions": 2491,
+  "order_status_counts": {
+    "accepted": 2491,
+    "filled": 1566,
+    "partially_filled": 4056,
+    "canceled": 925
+  },
+  "blocks": [
+    {
+      "start_s": 0.0,
+      "end_s": 600.0,
+      "pnl_increment": 21511.0
+    },
+    {
+      "start_s": 600.0,
+      "end_s": 1200.0,
+      "pnl_increment": 10950.0
+    },
+    {
+      "start_s": 1200.0,
+      "end_s": 1800.0,
+      "pnl_increment": 14173.0
+    },
+    {
+      "start_s": 1800.0,
+      "end_s": 2400.0,
+      "pnl_increment": 40412.0
+    },
+    {
+      "start_s": 2400.0,
+      "end_s": 3000.0,
+      "pnl_increment": 31409.0
+    },
+    {
+      "start_s": 3000.0,
+      "end_s": 3600.0,
+      "pnl_increment": 18985.0
+    },
+    {
+      "start_s": 3600.0,
+      "end_s": 4200.0,
+      "pnl_increment": 82211.0
+    },
+    {
+      "start_s": 4200.0,
+      "end_s": 4800.0,
+      "pnl_increment": 23966.0
+    },
+    {
+      "start_s": 4800.0,
+      "end_s": 5400.0,
+      "pnl_increment": 7637.0
+    },
+    {
+      "start_s": 5400.0,
+      "end_s": 5999.995946,
+      "pnl_increment": 53222.0
+    }
+  ],
+  "config": {
+    "order_accept_delay_ms": 5,
+    "public_depth": 20,
+    "run_log_path": null,
+    "book_delta_log_path": null,
+    "event_log_path": null,
+    "trade_log_path": null,
+    "max_position": 100,
+    "max_potential_position": 1000,
+    "position_breach_penalty_per_second": 10000.0,
+    "min_log_level": "INFO",
+    "show_progress": false,
+    "progress_fd": 2
+  },
+  "boundary_pnl": {
+    "1800000067": 46634.0,
+    "3599997635": 137440.0,
+    "4799996824": 243617.0
+  },
+  "source": "logs\\round2_t2_flow_magnitude\\sources\\horizon500ms.py",
+  "source_sha256": "bbf2558137756bc7ce1f0daf332c4438fa1ef3afb74f1cd1bcd8f5dfac5f1780",
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "strategy_state": {
+    "_labels": 260604,
+    "_mass": 252941.4983862032
+  },
+  "rates": {
+    "observed_duration_seconds": 5999.995946,
+    "net_pnl_per_minute": 3044.76205724423,
+    "volume_per_minute": 3058.3420664197897,
+    "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+  },
+  "last20": 60859.0
+}

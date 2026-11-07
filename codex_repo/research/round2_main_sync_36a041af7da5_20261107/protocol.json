@@ -1,0 +1,97 @@
+{
+  "upstream_commit": "36a041af7da57060f5cafe5bcc4f4772c23cd31b",
+  "candidates": [
+    {
+      "name": "round2_transfer",
+      "file": "logs\\round2_main_sync\\36a041af7da5\\sources\\round2_transfer.py",
+      "risk": "native",
+      "source_sha256": "c87f92f1de5c4cab5e18f0aff1c4112a3f4cee808343ce696aea5535435527e7",
+      "upstream_file": "strategies/round2/round2_transfer.py",
+      "registry_sha256": "c87f92f1de5c4cab5e18f0aff1c4112a3f4cee808343ce696aea5535435527e7"
+    },
+    {
+      "name": "round2_strict100",
+      "file": "logs\\round2_main_sync\\36a041af7da5\\sources\\round2_strict100.py",
+      "risk": "strict100",
+      "source_sha256": "877df4848527e64a6d21e5fb9bf23dc0c5b81d3e5fc28cba71cc7e883a33255c",
+      "upstream_file": "strategies/round2/round2_strict100.py",
+      "registry_sha256": "877df4848527e64a6d21e5fb9bf23dc0c5b81d3e5fc28cba71cc7e883a33255c"
+    },
+    {
+      "name": "round2_fast_adapt",
+      "file": "logs\\round2_main_sync\\36a041af7da5\\sources\\round2_fast_adapt.py",
+      "risk": "native",
+      "source_sha256": "8149296827f682c3c7a939bb9e747c30522553601be18a0564daa8fb01367819",
+      "upstream_file": "strategies/round2/round2_fast_adapt.py",
+      "registry_sha256": "8149296827f682c3c7a939bb9e747c30522553601be18a0564daa8fb01367819"
+    },
+    {
+      "name": "round2_dual_memory",
+      "file": "logs\\round2_main_sync\\36a041af7da5\\sources\\round2_dual_memory.py",
+      "risk": "native",
+      "source_sha256": "9da7815ffdd95ee07f2af0768f9e2565784a910f3a2205e2d0e88bd03a6ad371",
+      "upstream_file": "strategies/round2/round2_dual_memory.py",
+      "registry_sha256": "9da7815ffdd95ee07f2af0768f9e2565784a910f3a2205e2d0e88bd03a6ad371"
+    },
+    {
+      "name": "round2_guarded_trend",
+      "file": "logs\\round2_main_sync\\36a041af7da5\\sources\\round2_guarded_trend.py",
+      "risk": "strict80",
+      "source_sha256": "e75344f2c049e3f30141dcca0751b1809eb15288e4fd11ad258a0ae5c2744e41",
+      "upstream_file": "strategies/round2/round2_guarded_trend.py",
+      "registry_sha256": "e75344f2c049e3f30141dcca0751b1809eb15288e4fd11ad258a0ae5c2744e41"
+    },
+    {
+      "name": "round2_flat",
+      "file": "logs\\round2_main_sync\\36a041af7da5\\sources\\round2_flat.py",
+      "risk": "strict100",
+      "source_sha256": "2e386e9f37b28e88f664fccd614f71b1f84bc11ea39be4dfe0f3a045ac00612d",
+      "upstream_file": "strategies/round2/round2_flat.py",
+      "registry_sha256": "2e386e9f37b28e88f664fccd614f71b1f84bc11ea39be4dfe0f3a045ac00612d"
+    }
+  ],
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "objective": "Improve current upstream-main models by at least10000; additionally require10000 over existing local296715 to avoid claiming stale-main progress.",
+  "local_reference": "strategies/round2/round2_local_296715.py",
+  "local_reference_sha256": "33ec43e71347d9bf3ea81e7ee48c2bfd48d2310abc784a33c1ed614f5218fd55",
+  "local_reference_pnl": 296715,
+  "increment": 10000,
+  "market_windows": {
+    "largest_25s_drop": {
+      "start_us": 3850000067,
+      "end_us": 3875000067,
+      "start_mid": 9853.5,
+      "end_mid": 9731.5,
+      "drop_ticks": 122.0
+    },
+    "largest_100s_drop": {
+      "start_us": 3850000067,
+      "end_us": 3950000067,
+      "start_mid": 9853.5,
+      "end_mid": 9707.0,
+      "drop_ticks": 146.5
+    }
+  },
+  "limitations": "Consumed public tape; price windows descriptive, not future inputs or trading switches. User clarification about drop pending. Main snapshot does not claim future commits already monitored."
+}

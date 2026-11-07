@@ -1,0 +1,11 @@
+{
+  "candidate": {
+    "name": "huber6.0",
+    "file": "logs\\round2_t2_robust_shocks\\sources\\huber6.0.py",
+    "source_sha256": "088c20f7cf726b9e1e5047e2adc8c305e5c2a9ed0f1064aced4b097042f608f6",
+    "risk": "strict100"
+  },
+  "selection_rule": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "goal": 306715,
+  "scope": "Consumed public first80%; no new holdout and no server access."
+}

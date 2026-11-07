@@ -1,0 +1,42 @@
+{
+  "goal": 306715,
+  "candidates": [
+    {
+      "name": "huber3.0",
+      "file": "logs\\round2_t2_robust_shocks\\sources\\huber3.0.py",
+      "source_sha256": "ccca1614f75e5d00c8a105a1111e7fd1bfb2bb867fd03e1fd4a36df9dd411f1b",
+      "risk": "strict100"
+    },
+    {
+      "name": "huber6.0",
+      "file": "logs\\round2_t2_robust_shocks\\sources\\huber6.0.py",
+      "source_sha256": "088c20f7cf726b9e1e5047e2adc8c305e5c2a9ed0f1064aced4b097042f608f6",
+      "risk": "strict100"
+    }
+  ],
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "scope": "Consumed public first80%; no new holdout and no server access.",
+  "hypothesis": "Current user goal>=10k from upstream main, conservative local-cycle target306715. From304476 whose drawdown rose10880: robust weighted ridge with Huber residual threshold3/6 on matured400ms labels using forecasts stored at observation. Same weight in mass/covariance/xy; no crash-time or direction switches. Two frozen cases.",
+  "selection": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "reference": "Frozen 167412 composite remains unchanged; no automatic promotion from prefix alone."
+}

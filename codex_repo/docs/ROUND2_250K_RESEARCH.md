@@ -1,6 +1,12 @@
+# Historical research: earlier250k and supplied-plus50k goals
+
+The user superseded these targets with evolving-main improvements of at least10k.
+See [current objective and evidence](ROUND2_MAIN_PLUS10K.md). Historical frozen
+protocols and scores below are preserved.
+
 # Round 2: supplied liquidity model plus50,000 (target319,920)
 
-## Current verified improvement:296,715
+## Prior checkpoint:296,715
 
 No-passive plus ridge3x reached296715, with native CLI matching every audited
 result field. Source `strategies/round2/round2_local_296715.py`, SHA256

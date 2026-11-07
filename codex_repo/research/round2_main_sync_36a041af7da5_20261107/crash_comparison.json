@@ -1,0 +1,174 @@
+{
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "windows": {
+    "1": {
+      "start_us": 3873000067,
+      "end_us": 3874000067,
+      "start_mid": 9832.0,
+      "end_mid": 9736.5,
+      "drop_ticks": 95.5
+    },
+    "2": {
+      "start_us": 3873000067,
+      "end_us": 3875000067,
+      "start_mid": 9832.0,
+      "end_mid": 9731.5,
+      "drop_ticks": 100.5
+    },
+    "5": {
+      "start_us": 3869000067,
+      "end_us": 3874000067,
+      "start_mid": 9845.0,
+      "end_mid": 9736.5,
+      "drop_ticks": 108.5
+    },
+    "25": {
+      "start_us": 3849000067,
+      "end_us": 3874000067,
+      "start_mid": 9859.0,
+      "end_mid": 9736.5,
+      "drop_ticks": 122.5
+    },
+    "100": {
+      "start_us": 3936000067,
+      "end_us": 4036000067,
+      "start_mid": 9744.0,
+      "end_mid": 9587.5,
+      "drop_ticks": 156.5
+    }
+  },
+  "models": {
+    "reference296715": {
+      "net_pnl": 296715.0,
+      "source_sha256": "33ec43e71347d9bf3ea81e7ee48c2bfd48d2310abc784a33c1ed614f5218fd55",
+      "windows": {
+        "1": {
+          "pnl_inside": 9243.0,
+          "pnl_outside": 287472.0
+        },
+        "2": {
+          "pnl_inside": 8842.0,
+          "pnl_outside": 287873.0
+        },
+        "5": {
+          "pnl_inside": 10375.0,
+          "pnl_outside": 286340.0
+        },
+        "25": {
+          "pnl_inside": 14371.0,
+          "pnl_outside": 282344.0
+        },
+        "100": {
+          "pnl_inside": 20131.0,
+          "pnl_outside": 276584.0
+        }
+      },
+      "sampled_max_drawdown": {
+        "amount": 6012.0,
+        "start_s": 2714.0,
+        "end_s": 2764.0
+      }
+    },
+    "flow304476": {
+      "net_pnl": 304476.0,
+      "source_sha256": "bbf2558137756bc7ce1f0daf332c4438fa1ef3afb74f1cd1bcd8f5dfac5f1780",
+      "windows": {
+        "1": {
+          "pnl_inside": 9243.0,
+          "pnl_outside": 295233.0
+        },
+        "2": {
+          "pnl_inside": 8842.0,
+          "pnl_outside": 295634.0
+        },
+        "5": {
+          "pnl_inside": 10175.0,
+          "pnl_outside": 294301.0
+        },
+        "25": {
+          "pnl_inside": 14824.0,
+          "pnl_outside": 289652.0
+        },
+        "100": {
+          "pnl_inside": 19942.0,
+          "pnl_outside": 284534.0
+        }
+      },
+      "sampled_max_drawdown": {
+        "amount": 10880.0,
+        "start_s": 5398.0,
+        "end_s": 5400.0
+      }
+    },
+    "depth310978": {
+      "net_pnl": 310978.0,
+      "source_sha256": "650f3ed7910f33c2e3f38ac81bd49a32744a310f30b1ce51d78e0721156aae25",
+      "windows": {
+        "1": {
+          "pnl_inside": 9243.0,
+          "pnl_outside": 301735.0
+        },
+        "2": {
+          "pnl_inside": 8842.0,
+          "pnl_outside": 302136.0
+        },
+        "5": {
+          "pnl_inside": 9975.0,
+          "pnl_outside": 301003.0
+        },
+        "25": {
+          "pnl_inside": 13986.0,
+          "pnl_outside": 296992.0
+        },
+        "100": {
+          "pnl_inside": 21297.0,
+          "pnl_outside": 289681.0
+        }
+      },
+      "sampled_max_drawdown": {
+        "amount": 10880.0,
+        "start_s": 5398.0,
+        "end_s": 5400.0
+      }
+    },
+    "robust316031": {
+      "net_pnl": 316031.0,
+      "source_sha256": "088c20f7cf726b9e1e5047e2adc8c305e5c2a9ed0f1064aced4b097042f608f6",
+      "windows": {
+        "1": {
+          "pnl_inside": 9243.0,
+          "pnl_outside": 306788.0
+        },
+        "2": {
+          "pnl_inside": 8842.0,
+          "pnl_outside": 307189.0
+        },
+        "5": {
+          "pnl_inside": 10175.0,
+          "pnl_outside": 305856.0
+        },
+        "25": {
+          "pnl_inside": 14881.0,
+          "pnl_outside": 301150.0
+        },
+        "100": {
+          "pnl_inside": 20223.0,
+          "pnl_outside": 295808.0
+        }
+      },
+      "sampled_max_drawdown": {
+        "amount": 10880.0,
+        "start_s": 5398.0,
+        "end_s": 5400.0
+      }
+    }
+  },
+  "scope": "One-second sampled diagnostics on consumed public tape; no time rules in strategies",
+  "rebound_5398_5400": {
+    "start_s": 5398,
+    "end_s": 5400,
+    "start_mid": 9569.0,
+    "end_mid": 9682.5,
+    "rise_ticks": 113.5
+  }
+}

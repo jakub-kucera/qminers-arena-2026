@@ -1,48 +1,50 @@
 # Handoff for the next session
 
-## Active objective: supplied liquidity T2 plus50,000
+## Latest goal: evolving main plus at least10k, with price-crash diagnostics
 
-The user superseded the250k goal with beating their supplied
-`t2_liquidity_features` file by at least50,000. Unchanged reference verified
-**269,920**, hence target **319,920**. Do not complete merely at250k.
-Exact supplied source: research/round2_t2_liquidity_supplied_20261107/original_submission.py.
-SHA25654658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4.
-Native CLI/audit match all fields; actual/potential100, fees0, drawdown4658,
-first80=209280,final20=60640. All public data consumed; no new holdout.
-Current improved best **296,715** (+26,795), still23,205 short of319,920.
-Source strategies/round2/round2_local_296715.py, SHA256
-33ec43e71347d9bf3ea81e7ee48c2bfd48d2310abc784a33c1ed614f5218fd55.
-No-passive T2 with strict100 and ridge max(30,0.003*mass) instead of
-max(10,0.001*mass). Same33features,400ms target,50ms IOC pacing and spread1.
-Native CLI/audit parity; fees0, maxactual/potential100, drawdown6012,
-first80=226129,final20=70586, filled orders2335, volume271946.
+The user superseded319920 with improving main models by at least10000 as main
+improves, and confirmed that "drop" means sharp price decline. Fresh fetches
+still show origin/main36a041af7da57060f5cafe5bcc4f4772c23cd31b in the same repo.
+All6 active-registry references were audited on full native round2: no-trade0,
+guarded trend-6116 (independent CLI parity), others-229801 to-267529.75.
+There are no newer T2 models in current remote main. Preserve exact snapshots.
 
-Latest15 fixed cases across4 studies completed:
-- noquote_combo: ridge3x winner full296715. Flow0.2/0.3 and flow0.2+ridge3x
-  had weaker declared later-period score, despite higher totalprefix in some.
-- forecast_calibration: stored past raw forecasts,400ms causal labels, narrow
-  spread only, slopeprior20/cap0.5..1.5, memory300/1800 and blend50/100%.
-  Winner300s/50% full285091, native parity; not promoted.
-- inventory_response: skew0.1/.25/.5/.75 all worse prefix. Strongest lost488322;
-  no full replay. Do not fine-tune this failed family blindly.
-- training_spread: wide-label weights0/.25/.5; weight0 winner full292908,
-  native parity, not promoted. Early period weaker despite stronger later gain.
-All138 tests passed. All scheduled processes terminal; no live sessions.
-Archives research/round2_t2_<study>_20261107 contain source/protocol/results.
+Current-cycle criterion met at **316,031**: +19,316 over the stronger local
+reference296,715, exceeding the conservative306,715 guard. This does not
+claim future main commits have already been evaluated. Before further work,
+fetch main, inspect new commit diffs/README/HANDOFF and new models (not only
+registry entries); benchmark any newer relevant baseline on the same tape.
 
-Next useful structural hypothesis: encode aggressive-flow magnitude as well
-as its current normalized ratio, with causal bounded signed-volume features
-on a small set of horizons. Alternatively ensemble broad/narrow learners
-with a predeclared causal weighting rule; do not assume their gains add.
-Avoid further tiny parameter grids on known full scores. All public data is
-consumed, no unseen validation claims. Goal319920 overrides the stale system
-string250k. Original reference269920 remains unchanged, all fees/latency native.
+Exact source strategies/round2/round2_local_316031.py; SHA256
+088c20f7cf726b9e1e5047e2adc8c305e5c2a9ed0f1064aced4b097042f608f6.
+Native audit/CLI agree all fields. Fees0, actual/potential100, first80=253707,
+final20=62324, drawdown10880, fills2352, volume284784. Output copy is under
+outputs/round2-local-316031 with verified_result/current_goal_result/analysis.
 
-Current studies and completion are documented at the top of
-[research](docs/ROUND2_250K_RESEARCH.md). Native matching, latency and fees stay
-unchanged. No competition server, email or submission is authorized. Research
-branch Git pushes remain authorized. An earlier167412 file was emailed once
-at explicit request; do not email newer models.
+Architecture: no-passive35feature ridge3x,400ms labels,50ms IOC pace, spread1
+execution; adds500ms signed flow magnitude and sqrt intensity to liquidityT2.
+Huber6 residual weighting uses forecasts stored at observation and matured
+labels, weighting all sufficient statistics equally. No crash-time gates.
+It does not include the depth feature from the separate310978 alternative.
+
+Price-crash diagnostics: largest1s-sampled100s decline156.5ticks at3936–4036s.
+New/reference gain inside20223/20131, outside295808/276584 (+19224 outside).
+The worst drawdown10880 is at5398–5400s, during a113.5tick upward midpoint
+rebound. Risk is higher than old296715's6012 despite better PnL; disclose it.
+Mirror price20000-p, sideB/A swap produced identical316031 and all6001 PnL
+samples, zero fee and strict100. This is synthetic consumed data, not holdout.
+
+Latest studies: flow_magnitude500ms full304476; dual_head_v2 blend50% full297209;
+impact_ablation magnitude+depth full310978; robust_shocks Huber6 full316031.
+All were selected by positive30–60 and60–80 and maximum combined gain before
+full replay. Early studies retain historical319920 goal in frozen protocols;
+later studies use306715. See docs/ROUND2_MAIN_PLUS10K.md and research archives.
+All146 tests passed. Every replay is terminal; no live process remains.
+
+Do not access competition server or send emails/submissions. Earlier167412
+email was explicitly one-time. Research-branch Git pushes remain authorized.
+Do not alter original simulator/rules or immutable historical source files.
+All public data consumed; no guaranteed unseen superiority or private score.
 
 ## Historical checkpoint: 167,412 local result, no server access
 

@@ -1,0 +1,15 @@
+{
+  "candidate": {
+    "name": "narrow_blend0.5",
+    "file": "logs\\round2_t2_dual_head_v2\\sources\\narrow_blend0.5.py",
+    "source_sha256": "5f14a5d7c564db590a07e0c0a37cad68fe536108c46a49a251c2dbdef8064e11",
+    "risk": "strict100"
+  },
+  "selection_rule": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "goal": {
+    "reference_audit": "logs/round2_t2_liquidity_supplied/full_audit.json",
+    "reference_source_sha256": "54658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4",
+    "increment": 50000
+  },
+  "scope": "Consumed public first80%; no new holdout and no server access."
+}

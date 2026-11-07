@@ -1,12 +1,15 @@
 # ThatsMyQuant: Algo Trade Arena
 
-Current user objective: beat the supplied liquidity-feature T2 by **at least50,000**
-local native net PnL. Its unchanged verified score is **269,920**, so the target
-is **319,920**, superseding the earlier250k goal. The target remains active.
-See [research](docs/ROUND2_250K_RESEARCH.md). Competition server access remains off.
-Current verified best: **296,715**, **+26,795** above the supplied reference,
-with zero penalties. [Exact candidate](strategies/round2/round2_local_296715.py).
-Still23,205 below the requested319,920; no unseen-data superiority is claimed.
+Current objective: improve evolving **main** models by **at least10,000**, with
+explicit attention to sharp price declines. See
+[current main/+10k research](docs/ROUND2_MAIN_PLUS10K.md).
+Current-cycle result: **316,031**, **+19,316** over the stronger local296,715
+reference. [Exact verified candidate](strategies/round2/round2_local_316031.py).
+The latest fetched main remains36a041a; its active references were audited.
+Native CLI parity, zero fees, actual/potential100; sampled drawdown10,880
+versus6,012 for the prior reference. Synthetic mirror has the same PnL curve.
+No unseen-data superiority is claimed. Competition server access remains off.
+Earlier319920 goal was superseded; future main commits need fresh comparison.
 
 Start with [HANDOFF.md](HANDOFF.md). The next-round workflow is in
 [docs/ROUND2_PLAN.md](docs/ROUND2_PLAN.md); the organizer's original documentation

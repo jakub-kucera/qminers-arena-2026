@@ -1,0 +1,20 @@
+{
+  "current_main_commit": "36a041af7da57060f5cafe5bcc4f4772c23cd31b",
+  "observed_utc": "2026-11-07T22:53:32.875674+00:00",
+  "main_active_best": -6116,
+  "main_control": 0,
+  "local_cycle_reference": 296715,
+  "local_cycle_target": 306715,
+  "candidate": 316031,
+  "improvement": 19316,
+  "local_increment_requirement_met": true,
+  "source_sha256": "088c20f7cf726b9e1e5047e2adc8c305e5c2a9ed0f1064aced4b097042f608f6",
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "native_cli_parity": true,
+  "mirror_pnl": 316031,
+  "mirror_curve_identical": true,
+  "mirror_points": 6001,
+  "drawdown": 10880.0,
+  "outside_largest_100s_drop_gain": 19224,
+  "limitations": "Consumed public data and synthetic mirror; not independent validation. Ongoing future main changes have not been evaluated."
+}
