@@ -113,3 +113,13 @@ Trials so far (this worktree): 4 experiments, 34 cells.
 ### 21:05: R2-FH1 (the user's other session, `.claude/worktrees/fable-r2-cascade/python/bots/qminers/candidates/r2_FH1_flow_stop.py`, not in main)
 - The flow holder: R2-M2's rule (hold 100 lots the way of the last 500+-lot aggressor, IOC flips) plus STOP 3 (flatten after 3 ticks against the position since the signal). round2_public 132,005 (in 109,253 / out 22,752), the mirrored public 132,005 (symmetric), **round1.csv -159,378** (no self-gate; R2-M2 with its gate -1,242); validate OK. Riskier than M2 on a calm private tape; usable only with M2's gate.
 - Suggested upload order (the user, exploration against exploitation): R2-V2 (the likely final and the decisive question after E2's -41.5k), then R2-M2 (the other family), then re-upload the chosen final last.
+### R2-V1 / R2-V2, 20:05 (`python/bots/qminers/candidates/r2_V1_vol_exposure.py`, `r2_V2_vol_exposure_dz18.py`; the trend agent's)
+- R2-E2 plus an exposure that follows the tape's speed: at every valid book, exposure = clip(100 x (2.5 / fast)^2, 10, 100), fast the mid's |change| in ticks a second decayed over 5 s; the hedge stays at 100 (VOL_NOHEDGE 1), so a shrinking exposure stops new risk but forces no IOC. Round 1 runs at 1.23 ticks a second (exposure 100 nearly always), round 2 public at 3.22 (1.6-7.4 per 600 s). V1 adds two trend features (mid minus its 2-s / 60-s EWMA) at DEAD_ZONE 0.3; V2 is E2's 29 features at DEAD_ZONE 0.18.
+- | tape | V1 | **V2** | E2 (30 lots) | E2 at 100 lots |
+  |---|---|---|---|---|
+  | round 2 public (in / out) | 169,262.76 (127,172 / 42,091) | **167,288.05 (125,149 / 42,139)** | 47,098 (35,094 / 12,004) | -87,574 |
+  | round 1 public | 670,461.77 | **699,370.05** | 294,949 | 699,697 |
+  | round 1 rebuilt private | 660,398 | **681,633** | 287,960 | 684,271 |
+- Both Python files equal Rust ridge_maker to the byte (pnl.csv, result.json) on both public tapes; validate OK; run time 88-112 s for 6,000 s, 188-220 s for 12,000 s (with a second simulator running).
+- V2 against E2 on round 2, 1,000-s segments: ahead in 6 of 6, t 9.01, worst +12,783. On round 1 V2 is E2 at 100 lots (12 segments, mean -27, t -0.45).
+- Recommended upload: V2 (one rule on E2, no new features; keeps round 1's regime whole). Expect the validation score near twice the public (about 330k) on a round-2-like tape, near round 1's rate (about 700k) on a calm one.

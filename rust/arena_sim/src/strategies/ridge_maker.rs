@@ -103,6 +103,25 @@
 //! the most market lots ahead for KEEP, `KEEP_NOBACK` (0) no new order while a kept one rests. QP_STATS=file appends,
 //! per run, the maker lots by the market lots ahead at the last book.
 //!   R2-Q1 (r2_Q1_keep_slice.py): C12's and --set KEEP_LOTS=20 --set KEEP_TH=0.3
+//! Trend and volatility knobs (R2-T, 7 Nov), off by default (every result above unchanged): `OBS_CAP` (0: 64), the
+//! observations a clock-time model holds before its oldest is dropped unlabelled (64 at the 20-ms interval is 1.28 s:
+//! a HORIZON_US or H2_US past it needs OBS_CAP >= horizon / OBSERVATION_INTERVAL_US); `TREND` (0; 1 adds two base
+//! features, mid minus its EWMA over `TREND_US1` 10000000 and over `TREND_US2` 60000000, each clamped to 20 ticks);
+//! `VOL_EXP` (0: off): the exposure becomes clip(EXPOSURE * (base / fast)^VOL_EXP, `VOL_MIN` 10, `VOL_MAX` 100) at
+//! every valid book, fast the decayed |mid change| ticks a second over `VOL_US` (10000000), base the same over
+//! `VOL_BASE_US` (600000000), or the fixed `VOL_REF` ticks a second when VOL_REF > 0 (round 1 runs at 1.23, round 2
+//! public at 3.22); it moves the quoting, the skew, the withdrawal, the take's room and the hedge, unless
+//! `VOL_NOHEDGE` (0) is 1: the hedge then waits for max(the scaled exposure, EXPOSURE); `LEAN_K` (0: off): the skew
+//! aims at the inventory clip(LEAN_K * forecast, +-exposure) instead of 0, the forecast the second model's own
+//! (`LEAN_SRC` 0: m2 at H2_US, learning even with BLEND_W 0), the quoting's (1), or the side of the last market
+//! order of at least `BIG_LOTS` (500) lots, decayed over `BIG_US` (10000000) (2); `FT_SRC` (0: the quoting's
+//! prediction, the blend included; 1: the second model's alone) drives the forecast take.
+//!   R2-V1 (r2_V1_vol_exposure.py; round2_public.csv 169262.76 / 19,249 fills, round1.csv 670461.77 / 32,167, pnl.csv
+//!       the same bytes): FT1's sets with --set DEAD_ZONE=0.3 --set SKEW_K=0.025 --set QUOTE_SIZE=200 --set KEEP_LOTS=20
+//!       --set KEEP_TH=0.3 --set OBS_CAP=2000 --set TREND=1 --set TREND_US1=2000000 --set TREND_US2=60000000
+//!       --set EXPOSURE=100 --set VOL_EXP=2 --set VOL_REF=2.5 --set VOL_US=5000000 --set VOL_MAX=100 --set VOL_NOHEDGE=1
+//!   R2-V2 (r2_V2_vol_exposure_dz18.py; 167288.05 / 21,637 and 699370.05 / 36,719, the same bytes): R2-V1's sets with
+//!       --set DEAD_ZONE=0.18 --set TREND=0
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -360,6 +379,29 @@ pub struct RidgeMaker {
     /// extra models: 0 the next bid move, 1 the next ask move (SIDE2), 2 / 3 the MH_US1 / MH_US2 mid models (MH)
     ex: Vec<Model>,
     last_mid_change_us: i64,
+    /// round-2 trend knobs (all off by default)
+    obs_cap: usize,
+    trend: i64,
+    trend_us: [i64; 2],
+    trend_e: [f64; 2],
+    trend_time: Option<i64>,
+    exposure_base: i64,
+    vol_exp: f64,
+    vol_us: [i64; 2],
+    vol_min: i64,
+    vol_max: i64,
+    /// per window (fast, base): [decayed |mid change| ticks, decayed microseconds]
+    vol_acc: [[f64; 2]; 2],
+    vol_last: Option<(i64, f64)>,
+    vol_ref: f64,
+    vol_nohedge: bool,
+    big_lots: i64,
+    big_us: i64,
+    /// the last market order of at least BIG_LOTS: (time, sign)
+    big_last: Option<(i64, f64)>,
+    lean_k: f64,
+    lean_src: i64,
+    ft_src: i64,
     /// queue preservation (R2-Q): KEEP_LOTS, KEEP_TH, FRONT_LOTS, FRONT_TH, FRONT_NONE, SLICE_LOTS, SLICE_US
     keep_lots: i64,
     keep_th: f64,
@@ -435,7 +477,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 98] = [
+pub const KEYS: [&str; 114] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -449,6 +491,8 @@ pub const KEYS: [&str; 98] = [
     "UNWIND_LOTS", "UNWIND_AT", "UNWIND_TH", "UNWIND_US", "UNWIND_THRU", "UNWIND_SAFE",
     "FT_EDGE", "FT_SZ", "FT_GAP_MS", "FT_MODE", "FT_INV", "FT_THRU", "FT_NET",
     "PRIOR_MASS", "DUMP_US", "BUCKET", "SIDE2", "SIDE_W", "MH", "MH_US1", "MH_US2", "CLEAR_TH",
+    "OBS_CAP", "TREND", "TREND_US1", "TREND_US2", "VOL_EXP", "VOL_US", "VOL_BASE_US", "VOL_MIN", "VOL_MAX",
+    "LEAN_K", "LEAN_SRC", "FT_SRC", "VOL_REF", "VOL_NOHEDGE", "BIG_LOTS", "BIG_US",
     "KEEP_LOTS", "KEEP_TH", "FRONT_LOTS", "FRONT_TH", "FRONT_NONE", "SLICE_LOTS", "SLICE_US", "LADDER_LOTS", "KEEP_FREE", "KEEP_AHEAD", "KEEP_NOBACK",
 ];
 
@@ -469,7 +513,8 @@ impl RidgeMaker {
                 + if params.int("LAST_AGG", 0)? > 0 { 1 } else { 0 }
                 + if params.int("QUOTEFEAT", 0)? > 0 { 6 } else { 0 }
                 + if params.int("FLOWGRP", 0)? > 0 { 8 } else { 0 }
-                + if params.int("BUCKET", 0)? > 0 { 17 } else { 0 };
+                + if params.int("BUCKET", 0)? > 0 { 17 } else { 0 }
+                + if params.int("TREND", 0)? > 0 { 2 } else { 0 };
         let mh = params.int("MH", 0)?;
         let n = n_base + if mh > 0 { 2 } else { 0 };
         let horizon_us = params.int("HORIZON_US", 100_000)?;
@@ -644,6 +689,29 @@ impl RidgeMaker {
             n_base,
             ex: Vec::new(),
             last_mid_change_us: 0,
+            obs_cap: match params.int("OBS_CAP", 0)? {
+                c if c > 0 => c as usize,
+                _ => OBS_MAXLEN,
+            },
+            trend: params.int("TREND", 0)?,
+            trend_us: [params.int("TREND_US1", 10_000_000)?, params.int("TREND_US2", 60_000_000)?],
+            trend_e: [0.0; 2],
+            trend_time: None,
+            exposure_base: if exposure > 0 { exposure } else { position_limit },
+            vol_exp: params.float("VOL_EXP", 0.0)?,
+            vol_us: [params.int("VOL_US", 10_000_000)?, params.int("VOL_BASE_US", 600_000_000)?],
+            vol_min: params.int("VOL_MIN", 10)?,
+            vol_max: params.int("VOL_MAX", 100)?,
+            vol_acc: [[0.0; 2]; 2],
+            vol_last: None,
+            vol_ref: params.float("VOL_REF", 0.0)?,
+            vol_nohedge: params.int("VOL_NOHEDGE", 0)? != 0,
+            big_lots: params.int("BIG_LOTS", 500)?,
+            big_us: params.int("BIG_US", 10_000_000)?,
+            big_last: None,
+            lean_k: params.float("LEAN_K", 0.0)?,
+            lean_src: params.int("LEAN_SRC", 0)?,
+            ft_src: params.int("FT_SRC", 0)?,
             keep_lots: params.int("KEEP_LOTS", 0)?,
             keep_th: params.float("KEEP_TH", 99.0)?,
             front_lots: params.int("FRONT_LOTS", -1)?,
@@ -1163,7 +1231,9 @@ impl RidgeMaker {
 
     /// v2's `_hedge`: an IOC for |inventory| - EXPOSURE, HEDGE_TICKS through the cached touch, one at a time.
     fn hedge(&mut self, now: i64, ctx: &mut Ctx) {
-        if !self.hedge || self.inventory.abs() <= self.exposure || self.hedge_id.is_some() {
+        // VOL_NOHEDGE: the hedge keeps EXPOSURE's level when the scaled exposure is below it
+        let exposure = if self.vol_nohedge && self.vol_exp != 0.0 { self.exposure.max(self.exposure_base) } else { self.exposure };
+        if !self.hedge || self.inventory.abs() <= exposure || self.hedge_id.is_some() {
             return;
         }
         let Some((bid, ask, time)) = self.cached else { return };
@@ -1172,7 +1242,7 @@ impl RidgeMaker {
         }
         let sign = if self.inventory > 0 { -1 } else { 1 };
         let reserved: i64 = self.orders.iter().filter(|r| r.sign == sign).map(|r| r.quantity).sum();
-        let quantity = (self.inventory.abs() - self.exposure).min(0i64.max(self.position_limit - sign * self.inventory - reserved));
+        let quantity = (self.inventory.abs() - exposure).min(0i64.max(self.position_limit - sign * self.inventory - reserved));
         if quantity <= 0 {
             return;
         }
@@ -1210,6 +1280,25 @@ impl Strategy for RidgeMaker {
         self.last_us = Some(now);
         if self.flowgrp > 0 {
             self.flow_groups(snapshot, trades, elapsed);
+        }
+        if self.lean_k != 0.0 && self.lean_src == 2 {
+            // the market orders of this event, by taker order: the last of at least BIG_LOTS sets the lean's side
+            let mut lots: Vec<(u64, f64, i64)> = Vec::new();
+            for trade in trades {
+                if trade.taker_owner != Owner::Market {
+                    continue;
+                }
+                let sign = if trade.book_side == Side::Sell { 1.0 } else { -1.0 };
+                match lots.iter_mut().find(|(id, _, _)| *id == trade.taker_order_id) {
+                    Some(entry) => entry.2 += trade.quantity,
+                    None => lots.push((trade.taker_order_id, sign, trade.quantity)),
+                }
+            }
+            for (_, sign, q) in lots {
+                if q >= self.big_lots {
+                    self.big_last = Some((now, sign));
+                }
+            }
         }
         let decay = ((-elapsed) as f64 / self.flow_us as f64).exp();
         self.net *= decay;
@@ -1382,6 +1471,40 @@ impl Strategy for RidgeMaker {
             depth5_feat = ratio(tot[0], tot[1]);
         }
 
+        if self.vol_exp != 0.0 {
+            // VOL_EXP: EXPOSURE scaled by (base rate / fast rate)^VOL_EXP of |mid change| ticks per second, the
+            // base the VOL_BASE_US rate, or VOL_REF ticks a second when that is set
+            if let Some((t, m)) = self.vol_last {
+                let dt = (now - t).max(0) as f64;
+                let mv = (mid - m).abs();
+                for k in 0..2 {
+                    let d = (-dt / self.vol_us[k] as f64).exp();
+                    self.vol_acc[k][0] = self.vol_acc[k][0] * d + mv;
+                    self.vol_acc[k][1] = self.vol_acc[k][1] * d + dt;
+                }
+            }
+            self.vol_last = Some((now, mid));
+            let rate = |a: [f64; 2]| if a[1] > 0.0 { a[0] / a[1] } else { 0.0 };
+            let fast = rate(self.vol_acc[0]);
+            let base = if self.vol_ref > 0.0 { self.vol_ref * 1e-6 } else { rate(self.vol_acc[1]) };
+            self.exposure = if fast > 0.0 && base > 0.0 {
+                ((self.exposure_base as f64 * (base / fast).powf(self.vol_exp)).round() as i64).clamp(self.vol_min, self.vol_max)
+            } else {
+                self.exposure_base
+            };
+        }
+        if self.trend > 0 {
+            match self.trend_time {
+                Some(t) => {
+                    let dt = (now - t).max(0) as f64;
+                    for k in 0..2 {
+                        self.trend_e[k] += (1.0 - (-dt / self.trend_us[k] as f64).exp()) * (mid - self.trend_e[k]);
+                    }
+                }
+                None => self.trend_e = [mid; 2],
+            }
+            self.trend_time = Some(now);
+        }
         let spread_f = spread as f64;
         let mut skew = self.skew_k * self.inventory as f64 / self.exposure as f64 * spread_f.max(1.0);
         if self.skew2_k != 0.0 {
@@ -1509,6 +1632,11 @@ impl Strategy for RidgeMaker {
                 features[k + 16] = if s1 { imbalance } else { 0.0 };
             }
         }
+        if self.trend > 0 {
+            let k = self.n_base - 2;
+            features[k] = clamp(mid - self.trend_e[0], -20.0, 20.0);
+            features[k + 1] = clamp(mid - self.trend_e[1], -20.0, 20.0);
+        }
         let n = self.n_base;
         if self.std_on > 0 {
             let d = ((-elapsed) as f64 / self.std_us as f64).exp();
@@ -1539,7 +1667,8 @@ impl Strategy for RidgeMaker {
         }
         let n = self.n;
         self.learn(0, now, mid);
-        if self.blend_w > 0.0 {
+        let m2_on = self.blend_w > 0.0 || (self.lean_k != 0.0 && self.lean_src == 0) || self.ft_src == 1;
+        if m2_on {
             self.learn(1, now, mid);
         }
         if self.side2 > 0 {
@@ -1547,19 +1676,19 @@ impl Strategy for RidgeMaker {
             self.learn(3, now, ask as f64);
         }
         if now - self.last_observation_us >= self.observation_interval_us {
-            if self.label_mode == 0 && self.m1.observations.len() == OBS_MAXLEN {
+            if self.label_mode == 0 && self.m1.observations.len() >= self.obs_cap {
                 self.m1.observations.pop_front();
             }
             self.m1.observations.push_back((now, mid, features, self.mid_changes));
-            if self.blend_w > 0.0 {
-                if self.m2.observations.len() == OBS_MAXLEN {
+            if m2_on {
+                if self.m2.observations.len() >= self.obs_cap {
                     self.m2.observations.pop_front();
                 }
                 self.m2.observations.push_back((now, mid, features, self.mid_changes));
             }
             if self.side2 > 0 {
                 for (j, v) in [(0usize, bid as f64), (1, ask as f64)] {
-                    if self.ex[j].observations.len() == OBS_MAXLEN {
+                    if self.ex[j].observations.len() >= self.obs_cap {
                         self.ex[j].observations.pop_front();
                     }
                     self.ex[j].observations.push_back((now, v, features, self.mid_changes));
@@ -1567,7 +1696,7 @@ impl Strategy for RidgeMaker {
             }
             if self.mh > 0 {
                 for j in [2usize, 3] {
-                    if self.ex[j].observations.len() == OBS_MAXLEN {
+                    if self.ex[j].observations.len() >= self.obs_cap {
                         self.ex[j].observations.pop_front();
                     }
                     self.ex[j].observations.push_back((now, mid, features, self.mid_changes));
@@ -1588,6 +1717,28 @@ impl Strategy for RidgeMaker {
                 prediction = (1.0 - self.blend_w) * prediction + self.blend_w * p2;
             }
         }
+        // the second model's own forecast (LEAN_SRC 0, FT_SRC 1)
+        let p2_only = if m2_on && self.m2.labels >= self.min_labels {
+            clamp(py_sum(self.m2.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x)), -2.0, 2.0)
+        } else {
+            0.0
+        };
+        // LEAN_K: the skew aims at an inventory target that follows the slow forecast instead of at 0
+        let skew = if self.lean_k != 0.0 {
+            let src = match self.lean_src {
+                0 => p2_only,
+                2 => match self.big_last {
+                    Some((t, sign)) => sign * (-((now - t).max(0) as f64) / self.big_us as f64).exp(),
+                    None => 0.0,
+                },
+                _ => prediction,
+            };
+            let e = self.exposure as f64;
+            let target = clamp(self.lean_k * src, -e, e);
+            self.skew_k * (self.inventory as f64 - target) / e * spread_f.max(1.0)
+        } else {
+            skew
+        };
         let mut fair = mid + self.pred_mix * prediction + 0.0 * 0.25 * spread_f * imbalance - skew;
         let raw = fair;
         if self.fill_learn && self.fill_q > 0 {
@@ -1830,7 +1981,8 @@ impl Strategy for RidgeMaker {
             }
         }
         if self.ft_sz > 0 && self.m1.labels >= self.min_labels && now - self.ft_last >= self.ft_gap_ms * 1000 {
-            let signal = if self.ft_net > 0 { prediction - skew } else { prediction };
+            let source = if self.ft_src == 1 { p2_only } else { prediction };
+            let signal = if self.ft_net > 0 { source - skew } else { source };
             let need = self.ft_edge + 0.5 * spread_f;
             let sign = if signal > need {
                 1
