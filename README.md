@@ -437,6 +437,12 @@ naming the cells with a breach penalty or rejected orders, and `arena.grid`'s ax
 on the lowest or highest of a numeric axis' three or more values: widen it). `--out` writes one row per cell
 and the baseline with every number above and the per-file PnL. A cell whose bot raises shows its error.
 
+**The same grid in Rust**, for a strategy with a Rust version (`trend_follower`, `fallback_maker`, the F1
+candidate): `uv run python -m arena.qsim_rust fallback_maker data/sample.csv.gz --grid QUOTE=2,3,5 --grid
+LIMIT=30,50 --threads 4` prints this table from `rust/arena_sim`, the simulator ported to give the same numbers
+to the bit, 70-90 times faster a run ([rust/README.md](rust/README.md), "arena_sim"). The keys are the Python
+file's globals (`QUOTE`, `LIMIT`, `SKEW`, `WIND_DOWN_S`, `SESSION_S`).
+
 ## Compare bots
 
 `arena.grid` varies settings inside one file. `arena.compare` runs several bot files, or variants of

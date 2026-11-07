@@ -110,3 +110,42 @@ A new twin needs four things:
 - cases in `python/experiments/rust_bench.py`, run by `python/tests/test_rust.py`.
 
 **A new format's template is a twin by config instead**, with no Rust file of its own, when its ADAPTER makes the same choices as one of ours (`Adapter` in `src/bots/template.rs`). There are six: `units` (the engine's prices are in `Day.info`'s unit, so STRATEGY sees ticks), `names` (trades name their traders), `own_trades` (our fills join the trades, as Prosperity's `own_trades`), `exchange_limit` (the limit from the exchange, not PARAMS), `exchange_order` (products in the exchange's order) and `sorted_resting` (resting orders sorted by time and id). `"prosperity"` and `"drill"` are presets. Its row is `{"kind": "template", "format": "<name>", "adapter": "drill" or {the choices}, "rust": "rust/src/bots/template.rs", "reads": ["DEFAULTS", "PARAMS"], "sha256": ""}`. Then `uv run python -m experiments.rust_bench --twin FILE --data D --days ... --format F --record` runs 32 cases on its own data, in both engines: the committed settings in five modes and against a copy (6), and each part of STRATEGY on its first two products (26). It records the hash only if every case is identical. A test rehearses it on a copy of the drill template, and shows that one wrong choice is caught.
+
+## arena_sim: the Arena's exchange simulator
+
+`rust/arena_sim/` is a second crate in the workspace (`cargo build --release --workspace` builds both; the
+`arena-rs` crate is unchanged): the competition's own simulator, `simulator/simulator.py` with `models.py`,
+`strategy.py` and `main.py`'s rules (5 ms accept delay, limit 100, potential-position cap 1,000, 10,000 a second
+over the limit), ported step for step, and Rust versions of strategies behind a `Strategy` trait
+(`on_book(snapshot, trades, ctx)`, `on_private(event, ctx)`; `ctx.send_order`, `cancel_order`, `modify_order`,
+`now_us`). It is not a twin in `rust/twins.json`: its Python is theirs, and `python/tests/test_arena_rust.py` is
+its parity check.
+
+```sh
+cargo run --release -p arena_sim --manifest-path rust/Cargo.toml -- --backtest data/sample.csv --strategy fallback_maker \
+    [--params '{"QUOTE": 3}'] [--log-dir DIR] [--repeat 20]    # their CLI's lines; result.json and pnl.csv with --log-dir
+uv run python -m arena.qsim_rust fallback_maker data/sample.csv.gz --grid QUOTE=2,3,5,8 --grid LIMIT=20,30,50,80 --threads 4
+```
+
+| File | What it copies |
+|---|---|
+| `src/data.rs` | `iter_backtest`: `Time` to µs as `int(round(float(t) * 1_000_000))`, `Insert`/`Cancel`, `B`/`A`, `Lifespan` `F` an IOC (else resting); the tape is read once and shared by a grid's runs. Plain CSV only, as theirs (`arena.qsim_rust` unpacks a `.gz`) |
+| `src/sim.rs` | `OrderBook` and `ExchangeSimulator`: per row, our pending sends, cancels and modifies due by its time in ready order at their ready time (what the strategy queues meanwhile waits for the next row, as theirs does), the penalty integral and 1-s PnL samples, the row (every insert a taker first, then resting if `G`), then `on_book`. Price-time FIFO, our orders at the back, our takers skip our own resting orders, a modify shrinks in place, a tape cancel of an order already consumed is ignored; the private events in the same order with the same fields, during matching; the cap `\|I + s(R+q)\| > 1000`; the markout, `mark_price`, the quantiles, `fills`, `traded_volume`, `pnl_curve`. The run and CSV logs are not ported (a `--no-logs` run) |
+| `src/py.rs` | `repr(float)`, `f"{x:.2f}"`, and `statistics.stdev`, which is exact: the variance of the floats as fractions (a small big-integer), its square root correctly rounded, as CPython's `_float_sqrt_of_frac` |
+| `src/strategies/` | `trend_follower.rs` (`strategies/trend_follower.py`; Rust-only `QUANTITY`, `MIN_NET`), `fallback_maker.rs` (`python/bots/qminers/candidates/r0_F1_fallback.py`: `QUOTE`, `LIMIT`, `SKEW`, `WIND_DOWN_S`, `SESSION_S`, Rust-only `INSIDE_SPREAD`), `probe.rs` (`python/tests/fixtures/qsim_probe.py`, the parity test's random orders, cancels and modifies). Parameters are a flat JSON object named as the Python file's globals; an unknown key is an error |
+| `src/main.rs` | `arena-sim` (one run, their CLI's lines) and `arena-sim batch` (parameter sets × files on N threads, a JSON line per run with its curve and reject counts, which `python/arena/qsim_rust.py` reads into `arena.qgrid`'s table) |
+
+**Parity** (`python/tests/test_arena_rust.py`, on `data/sample.csv.gz`): trend_follower and F1 as written give
+their CLI's lines and `result.json` and `pnl.csv` byte for byte (pnl 1878.00, 305 fills; -5877.00, 303 fills); F1
+with 60-lot quotes (the penalty and the cap), F1 winding down from half time, and three probe settings (modifies
+valid and not, cancels that lose the race, orders sent mid-activation, over 6,000 fills and a 30M penalty) give
+every result field, the whole PnL curve and both reject counts identical.
+
+**Speed** (the sample, 53,758 rows, one core, measured 7 Nov): trend_follower 151 ms a run in Python, 1.7 ms in
+Rust (90x); F1 274 ms, 3.9 ms (70x); parsing the CSV once is 5 ms more. On 4 threads, F1's 16-cell grid
+(plus the baseline) takes 1.6 s in `arena.qgrid --jobs 4` and 0.2 s in `arena.qsim_rust`, the same table to the
+character; 100 cells take 0.4 s, most of it reading the runs' PnL curves back into Python.
+
+**A new strategy**: a `Strategy` impl in `src/strategies/`, a name in `strategies::make`, its Python file in
+`arena.qsim_rust.STRATEGIES`, and a case in `python/tests/test_arena_rust.py` comparing it with the Python one.
+A change to `simulator/` (a new starter) needs the port checked again: run that test.
