@@ -222,3 +222,12 @@ Trials so far (this worktree): 4 experiments, 34 cells.
 ### 23:20: L3's variants (one change each; round2_public / hi_vol_fast1.25 / hi_vol; L3 294,098 / 922,872 / 804,815; breach 0 in all)
 - TAKE_GAP_MS 20: 291,046 / 934,685 / 799,451; TAKE_GAP_MS 10: 291,848 / 935,778 / 801,763; TAKE_EDGE 0.10: 281,263 / 878,445 / 801,300; both: 281,089 / 888,605 / 784,837 (noise or worse).
 - **R2-L6** (`python/bots/qminers/candidates/r2_L6_pure_flowbias.py`: L3 + the big-flow bias at 0.15, i.e. R2-L2 with QUOTE_SIZE 0): 294,522 / 930,380 / 814,944: ahead of L3 on all three, by +0.1% / +0.8% / +1.3%. Validate OK. A small, consistent edge: worth one upload; keep whichever of L3 / L6 scores higher on validation (near-identical bots, so little selection bias).
+- **R2-L6 on validation (uploaded 23:18, submission a631c405-b9b2-4a39-8563-968dd79fb3bb): +798,269.00** (fills 9,131, volume 1,197,878, breach 0, pnl_se 51,995, 6 min 47.5 s): -5.7k against L3, noise. L3 stays the final.
+
+### 23:35: the last round of L3 variants (round2_public / hi_vol_fast1.25 / hi_vol; L3 294,098 / 922,872 / 804,815)
+- HORIZON_US 300 ms 288,114 / 921,352 / 815,914; 600 ms 254,826 / 867,283 / 734,336.
+- A higher bar for a flip than for an open: +0.05 288,800 / 908,703 / 831,475; +0.15 260,116 / 912,706 / 770,706.
+- Half size when the signal clears the bar by under 0.10 / 0.25: 274,576 / 905,190 / 780,650; 269,480 / 842,416 / 768,328.
+- **A volatility gate** (the take's bar raised by 0.05 per tick/s of the 5-s |mid change| rate above 3): 262,289 / **748,799** / **660,336**; lowered instead: 289,760 / 875,467 / 816,602. The edge is in the bursts: raising the bar there costs 174k on the validation-like tape.
+- **A forecast ensemble** (R2-L7: L5's 37-feature ridge and L3's 33-feature ridge fitted side by side, forecasts averaged with weight ENS_W on L3's): ENS_W 0.3 / 0.5 / 0.7: 281,020 / 880,875 / 816,462; 288,187 / 842,942 / 815,709; 294,169 / 886,631 / 800,670: averaging shrinks the forecasts, so fewer takes clear the fixed bar and the bursts pay less.
+- None beats L3: it sits at a local optimum. **The round-2 final: R2-L3, submission d319b090-4d40-41c4-a8ed-7648f7b630ae (+804,018.00 on validation); mark it final.**
