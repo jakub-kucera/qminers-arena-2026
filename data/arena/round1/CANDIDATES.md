@@ -23,6 +23,7 @@ command in "Trials". Pluses and minuses are measured facts, not hopes.
 | id | file | what it is | pnl per gate mode | held out | worst day | stress worst | max dd | \|pos\| 99.7% | relies on | pluses | minuses | verified | portal |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | A0 | python/bots/qminers/candidates/r1_F3_full_room.py | F3 with SESSION_S 1e9 (never winds down) | +425,553 (one file) | +110,540 | 899 | | 899 | 100 | a 1-tick market where trades barely run (round_start: WEAK, +0.22 ticks at 5 s) | first by far on round 1 (F4 +399k, F2 +273k, F1 +29k; momentum -1.3M to -5.7M); imbalance/depletion filters only cut volume | at +-100 most of the time (q50 98); ends at +100 | n/a | +425,553 (identical) |
+| R1-F8 | python/bots/qminers/candidates/r1_F8_take_join.py | F7 + a limit order taking the last lots of the other side's dying touch (TAKE_LOTS 60, TAKE_DEPLETE 150, TAKE_MS 250) while our own touch holds 800+ lots (TAKE_OWN), ALLOC_K -0.5, and the sweep join only while the flow side's touch holds 400+ lots (JOIN_OWN); chosen on the first 75% (386,964) | +519,027 | +131,947 | | | 519 | 100 (q50 40) | the followers filling a cleared level within 20 ms (71% of clears, 79% when their touch is deep) on a 1-tick tape; the depletion guard's dying state | +22,463 full over F7 (+4.5%), 12 of 12 segments (t 6.73, worst +656), +4,117 on the last 25%, +5,768 on sample_v2 (234,661); drawdown 519 (F7 570) | 3,917 taker fills a round (47k lots at -0.40 ticks, the mid then +0.56 our way): a 2-tick tape fires the take rarely; six new knobs | verifier running (15:10) | |
 | R1-F7 | python/bots/qminers/candidates/r1_F7_signal.py | F6 + a dying touch's room one tick back + joining inside on the flow's side for 50 ms after a 400+ lot sweep, chosen on the first 75% (368,589) | +496,564 | +127,975 | | | | 100 (q50 39) | round 1's momentum after big trades (+0.32 ticks) | +13.5k full over F6, 11 of 12 segments (t 3.66) | +1.6k on the last 25% only; -8k on sample_v2 (no momentum there) | n/a | |
 | R1-F6b | python/bots/qminers/candidates/r1_F6b_alloc.py | F6 + ALLOC_K -0.5 (fewer lots at the back of a long queue), chosen on the first 75% (362,752) | +489,844 | +127,092 | | | | 100 (q50 43) | as F6 | +6.8k over F6, 11 of 12 segments, +1.6k on sample_v2; one knob, nothing cancelled | below the noise bar on the full tape and the last 25% | n/a | |
 | R1-F6 | python/bots/qminers/candidates/r1_F6_two_levels.py | R1-F5 + a second level (LEVELS 2, KEEP_DEPTH 2, SIZE_TOUCH 65, SIZE_DEEP 80, SIZE_NARROW 115, TOPUP 1), chosen on the first 75% (356,715) from a 27-cell plateau | +483,074 | +126,359 | | | | 100 (q50 42) | a 1-tick market (round 1's) | +27k full, +11k last 25%, 4/4 quarters over R1-F5; half the inventory (q50 42 against 95), pnl_se 8,867 | -35k on sample_v2 (a 2-tick market): fails the cross-check | n/a | |
@@ -41,6 +42,11 @@ command in "Trials". Pluses and minuses are measured facts, not hopes.
 
 ## Dropped
 <!-- id, why (with the numbers), the iteration -->
+- H1 JOIN_ANY (`r1_H1_join_any.py`, 15:00): F7's anchor-shifting inside quote after ANY touch clear loses at every window (in 75% 365.0k at 10 ms to 351.8k at 120 ms; F7 368.6k): the anchor shift cancels the deep order on every clear.
+- H2 REDUCE (`r1_H2_reduce_room.py`): a bigger reducing-side quote from |pos| 60-95 is flat at best (369.0k at 100 lots) and loses at 150-200 lots (344-359k).
+- H3 IMB_JOIN (`r1_H3_imb_join.py`): an inside quote on the side whose touch holds 1.5-300x the other's: 355-368k, monotone toward off.
+- INSIDE_POS 80 / 90 on F7: 361.6k / 363.9k (loses on F7, unlike on F6).
+- The non-shifting join (JOIN_LOTS, `r1_H6_combo.py` / `r1_F8_take_join.py` with MOM_JOIN 0): equal to the gated shifting join in 75% (386.9k at 150 lots + JOIN_OWN 400) but 1.5k less on the last 25% and 1.6k less on the full tape: not kept.
 
 ## Queue
 <!-- the next experiments, best first. Each is pre-registered before it runs: id; the mechanism (why it should work in
@@ -52,7 +58,14 @@ this market, one line, from this data); the exact command; the training days; th
 
 ## Trials
 <!-- every experiment run, in order: time; id; command; cells or bots tried; result; kept or dropped; commit -->
-Trials so far: 0 experiments, 0 cells.
+Trials (15:10): 11 experiments, 103 cells, every choice by `in 75%` (F7 368,589); the CSVs in logs/.
+- 14:55 A-D, four builders in parallel (one hypothesis each on F7, `--holdout 0.25 --jobs 3`): A `--grid JOIN_ANY=1 --grid JOIN_MS=10,20,35,50,80,120` then `JOIN_MS=2..20 x MOM_LOTS=400,100000` (16 cells, all lose); B `--grid REDUCE_POS=60,80,95 --grid REDUCE_TOUCH=100,150,200` then `REDUCE_TOUCH=65,80,100 x REDUCE_DEEP=0,40,80,120` (21, flat at best); C `--grid IMB_JOIN=1.5,2,3,5,8,15` then `20,30,50,100,300` (11, all lose); D `--grid TAKE_LOTS=20,40,80 --grid TAKE_MAX=20,40,80` then `TAKE_MAX=100`, `TAKE_MS=100,250,1000 x TAKE_MAX=80,100`, `DEPL_FRAC=0.06,0.2` (21): TAKE 40 / 100 / 250 373.6k, dropped.
+- 14:50 `uv run python -m arena.qgrid r1_F7_signal.py D --grid INSIDE_POS=80,90` (2): 361.6k / 363.9k.
+- 15:00 H5 `--grid ALLOC_K=-0.25,-0.5,-0.75` on F7 (3): 371.7k / 371.7k / 369.4k. H6 `--set TAKE_LOTS=40 --set TAKE_MAX=100 --grid ALLOC_K=-0.25,-0.5` (2): 376.0k / 377.3k.
+- 15:02 H6 gates `--set TAKE_LOTS=40 TAKE_MAX=100 TAKE_MS=250 ALLOC_K=-0.5 --grid TAKE_OWN=0,400,800,1500 --grid TAKE_RATIO=0,1,2` (12): 800 / 0 378.5k; `--grid JOIN_OWN=400,800,1500` (3): 384.1k / 381.4k / 377.3k; `--set TAKE_MAX=1000 TAKE_OWN=800 --grid TAKE_DEPLETE=100,150,200,300 --grid TAKE_LOTS=30,40,60` (12): 150 / 60 380.1k; `--set MOM_JOIN=0 --grid JOIN_LOTS=20,40,65,100 --grid JOIN_MS=50,200` (8): 100 / 50 383.3k; `--set TAKE_LOTS=60 TAKE_DEPLETE=150 --grid JOIN_OWN=100,200,300,400,600` (5): 383.8k / 385.1k / 386.4k / 387.0k / 384.7k.
+- 15:06 F8 `--set MOM_JOIN=0 --grid JOIN_LOTS=100,150,200 --grid JOIN_OWN=0,400` (6): 150 / 400 386.9k, not kept; `--set MOM_JOIN=0 JOIN_LOTS=100 ANY_CLEAR=1 --grid JOIN_OWN=400,800 --grid MOM_MS=20,50` (4): see the row.
+- One-time checks of R1-F8 (`exchange-simulator --no-logs` to logs/r1_F8, `pnl_segments` against logs/r1_F7, sample_v2 to logs/r1_F8_v2, a full-logs run to logs/r1_F8_full with `run_review`): in the board row.
+
 
 ## Verifier verdicts
 <!-- each verifier's report, verbatim, under the candidate's id and the time -->
