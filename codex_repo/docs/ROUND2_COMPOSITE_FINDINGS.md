@@ -1,5 +1,10 @@
 # Round-2 composite research: current target not achieved
 
+**Historical study:** the current target is 150,000 and subsequent adaptive
+models exceed the old 100,000 target. See [current local progress](ROUND2_LOCAL_PROGRESS.md).
+All public data is now consumed; the user prohibits competition server access.
+The remaining text records the earlier static-model experiment, not current status.
+
 The goal remains a good solution reaching at least 100,000 net PnL under the
 native competition metric. No round-2 strategy has been promoted or submitted
 to the website by this research branch. The original matching engine is intact.

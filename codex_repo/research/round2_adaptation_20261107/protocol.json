@@ -1,0 +1,69 @@
+{
+  "scope": "First 80% is now consumed development. Final20% remains reserved.",
+  "candidates": [
+    {
+      "name": "calibrate_slow",
+      "file": "logs\\round2_adaptation\\sources\\calibrate_slow.py",
+      "source_sha256": "f3e86944a1d5727b0084e8553ae4302cb7cc7926e4996bd0f565cf12ad2828e3",
+      "risk": "strict100"
+    },
+    {
+      "name": "calibrate_fast",
+      "file": "logs\\round2_adaptation\\sources\\calibrate_fast.py",
+      "source_sha256": "7b4d766831f29f26b89df6346b7885f6e7f8bf823a8546d3364f6aff9a9a1fde",
+      "risk": "strict100"
+    },
+    {
+      "name": "passive_escape",
+      "file": "logs\\round2_adaptation\\sources\\passive_escape.py",
+      "source_sha256": "d11b0da08382d40a834774ac60461c7df20a2f9f0c99b35781a9f6829aa96f0e",
+      "risk": "strict100"
+    },
+    {
+      "name": "calibrate_fast_escape",
+      "file": "logs\\round2_adaptation\\sources\\calibrate_fast_escape.py",
+      "source_sha256": "2542b6667c854323c44c9e1f69cfdd664fe313d086ba9bfe7d27d3564ac7529e",
+      "risk": "strict100"
+    },
+    {
+      "name": "trend_escape",
+      "file": "logs\\round2_adaptation\\sources\\trend_escape.py",
+      "source_sha256": "cdf21d885949310532e3a050450455ab9c8a1e3f9f7ae84a43b9d8a5ec48ae3e",
+      "risk": "strict100"
+    },
+    {
+      "name": "calibrate_fast_trend",
+      "file": "logs\\round2_adaptation\\sources\\calibrate_fast_trend.py",
+      "source_sha256": "122871d3d6586393a2f9cd0f7a10368cf89026a631b014ddc9a604da1a0e38b2",
+      "risk": "strict100"
+    }
+  ],
+  "data_sha256": "7736799c3b91285fff72e28558e60fa930532cee91342ada939fc0e40a901484",
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "hypotheses": [
+    "Bounded causal 400ms fill-error calibration with slow decay to avoid permanent shutdown",
+    "Permit passive reduction when the gate blocks new exposure",
+    "Fast drift risk control may flatten countertrend positions, paying native costs"
+  ],
+  "selection": "Require positive 30-60m and 60-80m increments, then prefer highest minimum per-minute gain across those windows. No final20% tuning."
+}

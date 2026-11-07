@@ -6,3 +6,5 @@ strategies/round1_penalty_experimental.py -text
 
 strategies/round2/*.py -text
 strategies/round1_quote_flow_624076.py -text
+strategies/round2_big_aggressor_supplied.py -text whitespace=cr-at-eol
+strategies/round2_composite_local.py -text whitespace=cr-at-eol

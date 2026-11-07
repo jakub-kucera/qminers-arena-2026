@@ -1,0 +1,22 @@
+{
+  "scope": "Previously consumed first80%; robustness description, not independent validation.",
+  "choice": "Keep exact supplied defaults. Do not select a different threshold from these probes.",
+  "sources": {
+    "lots400": {
+      "file": "logs\\round2_m2_robustness\\sources\\lots400.py",
+      "sha256": "030357a5193c03570bf8dae8c19bafc5387f51cbe914699c3f257bb080884ed1"
+    },
+    "lots600": {
+      "file": "logs\\round2_m2_robustness\\sources\\lots600.py",
+      "sha256": "6e9f325b315349b5f6612804dc56c662968f59bb825fb963e9096379f0e9bb95"
+    },
+    "gate5": {
+      "file": "logs\\round2_m2_robustness\\sources\\gate5.py",
+      "sha256": "7bb43d57c699dc5cece5d3794bdb9296a77899a8c4687789edcf19bf09e2844d"
+    },
+    "gate20": {
+      "file": "logs\\round2_m2_robustness\\sources\\gate20.py",
+      "sha256": "7413123333e4a5621f6f2b9bb49063db8058e7eae00e6f45b83b7f5a10fae4b9"
+    }
+  }
+}

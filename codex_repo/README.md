@@ -26,6 +26,13 @@ later tuning results are sample-tuned, not independent holdouts.
 
 ## Round-2 preparation
 
+**Current local research:** best full replay **167,412 net PnL**, supplied M2
+**116,620**, adaptive maker **105,829**, all with zero penalties. The updated
+**150,000 local target is exceeded**. All public data has now been consumed.
+Competition website/server access is prohibited by the user. See
+[current progress](docs/ROUND2_LOCAL_PROGRESS.md). The preparation notes below
+describe earlier experiments and are retained as history.
+
 Latest research-branch finding: a composite conditional-fill model reached
 85,435 on the development hour (including its first 30 minutes of training),
 but lost **21,593** on the previously reserved next 20 minutes. It was rejected;

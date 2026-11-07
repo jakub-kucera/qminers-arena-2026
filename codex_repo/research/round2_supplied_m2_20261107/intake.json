@@ -1,0 +1,10 @@
+{
+  "source_sha256": "c969089d0f140f73ba60fbb7ddbca97847c443d68a69bf8a2b058110837ce4ab",
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "source_bytes": 7739,
+  "claimed_pnl": 116620,
+  "claimed_first80": 95379,
+  "claimed_last20": 21241,
+  "status": "User supplied; claimed scores not yet independently verified.",
+  "scope": "Header already reports full public and split results; final segment is not independent of the supplied research."
+}

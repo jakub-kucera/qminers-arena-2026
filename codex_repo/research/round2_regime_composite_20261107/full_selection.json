@@ -1,0 +1,10 @@
+{
+  "candidate": {
+    "name": "mix_300s_gate0",
+    "file": "logs\\round2_regime_composite\\sources\\mix_300s_gate0.py",
+    "source_sha256": "c5feae50878b5e2d60e59ef1e30fd174f3112e7a6bc21aa22c556ffd3064ed4d",
+    "risk": "strict100"
+  },
+  "criterion": "Require positive 30-60m and 60-80m increments. Prefer larger combined net gain in those windows; freeze one before full replay.",
+  "public_data_previously_consumed": true
+}

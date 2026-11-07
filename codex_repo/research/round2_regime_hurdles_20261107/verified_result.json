@@ -1,0 +1,55 @@
+{
+  "status": "Local 150k target achieved; no server submission",
+  "selection": {
+    "name": "mix_60s_gate20",
+    "file": "logs\\round2_regime_hurdles\\sources\\mix_60s_gate20.py",
+    "source_sha256": "c96141d18a50b9280539a90b160f2a1b13acb00ef96cd099a8484e12b4292877",
+    "risk": "strict100"
+  },
+  "result": {
+    "fills": 9909,
+    "traded_volume": 670022,
+    "inventory": -100,
+    "cash": 1136412.0,
+    "mark_price": 9690.0,
+    "breach_penalty": 0.0,
+    "pnl": 167412.0,
+    "pnl_se": 23946.885245378333,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "last20_increment": 16400.0,
+  "max_abs_inventory": 100,
+  "max_potential_inventory": 100,
+  "sampled_max_drawdown": 13138.0,
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "engine_sha256": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+  "source_sha256": "c96141d18a50b9280539a90b160f2a1b13acb00ef96cd099a8484e12b4292877",
+  "official_curve_sha256": "329110303bed928310c6417c98c63be814115f25a21032dc8a1f990d55903fe0",
+  "verification": "Unmodified native CLI and instrumented replay match every result field.",
+  "limitations": "All public data consumed. Parameter sensitivity is not independent validation. No unseen-tape guarantee.",
+  "sensitivity": {
+    "window90_gate20": {
+      "first80": 143718.0,
+      "later30": 38626.0,
+      "last20": 63261.0
+    },
+    "window60_gate15": {
+      "first80": 135938.0,
+      "later30": 38162.0,
+      "last20": 57892.0
+    },
+    "window60_gate25": {
+      "first80": 148100.0,
+      "later30": 45632.0,
+      "last20": 56409.0
+    },
+    "window45_gate20": {
+      "first80": 141652.0,
+      "later30": 38731.0,
+      "last20": 56240.0
+    }
+  }
+}

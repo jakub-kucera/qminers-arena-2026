@@ -1,5 +1,19 @@
 # Handoff for the next session
 
+## Current checkpoint: 167,412 local result, no server access
+
+The user prohibits all competition website/server access, including read-only
+checks. Continue locally. Read [the current results](docs/ROUND2_LOCAL_PROGRESS.md)
+before the historical sections below. Best audited full public replay is
+167,412 net PnL from a causal maker/M2 switch; supplied M2 scores 116,620 and
+the adaptive maker 105,829. All have zero penalties and maximum 100-lot exposure.
+The target is now 150,000, not the earlier 100,000. The local replay exceeds it.
+All public segments have been consumed. Do not claim an untouched holdout.
+The frozen candidate uses a 60-second window and 20-tick shadow-profit hurdle.
+Check the archived verified_result.json for native CLI parity and sensitivity.
+Historical statements
+below about reserved segments, pending tests, and server access are superseded.
+
 ## Research branch update: composite model failed reserved validation
 
 Read [ROUND2_COMPOSITE_FINDINGS.md](docs/ROUND2_COMPOSITE_FINDINGS.md) first for

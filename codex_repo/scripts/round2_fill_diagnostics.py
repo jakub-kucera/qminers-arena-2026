@@ -1,5 +1,6 @@
 """Read-only wrappers attribute fill quality; assert unchanged native result."""
 import csv
+import argparse
 import json
 from pathlib import Path
 import numpy as np
@@ -10,9 +11,16 @@ from simulator.models import OrderStatus
 
 
 def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--source',type=Path,default=Path('logs/round2_structural_batch/sources/robust_labels_3.py'))
+    parser.add_argument('--output',type=Path,default=Path('logs/round2_fill_diagnostics'))
+    parser.add_argument('--validation',action='store_true')
+    parser.add_argument('--reference',type=Path,default=Path('logs/round2_structural_batch/results.json'))
+    parser.add_argument('--name',default='robust_labels_3')
+    args=parser.parse_args()
     manifest = load_manifest(Path('logs/round2_local_intake'))
-    path = Path('logs/round2_structural_batch/sources/robust_labels_3.py')
-    destination = Path('logs/round2_fill_diagnostics')
+    path = args.source
+    destination = args.output
     destination.mkdir(exist_ok=True)
     source = cli.load_strategy_from_file(path)
     public = source.on_order_book_change
@@ -49,9 +57,13 @@ def main():
     # already constructed strategy. No observations enter the trading model.
     from scripts.benchmark import evaluate
     from scripts.round2_workbench import BoundaryMarkEngine
-    BoundaryMarkEngine.boundaries = (manifest['development_cutoff_us'],)
-    result = evaluate(source, Path(manifest['development']), destination, 600, BoundaryMarkEngine)
-    reference = json.loads(Path('logs/round2_structural_batch/results.json').read_text())['robust_labels_3']
+    key='validation_prefix' if args.validation else 'development'
+    BoundaryMarkEngine.boundaries = (manifest['development_cutoff_us'],manifest['validation_cutoff_us']) if args.validation else (manifest['development_cutoff_us'],)
+    result = evaluate(source, Path(manifest[key]), destination, 600, BoundaryMarkEngine)
+    refs=json.loads(args.reference.read_text())
+    reference=refs.get('results',refs)[args.name]
+    assert digest(path)==reference['source_sha256']
+    assert manifest[key+'_sha256']==reference['data_sha256']
     assert result['result'] == reference['result'], 'Instrumentation changed trading'
     q = np.array(quotes);f = np.array(fills)
     np.savez_compressed(destination/'observations.npz', quotes=q, fills=f)
@@ -71,8 +83,8 @@ def main():
             groups[name] = dict(private_fill_events=int(mask.sum()), volume=float(weights.sum()),
                                markout_per_lot=float(np.average(edge[mask],weights=weights)) if weights.sum() else None)
         horizons[str(h)] = groups
-    report = dict(scope='First 60% public development only; overlapping markouts are descriptive.',
-                  source_sha256=digest(path),data_sha256=manifest['development_sha256'],
+    report = dict(scope=('First 80% public, including consumed failed validation.' if args.validation else 'First 60% public development only;')+' Overlapping markouts are descriptive.',
+                  source_sha256=digest(path),data_sha256=manifest[key+'_sha256'],
                   exact_result_parity=True,result=result['result'],horizons=horizons,
                   fill_count_definition='Native fills counts distinct filled order IDs; private callbacks can include several partial fills per order.',
                   caveat='Prefill state is the last public callback; future sampled midpoint within 20 ms of target. Markouts are not completed round-trip PnL.')
