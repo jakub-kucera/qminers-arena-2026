@@ -507,3 +507,11 @@ only when predicted price edge after inventory skew exceeds 0.25 ticks.
 The 0.10 threshold scored 520,553; the 0.50 threshold scored 545,129. The
 threshold is selected from the same already evaluated round-1 file.
 Metrics and verification status are tracked in `results/round1_550873.json`.
+
+`strategies/round1_private_554k.py` preserves an audited **554,318** round-1
+replay. It extends the 550,873 candidate by replenishing from cached desired
+quotes immediately after cancellation confirmations, provided the cache is no
+older than 5 ms. Partial-fill notifications update inventory and cash without
+triggering that cached replenishment. Invalid public books clear the cache.
+Actual/potential inventory remain bounded by 100, with zero penalty. Metrics
+and verification status are in `results/round1_554318.json`.

@@ -1,0 +1,159 @@
+{
+  "name": "cancel_5000_inside_0.25",
+  "file": "strategies/round1_private_554k.py",
+  "source_sha256": "c7f46bafde2c8fd8b70c5891aac44f874691b8067f6d7c291baf164c0bb1b255",
+  "parameters": {
+    "mode": "cancel",
+    "age_us": 5000,
+    "inside_threshold": 0.25,
+    "source_sha256": "c7f46bafde2c8fd8b70c5891aac44f874691b8067f6d7c291baf164c0bb1b255"
+  },
+  "result": {
+    "result": {
+      "fills": 37179,
+      "traded_volume": 2195102,
+      "inventory": 100,
+      "cash": -448582.0,
+      "mark_price": 10029.0,
+      "breach_penalty": 0.0,
+      "pnl": 554318.0,
+      "pnl_se": 11206.101611371698,
+      "abs_inventory_q50": 96,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 111.16690304200165,
+    "max_abs_inventory": 100,
+    "max_potential_inventory_at_submission": 100,
+    "max_drawdown_1s": 826.0,
+    "submissions": 107380,
+    "order_status_counts": {
+      "accepted": 107380,
+      "partially_filled": 18426,
+      "canceled": 74820,
+      "filled": 32559,
+      "rejected": 215
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 600.0,
+        "pnl_increment": 26643.0
+      },
+      {
+        "start_s": 600.0,
+        "end_s": 1200.0,
+        "pnl_increment": 25841.0
+      },
+      {
+        "start_s": 1200.0,
+        "end_s": 1800.0,
+        "pnl_increment": 25809.0
+      },
+      {
+        "start_s": 1800.0,
+        "end_s": 2400.0,
+        "pnl_increment": 26775.0
+      },
+      {
+        "start_s": 2400.0,
+        "end_s": 3000.0,
+        "pnl_increment": 25329.0
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 3600.0,
+        "pnl_increment": 32464.0
+      },
+      {
+        "start_s": 3600.0,
+        "end_s": 4200.0,
+        "pnl_increment": 28956.0
+      },
+      {
+        "start_s": 4200.0,
+        "end_s": 4800.0,
+        "pnl_increment": 26649.0
+      },
+      {
+        "start_s": 4800.0,
+        "end_s": 5400.0,
+        "pnl_increment": 28655.0
+      },
+      {
+        "start_s": 5400.0,
+        "end_s": 6000.0,
+        "pnl_increment": 27399.0
+      },
+      {
+        "start_s": 6000.0,
+        "end_s": 6600.0,
+        "pnl_increment": 28426.0
+      },
+      {
+        "start_s": 6600.0,
+        "end_s": 7200.0,
+        "pnl_increment": 30240.0
+      },
+      {
+        "start_s": 7200.0,
+        "end_s": 7800.0,
+        "pnl_increment": 25586.0
+      },
+      {
+        "start_s": 7800.0,
+        "end_s": 8400.0,
+        "pnl_increment": 29767.0
+      },
+      {
+        "start_s": 8400.0,
+        "end_s": 9000.0,
+        "pnl_increment": 29042.0
+      },
+      {
+        "start_s": 9000.0,
+        "end_s": 9600.0,
+        "pnl_increment": 26651.0
+      },
+      {
+        "start_s": 9600.0,
+        "end_s": 10200.0,
+        "pnl_increment": 25593.0
+      },
+      {
+        "start_s": 10200.0,
+        "end_s": 10800.0,
+        "pnl_increment": 30128.0
+      },
+      {
+        "start_s": 10800.0,
+        "end_s": 11400.0,
+        "pnl_increment": 27356.0
+      },
+      {
+        "start_s": 11400.0,
+        "end_s": 11999.990364,
+        "pnl_increment": 27009.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    }
+  },
+  "data_file": "data/round1.csv",
+  "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+  "verification": "Audited full replay; separate CLI verification pending.",
+  "limitation": "Further tuning on already evaluated round-1 data; no fresh holdout."
+}
