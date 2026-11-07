@@ -299,6 +299,9 @@ CODEX = [
     ("C10", {"FLOWGRP": 2, "FLOWGRP_CAP": 100}, "616534.83", 21436),
     ("C11", {"QUOTEFEAT": 1, "FLOWGRP": 2, "FLOWGRP_CAP": 1}, "619281.99", 21460),
     ("C12", {"QUOTEFEAT": 1, "FLOWGRP": 2, "FLOWGRP_CAP": 20, "FLOWGRP_US": 1000000}, "622920.99", 21462),
+    # R2-Q1 (r2_Q1_keep_slice.py): C12 keeping a touch order's queue place, shrunk to 20 lots, on a step-back
+    ("Q1", {"QUOTEFEAT": 1, "FLOWGRP": 2, "FLOWGRP_CAP": 20, "FLOWGRP_US": 1000000, "KEEP_LOTS": 20, "KEEP_TH": 0.3},
+     "634748.99", 34167),
 ]
 
 
