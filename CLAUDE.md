@@ -1,49 +1,47 @@
 # CLAUDE.md
 
 Prep tooling for the Qminers Algo Trade Arena, a 24-hour in-person hackathon (7–8 Nov 2026): four 5-hour
-rounds, a Python bot file submitted at the end of each. The real API is the organisers' starter (`STARTER.md`, root
-`simulator/`): the day's bot `python/bots/qminers/template.py` (`ArenaBot`) runs on their `exchange-simulator`. Our
-engine and tools were built on **IMC Prosperity data as a stand-in**: their results are priors.
+rounds, a Python bot file submitted at the end of each. The real API is the organisers' starter (`STARTER.md`).
+Our engine and tools were built before it on **IMC Prosperity data as a stand-in**: their results are priors.
 
-## On the day, start here
+## The Arena path (start here)
 
-`RUNBOOK.md` (one page, the day's index) → the `ON_THE_DAY.md` sections it names (its "The format swap, step
-by step" is what is left of the swap) → `STARTER.md` and `ON_THE_DAY.md`'s "Known so far" (7 Nov) before any PARAMS. `KICKOFF_PROMPT.md` is what the
-user pastes to start a session. `IDEAS.md`'s first 150 lines index every tested idea by line;
-`python/experiments/README.md` says which experiment answers what.
-
-## Layout and docs
-
-`python/` (`arena/` the engine and CLIs, `bots/`, `experiments/`, `tests/`, `notebooks/`; `uv sync` installs it
-editable, so commands run from the root), `rust/` (the Rust twins, laid out as `python/`), `references/`
-(clones and the wiki), `literature_md/`, `data/` (gitignored but `data/arena/round*/HANDOVER.md` and `leaderboard.json`).
-- `RUNBOOK.md`, `ON_THE_DAY.md`, `KICKOFF_PROMPT.md`: the day (above).
-- `IDEAS.md`: every idea tested on Prosperity data, with results; priors for the day.
-- `README.md`: the user's guide to every tool. `ARCHITECTURE.md`: how the code fits together.
-- `TODO.md`: prep work left. `docs/TODO_DONE.md`: finished items, with their evidence and decisions.
-  `docs/MANUAL_TODO.md`: what only a person can obtain. `docs/HANDOVER_TEMPLATE.md`: each round's note.
-
-## Commands
+`RUNBOOK.md` (one page, the day's index) → the `ON_THE_DAY.md` sections it names → `STARTER.md` and `ON_THE_DAY.md`'s
+"Known so far" (7 Nov) before any PARAMS; `data/arena/round*/` holds each round's `HANDOVER.md` and `CANDIDATES.md`;
+`KICKOFF_PROMPT.md` is what the user pastes to start a session; `ARCHITECTURE.md`'s "The Arena path" says how it fits.
+- Their `simulator/`, `explorer/`, `strategies/`, `data/sample.csv.gz` at the root, as they wrote them: the engine.
+- `python/bots/qminers/`: `template.py` (`ArenaBot`), `families/` (five strategies in their style), `candidates/`.
 
 ```sh
 uv run exchange-simulator --strategy BOT --backtest D/<file>.csv --log-dir logs/<run> [--no-logs]   # their simulator (unzip first)
 uv run backtest-explorer --log-dir logs/<run>                        # their Dash app on a full-logs run
-references/clone.sh && uv sync && uv run pytest     # the clones (~2 GB), Python 3.13, all tests (~3 min)
+uv run python -m experiments.day.round_start data/round1.csv.gz [--jobs N] [--out DIR]   # the round's first look: tape profile, markouts, every candidate ranked, next grids
+uv run python -m arena.qgrid python/bots/qminers/template.py data/sample.csv.gz --set 'PARAMS.ASSET={"fair": "mid"}' --grid PARAMS.ASSET.make_edge=0,1,2 [--holdout 0.25] [--out results/qgrid.csv]
+uv run python -m arena.qsim_rust fallback_maker data/sample.csv.gz --grid QUOTE=2,5 --threads 4   # the same, its Rust port (rust/arena_sim)
+uv run python -m experiments.day.run_review logs/<run>               # our fills against the mid, from a full-logs run
+uv run python -m arena.validate BOT all --format qminers             # the sandbox's source checks; exit 1 on FAIL
+```
+
+## Prosperity-era tools (priors)
+
+`python/` (`arena/` our engine and CLIs, `bots/`, `experiments/`, `tests/`, `notebooks/`; `uv sync` installs it
+editable, so commands run from the root), `rust/` (the Rust twins, laid out as `python/`), `references/`
+(clones and the wiki), `literature_md/`, `data/` (gitignored but `data/arena/round*/HANDOVER.md` and `leaderboard.json`).
+`IDEAS.md`'s first 150 lines index every tested idea by line; `python/experiments/README.md` says which experiment
+answers what. `README.md`: the user's guide to every tool. `TODO.md`: prep work left; `docs/TODO_DONE.md`: finished
+items; `docs/MANUAL_TODO.md`: what only a person can obtain; `docs/HANDOVER_TEMPLATE.md`: each round's note.
+
+```sh
+references/clone.sh && uv sync && uv run pytest     # the clones (~2 GB), Python 3.13, all tests (~4 min)
 uv run python -m arena.diagnose 1 --data p4 --profile --suggest      # per-product diagnostics and a PARAMS entry each, no bot
 uv run python -m arena.backtest python/bots/template.py 1 [--data p2|p3|p4] [--resting] [--match-trades worse] [--mark touch] [--metrics] [--engine rust] [--out results/]
-uv run python -m arena.validate python/bots/template.py 1 [--max-size 100KB] [--time-limit-ms 100]   # exit 1 on FAIL
 uv run python -m arena.compact python/bots/template.py submit/template.py   # over the size cap
-uv run python -m arena.grid python/bots/template.py 1 --grid PARAMS.KELP.make_edge=0.5,1,2 --modes all,worse [--holdout last] [--screen 0.25 | --search tpe --budget 1000] [--scenario rest:resting] --engine rust
-uv run python -m arena.qgrid python/bots/qminers/template.py data/sample.csv.gz --set 'PARAMS.ASSET={"fair": "mid"}' --grid PARAMS.ASSET.make_edge=0,1,2 [--holdout 0.25] [--out results/qgrid.csv]   # on the Arena's simulator
-uv run python -m arena.qsim_rust fallback_maker data/sample.csv.gz --grid QUOTE=2,5 --threads 4   # the same, its Rust port (rust/arena_sim)
+uv run python -m arena.grid python/bots/template.py 1 --grid PARAMS.KELP.make_edge=0.5,1,2 --modes all,worse [--holdout last] [--screen 0.25 | --search tpe --budget 1000] --engine rust
 uv run python -m arena.compare python/bots/template.py 1 --bot python/bots/zoo/claude/*.py --modes all,worse
 uv run python -m arena.stress python/bots/template.py 1              # perturbed days; size stop_loss from it
 uv run python -m arena.sim run python/bots/template.py --days 5      # inside an agent market, against the same days replayed
 uv run python -m arena.analysis results/                             # PNGs and fill tables
-uv run python -m experiments.day.premise --data data/abides --days 1 --engine rust   # Prosperity-like or agent-like, per product
-uv run python -m experiments.day.round_start data/round1.csv.gz [--jobs N] [--out DIR]   # the Arena round's first look: tape profile, markouts, every candidate ranked, next grids
-uv run python -m experiments.day.structure --data D --days all --format qminers      # any day experiment: --data D --days ... --format F --bot BOT
-uv run python -m experiments.format_drill data/drill                # drill-format practice data (--format drill --data data/drill/drill)
+uv run python -m experiments.day.structure --data D --days all --format F            # any day experiment: --data D --days ... --format F --bot BOT
 uv run python -m experiments.format_drill --sync                    # the template's DEFAULTS/STRATEGY/EXECUTION into every bots/<format>/template.py
 uv run python -m experiments.ideas_index                            # after editing IDEAS.md
 uv run python -m experiments.rust_bench --parity-only --record      # after changing a twin (rust/twins.json)
@@ -63,7 +61,7 @@ Read `ARCHITECTURE.md`'s section before changing the engine, a format, bot loadi
 - **Parity with prosperity3bt is pinned:** matching, limits and marking keep `test_parity.py` passing; its fixture `python/tests/fixtures/parity_bot.py` is frozen; resting-mode code stays in its own branch of `run_day`.
 - **Rust twins:** a change to a twin's Python code goes into its Rust file too, then `rust_bench --parity-only --record`. A new zoo bot needs its own twin.
 - **Bot files:** one self-contained file, standard library only, cross-tick state in `traderData` (the Arena bot: also numpy, pandas, scipy, sklearn, `simulator.models`, `BaseStrategy`; state on the instance); strategy in STRATEGY, order management in EXECUTION, format code in ADAPTER. Never edit a zoo bot or a prompt once used.
-- **Experiments:** `experiments/day/` takes the day's data (`arena.cli.add_dataset_arguments`), `experiments/study/` holds Prosperity one-offs, the tools sit at the top.
+- **Experiments:** `experiments/day/` takes the day's data (`arena.cli.add_dataset_arguments`; `round_start` and `run_review` the Arena's files), `experiments/study/` holds Prosperity one-offs, the tools sit at the top.
 - **Charts:** `THEMES`' palettes were checked with the dataviz skill's validator; keep categorical colors in slot order.
 
 ## Repo conventions

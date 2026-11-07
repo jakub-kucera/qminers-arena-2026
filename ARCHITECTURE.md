@@ -1,10 +1,34 @@
 # Architecture
 
-How the code fits together: the engine, the format plug-ins, bot loading, the matching rules and
+How the code fits together: first the Arena path (what the day runs on since 7 Nov), then our own engine built on
+Prosperity data as a stand-in: the format plug-ins, bot loading, the matching rules and
 their modes, the shared and simulated markets, the stress harness, the grid and its statistics,
 bot comparison, the Rust port and the analysis, then the bot files and the known gaps.
 `CLAUDE.md` holds the commands, the rules that keep these parts consistent, and the repo's
 conventions; `README.md` is the user's guide.
+
+## The Arena path
+
+The organisers' starter (`STARTER.md`) is the engine; our engine below is not on the day's path.
+- **Their code, at the root, as they wrote it:** `simulator/` (`ExchangeSimulator`: the tape replayed with exact
+  matching, the 5 ms accept delay, position limit 100, the potential-position cap 1,000, the breach penalty;
+  `simulator.strategy.BaseStrategy` is the bot API, `simulator.models` its types), `explorer/` (the Dash app on a
+  full-logs run), `strategies/` (their examples), `data/sample.csv.gz`. Never edited.
+- **Our bots, `python/bots/qminers/`:** `template.py` (`ArenaBot`, a `BaseStrategy` subclass: the template's STRATEGY
+  and EXECUTION with an ADAPTER for their API), `families/` (five strategies written in their style), `candidates/`
+  (the files ready to submit, `r<round>_<id>_<name>.py`). One file each, loaded by their loader (the alphabetically
+  first `BaseStrategy` subclass).
+- **Grids on their simulator:** `python/arena/qgrid.py` runs a bot file per cell on `simulator.main`'s settings in a
+  process pool, with `arena.grid`'s neighbourhood and holdout columns; `python/arena/qsim_rust.py` gives the same
+  table from `rust/arena_sim/`, the simulator ported to Rust and pinned to the same numbers to the bit
+  (`python/tests/test_arena_rust.py`), for the strategies with a Rust version.
+- **The round's tools:** `python/experiments/day/round_start.py` (the tape's profile and markouts, every candidate
+  ranked, the next grids) and `python/experiments/day/run_review.py` (a full-logs run's fills against the mid).
+- **Before an upload:** `arena.validate BOT all --format qminers` runs the source checks only, with
+  `python/arena/formats/qminers.py`'s `SANDBOX` and `PROVIDED_MODULES` (`check_source`: one `BaseStrategy` subclass).
+- **The day's docs:** `RUNBOOK.md`, `ON_THE_DAY.md`'s 7 Nov blocks, `KICKOFF_PROMPT.md`, `data/arena/round*/`.
+
+Everything from here on is the Prosperity-era engine and its tools: research whose results are priors.
 
 ## Architecture
 

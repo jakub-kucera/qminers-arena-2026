@@ -4,10 +4,11 @@ This repository is our team's copy of the Qminers starter, `QminersOrg/qminers-a
 [`STARTER.md`](STARTER.md); its `simulator/`, `explorer/`, `strategies/` and `data/sample.csv.gz` are at the root as they
 wrote them), merged with our prep for the Arena: the tools below, built before the event on IMC Prosperity data.
 
-Tooling for the Qminers Algo Trade Arena (7–8 Nov 2026, MFF UK, Prague): a backtester, a
-parameter grid search, charts and fill statistics, a pre-submission validator and a
-single-file bot template, built on IMC Prosperity data as a stand-in. The day's bot,
-`python/bots/qminers/template.py` (`ArenaBot`), runs on their `exchange-simulator`; our engine's results are priors.
+The Qminers Algo Trade Arena is 7–8 Nov 2026, MFF UK, Prague. Start from [The Arena path](#the-arena-path): their
+`exchange-simulator`, our bot `python/bots/qminers/template.py` (`ArenaBot`) and its families and candidates, and the
+tools that run on their simulator. The rest, a backtester, grid search, charts, a validator and a single-file bot
+template built on IMC Prosperity data as a stand-in, is under [Prosperity-era tools (priors)](#prosperity-era-tools-priors):
+its results are priors.
 
 | Path | What it is |
 |---|---|
@@ -15,7 +16,7 @@ single-file bot template, built on IMC Prosperity data as a stand-in. The day's 
 | `python/bots/template.py` | Single-file market maker to copy for each round |
 | `python/bots/probe.py` | The first-hour probe bot: runs the probes in `ON_THE_DAY.md` and prints what it finds |
 | `python/bots/drill/template.py` | The template with its ADAPTER rewritten for the drill format, the worked example of the format swap |
-| `python/bots/qminers/` | The day's bot: `template.py` (`ArenaBot`, a `BaseStrategy` subclass: the template's STRATEGY and EXECUTION with an ADAPTER for their API; set `PARAMS["ASSET"]`), run with `exchange-simulator` and tuned with `arena.qgrid`; `candidates/` (the playground's `r0_A0_mm.py`); `probe.py`, still the Prosperity probe |
+| `python/bots/qminers/` | The day's bot: `template.py` (`ArenaBot`, a `BaseStrategy` subclass: the template's STRATEGY and EXECUTION with an ADAPTER for their API; set `PARAMS["ASSET"]`), run with `exchange-simulator` and tuned with `arena.qgrid`; `families/` (five strategies in their style); `candidates/` (the files ready to submit); `probe.py`, still the Prosperity probe |
 | `python/bots/research/` | Copies of the template that test an idea before it is ported (no Rust twin, no drill copy): `online_edge.py` learns `make_edge` from its own fills |
 | `python/notebooks/analysis.ipynb` | Backtest → PnL, fills, one product's fills against the book, markouts, PnL split, market-trade impact, grid heatmaps |
 | `references/` | Reference repos and the Prosperity data; see [references/README.md](references/README.md) |
@@ -31,6 +32,24 @@ single-file bot template, built on IMC Prosperity data as a stand-in. The day's 
 | [`CLAUDE.md`](CLAUDE.md) | What an agent session reads first: where to start on the day, the commands, the rules that keep the parts consistent |
 | [`TODO.md`](TODO.md) | Prep work left before the event ([`docs/TODO_DONE.md`](docs/TODO_DONE.md): the finished items, with their evidence and decisions; [`docs/MANUAL_TODO.md`](docs/MANUAL_TODO.md): what only a person can obtain) |
 
+## The Arena path
+
+What the day runs on, in the order a round uses it (since 7 Nov; everything after
+[Prosperity-era tools (priors)](#prosperity-era-tools-priors) was built on the stand-in and gives priors only):
+
+| Path | What it is |
+|---|---|
+| `simulator/`, `explorer/`, `strategies/`, `data/sample.csv.gz` | The organisers' starter as they wrote it ([`STARTER.md`](STARTER.md)): `uv run exchange-simulator --strategy BOT --backtest D/<file>.csv --log-dir logs/<run> [--no-logs]` is the engine; `uv run backtest-explorer --log-dir logs/<run>` its Dash app |
+| `python/bots/qminers/template.py` | `ArenaBot`, a `BaseStrategy` subclass: the template's STRATEGY and EXECUTION with an ADAPTER for their API (set `PARAMS["ASSET"]`) |
+| `python/bots/qminers/families/` | Five strategies in their style: `momentum_runner.py`, `momentum_taker.py`, `momentum_maker.py`, `protected_maker.py`, `run_fade.py` (`IDEAS.md`, "On the Arena (7 Nov on)") |
+| `python/bots/qminers/candidates/` | The files ready to submit, `r<round>_<id>_<name>.py` (M1, M2 the runners, F1 the fallback maker, A0-A6 the playground's) |
+| `python -m experiments.day.round_start DATA.csv[.gz]` | A round's first look: the tape's profile and markouts, every candidate ranked on it, the next grids |
+| `python -m arena.qgrid BOT DATA` | A parameter grid on their simulator ([below](#grid-on-the-arenas-simulator)) |
+| `python -m arena.qsim_rust STRATEGY DATA` | The same grid on `rust/arena_sim`, their simulator ported to Rust: the same numbers to the bit, 50-100 times faster |
+| `python -m experiments.day.run_review LOG_DIR` | A full-logs run (ours or the portal's results folder): our fills' edge and the mid's move after them |
+| `python -m arena.validate BOT all --format qminers` | The sandbox's source checks before an upload ([below](#validate-before-submitting)) |
+| [`RUNBOOK.md`](RUNBOOK.md), `data/arena/round*/` | The day's one page, and each round's `HANDOVER.md` and `CANDIDATES.md` |
+
 ## Setup
 
 ```sh
@@ -40,7 +59,94 @@ uv run pytest
 uv run --group analysis jupyter lab python/notebooks/analysis.ipynb   # optional: Jupyter
 ```
 
-## Diagnose the data
+## Grid on the Arena's simulator
+
+`arena.grid` runs on the stand-in engine; `arena.qgrid` runs a grid on the Arena's own exchange simulator
+(`simulator/`, [STARTER.md](STARTER.md)) at the rules' settings (`simulator.main`'s 5 ms accept delay,
+position limit 100, potential-position cap 1,000, 10,000 a second over the limit):
+
+```sh
+uv run python -m arena.qgrid python/bots/qminers/template.py data/sample.csv.gz \
+    --set 'PARAMS.ASSET={"fair": "mid"}' \
+    --grid PARAMS.ASSET.make_edge=0,1,2 --grid PARAMS.ASSET.make_size=5,10 \
+    [--jobs N] [--holdout 0.25] [--sort pnl|holdout|nbhd] [--top 15] [--out results/qgrid.csv]
+```
+
+The bot is any file with a `BaseStrategy` subclass (the alphabetically first is run, as their loader does),
+loaded fresh for each run, `--set` then the cell's `--grid` values applied to its globals (`--grid` takes
+`V1,V2,...` or `START..STOP[..STEP]`, as in `arena.grid`). The template's `PARAMS` is empty, so
+`--set 'PARAMS.ASSET={...}'` creates the asset's entry that the grid's `PARAMS.ASSET.*` keys go into. Data
+files are the starter's CSVs (a `.csv.gz` is unpacked to a temporary file). Every cell, and the bot as is with
+only `--set` (the `base` row, shown first), runs on each file in a process pool (`--jobs`, default the CPU
+count). The columns, summed over the files unless noted:
+
+| Column | Meaning |
+|---|---|
+| `pnl` | the simulator's PnL (cash + inventory marked out − breach penalty); with several files, one column per file follows |
+| `in 75%`, `out 25%` | from the 1-second PnL curve, the PnL over each file's first 1 − `--holdout` of the time and over the last share: a time-split held-out check (`--sort holdout` ranks by the held-out part) |
+| `nbhd` | mean `pnl` of the cell and its one-step neighbours on each axis (`arena.grid`'s rule): prefer a plateau to a peak |
+| `max dd` | the largest fall from a peak of the PnL curve, the files' curves chained |
+| `breach` | the position-breach penalty, already in `pnl` |
+| `fills`, `volume` | our orders that filled, and the lots traded |
+| `\|inv\| q997` | the time-weighted 99.7% quantile of the absolute inventory (the largest over the files) |
+| `pnl se` | the simulator's standard error of the PnL (stdev × √n of its 1-second increments) |
+| `rej`, `cxl rej` | orders the exchange rejected (over the potential-position cap), and cancels or modifies rejected (the order had filled first) |
+
+Below the table: the best cell by each of `pnl`, `holdout` and `nbhd` and whether they agree, a `!` line
+naming the cells with a breach penalty or rejected orders, and `arena.grid`'s axis-end note (the best cell
+on the lowest or highest of a numeric axis' three or more values: widen it). `--out` writes one row per cell
+and the baseline with every number above and the per-file PnL. A cell whose bot raises shows its error.
+
+**The same grid in Rust**, for a strategy with a Rust version (`trend_follower`, `fallback_maker`, the F1
+candidate): `uv run python -m arena.qsim_rust fallback_maker data/sample.csv.gz --grid QUOTE=2,3,5 --grid
+LIMIT=30,50 --threads 4` prints this table from `rust/arena_sim`, the simulator ported to give the same numbers
+to the bit, 70-90 times faster a run ([rust/README.md](rust/README.md), "arena_sim"). The keys are the Python
+file's globals (`QUOTE`, `LIMIT`, `SKEW`, `WIND_DOWN_S`, `SESSION_S`).
+
+## Validate before submitting
+
+```sh
+uv run python -m arena.validate python/bots/template.py 1
+uv run python -m arena.validate python/bots/my_bot.py 1 --allow numpy --time-limit-ms 900
+uv run python -m arena.validate python/bots/template.py 1 --max-size 100KB     # the cap as the dashboard shows it
+uv run python -m arena.compact python/bots/template.py submit/template.py      # over the cap: the same code, no comments or docstrings
+```
+
+It fails (exit code 1) on:
+- what the portal's upload form refuses: a name not ending in `.py`, an empty file, or one bigger than `--max-size` (bytes, or the dashboard's figure: `100KB`, `1.5MB`; the dashboard rounds to a tenth of a binary unit, so `100KB` is checked as 99.95 × 1,024 bytes). Without `--max-size` it prints the size.
+- a syntax error, or a missing entry point (`class Trader` with `run`)
+- imports from outside the standard library that aren't listed in `--allow`
+- what the format's sandbox rejects before a bot runs, where the plug-in lists it (`SANDBOX`; `--format qminers` has the Arena's, from their info page and `STARTER.md`: `os`, `sys`, `subprocess`, `socket`, `io`, `pathlib`, `threading`, `importlib`, `inspect`, `gc` and private modules; `open`, `getattr`, `type`, `eval`, `exec`; dunder attributes and names; `str.format`; from `simulator` only `simulator.models`' public names and `simulator.strategy.BaseStrategy`), each with its lines. `__future__` and `__init__` are allowed, as their own examples use `from __future__ import annotations` and `super().__init__()` and pass. It warns on builtins a sandbox often bans as well (`globals`, `setattr`, ...).
+- any exception, or malformed orders (e.g. float prices)
+- orders the engine cancels for possibly breaching a position limit
+- a tick slower than `--time-limit-ms`, timed without the garbage collections that run inside the call (the backtester's objects, not the bot's work; the line says when it left some out, and the bot's own garbage is left out with them; a WARN when the figure with them is over the limit, since their clock may count them)
+- a traded product with no `limit` in PARAMS (the template refuses it: DEFAULTS' is a placeholder)
+- a gray-area bot: one that sets `GRAY_AREA = "<what it does>"` at module level because it games the exchange or other teams (spoofing, moving the mark, an exchange bug) rather than trading. It can be built and backtested, but validate FAILs it in capitals (and `arena.compact` warns), so it can't go up by accident; `--allow-gray-area` turns that into a WARN, only after an organiser has said it's allowed
+- errors or breaches when the first day is replayed with every order a step late (`--late 1`, the default while the run's own `--delay` is 0; `--late 0` where the rules say orders arrive at once): a bot that doesn't count what it sent and can't see listed yet re-posts it into the caps and its limits, as both 2026-10-30 rehearsal bots did after passing. The template passes once its `DELAY` (and `ORDERS_REST`) are set; race ticks are printed, not failed
+
+Over the cap, `arena.compact` writes a copy without comments or docstrings (the template's 49 KB become about 26 KB) and checks that it parses back to the same code; it trades exactly as the original (`python/tests/test_compact.py`). Validate and upload the copy, and keep editing the original. Delete the probe bot's RISKY PROBES block before compacting it, since its markers are comments.
+
+It warns about:
+- use of environment variables, files, subprocesses or the network
+- with `--max-state CHARS`, a `traderData` longer than the exchange keeps (Prosperity cut it at 50,000 characters, and the bot read back a broken string); without it the largest state is printed
+- results that change on a repeat run, or when the first day is replayed in two other Python processes with other hash seeds (`PYTHONHASHSEED`), which catches a bot that iterates a set of strings: the organisers rerun the top bots, and such a bot wouldn't reproduce
+- results that change when the bot is reloaded every tick, which means it keeps state outside `traderData` that the real engine may not preserve
+- settings that can't matter, if the bot lists them (the template's `param_conflicts`): two target modes on one product (the first in `trade_product`'s order wins), a static `target` that a mode replaces, or a mode's own setting while the mode is off
+- a product's limit in PARAMS unlike the data's, and a product on `fair: "sized_mid"` whose book sides lack a level of its `wall_size` more than 20% of the time, where it falls back to the plain mid (set `wall_size` near `arena.diagnose`'s `wall` column)
+
+## On the day: adapting to the real format
+
+Start from [`RUNBOOK.md`](RUNBOOK.md), one page of the day's commands, each line naming the [`ON_THE_DAY.md`](ON_THE_DAY.md) section behind it. The format swap is done (7 Nov; "The format swap, step by step" keeps what is left each round): `python/bots/qminers/template.py` runs on their `exchange-simulator`, and `python/arena/formats/qminers.py` serves only `arena.validate`'s import and sandbox checks. Practise it: `uv run python -m experiments.format_drill <folder>` makes drill data from simulated days, then any tool runs with `--format drill --data <folder>/drill`. `python/experiments/README.md` says which experiment answers what on the day's data.
+
+## Prosperity-era tools (priors)
+
+Everything below was built before the event on IMC Prosperity data as a stand-in for the unknown API: our own engine
+(`python/arena/` with the `--format` plug-ins), its CLIs (`arena.diagnose`, `backtest`, `grid`, `compare`, `stress`,
+`sim`, `analysis`), the template `python/bots/template.py`, the zoo and rivals, most of `python/experiments/`, and the
+Rust twins in `rust/src`. It is kept as research: its results in `IDEAS.md` are priors to re-test on the Arena's
+data with the tools above, not numbers for the Arena.
+
+### Diagnose the data
 
 ```sh
 uv run python -m arena.diagnose 1                      # Prosperity 3 round 1, every day
@@ -73,7 +179,7 @@ The first thing to run on a new data download: it needs no bot. Per product it m
 
 The notes under the table name the regime. [Reading the data on day one](references/wiki/concepts/reading-the-data-on-day-one.md) maps each one to a strategy choice. `--csv` writes every number, against both the mid and the wall mid.
 
-## Backtest
+### Backtest
 
 ```sh
 uv run python -m arena.backtest python/bots/template.py 1                  # Prosperity 3 round 1, every day
@@ -119,7 +225,7 @@ Days are `ROUND` (all of its days) or `ROUND-DAY`, e.g. `1`, `1-0` or `1--1`.
 | `--print` | Show the bot's prints |
 | `--no-strict` | Let the bot swallow its own exceptions, as it does when submitted |
 
-### Fill assumptions matter
+#### Fill assumptions matter
 
 Same template, Prosperity 3 round 1, all three days (Kelp at `make_edge` 0.5 since 2026-10-15, on
 `sized_mid` since 2026-10-18; with the earlier edge 1, `all` per tick was 81,292 and `worse` 57,774):
@@ -138,7 +244,7 @@ instead of with each other. When comparing variants, check that the better one a
 With `--resting`, a quote that joins an existing level waits behind it, so `all` loses about 8%
 (72,674 to 66,558). Under `worse` and `none`, fills don't depend on the queue, so the two modes are close.
 
-## Grid search
+### Grid search
 
 ```sh
 uv run python -m arena.grid python/bots/template.py 1 \
@@ -399,51 +505,7 @@ per-mode totals, `min day` and `nbhd`, then per-day and per-product PnL. Combina
 or limit breaches are left out of the summary's picks and of the heatmaps, and the grid exits with 1
 if every combination failed.
 
-## Grid on the Arena's simulator
-
-`arena.grid` runs on the stand-in engine; `arena.qgrid` runs a grid on the Arena's own exchange simulator
-(`simulator/`, [STARTER.md](STARTER.md)) at the rules' settings (`simulator.main`'s 5 ms accept delay,
-position limit 100, potential-position cap 1,000, 10,000 a second over the limit):
-
-```sh
-uv run python -m arena.qgrid python/bots/qminers/template.py data/sample.csv.gz \
-    --set 'PARAMS.ASSET={"fair": "mid"}' \
-    --grid PARAMS.ASSET.make_edge=0,1,2 --grid PARAMS.ASSET.make_size=5,10 \
-    [--jobs N] [--holdout 0.25] [--sort pnl|holdout|nbhd] [--top 15] [--out results/qgrid.csv]
-```
-
-The bot is any file with a `BaseStrategy` subclass (the alphabetically first is run, as their loader does),
-loaded fresh for each run, `--set` then the cell's `--grid` values applied to its globals (`--grid` takes
-`V1,V2,...` or `START..STOP[..STEP]`, as in `arena.grid`). The template's `PARAMS` is empty, so
-`--set 'PARAMS.ASSET={...}'` creates the asset's entry that the grid's `PARAMS.ASSET.*` keys go into. Data
-files are the starter's CSVs (a `.csv.gz` is unpacked to a temporary file). Every cell, and the bot as is with
-only `--set` (the `base` row, shown first), runs on each file in a process pool (`--jobs`, default the CPU
-count). The columns, summed over the files unless noted:
-
-| Column | Meaning |
-|---|---|
-| `pnl` | the simulator's PnL (cash + inventory marked out − breach penalty); with several files, one column per file follows |
-| `in 75%`, `out 25%` | from the 1-second PnL curve, the PnL over each file's first 1 − `--holdout` of the time and over the last share: a time-split held-out check (`--sort holdout` ranks by the held-out part) |
-| `nbhd` | mean `pnl` of the cell and its one-step neighbours on each axis (`arena.grid`'s rule): prefer a plateau to a peak |
-| `max dd` | the largest fall from a peak of the PnL curve, the files' curves chained |
-| `breach` | the position-breach penalty, already in `pnl` |
-| `fills`, `volume` | our orders that filled, and the lots traded |
-| `\|inv\| q997` | the time-weighted 99.7% quantile of the absolute inventory (the largest over the files) |
-| `pnl se` | the simulator's standard error of the PnL (stdev × √n of its 1-second increments) |
-| `rej`, `cxl rej` | orders the exchange rejected (over the potential-position cap), and cancels or modifies rejected (the order had filled first) |
-
-Below the table: the best cell by each of `pnl`, `holdout` and `nbhd` and whether they agree, a `!` line
-naming the cells with a breach penalty or rejected orders, and `arena.grid`'s axis-end note (the best cell
-on the lowest or highest of a numeric axis' three or more values: widen it). `--out` writes one row per cell
-and the baseline with every number above and the per-file PnL. A cell whose bot raises shows its error.
-
-**The same grid in Rust**, for a strategy with a Rust version (`trend_follower`, `fallback_maker`, the F1
-candidate): `uv run python -m arena.qsim_rust fallback_maker data/sample.csv.gz --grid QUOTE=2,3,5 --grid
-LIMIT=30,50 --threads 4` prints this table from `rust/arena_sim`, the simulator ported to give the same numbers
-to the bit, 70-90 times faster a run ([rust/README.md](rust/README.md), "arena_sim"). The keys are the Python
-file's globals (`QUOTE`, `LIMIT`, `SKEW`, `WIND_DOWN_S`, `SESSION_S`).
-
-## Compare bots
+### Compare bots
 
 `arena.grid` varies settings inside one file. `arena.compare` runs several bot files, or variants of
 them, against one baseline, with the same checks:
@@ -465,7 +527,7 @@ uv run python -m arena.compare python/bots/template.py 1 2 --data p4 --resting -
   - the grid's overfitting lines, ending with the pick: StepM's best bot that beats the baseline under every mode, or the baseline.
 - **A bot that fails to load, raises or breaches a limit** is flagged with its first error and left out of the picks. The command exits with 1 only if every bot does.
 
-## Charts and fill statistics
+### Charts and fill statistics
 
 ```sh
 uv run python -m arena.backtest python/bots/template.py 1 --out results/run
@@ -487,38 +549,7 @@ The notebook does the same steps interactively, through the same functions in `p
 - **Market trades:** for the data's trades (buys at the ask, sells at the bid), what the taker paid against each reference and how far that reference moves in the trade's direction 1–50 ticks later. A move that stays above zero means trades carry information.
 - **Grid heatmap:** one metric over two parameters, with the best cell outlined. With more than two parameters, each cell shows the best value over the rest.
 
-## Validate before submitting
-
-```sh
-uv run python -m arena.validate python/bots/template.py 1
-uv run python -m arena.validate python/bots/my_bot.py 1 --allow numpy --time-limit-ms 900
-uv run python -m arena.validate python/bots/template.py 1 --max-size 100KB     # the cap as the dashboard shows it
-uv run python -m arena.compact python/bots/template.py submit/template.py      # over the cap: the same code, no comments or docstrings
-```
-
-It fails (exit code 1) on:
-- what the portal's upload form refuses: a name not ending in `.py`, an empty file, or one bigger than `--max-size` (bytes, or the dashboard's figure: `100KB`, `1.5MB`; the dashboard rounds to a tenth of a binary unit, so `100KB` is checked as 99.95 × 1,024 bytes). Without `--max-size` it prints the size.
-- a syntax error, or a missing entry point (`class Trader` with `run`)
-- imports from outside the standard library that aren't listed in `--allow`
-- what the format's sandbox rejects before a bot runs, where the plug-in lists it (`SANDBOX`; `--format qminers` has the Arena's, from their info page and `STARTER.md`: `os`, `sys`, `subprocess`, `socket`, `io`, `pathlib`, `threading`, `importlib`, `inspect`, `gc` and private modules; `open`, `getattr`, `type`, `eval`, `exec`; dunder attributes and names; `str.format`; from `simulator` only `simulator.models`' public names and `simulator.strategy.BaseStrategy`), each with its lines. `__future__` and `__init__` are allowed, as their own examples use `from __future__ import annotations` and `super().__init__()` and pass. It warns on builtins a sandbox often bans as well (`globals`, `setattr`, ...).
-- any exception, or malformed orders (e.g. float prices)
-- orders the engine cancels for possibly breaching a position limit
-- a tick slower than `--time-limit-ms`, timed without the garbage collections that run inside the call (the backtester's objects, not the bot's work; the line says when it left some out, and the bot's own garbage is left out with them; a WARN when the figure with them is over the limit, since their clock may count them)
-- a traded product with no `limit` in PARAMS (the template refuses it: DEFAULTS' is a placeholder)
-- a gray-area bot: one that sets `GRAY_AREA = "<what it does>"` at module level because it games the exchange or other teams (spoofing, moving the mark, an exchange bug) rather than trading. It can be built and backtested, but validate FAILs it in capitals (and `arena.compact` warns), so it can't go up by accident; `--allow-gray-area` turns that into a WARN, only after an organiser has said it's allowed
-- errors or breaches when the first day is replayed with every order a step late (`--late 1`, the default while the run's own `--delay` is 0; `--late 0` where the rules say orders arrive at once): a bot that doesn't count what it sent and can't see listed yet re-posts it into the caps and its limits, as both 2026-10-30 rehearsal bots did after passing. The template passes once its `DELAY` (and `ORDERS_REST`) are set; race ticks are printed, not failed
-
-Over the cap, `arena.compact` writes a copy without comments or docstrings (the template's 49 KB become about 26 KB) and checks that it parses back to the same code; it trades exactly as the original (`python/tests/test_compact.py`). Validate and upload the copy, and keep editing the original. Delete the probe bot's RISKY PROBES block before compacting it, since its markers are comments.
-
-It warns about:
-- use of environment variables, files, subprocesses or the network
-- with `--max-state CHARS`, a `traderData` longer than the exchange keeps (Prosperity cut it at 50,000 characters, and the bot read back a broken string); without it the largest state is printed
-- results that change on a repeat run, or when the first day is replayed in two other Python processes with other hash seeds (`PYTHONHASHSEED`), which catches a bot that iterates a set of strings: the organisers rerun the top bots, and such a bot wouldn't reproduce
-- results that change when the bot is reloaded every tick, which means it keeps state outside `traderData` that the real engine may not preserve
-- settings that can't matter, if the bot lists them (the template's `param_conflicts`): two target modes on one product (the first in `trade_product`'s order wins), a static `target` that a mode replaces, or a mode's own setting while the mode is off
-- a product's limit in PARAMS unlike the data's, and a product on `fair: "sized_mid"` whose book sides lack a level of its `wall_size` more than 20% of the time, where it falls back to the plain mid (set `wall_size` near `arena.diagnose`'s `wall` column)
-
-## How the engine works
+### How the engine works
 
 `python/arena/engine.py` replays a day tick by tick, using the rules from IMC Prosperity:
 
@@ -535,7 +566,7 @@ three trade-matching modes on each. Those days include round 5, with all 15 prod
 that are sometimes empty on one side. `python/tests/test_parity.py` pins 6 of them: round 1 day 0 and
 round 5 day 2, in each mode.
 
-### Resting mode
+#### Resting mode
 
 A realistic exchange keeps orders open until they fill or you cancel them. That was the case in
 AlgoTrade 2026 (`references/algotrade2026-pitfa19/.firecrawl/algotrade-api.md`), and it may be
@@ -571,7 +602,7 @@ re-posts its walls every tick, `front` is closest to what the bot makes in the m
 (`IDEAS.md`, "Queue models against a market that re-posts"). `prob` stays near `back` there: a
 level that is re-posted at the same size shows no drop to split.
 
-### Shared market
+#### Shared market
 
 `--vs BOT` puts more bots in the market: copies of yours (give the same file again) or other
 versions. `--set` only applies to your bot. Rivals' results are summarised under each day.
@@ -632,7 +663,7 @@ them, and with price priority they take the trades first. On Resin, `make_inside
 5.7k to 24.8k in a field of 12 zoo bots, for 4–10k alone; with resting orders the template already steps in
 front of the quotes it sees (`IDEAS.md`, "Quoting nearer fair than one tick inside the book").
 
-## The engine in Rust
+### The engine in Rust
 
 `rust/` is a Rust port of the engine, `arena.sim`'s market, the template, the rivals, every zoo bot and `python/bots/mm.py`, each with its Python file as a twin that must trade the
 same (`rust/README.md` has the table of what is in Python, in Rust, and in both). `uv run python -m experiments.rust_bench` builds it
@@ -653,7 +684,7 @@ Rust bot has no step timings, so a report leaves out the bot-timing line). The R
 twin's code as last checked (comments, docstrings and the settings Rust reads from the file don't count), and `python/tests/test_rust.py` fails when its code changes until `uv run python -m experiments.rust_bench --parity-only
 --record` has checked the pair again. The submitted bot stays a Python file.
 
-## Stress
+### Stress
 
 `arena.stress` reruns a bot on perturbed copies of each day: each product's whole book, trades and
 mark moved together, so only the price path changes. The perturbations: volatility ×2 (every move of the price doubled; the spread keeps its width, so the market is tighter relative to its moves), a trend
@@ -670,7 +701,7 @@ On P4 rounds 1–4 a trend up turns the template's 2.27M into −0.32M: the leve
 keep betting on a price that has left. The per-product `stop_loss` bounds each day's loss without
 changing the plain days (`IDEAS.md`, "Stress: what a regime change costs" and the rows after it).
 
-## Simulated market
+### Simulated market
 
 The engine replays a recording, so the market never reacts to your orders. `arena.sim` is a
 small agent-based market that does: a take moves the price, the market maker can skew against
@@ -712,7 +743,7 @@ The template over seeds 0–4 (`IDEAS.md`, "Replay against a market that reacts"
 
 What it doesn't match: the takers' signs don't persist (`C(1)` about 0, against 0.1 in P3), the flow is balanced (P3's Kelp is 35% buys), and takers pay more against the wall mid (Kelp 1.3, against 0.9).
 
-## The bot template
+### The bot template
 
 `python/bots/template.py` is one file in five sections:
 
@@ -734,7 +765,7 @@ What it doesn't match: the takers' signs don't persist (`C(1)` about 0, against 
 - **Trader:** the entry point. It isolates each product, so one product's bug doesn't stop the others. It keeps all state in `traderData`, and it swallows exceptions unless `STRICT` is set. The backtester sets `STRICT` so errors show up.
 - **`DELAY`, `ORDERS_REST`, `MAX_RESTING`:** the exchange's timing and resting cap, set in ADAPTER from the rules or probe 3. With `DELAY` above 0 the bot counts what it sent and can't see listed yet against its limit and the cap, instead of re-posting it.
 
-## The LLM zoo
+### The LLM zoo
 
 `python/bots/zoo/` holds bots that language models wrote from a Prosperity-style spec alone: the
 baseline an agent-using team starts from, and rivals for `--vs`. `uv run python -m
@@ -745,11 +776,7 @@ alone on Kelp and Resin and beat it head to head, all of it on Squid Ink, which 
 doesn't trade. `uv run python -m experiments.study.zoo_h2h` splits each pairing by product and fill
 mode (`IDEAS.md`, "The LLM zoo" and "Why the zoo beat the template head to head").
 
-## On the day: adapting to the real format
-
-Start from [`RUNBOOK.md`](RUNBOOK.md), one page of the day's commands, each line naming the [`ON_THE_DAY.md`](ON_THE_DAY.md) section behind it. The format swap is done (7 Nov; "The format swap, step by step" keeps what is left each round): `python/bots/qminers/template.py` runs on their `exchange-simulator`, and `python/arena/formats/qminers.py` serves only `arena.validate`'s import and sandbox checks. Practise it: `uv run python -m experiments.format_drill <folder>` makes drill data from simulated days, then any tool runs with `--format drill --data <folder>/drill`. `python/experiments/README.md` says which experiment answers what on the day's data.
-
-## Known gaps
+### Known gaps
 
 - **The simulated market is one guess at a design** (`arena.sim`). Its agents are the literature's minimal set, calibrated to P3 round 1's statistics, not to how the Arena's bots behave. Its market makers quote around the true price exactly, except `KELP_NOISY`'s, so on the other presets the walls give the price away, and results that favour a wall-mid fair hold only where `arena.diagnose` says the wall mid filters the mid's noise (`IDEAS.md`, "A market maker that doesn't know the price").
 - **The queue model is an estimate.** By default you join the back of the queue and only move up when the visible volume shrinks. `--queue prob` and `--queue front` bracket it, but none of them sees individual orders, so a level re-posted at the same size looks unchanged to `prob`. Orders priced beyond the visible depth keep their last queue estimate.
