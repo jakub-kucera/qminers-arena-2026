@@ -42,6 +42,7 @@ STRATEGIES = {
     "alloc_maker": "python/bots/qminers/families/alloc_maker.py",  # room_maker.rs at R1-F6's defaults, with ALLOC_K ... ADV_SCOPE
     "signal_maker": "python/bots/qminers/families/signal_maker.py",  # room_maker.rs at R1-F6's defaults, with MOM_SIZE ... SKEW_TRIM
     "take_maker": "python/bots/qminers/candidates/r1_F8_take_join.py",  # room_maker.rs at R1-F8's defaults, with TAKE_LOTS ... TAKE_MS, JOIN_*, ANY_CLEAR
+    "ridge_maker": "python/bots/qminers/candidates/r1_C1_codex_ridge.py",  # R1-C1, with INSIDE_TH ... PRED_MIX (ridge_maker.rs)
     "probe": "python/tests/fixtures/qsim_probe.py",
 }
 

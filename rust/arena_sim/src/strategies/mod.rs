@@ -3,14 +3,16 @@
 
 pub mod fallback_maker;
 pub mod probe;
+pub mod ridge_maker;
 pub mod room_maker;
 pub mod trend_follower;
 
 use crate::params::Params;
 use crate::sim::Strategy;
 
-pub const NAMES: [&str; 8] =
-    ["trend_follower", "fallback_maker", "room_maker", "shrink_maker", "alloc_maker", "signal_maker", "take_maker", "probe"];
+pub const NAMES: [&str; 9] = [
+    "trend_follower", "fallback_maker", "room_maker", "shrink_maker", "alloc_maker", "signal_maker", "take_maker", "ridge_maker", "probe",
+];
 
 pub fn make(name: &str, params: &Params) -> Result<Box<dyn Strategy + Send>, String> {
     match name {
@@ -19,6 +21,7 @@ pub fn make(name: &str, params: &Params) -> Result<Box<dyn Strategy + Send>, Str
         "room_maker" | "shrink_maker" | "alloc_maker" | "signal_maker" | "take_maker" => {
             Ok(Box::new(room_maker::RoomMaker::new(name, params)?))
         }
+        "ridge_maker" => Ok(Box::new(ridge_maker::RidgeMaker::new(params)?)),
         "probe" => Ok(Box::new(probe::Probe::new(params)?)),
         _ => Err(format!("unknown strategy {name:?} (known: {})", NAMES.join(", "))),
     }
