@@ -6,7 +6,9 @@ INV_K: the same by position (when long, a smaller bid touch and more lots behind
 short). ALLOC_UP 0 lets either only shrink the touch. ADV_TH: an online adverse table, a running mean of our fills'
 ADV_MS markout (ticks a lot) per state (the side's signed imbalance tercile x spread 1 or 2+), learned as the session
 runs; after ADV_MIN lots in a state, a side whose state's mean is below ADV_TH posts no top-up (ADV_SCOPE 2: no new
-touch order at all). R1-F6's notes follow.
+touch order at all). ALLOC_KU, ALLOC_HI, ALLOC_TH, ALLOC_DEEP shape ALLOC_K (see their comments). On round1 (IDEAS.md,
+"Allocate, don't gate"): ALLOC_K -0.5 (the thick side's touch smaller, the thin side's fuller) +489,844 (+6,770, 11 of 12
+segments up), below the bar for a replacement; INV_K flat, ADV_TH only loses volume. R1-F6's notes follow.
 
 Round 1 candidate R1-F6 (7 Nov, 14:00): R1-F5 with a second level (LEVELS 2, KEEP_DEPTH 2, SIZE_TOUCH 65, SIZE_DEEP 80,
 SIZE_NARROW 115, TOPUP 1), chosen on round1's first 75% from a broad plateau (356,715): full +483,074, the last 25% +126,359,
@@ -84,6 +86,9 @@ ALLOC_K = 0.0  # touch cap x (1 + ALLOC_K * imbalance) on the bid, (1 - ALLOC_K 
 INV_K = 0.0  # touch cap x (1 - INV_K * position / LIMIT) on the bid, (1 + ...) on the ask; the rest behind (0: off)
 ALLOC_UP = 1  # 1: the factor may also raise a touch cap above F6's (up to ALLOC_HI times); 0: only shrink it
 ALLOC_HI = 2.0
+ALLOC_KU = 0.0  # the imbalance's coefficient where it raises a touch cap (0: ALLOC_K's)
+ALLOC_TH = 0.0  # the imbalance counts only beyond this |imbalance| (0: always)
+ALLOC_DEEP = 1  # 1: lots taken off a touch go to the level behind; 0: they are not quoted
 ADV_TH = -1000.0  # post a top-up only while our fills' running markout in the current state is at least this (-1000: off)
 ADV_MIN = 2000  # ... once the state has this many filled lots measured
 ADV_MS = 1000  # the markout's horizon
@@ -186,16 +191,25 @@ class LadderMakerStrategy(BaseStrategy):
         ask_deep = SIZE_DEEP
         if ALLOC_K or INV_K:
             imb = (bid_lots - ask_lots) / (bid_lots + ask_lots)
-            shift = ALLOC_K * imb - INV_K * position / LIMIT
+            if -ALLOC_TH <= imb <= ALLOC_TH:
+                imb = 0.0
+            inv = INV_K * position / LIMIT
+            shift = ALLOC_K * imb - inv
             hi = ALLOC_HI if ALLOC_UP else 1.0
             if not bid_dying:
-                new = int(bid_cap * min(hi, max(0.0, 1.0 + shift)) + 0.5)
-                if new < bid_cap:
+                factor = 1.0 + shift
+                if ALLOC_KU and factor > 1.0:
+                    factor = 1.0 + ALLOC_KU * imb - inv
+                new = int(bid_cap * min(hi, max(0.0, factor)) + 0.5)
+                if new < bid_cap and ALLOC_DEEP:
                     bid_deep += bid_cap - new
                 bid_cap = new
             if not ask_dying:
-                new = int(ask_cap * min(hi, max(0.0, 1.0 - shift)) + 0.5)
-                if new < ask_cap:
+                factor = 1.0 - shift
+                if ALLOC_KU and factor > 1.0:
+                    factor = 1.0 - ALLOC_KU * imb + inv
+                new = int(ask_cap * min(hi, max(0.0, factor)) + 0.5)
+                if new < ask_cap and ALLOC_DEEP:
                     ask_deep += ask_cap - new
                 ask_cap = new
         bid_top = True
