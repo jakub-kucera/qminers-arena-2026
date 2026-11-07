@@ -15,6 +15,16 @@
 //! `RIDGE_FRAC` (0.001): ridge = max(RIDGE_MIN, RIDGE_FRAC * mass), `FIT_US` (1000000, between refits),
 //! `REPLENISH_US` (5000, how long after a quote a landed cancel re-quotes), `PRED_MIX` (1.0, the model's weight in
 //! fair).
+//!
+//! Rust-only additions from R1-F8 (python/bots/qminers/candidates/r1_F8_take_join.py, `take_maker`), off by
+//! default, so the defaults are R1-C1 as written: the depletion guard, `DEPLETE_LOTS` (0: off) and `DEPL_FRAC`
+//! (0.12): when the market's lots at its touch are under DEPLETE_LOTS and under DEPL_FRAC of their peak since that
+//! price became the touch (DEPL_FRAC 0: the lots alone), a quote of ours at that touch moves a tick back (ours there
+//! cancelled, the room posted behind); the take, `TAKE_LOTS` (0: off), `TAKE_OWN` (800), `TAKE_DEPLETE` (150),
+//! `TAKE_MAX` (1000), `TAKE_MS` (250): at a one-tick spread, when the other side's touch is dying (under TAKE_DEPLETE
+//! lots and under DEPL_FRAC of its peak; without both, the guard's test) with at most TAKE_MAX lots while ours holds
+//! TAKE_OWN or more and we still quote our side, a limit order of TAKE_LOTS (within the limit) at the other side's
+//! touch, at most one a side per TAKE_MS, exempt from the re-quote's cancels for TAKE_MS (take_maker's `take`).
 
 use std::collections::VecDeque;
 
@@ -31,6 +41,8 @@ struct Record {
     quantity: i64,
     accepted: bool,
     cancelling: bool,
+    /// a take order: not cancelled by the quoting before this time
+    exempt_until: i64,
 }
 
 /// CPython 3.12's `sum()` of floats, start 0 (rust/src/support/py.rs `sum`).
@@ -86,6 +98,16 @@ pub struct RidgeMaker {
     fit_us: i64,
     replenish_us: i64,
     pred_mix: f64,
+    deplete_lots: i64,
+    depl_frac: f64,
+    take_lots: i64,
+    take_own: i64,
+    take_deplete: i64,
+    take_max: i64,
+    take_ms: i64,
+    take_block: [i64; 2],
+    /// per side (bid, ask): [touch price, the market's lots there at their most since]
+    peak: [Option<(i64, i64)>; 2],
 
     inventory: i64,
     orders: Vec<Record>,
@@ -114,10 +136,11 @@ pub struct RidgeMaker {
     invalid_since: Option<i64>,
 }
 
-pub const KEYS: [&str; 21] = [
+pub const KEYS: [&str; 28] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
+    "DEPLETE_LOTS", "DEPL_FRAC", "TAKE_LOTS", "TAKE_OWN", "TAKE_DEPLETE", "TAKE_MAX", "TAKE_MS",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -153,6 +176,15 @@ impl RidgeMaker {
             fit_us: params.int("FIT_US", 1_000_000)?,
             replenish_us: params.int("REPLENISH_US", 5000)?,
             pred_mix: params.float("PRED_MIX", 1.0)?,
+            deplete_lots: params.int("DEPLETE_LOTS", 0)?,
+            depl_frac: params.float("DEPL_FRAC", 0.12)?,
+            take_lots: params.int("TAKE_LOTS", 0)?,
+            take_own: params.int("TAKE_OWN", 800)?,
+            take_deplete: params.int("TAKE_DEPLETE", 150)?,
+            take_max: params.int("TAKE_MAX", 1000)?,
+            take_ms: params.int("TAKE_MS", 250)?,
+            take_block: [0, 0],
+            peak: [None, None],
             inventory: 0,
             orders: Vec::new(),
             desired_buy: None,
@@ -267,7 +299,7 @@ impl RidgeMaker {
                 continue;
             }
             current += 1;
-            if price.is_none() || Some(self.orders[index].price) != price {
+            if (price.is_none() || Some(self.orders[index].price) != price) && now >= self.orders[index].exempt_until {
                 self.cancel(index, ctx);
             }
         }
@@ -284,8 +316,25 @@ impl RidgeMaker {
             return;
         }
         let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, false);
-        self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false });
+        self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: 0 });
         self.last_action[side_index(sign)] = now;
+    }
+
+    /// take_maker's `take`: TAKE_LOTS (within the limit) at `price`, one a side per TAKE_MS, exempt that long.
+    fn take(&mut self, now: i64, sign: i64, price: i64, ctx: &mut Ctx) {
+        let key = side_index(sign);
+        if now < self.take_block[key] {
+            return;
+        }
+        let reserved: i64 = self.orders.iter().filter(|r| r.sign == sign).map(|r| r.quantity).sum();
+        let quantity = self.take_lots.min(self.position_limit - sign * self.inventory - reserved);
+        if quantity <= 0 || price <= 0 {
+            return;
+        }
+        let until = now + self.take_ms * 1000;
+        self.take_block[key] = until;
+        let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, false);
+        self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: until });
     }
 }
 
@@ -443,6 +492,40 @@ impl Strategy for RidgeMaker {
         }
         if flow > self.flow_cut || self.inventory <= -self.position_limit {
             sell = None;
+        }
+        if self.deplete_lots > 0 || self.take_lots > 0 {
+            for (key, price, lots) in [(0, bid, bq), (1, ask, aq)] {
+                match &mut self.peak[key] {
+                    Some((p, most)) if *p == price => *most = (*most).max(lots),
+                    slot => *slot = Some((price, lots)),
+                }
+            }
+            let peak = |key: usize| self.peak[key].map_or(0, |(_, most)| most) as f64;
+            let mut bid_dying = bq < self.deplete_lots;
+            let mut ask_dying = aq < self.deplete_lots;
+            if self.depl_frac > 0.0 {
+                bid_dying = bid_dying && (bq as f64) < self.depl_frac * peak(0);
+                ask_dying = ask_dying && (aq as f64) < self.depl_frac * peak(1);
+            }
+            if self.take_lots > 0 && spread == 1 {
+                let (mut ask_take, mut bid_take) = (ask_dying, bid_dying);
+                if self.take_deplete > 0 && self.depl_frac > 0.0 {
+                    ask_take = aq < self.take_deplete && (aq as f64) < self.depl_frac * peak(1);
+                    bid_take = bq < self.take_deplete && (bq as f64) < self.depl_frac * peak(0);
+                }
+                if ask_take && aq <= self.take_max && buy.is_some() && bq >= self.take_own {
+                    self.take(now, 1, ask, ctx);
+                }
+                if bid_take && bq <= self.take_max && sell.is_some() && aq >= self.take_own {
+                    self.take(now, -1, bid, ctx);
+                }
+            }
+            if bid_dying && buy == Some(bid) {
+                buy = Some(bid - 1);
+            }
+            if ask_dying && sell == Some(ask) {
+                sell = Some(ask + 1);
+            }
         }
         self.desired_buy = buy;
         self.desired_sell = sell;
