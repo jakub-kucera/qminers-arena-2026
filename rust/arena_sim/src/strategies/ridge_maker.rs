@@ -25,13 +25,20 @@
 //! lots and under DEPL_FRAC of its peak; without both, the guard's test) with at most TAKE_MAX lots while ours holds
 //! TAKE_OWN or more and we still quote our side, a limit order of TAKE_LOTS (within the limit) at the other side's
 //! touch, at most one a side per TAKE_MS, exempt from the re-quote's cancels for TAKE_MS (take_maker's `take`).
+//!
+//! Learned-model knobs, all off by default (C1 to the bit): `PLACE` (0; 1 adds two features: the share of new market
+//! orders landing at/inside the previous touch, bids minus asks, decayed over `PLACE_US1` 100000 and `PLACE_US2` 300000),
+//! `DEPTH5` (5-level lots imbalance), `FLOW2` (signed flow over 0.1 s and 2 s), `LAST_AGG` (signed ln(1+lots) of the
+//! last aggressive order), `STD` with `STD_US` (scale each feature by its running RMS), `BLEND_W` (0) with `H2_US`
+//! (500000): a second ridge on the same features at the H2_US horizon, prediction = (1-W) p1 + W p2.
 
-use std::collections::VecDeque;
+use std::collections::{HashSet, VecDeque};
 
 use crate::params::Params;
 use crate::sim::{Ctx, Owner, PrivateEvent, Side, Snapshot, Status, Strategy, Trade};
 
 const N: usize = 15;
+const NM: usize = 24;
 const OBS_MAXLEN: usize = 64;
 
 struct Record {
@@ -76,6 +83,34 @@ fn clamp(x: f64, lo: f64, hi: f64) -> f64 {
     }
 }
 
+struct Model {
+    horizon_us: i64,
+    observations: VecDeque<(i64, f64, [f64; NM])>,
+    last_fit_us: Option<i64>,
+    last_label_us: Option<i64>,
+    labels: i64,
+    mass: f64,
+    xx: [[f64; NM]; NM],
+    xy: [f64; NM],
+    weights: [f64; NM],
+}
+
+impl Model {
+    fn new(horizon_us: i64) -> Model {
+        Model {
+            horizon_us,
+            observations: VecDeque::with_capacity(OBS_MAXLEN),
+            last_fit_us: None,
+            last_label_us: None,
+            labels: 0,
+            mass: 0.0,
+            xx: [[0.0; NM]; NM],
+            xy: [0.0; NM],
+            weights: [0.0; NM],
+        }
+    }
+}
+
 pub struct RidgeMaker {
     horizon_us: i64,
     observation_interval_us: i64,
@@ -114,15 +149,28 @@ pub struct RidgeMaker {
     desired_buy: Option<i64>,
     desired_sell: Option<i64>,
     desired_time: Option<i64>,
-    observations: VecDeque<(i64, f64, [f64; N])>,
+    m1: Model,
+    m2: Model,
+    n: usize,
     last_observation_us: i64,
-    last_fit_us: Option<i64>,
-    last_label_us: Option<i64>,
-    labels: i64,
-    mass: f64,
-    xx: [[f64; N]; N],
-    xy: [f64; N],
-    weights: [f64; N],
+    place: i64,
+    place_us1: i64,
+    place_us2: i64,
+    depth5: i64,
+    flow2: i64,
+    last_agg: i64,
+    std_on: i64,
+    std_us: i64,
+    blend_w: f64,
+    seen: HashSet<u64>,
+    seen_next: HashSet<u64>,
+    /// per tau: [bid at/inside, bid all, ask at/inside, ask all]
+    place_acc: [[f64; 4]; 2],
+    flow_fast: (f64, f64),
+    flow_slow: (f64, f64),
+    last_agg_value: f64,
+    std_m2: [f64; NM],
+    std_mass: f64,
     fast_mid: f64,
     slow_mid: f64,
     model_time: Option<i64>,
@@ -136,11 +184,12 @@ pub struct RidgeMaker {
     invalid_since: Option<i64>,
 }
 
-pub const KEYS: [&str; 28] = [
+pub const KEYS: [&str; 38] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
     "DEPLETE_LOTS", "DEPL_FRAC", "TAKE_LOTS", "TAKE_OWN", "TAKE_DEPLETE", "TAKE_MAX", "TAKE_MS",
+    "PLACE", "PLACE_US1", "PLACE_US2", "DEPTH5", "FLOW2", "LAST_AGG", "STD", "STD_US", "BLEND_W", "H2_US",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -190,15 +239,30 @@ impl RidgeMaker {
             desired_buy: None,
             desired_sell: None,
             desired_time: None,
-            observations: VecDeque::with_capacity(OBS_MAXLEN),
+            m1: Model::new(params.int("HORIZON_US", 100_000)?),
+            m2: Model::new(params.int("H2_US", 500_000)?),
+            n: N + if params.int("PLACE", 0)? > 0 { 2 } else { 0 }
+                + if params.int("DEPTH5", 0)? > 0 { 1 } else { 0 }
+                + if params.int("FLOW2", 0)? > 0 { 2 } else { 0 }
+                + if params.int("LAST_AGG", 0)? > 0 { 1 } else { 0 },
             last_observation_us: -100_000,
-            last_fit_us: None,
-            last_label_us: None,
-            labels: 0,
-            mass: 0.0,
-            xx: [[0.0; N]; N],
-            xy: [0.0; N],
-            weights: [0.0; N],
+            place: params.int("PLACE", 0)?,
+            place_us1: params.int("PLACE_US1", 100_000)?,
+            place_us2: params.int("PLACE_US2", 300_000)?,
+            depth5: params.int("DEPTH5", 0)?,
+            flow2: params.int("FLOW2", 0)?,
+            last_agg: params.int("LAST_AGG", 0)?,
+            std_on: params.int("STD", 0)?,
+            std_us: params.int("STD_US", 60_000_000)?,
+            blend_w: params.float("BLEND_W", 0.0)?,
+            seen: HashSet::new(),
+            seen_next: HashSet::new(),
+            place_acc: [[0.0; 4]; 2],
+            flow_fast: (0.0, 0.0),
+            flow_slow: (0.0, 0.0),
+            last_agg_value: 0.0,
+            std_m2: [0.0; NM],
+            std_mass: 0.0,
             fast_mid: 0.0,
             slow_mid: 0.0,
             model_time: None,
@@ -213,74 +277,78 @@ impl RidgeMaker {
         })
     }
 
-    fn learn(&mut self, now: i64, mid: f64) {
-        while let Some(&(observed_us, old_mid, features)) = self.observations.front() {
-            if observed_us + self.horizon_us > now {
+    fn learn(&mut self, which: usize, now: i64, mid: f64) {
+        let n = self.n;
+        let (min_labels, memory, fit_us, ridge_min, ridge_frac) =
+            (self.min_labels, self.model_memory_us, self.fit_us, self.ridge_min, self.ridge_frac);
+        let m = if which == 0 { &mut self.m1 } else { &mut self.m2 };
+        while let Some(&(observed_us, old_mid, features)) = m.observations.front() {
+            if observed_us + m.horizon_us > now {
                 break;
             }
-            self.observations.pop_front();
-            if now - observed_us > self.horizon_us + 1_000_000 {
+            m.observations.pop_front();
+            if now - observed_us > m.horizon_us + 1_000_000 {
                 continue;
             }
-            let elapsed = match self.last_label_us {
+            let elapsed = match m.last_label_us {
                 None => 0,
                 Some(t) => now - t,
             };
-            let decay = ((-(elapsed.max(0))) as f64 / self.model_memory_us as f64).exp();
-            self.last_label_us = Some(now);
+            let decay = ((-(elapsed.max(0))) as f64 / memory as f64).exp();
+            m.last_label_us = Some(now);
             let response = clamp(mid - old_mid, -20.0, 20.0);
-            self.mass = self.mass * decay + 1.0;
-            for i in 0..N {
-                self.xy[i] = self.xy[i] * decay + features[i] * response;
-                for j in 0..N {
-                    self.xx[i][j] = self.xx[i][j] * decay + features[i] * features[j];
+            m.mass = m.mass * decay + 1.0;
+            for i in 0..n {
+                m.xy[i] = m.xy[i] * decay + features[i] * response;
+                for j in 0..n {
+                    m.xx[i][j] = m.xx[i][j] * decay + features[i] * features[j];
                 }
             }
-            self.labels += 1;
+            m.labels += 1;
         }
-        if self.labels < self.min_labels {
+        if m.labels < min_labels {
             return;
         }
-        if let Some(t) = self.last_fit_us {
-            if now - t < self.fit_us {
+        if let Some(t) = m.last_fit_us {
+            if now - t < fit_us {
                 return;
             }
         }
-        self.last_fit_us = Some(now);
-        let r = self.ridge_frac * self.mass;
-        let ridge = if r > self.ridge_min { r } else { self.ridge_min };
-        let mut matrix = [[0.0f64; N + 1]; N];
-        for i in 0..N {
-            matrix[i][..N].copy_from_slice(&self.xx[i]);
-            matrix[i][N] = self.xy[i];
+        m.last_fit_us = Some(now);
+        let r = ridge_frac * m.mass;
+        let ridge = if r > ridge_min { r } else { ridge_min };
+        let mut matrix = [[0.0f64; NM + 1]; NM];
+        for i in 0..n {
+            matrix[i][..n].copy_from_slice(&m.xx[i][..n]);
+            matrix[i][n] = m.xy[i];
         }
-        for i in 0..N {
+        for i in 0..n {
             matrix[i][i] += ridge;
         }
-        for col in 0..N {
+        for col in 0..n {
             let pivot = matrix[col][col];
             if !pivot.is_finite() || pivot <= 1e-12 {
                 return;
             }
-            for j in col..=N {
+            for j in col..=n {
                 matrix[col][j] /= pivot;
             }
-            for i in 0..N {
+            for i in 0..n {
                 if i == col {
                     continue;
                 }
                 let factor = matrix[i][col];
-                for j in col..=N {
+                for j in col..=n {
                     matrix[i][j] -= factor * matrix[col][j];
                 }
             }
         }
-        let mut weights = [0.0; N];
-        for i in 0..N {
-            weights[i] = matrix[i][N];
+        let mut weights = [0.0; NM];
+        for i in 0..n {
+            weights[i] = matrix[i][n];
         }
         if weights.iter().all(|w| w.is_finite()) {
-            self.weights = weights;
+            m.weights = weights;
         }
     }
 
@@ -355,6 +423,40 @@ impl Strategy for RidgeMaker {
                 self.volume += trade.quantity as f64;
             }
         }
+        if self.flow2 > 0 {
+            let df = ((-elapsed) as f64 / 100_000.0).exp();
+            let ds = ((-elapsed) as f64 / 2_000_000.0).exp();
+            self.flow_fast.0 *= df;
+            self.flow_fast.1 *= df;
+            self.flow_slow.0 *= ds;
+            self.flow_slow.1 *= ds;
+            for trade in trades {
+                if trade.taker_owner == Owner::Market {
+                    let q = trade.quantity as f64;
+                    let signed = if trade.book_side == Side::Sell { q } else { -q };
+                    self.flow_fast.0 += signed;
+                    self.flow_fast.1 += q;
+                    self.flow_slow.0 += signed;
+                    self.flow_slow.1 += q;
+                }
+            }
+        }
+        if self.last_agg > 0 {
+            let mut last: Option<(u64, f64, f64)> = None;
+            for trade in trades {
+                if trade.taker_owner != Owner::Market {
+                    continue;
+                }
+                let sign = if trade.book_side == Side::Sell { 1.0 } else { -1.0 };
+                match &mut last {
+                    Some((id, _, q)) if *id == trade.taker_order_id => *q += trade.quantity as f64,
+                    slot => *slot = Some((trade.taker_order_id, sign, trade.quantity as f64)),
+                }
+            }
+            if let Some((_, sign, q)) = last {
+                self.last_agg_value = sign * (1.0 + q).ln();
+            }
+        }
         let touch_bid = snapshot.market_touch(Side::Buy);
         let touch_ask = snapshot.market_touch(Side::Sell);
         let (bid, bq, ask, aq) = match (touch_bid, touch_ask) {
@@ -416,6 +518,70 @@ impl Strategy for RidgeMaker {
         let depth_mid =
             (bd_value as f64 / bd_r.max(1) as f64 + ad_value as f64 / ad_r.max(1) as f64) * 0.5 - mid;
 
+        let mut place_feat = [0.0f64; 2];
+        if self.place > 0 {
+            let (ref_bid, ref_ask) = match self.previous_touch {
+                Some((ob, oa, _, _)) => (ob, oa),
+                None => (bid, ask),
+            };
+            let mut add = [0.0f64; 4];
+            self.seen_next.clear();
+            for side in [Side::Buy, Side::Sell] {
+                for order in snapshot.side(side) {
+                    if order.owner != Owner::Market {
+                        continue;
+                    }
+                    self.seen_next.insert(order.order_id);
+                    if self.seen.contains(&order.order_id) {
+                        continue;
+                    }
+                    if order.side == Side::Buy {
+                        add[1] += 1.0;
+                        if order.price >= ref_bid {
+                            add[0] += 1.0;
+                        }
+                    } else {
+                        add[3] += 1.0;
+                        if order.price <= ref_ask {
+                            add[2] += 1.0;
+                        }
+                    }
+                }
+            }
+            std::mem::swap(&mut self.seen, &mut self.seen_next);
+            for (k, tau) in [self.place_us1, self.place_us2].into_iter().enumerate() {
+                let d = ((-elapsed) as f64 / tau as f64).exp();
+                for q in 0..4 {
+                    self.place_acc[k][q] = self.place_acc[k][q] * d + add[q];
+                }
+                let acc = self.place_acc[k];
+                let sb = if acc[1] > 1e-9 { acc[0] / acc[1] } else { 0.5 };
+                let sa = if acc[3] > 1e-9 { acc[2] / acc[3] } else { 0.5 };
+                place_feat[k] = sb - sa;
+            }
+        }
+        let mut depth5_feat = 0.0f64;
+        if self.depth5 > 0 {
+            let mut tot = [0i64; 2];
+            for (k, side) in [Side::Buy, Side::Sell].into_iter().enumerate() {
+                let mut levels = 0;
+                let mut last_price = i64::MIN;
+                for order in snapshot.side(side) {
+                    if order.price != last_price {
+                        levels += 1;
+                        last_price = order.price;
+                        if levels > 5 {
+                            break;
+                        }
+                    }
+                    if order.owner == Owner::Market {
+                        tot[k] += order.quantity;
+                    }
+                }
+            }
+            depth5_feat = ratio(tot[0], tot[1]);
+        }
+
         let spread_f = spread as f64;
         let skew = self.skew_k * self.inventory as f64 / self.position_limit as f64 * spread_f.max(1.0);
         match self.model_time {
@@ -427,7 +593,8 @@ impl Strategy for RidgeMaker {
             _ => {
                 self.fast_mid = mid;
                 self.slow_mid = mid;
-                self.observations.clear();
+                self.m1.observations.clear();
+                self.m2.observations.clear();
             }
         }
         self.model_time = Some(now);
@@ -445,7 +612,7 @@ impl Strategy for RidgeMaker {
         }
         self.previous_touch = Some((bid, ask, bq, aq));
         let ofi = clamp(self.ofi, -3.0, 3.0);
-        let features: [f64; N] = [
+        let base: [f64; N] = [
             flow,
             clamp(self.fast_mid - self.slow_mid, -5.0, 5.0),
             imbalance,
@@ -462,17 +629,61 @@ impl Strategy for RidgeMaker {
             count_imbalance * count_imbalance.abs(),
             robust_imbalance * robust_imbalance.abs(),
         ];
-        self.learn(now, mid);
-        if now - self.last_observation_us >= self.observation_interval_us {
-            if self.observations.len() == OBS_MAXLEN {
-                self.observations.pop_front();
+        let mut features = [0.0f64; NM];
+        features[..N].copy_from_slice(&base);
+        let mut k = N;
+        if self.place > 0 {
+            features[k] = place_feat[0];
+            features[k + 1] = place_feat[1];
+            k += 2;
+        }
+        if self.depth5 > 0 {
+            features[k] = depth5_feat;
+            k += 1;
+        }
+        if self.flow2 > 0 {
+            features[k] = self.flow_fast.0 / (1.0 + self.flow_fast.1);
+            features[k + 1] = self.flow_slow.0 / (1.0 + self.flow_slow.1);
+            k += 2;
+        }
+        if self.last_agg > 0 {
+            features[k] = self.last_agg_value;
+        }
+        let n = self.n;
+        if self.std_on > 0 {
+            let d = ((-elapsed) as f64 / self.std_us as f64).exp();
+            self.std_mass = self.std_mass * d + 1.0;
+            for i in 0..n {
+                self.std_m2[i] = self.std_m2[i] * d + features[i] * features[i];
+                features[i] /= (self.std_m2[i] / self.std_mass).sqrt() + 1e-9;
             }
-            self.observations.push_back((now, mid, features));
+        }
+        self.learn(0, now, mid);
+        if self.blend_w > 0.0 {
+            self.learn(1, now, mid);
+        }
+        if now - self.last_observation_us >= self.observation_interval_us {
+            if self.m1.observations.len() == OBS_MAXLEN {
+                self.m1.observations.pop_front();
+            }
+            self.m1.observations.push_back((now, mid, features));
+            if self.blend_w > 0.0 {
+                if self.m2.observations.len() == OBS_MAXLEN {
+                    self.m2.observations.pop_front();
+                }
+                self.m2.observations.push_back((now, mid, features));
+            }
             self.last_observation_us = now;
         }
         let mut prediction = 0.25 * spread_f * imbalance;
-        if self.labels >= self.min_labels {
-            prediction = clamp(py_sum(self.weights.iter().zip(features.iter()).map(|(w, x)| w * x)), -2.0, 2.0);
+        if self.m1.labels >= self.min_labels {
+            prediction =
+                clamp(py_sum(self.m1.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x)), -2.0, 2.0);
+            if self.blend_w > 0.0 && self.m2.labels >= self.min_labels {
+                let p2 =
+                    clamp(py_sum(self.m2.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x)), -2.0, 2.0);
+                prediction = (1.0 - self.blend_w) * prediction + self.blend_w * p2;
+            }
         }
         let mut fair = mid + self.pred_mix * prediction + 0.0 * 0.25 * spread_f * imbalance - skew;
         if (fair - mid).abs() <= self.dead_zone {
