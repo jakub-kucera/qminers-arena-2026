@@ -4,6 +4,10 @@ The template (`docs/HANDOVER_TEMPLATE.md`): copy it to `data/arena/round<N>/HAND
 fill it in during the round and finish it by deadline − 0:10; the template itself stays as it is. Committed and pushed so the other laptop has it (ON_THE_DAY.md, "Handover note"); the private
 run's results and `leaderboard.json` go in this folder too.
 
+## Update 8 Nov 00:25: R2-L9 is the new base
+- R2-L9 (`python/bots/qminers/candidates/r2_L9_taker_huber.py`, the stats session's last taker) made **+873,719 on round 2's validation tape** (submission bc0a2c50-d4bd-46ae-bc23-ee556d21ffe5, uploaded at the 00:14 deadline): +46.9k over R2-L8, +69.7k over R2-L3. It is L3's pure taker with a **Huber-robust fit** (HUBER_DELTA 6) and impact features at 500 ms (36 features).
+- So round 3 starts from L9 (and L8's regime-switched quotes on top of it is the first combination to try), and a better learner (robust losses, then non-linear models) ranks above execution tweaks: every execution tweak tried on L3 lost or tied, while the robust fit gained +70k on validation.
+
 ## Start here (written 00:00, 8 Nov, from round 2)
 
 Round 2's whole story is in `data/arena/round2/HANDOVER.md`, "Round 2 results, marked" (every upload, its validation score, what transferred). The short version: on the server's volatile tapes **the forecast taker won** (R2-L8, the forecast taker with quotes only in slow markets, +826,778 on validation; R2-L3, the pure taker, +804,018), the learned maker with size lost, big-order momentum worked (+376k to +468k), and the edge sits in the bursts.
