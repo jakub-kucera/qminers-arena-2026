@@ -1,27 +1,33 @@
-"""R2-H1 (7 Nov, round 2): R2-T1 (r2_T1_take_only.py, the online ridge's forecast take) biased by R2-RA's big-flow
-signal (r2_RA_flow_window.py). RA's state is kept beside the ridge exactly as RA keeps it: the side of the last window
-of FLOW_MS ms whose net market-taker lots reached MIN_LOTS (the window cleared when it fires), a one-lot shadow
-holding that side whose PnL since the start must be above GATE_TICKS (the self-gate, which stays shut on calm tapes),
-and a stop that drops the signal once the mid has moved STOP ticks against it since it was set (until the next fire).
-While the gated, unstopped signal says +1 (-1), the take's threshold toward it is lowered by BIAS_AGREE ticks and the
-one against it raised by BIAS_AGAINST (each side's own threshold: buy when the forecast beats need_buy, sell when it
-is under -need_sell). BIAS_AGREE 0 / BIAS_AGAINST 0 is R2-T1 exactly; a large BIAS_AGREE is RA's hold taken by T1's
-takes (at most TAKE_SZ lots every TAKE_GAP_MS while the spread is at most TAKE_MAXSPREAD), with T1's forecast in
-charge whenever the signal is off. FEAT_BIG 1 also gives the ridge the gated signal as a 30th feature (0 while the
-gate is shut, so the fit is T1's there). ROOM_RESERVED 1 nets the side's resting and in-flight lots out of the take's
-room, so a one-lot quote filling beside a full take no longer puts |position| at 101 (T1's breach: 8.8k on the public
-tape, 22k on the validation tape).
-Set: BIAS_AGREE 0.3, BIAS_AGAINST 0, ROOM_RESERVED 1. Round 2's public tape (`uv run python -m arena.qgrid
-python/bots/qminers/candidates/r2_H1_flow_bias.py data/arena/round2/round2_public.csv --set ROOM_RESERVED=0
---grid BIAS_AGREE=0.15,0.3,0.6,9 --grid BIAS_AGAINST=0,0.3,9`, chosen on the first 75%; T1 191,984, in 135,839 /
-out 56,145): 0.3 / 0 207,065 (157,308 / 49,757), 0.15 / 0 211,585 (154,798 / 56,788), 0.3 / 0.3 203,398, 0.6 / 0
-181,116, 9 / 9 (RA's hold inside T1) 181,855, 9 / 0 146,540; single runs 0.2 / 0 227,828, 0.45 / 0 196,721;
-AGREE_MAXSPREAD 99 at 9 / 0.6 124,147; FEAT_BIG 1 with no bias 181,858. With ROOM_RESERVED 1, per tape (H1 / T1 / RA;
-`uv run exchange-simulator --strategy FILE --backtest CSV --log-dir logs/x --no-logs`): round2_public 223,794 /
-191,984 / 165,459; its mirror 224,190 / 187,246 / 165,459; round1 171,203 / 164,194 / -527; the stitched 12,000-s
-tapes of `experiments.day.tape_character stitch` (IDEAS.md, "Why R2-E2 lost"): high-vol half x4 571,725 / 514,873 /
-510,494, public twice 469,264 / 421,081 / 338,278, high-vol half 1.25x faster 611,059 / 547,196 / 562,176. Ahead of
-both on every tape. Breach 0-773 against T1's 8.8-31k. R2-T1's notes follow.
+"""R2-H1 (7 Nov, round 2): R2-T2 (r2_T2_take_only_safe.py: R2-T1's online ridge forecast take with its breach fixes,
+TAKE_ROOM_LIVE 1 and CANCEL_FREE 0.0) biased by R2-RA's big-flow signal (r2_RA_flow_window.py). RA's state is kept
+beside the ridge as RA keeps it: the side of the last window of FLOW_MS ms whose net market-taker lots reached
+MIN_LOTS (the window cleared when it fires), a one-lot shadow holding that side whose PnL since the start must be
+above GATE_TICKS (the self-gate, which stays shut on calm tapes), and a stop that drops the signal once the mid has
+moved STOP ticks against it since it was set (until the next fire; checked while the gate is open). While the gated,
+unstopped signal says +1 (-1), the take's threshold toward it is lowered by BIAS_AGREE ticks and the one against it
+raised by BIAS_AGAINST (each side's own threshold: buy when the forecast beats need_buy, sell when it is under
+-need_sell). BIAS_AGREE 0 / BIAS_AGAINST 0 is the base exactly (R2-T1 to the cent with TAKE_ROOM_LIVE 0 and
+CANCEL_FREE 1.0, on a 410-s cut of the public tape); a large BIAS_AGREE is RA's hold taken by the base's takes (at most
+TAKE_SZ lots every TAKE_GAP_MS while the spread is at most TAKE_MAXSPREAD), with the forecast in charge whenever the
+signal is off. AGREE_MAXSPREAD > TAKE_MAXSPREAD lets the take toward the signal fire at wider spreads; FEAT_BIG 1 gives
+the ridge the gated signal as a 30th feature (0 while the gate is shut, so the fit is the base's there).
+Set: BIAS_AGREE 0.3, BIAS_AGAINST 0. Chosen on round 2's public tape on the T1 base (this file at commit 015c3c8,
+`uv run python -m arena.qgrid FILE data/arena/round2/round2_public.csv --set ROOM_RESERVED=0 --grid
+BIAS_AGREE=0.15,0.3,0.6,9 --grid BIAS_AGAINST=0,0.3,9`, on the first 75%; T1 191,984, in 135,839 / out 56,145; at
+015c3c8 the T2 base's room fix was ROOM_RESERVED 1, with 223,794, in 164,498 / out 59,296): 0.3 / 0 207,065 (157,308 / 49,757), 0.15 / 0
+211,585 (154,798 / 56,788), 0.3 / 0.3 203,398, 0.6 / 0 181,116, 9 / 9 (RA's hold inside T1) 181,855, 9 / 0 146,540;
+single runs 0.2 / 0 227,828, 0.45 / 0 196,721; AGREE_MAXSPREAD 99 at 9 / 0.6 124,147; FEAT_BIG 1 with no bias 181,858.
+This file, per tape (H1 / T2 / T1 / RA; `uv run exchange-simulator --strategy FILE --backtest CSV --log-dir logs/x
+--no-logs`): round2_public 223,773 / 194,391 / 191,984 / 165,459; its mirror 223,586 / 192,774 / 187,246 / 165,459;
+round1 171,176 / 171,802 / 164,194 / -527; the stitched 12,000-s tapes of `experiments.day.tape_character stitch`
+(IDEAS.md, "Why R2-E2 lost"): high-vol half x4 569,111 / 495,028 / 514,873 / 510,494, public twice 466,113 / 423,096 /
+421,081 / 338,278, high-vol half 1.25x faster 608,688 / 550,352 / 547,196 / 562,176. Breach 0 on every tape. Ahead of
+T1, T2 and RA on every round-2 tape; round 1 626 under T2 (the gate opens briefly there). The T1 base with only the
+take's room fix (no bias) is 182,966 on the public, 510,027 on the high-vol half, 568,827 on its 1.25x: the gain is
+the bias's. R2-T2's and R2-T1's notes follow.
+R2-T2 (7 Nov, round 2): R2-T1 without its position breaches: the take's room is EXPOSURE - pos - every live same-side
+order's lots (TAKE_ROOM_LIVE 1), and an order being cancelled counts in full toward EXPOSURE until the cancel lands
+(CANCEL_FREE 0.0). Numbers: IDEAS.md, the R2-T2 row.
 R2-T1 (7 Nov, round 2, the fable worktree): the forecast take ALONE. R2-E2's file (R1-C12's online ridge of the 400-ms mid move on 29 features, a forecast take, queue keeping) with its quoting reduced to one lot (QUOTE_SIZE 1), EXPOSURE 100, TAKE_EDGE 0.15, TAKE_SZ 200, TAKE_GAP_MS 50, and a new module knob TAKE_MAXSPREAD (the take fires only while the spread is at most this many ticks; 99: off). Why: on round 2's public tape the same model quoting makes -87,574 while its take alone makes 185,818 (first 75% 122,759, last 25% 63,059: the best held-out figure of any candidate), 142,017 on round 1 and 335-363k on the drift-free draws (`arena.qsim_rust ridge_maker ... --set QUOTE_SIZE=1`, the grid in CANDIDATES.md); forecast_quality on this tape: at a 1-tick spread a prediction of 0.75-1.25 ticks is followed by a 1.1-1.6 tick move in 0.4 s (net of the half spread +0.6 to +1.1, hit 72-75%), at a 2+ tick spread the net is negative in every bin (-0.4 to -2.6), which the spread gate removes. E2's notes follow.
 R2-E2: R2-E1 (r2_E1_low_exposure.py) plus R2-Q1's queue keeping (r2_Q1_keep_slice.py), for round 2.
 
@@ -56,7 +62,7 @@ TAKE_MAXSPREAD = 1  # the forecast take fires only while the spread is at most t
 BIAS_AGREE = 0.3  # ticks off the take's threshold toward the gated big-flow signal
 BIAS_AGAINST = 0  # ticks onto the take's threshold against it
 AGREE_MAXSPREAD = 1  # while the signal is on, the take toward it fires up to this spread (T1's gate: TAKE_MAXSPREAD)
-ROOM_RESERVED = 1  # 1: the take's room counts the lots resting or in flight on its side (T1: 0, a quote's lot can breach 100)
+TAKE_ROOM_LIVE = 1  # R2-T2: the take's room is EXPOSURE - pos - every live same-side order's lots (0: R2-T1, EXPOSURE - pos)
 FEAT_BIG = 0  # 1: the gated big-flow signal is also the ridge's 30th feature
 MIN_LOTS = 500  # R2-RA: the window's net market-taker lots that set the big signal
 FLOW_MS = 250  # R2-RA: the window
@@ -79,7 +85,7 @@ class PassiveStrategy(BaseStrategy):
     INSIDE_TH = 0.3
     SKEW_K = 0.025
     FLOW_CUT = 1.1
-    CANCEL_FREE = 1.0
+    CANCEL_FREE = 0.0    # R2-T2: an order being cancelled counts in full toward EXPOSURE until the cancel lands (R2-T1: 1.0, free)
     HEDGE_TICKS = 10
     HEDGE_STALE_US = 100000
     TAKE_EDGE = 0.15
@@ -225,8 +231,8 @@ class PassiveStrategy(BaseStrategy):
         else:
             room = self.EXPOSURE-pos
         reserved = sum(r[2] for r in self._orders.values() if r[0] == sign)
-        if ROOM_RESERVED:
-            room -= reserved
+        if TAKE_ROOM_LIVE:
+            room -= reserved  # R2-T2: every live same-side order (a one-lot quote, one being cancelled, the hedge) can fill first
         quantity = min(self.TAKE_SZ,room,self.POSITION_LIMIT-pos-reserved)
         if quantity <= 0:
             return
