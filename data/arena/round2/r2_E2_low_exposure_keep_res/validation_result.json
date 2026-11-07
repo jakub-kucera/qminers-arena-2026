@@ -1,0 +1,17 @@
+{
+  "bot": "python/bots/qminers/candidates/r2_E2_low_exposure_keep.py",
+  "dataset": "round 2 validation (the server; PnL and metrics only, no logs)",
+  "submission_id": "9f4843cd-8d59-4e2d-b020-879177fe7ef5",
+  "round_id": "a717d948-0703-4a36-b0ce-c6c6b1660da6",
+  "submitted": "2026-11-07 19:54",
+  "simulation_time_s": 314.4,
+  "pnl": -41499.00,
+  "fills": 39523,
+  "traded_volume": 1310730,
+  "end_position": -30,
+  "cash": 272961.00,
+  "mark_price": 10482.00,
+  "breach_penalty": 0.00,
+  "pnl_se": 19267.29,
+  "abs_position_q50_q68_q95_q997": [30, 30, 30, 30]
+}

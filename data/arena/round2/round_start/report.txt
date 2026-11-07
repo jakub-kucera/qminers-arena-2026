@@ -1,0 +1,42 @@
+== profile (2,193,064 rows replayed in 5.3 s)
+time     0.000 .. 5999.996 s, length 6,000.0 s (1.67 h), 365.5 events/s, 4.85 mid changes/s
+spread   time share 1 tick 83.9%, 2 ticks 11.6%, 3+ ticks 4.4%, one-sided 0.1%, empty 0.0%
+depth    median lots a side at the touch 878.0, within 5 ticks 2317.75 (sampled each second)
+trades   8.556 aggressive orders/s (51,336; 197,588 prints, 1166.65 lots/s); size median 58, p90 333, mean 136.4
+markout  the mid's move in ticks in the event's direction (mean / median; + momentum, - reversion), from the mid just after it
+  after                          n         impact            1 s            5 s           30 s           60 s
+  trade (all)               51,329   +0.12 / -0.0   +0.44 / +0.0   +0.46 / +0.0   +0.44 / +0.0   +0.39 / +0.0
+  trade <= 58 lots          25,690   +0.06 / +0.0   +0.19 / +0.0   +0.18 / +0.0   +0.15 / +0.0   -0.19 / +0.0
+  trade > 58 lots           25,639   +0.18 / +0.0   +0.69 / +0.5   +0.73 / +0.5   +0.74 / +0.0   +0.97 / +1.0
+  1-tick mid move           27,491              -   +0.58 / +0.0   +0.80 / +0.5   +0.90 / +0.5   +1.19 / +0.5
+  1-tick move, no trade     19,137              -   +0.60 / +0.0   +0.95 / +0.0   +1.22 / +0.5   +1.47 / +1.0
+verdict  WEAK (+0.46 ticks at 5 s, mean spread ~1.2): following pays no spread; make markets (A0, pmaker, F1)
+
+== candidates (each at its file's defaults, the session set to the data's length; 2,193,064 rows)
+ #  candidate         pnl   first 75%  last 25%     max dd   fills     volume  |inv| q997  breach  rej  run s  s @8.8M
+ 1  fade                0           0         0          0       0          0           0       0    0    9.0       36
+ 2  pmaker         -3,110      -5,220     2,110      5,490       2         20          10       0    0    9.8       39
+ 3  A0            -14,584     -19,308     4,724     22,339   8,317     40,324          50       0    0   61.7      248         SLOW
+ 4  mmaker        -14,849      -8,426    -6,423     20,075  11,321    109,490          50       0    0   10.5       42
+ 5  tmpl_mom      -21,032     -17,530    -3,502     37,280   3,761    239,292         100       0    0   56.4      226
+ 6  F1            -22,272     -18,300    -3,972     24,701  23,561    116,381          24       0    0   13.5       54
+ 7  R1_F8         -86,391     -74,823   -11,568    124,847  38,748  1,062,074         100       0    0   38.7      155
+ 8  R1_F6b        -88,229     -71,068   -17,161    129,982  35,533  1,048,561         100       0    0   31.3      126
+ 9  R1_F6        -100,630     -79,251   -21,379    137,687  29,494  1,028,404         100       0    0   29.0      116
+10  R1_F7        -102,443     -83,244   -19,199    139,963  31,846  1,029,703         100       0    0   28.4      114
+11  R1_F5        -136,408    -117,191   -19,217    175,381  21,131  1,364,171         100       0    0   26.7      107
+12  R1_F3        -216,175    -185,500   -30,675    243,283  17,049  1,463,028         100       0    0   23.5       94
+13  R1_C1        -219,331    -177,577   -41,754    253,110  21,557  1,218,950         100       0    0   86.9      349         SLOW
+14  R1_C5        -247,210    -190,683   -56,526    273,158  12,615  1,243,974         100   4,686    0   87.9      353  SLOW BREACH
+15  R1_C11       -263,201    -190,306   -72,895    295,663  13,025  1,214,180         100   6,999    0  120.6      484  SLOW BREACH
+16  M2           -326,260    -228,292   -97,968    326,260   6,797  1,023,484         100       0    0   14.0       56
+17  taker        -710,418    -539,107  -171,311    710,418  40,668  1,398,132          50       0    0   10.1       40
+18  runner     -3,438,647  -2,636,083  -802,564  3,438,647  31,878  4,857,294         100       0    0   10.2       41
+19  M1         -3,438,647  -2,636,083  -802,564  3,438,647  31,878  4,857,294         100       0    0   10.1       41
+run s: wall time in the pool (contention inflates it); s @8.8M: projected to a real round's rows; SLOW: over 240 s here, at risk in the sandbox's 15 minutes on a 2-3x slower CPU
+
+== next grids (the top two by PnL)
+uv run python -m arena.qgrid python/bots/qminers/families/run_fade.py data/arena/round2/round2_public.csv --set 'SESSION_S=6000' --grid DELAY_MS=1000,2000,4000,6000 --grid RUN_TICKS=2,4,8 --grid HOLD_MS=4000,10000 --grid MIN_FLOW=1,58,333,666 --holdout 0.25 --jobs 8 --sort holdout
+uv run python -m arena.qgrid python/bots/qminers/families/protected_maker.py data/arena/round2/round2_public.csv --set 'SESSION_S=6000' --grid PULL_MS=0,500,2000,6000 --grid OFFSET=-1,0,1 --grid QUOTE=5,10 --grid PULL_SIDE=0,1 --holdout 0.25 --jobs 8 --sort holdout
+
+done in 130.5 s
