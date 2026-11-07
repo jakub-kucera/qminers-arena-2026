@@ -11,6 +11,11 @@ run's results and `leaderboard.json` go in this folder too.
 - **What works so far: less inventory.** R2-FT1 with EXPOSURE 30 (the hedge sells back above 30 lots) and DEAD_ZONE 0.3: +28,418 (in 23,430 / out 4,988, breach 0); the plateau EXPOSURE 20-45 x DEAD_ZONE 0.3-0.45 x FT_EDGE 0.1-0.25 is in 21-23.6k, full 28-35k (`results/r2_ft_grid2.csv`).
 - **Run time:** R1-C11 took 121 s on this 2.2M-row tape under load, so about 240 s on a 12,000-s validation tape, and 2-3x that on a slower server: check every candidate's run time before uploading.
 
+## The organisers' deck, round 2 so far (read 22:35; the shared deck's embedded data, as of 20:31 Prague)
+- 36 submissions (33 completed, 1 failed) from 20 teams. Each team's best validation PnL so far: median 55,268, 25th percentile -15,878, 75th percentile 386,684 (just after our R2-M2's 376,082 at 20:28 the 75th percentile read 391,985; before it, 343,614 at 20:25). With 20 teams the 75th percentile sits between the 5th and 6th best, so about five teams' best was at or above ~387k: our 376,082 is roughly 6th by best validation score at 20:31. Our E2 (-41,499, 19:54) and V2 (+71,864, 20:12) appear in the series at their times, so the series is the validation score in Prague time.
+- The deck labels the deadline "Round 2 submission deadline (00:15 Prague time)"; check the dashboard's own countdown before relying on it.
+- The public tape's stats in the deck: start 10,000, end 9,689.5, high 10,007.5, low 9,455, one-tick share 0.84, 2,193,064 events, 197,588 trades, 6,999,892 lots.
+
 ## Uploaded
 <!-- each upload: file, time, why; local PnL under all / worse / --resting; the metrics expected (arena.backtest --metrics) -->
 

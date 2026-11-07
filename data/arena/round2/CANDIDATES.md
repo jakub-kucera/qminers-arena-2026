@@ -158,3 +158,7 @@ Trials so far (this worktree): 4 experiments, 34 cells.
 ### 22:05: R2-M3 (`python/bots/qminers/candidates/r2_M3_flow_stop_gated.py`)
 - R2-M2 plus FH1's stop (STOP 3: once the mid has moved 3 ticks against the signal since it was set, flatten by IOC; no new target until the next big order), M2's self-gate kept (the one-lot shadow follows the unstopped signal). STOP 0 reproduces M2 to the cent.
 - round2_public 130,251 (in 107,499 / out 22,752; M2 116,620 / 95,379 / 21,241), breach 0, max drawdown 17,140 (M2 19,543); the mirrored public the same; round1.csv -1,242 and the rebuilt private 0, both identical to M2; validate OK; 8 s / 16 s. STOP 2-5 all above M2 (121-130k); MIN_LOTS 400 lower at every STOP. Against M2 by 1,000-s segment: 6 of 6 ahead, mean +2,272, t 1.38, but +10.5k of the +13.6k in one segment.
+
+### 22:25: R2-M3 on the validation tape (uploaded 21:40 CET; `data/arena/round2/r2_M3_flow_stop_gated_res/`, ignored by git)
+- **R2-M3: +366,342.00** (fills 4,607, volume 555,408, end +100 at 10,480.2, breach 0, pnl_se 55,471, 37.9 s). Against R2-M2's +376,082 on the same tape: -9,740; by 1,000-s segment ahead in 6 of 12, mean -812, t -0.69 (500-s: 11 of 24, t -0.62): no difference beyond noise. The stitched validation-like tapes predicted +55k for the stop (in-sample: built from the public segments it was tuned on); the validation tape shows none.
+- **Decision: R2-M2 is the final** (higher on validation, simpler, one fewer tuned constant): re-upload it as the last submission.

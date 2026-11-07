@@ -122,6 +122,12 @@
 //!       --set EXPOSURE=100 --set VOL_EXP=2 --set VOL_REF=2.5 --set VOL_US=5000000 --set VOL_MAX=100 --set VOL_NOHEDGE=1
 //!   R2-V2 (r2_V2_vol_exposure_dz18.py; 167288.05 / 21,637 and 699370.05 / 36,719, the same bytes): R2-V1's sets with
 //!       --set DEAD_ZONE=0.18 --set TREND=0
+//! Small orders (R2-S, 7 Nov; round 1's winner made 426k fills), off by default (every result above unchanged):
+//! `BURST` (1), the most new orders a quote call sends (with SLICE_LOTS, the room posted as slices at once rather
+//! than one a book event); `L2_LOTS` (0: off) / `L2_ORDERS` (0) / `L2_FREE` (0): up to L2_ORDERS orders of L2_LOTS
+//! one tick behind the desired price, an old touch order a tick back kept there shrunk to L2_LOTS (the rest
+//! cancelled), not counted in MAX_ORDERS, a new one at most one a quote call and one per SLICE_US; their lots count
+//! toward EXPOSURE unless L2_FREE is 1 (then the position can pass 100: the breach penalty).
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -414,6 +420,12 @@ pub struct RidgeMaker {
     keep_free: f64,
     keep_ahead: i64,
     keep_noback: bool,
+    /// small slices one tick behind the desired price (R2-S, 7 Nov): L2_LOTS, L2_ORDERS, L2_FREE; BURST
+    l2_lots: i64,
+    l2_orders: usize,
+    l2_free: bool,
+    l2_last: [i64; 2],
+    burst: usize,
     qp: bool,
     /// our orders at the market's touch: id -> the market lots ahead of it
     ahead: HashMap<u64, i64>,
@@ -477,7 +489,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 114] = [
+pub const KEYS: [&str; 118] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -494,6 +506,7 @@ pub const KEYS: [&str; 114] = [
     "OBS_CAP", "TREND", "TREND_US1", "TREND_US2", "VOL_EXP", "VOL_US", "VOL_BASE_US", "VOL_MIN", "VOL_MAX",
     "LEAN_K", "LEAN_SRC", "FT_SRC", "VOL_REF", "VOL_NOHEDGE", "BIG_LOTS", "BIG_US",
     "KEEP_LOTS", "KEEP_TH", "FRONT_LOTS", "FRONT_TH", "FRONT_NONE", "SLICE_LOTS", "SLICE_US", "LADDER_LOTS", "KEEP_FREE", "KEEP_AHEAD", "KEEP_NOBACK",
+    "L2_LOTS", "L2_ORDERS", "L2_FREE", "BURST",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -723,6 +736,11 @@ impl RidgeMaker {
             keep_free: params.float("KEEP_FREE", 0.0)?,
             keep_ahead: params.int("KEEP_AHEAD", -1)?,
             keep_noback: params.int("KEEP_NOBACK", 0)? != 0,
+            l2_lots: params.int("L2_LOTS", 0)?,
+            l2_orders: params.int("L2_ORDERS", 0)? as usize,
+            l2_free: params.int("L2_FREE", 0)? != 0,
+            l2_last: [-5000, -5000],
+            burst: params.int("BURST", 1)?.max(1) as usize,
             qp: params.int("KEEP_LOTS", 0)? > 0 || params.int("FRONT_LOTS", -1)? >= 0 || params.int("LADDER_LOTS", 0)? > 0,
             ahead: HashMap::new(),
             qp_touch: [0, 0],
@@ -1166,8 +1184,30 @@ impl RidgeMaker {
 
     fn quote(&mut self, now: i64, sign: i64, price: Option<i64>, ctx: &mut Ctx) {
         let mut current = 0usize;
+        let mut behind = 0usize;
+        let l2_price = if self.l2_lots > 0 { price.map(|p| p - sign) } else { None };
         for index in 0..self.orders.len() {
             if self.orders[index].sign != sign {
+                continue;
+            }
+            if l2_price.is_some() && Some(self.orders[index].price) == l2_price && now >= self.orders[index].exempt_until {
+                // R2-S: up to L2_ORDERS orders one tick behind the desired price rest there, each shrunk to
+                // L2_LOTS (an old touch order a tick back included), not counted in MAX_ORDERS; the rest cancelled
+                let r = &self.orders[index];
+                if !r.cancelling && r.accepted && self.hedge_id != Some(r.id) && behind < self.l2_orders {
+                    let (id, quantity, target) = (r.id, r.quantity, r.target);
+                    if quantity > self.l2_lots && (target == 0 || target > self.l2_lots) {
+                        ctx.modify_order(id, self.l2_lots);
+                        self.orders[index].target = self.l2_lots;
+                    }
+                    self.orders[index].kept = false;
+                    behind += 1;
+                } else if !r.accepted && !r.cancelling && r.quantity <= self.l2_lots && behind < self.l2_orders {
+                    // a slice of ours still in flight
+                    behind += 1;
+                } else {
+                    self.cancel(index, ctx);
+                }
                 continue;
             }
             current += 1;
@@ -1180,27 +1220,64 @@ impl RidgeMaker {
                 self.orders[index].kept = false;
             }
         }
-        if current >= self.max_orders {
+        for _ in 0..self.burst {
+            if !self.place(now, sign, price, current, l2_price, ctx) {
+                break;
+            }
+            current += 1;
+        }
+        if let Some(p2) = l2_price {
+            if behind < self.l2_orders && p2 > 0 && now - self.l2_last[side_index(sign)] >= self.slice_us {
+                self.place_behind(now, sign, p2, ctx);
+            }
+        }
+    }
+
+    /// R2-S: one L2_LOTS slice one tick behind the desired price, within the limit (and EXPOSURE unless L2_FREE)
+    fn place_behind(&mut self, now: i64, sign: i64, price: i64, ctx: &mut Ctx) {
+        let reserved: i64 = self.orders.iter().filter(|r| r.sign == sign).map(|r| r.quantity).sum();
+        let mut quantity = self.l2_lots.min(self.position_limit - sign * self.inventory - reserved);
+        if !self.l2_free {
+            let effective: i64 = self
+                .orders
+                .iter()
+                .filter(|r| r.sign == sign)
+                .map(|r| if r.cancelling { (r.quantity as f64 * (1.0 - self.cancel_free)).ceil() as i64 } else { r.quantity })
+                .sum();
+            quantity = quantity.min(self.exposure - sign * self.inventory - effective);
+        }
+        if quantity <= 0 {
             return;
+        }
+        let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, false);
+        self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: 0, target: 0, kept: false });
+        self.l2_last[side_index(sign)] = now;
+    }
+
+    /// the quoting's new order at `price` (one call, one order): whether one was sent
+    fn place(&mut self, now: i64, sign: i64, price: Option<i64>, current: usize, l2_price: Option<i64>, ctx: &mut Ctx) -> bool {
+        if current >= self.max_orders {
+            return false;
         }
         if self.keep_noback && self.orders.iter().any(|r| r.sign == sign && r.kept && !r.cancelling) {
-            return;
+            return false;
         }
-        let Some(price) = price else { return };
+        let Some(price) = price else { return false };
         if price <= 0 || now - self.last_action[side_index(sign)] < self.requote_us {
-            return;
+            return false;
         }
         if self.slice_lots > 0
             && now - self.last_action[side_index(sign)] < self.slice_us
             && self.orders.iter().any(|r| r.sign == sign && r.price == price && !r.cancelling)
         {
-            return;
+            return false;
         }
         let reserved: i64 = self.orders.iter().filter(|r| r.sign == sign).map(|r| r.quantity).sum();
+        let free_behind = self.l2_free && l2_price.is_some();
         let effective: i64 = self
             .orders
             .iter()
-            .filter(|r| r.sign == sign)
+            .filter(|r| r.sign == sign && !(free_behind && Some(r.price) == l2_price))
             .map(|r| {
                 if r.cancelling {
                     (r.quantity as f64 * (1.0 - self.cancel_free)).ceil() as i64
@@ -1222,11 +1299,12 @@ impl RidgeMaker {
             quantity = quantity.min(self.slice_lots);
         }
         if quantity <= 0 {
-            return;
+            return false;
         }
         let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, false);
         self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: 0, target: 0, kept: false });
         self.last_action[side_index(sign)] = now;
+        true
     }
 
     /// v2's `_hedge`: an IOC for |inventory| - EXPOSURE, HEDGE_TICKS through the cached touch, one at a time.
