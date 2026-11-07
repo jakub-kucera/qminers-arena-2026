@@ -16,6 +16,8 @@ Run modules from the repository root with `.venv/bin/python -m scripts.NAME`.
 | `round2_queue_inventory.py`, `round2_queue_combinations.py` | Native queue-preserving shrinks and causal inventory targets; planned bounds permit paid overlap |
 | `round2_conditional_market_fills.py` | Forecast public-fill markouts using preceding features and causally matured labels |
 | `round2_fill_attribution.py` | Exact native PnL decomposition and descriptive post-run fill markouts |
+| `round2_regime_features.py` | Development comparisons of jump-state features and order-size cohorts |
+| `round2_volatility_exposure.py` | User-proposed absolute-volatility sizing; causal 100 ms sampling, inverse-volatility/variance caps |
 | `check_submission.py` | Conservative local check of documented export restrictions |
 | `benchmark.py` | Native-config replay and diagnostic metrics for explicit sources |
 

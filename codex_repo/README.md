@@ -37,6 +37,13 @@ price volatility; all active reference strategies lost on that prefix. Read
 [the initial findings](docs/ROUND2_INITIAL_FINDINGS.md). The later public
 segments are still unreplayed; no server score has been received.
 
+Follow-up development research has reached **93,679 net** using exposure
+inversely proportional to absolute realized volatility, versus **45,698**
+for the corresponding fixed-50-lot jump-aware maker. This is first-60%
+sample tuning, not a selected submission or a server result. The source is
+[round2_absolute_vol_93679.py](strategies/round2_research/round2_absolute_vol_93679.py);
+its evidence is [round2_development_93679.json](results/round2_development_93679.json).
+
 The reference workflow below is for a fresh study directory. The default
 `logs/round2` intake, profile and screen have already completed; do not overwrite
 it or freeze a no-trade winner prematurely while developing new policies:

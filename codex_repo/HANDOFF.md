@@ -9,7 +9,15 @@ and four development diagnostics have completed. Every active policy lost on
 that prefix. Four further inventory/entry prototypes also lost; their naive
 resizing caused large queue churn and does not isolate the effect of smaller
 positions. See the findings and source hashes before reusing these prototypes.
-Follow-up research has found positive DEVELOPMENT candidates: native
+The user's absolute-volatility exposure idea improved the DEVELOPMENT best to
+**93,679 net** (`strategies/round2_research/round2_absolute_vol_93679.py`).
+Volatility is EW 100 ms preceding-midpoint returns in ticks/sqrt(second),
+10-second decay; planned exposure is 100/sigma, rounded down to 5-lot steps
+and bounded 10..100. It keeps the jump-aware quote logic and native
+priority-preserving shrinks. Slower 60-second volatility scored 63,992.
+See `results/round2_development_93679.json`; remaining variants are running.
+Later40% public and server validation remain unused at this checkpoint.
+Follow-up research has also found positive DEVELOPMENT candidates: native
 queue-preserving sizing with planned bounds +/-50 scored 31,840 net without
 penalty (`strategies/round2_research/round2_queue_fixed50_31840.py`), and a
 500 ms jump-pause maker scored 34,388. These are first-60% tuning results,
