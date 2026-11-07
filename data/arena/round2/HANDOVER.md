@@ -176,3 +176,12 @@ read these as which family to start from, then choose the knobs on round 2's own
 | a trend (strong impact, more buys than sells) | C5 as it is (not HORIZON_US 100000: -69k) | C5 +42k over F8, +63k over C1 |
 | weak impact, a flat mid | C5 or C1 (F8 far behind) | C5 +319k over F8 |
 | IOC orders that predict the next move | F8, then C5 with DEAD_ZONE 0.25 | F8 +27k over C5 |
+
+
+## Round 2's private leaderboard (published 8 Nov ~01:00; `data/arena/round2/leaderboard.json`)
+- **We finished 22nd of 59 with +742,470** (55 teams positive: mean 562,148, sd 448,626, so our z = +0.40). Combined with round 1 (z +1.22, weight 0.8): **12th overall after two rounds** (0.8 z1 + z2 = 1.38; Team 2 3.54, Team 1 3.27, Team 3 2.94 lead).
+- The winner **Team 1 made +1,875,116** (z +2.93); 2nd-21st 0.81-1.30M.
+- **The curves** (read off the leaderboard chart in linear scale, 25-s steps; our curve calibrated to our final):
+  - Teams 2-21 look like us (their 25-s steps correlate 0.46-0.76 with ours, step sd 2.4-3.1k like our 2.9k) with a higher slope (mean step 1.7-2.7k vs our 1.55k): the same family with a better forecast.
+  - **Team 1 is different** (correlation 0.32 with us, step sd 8.2k): in the single step ending 2,925 s it made **+148,461** where we and the other leaders made ~+18k, i.e. ~8x our exposure at a price jump (several hundred lots, over the 100-lot limit, accepting the 10,000/s penalty briefly); at 8,600 s it made +77k where we lost 7.8k (the right side of a jump we were wrong on); +29.6k at 2,575 (us +10k), +27.7k at 10,025 (us +3.5k), +27.6k at 7,600 (us -7k), +25.4k at 11,725 (us -5.4k). Without those jumps it still makes ~1.65M (median step 2,060 vs our 679).
+  - So the generator seems to have big latent-price jumps whose timing and direction can be anticipated, and the winner bet size on them. This is the top question for the generator work (docs/GENERATOR_PLAN.md) and for round 3.
