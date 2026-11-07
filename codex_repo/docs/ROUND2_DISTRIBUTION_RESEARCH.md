@@ -1,5 +1,7 @@
 # Round 2 distribution-driven research
 
+Subsequent evidence: [taker research](ROUND2_TAKER_RESEARCH.md) records the supplied server results and new 269,920 public candidate. The maker study below is historical; it has not established server transfer for its 181 K source.
+
 This study starts from the frozen 162,253.08 checkpoint and holds its absolute
 volatility sizing, position limits, exchange latency and penalty rules fixed.
 All public data was already inspected before this study. Fitted labels use

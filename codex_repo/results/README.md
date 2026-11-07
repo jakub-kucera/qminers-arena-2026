@@ -1,5 +1,7 @@
 # Result manifests
 
+Latest: [seven-model taker shortlist](../docs/ROUND2_TAKER_SHORTLIST.md), [research](../docs/ROUND2_TAKER_RESEARCH.md). Liquidity forecast: verified public269,920, server pending. Imported T2: public194,391, supplied validation490,359. `round2_submission.py` / its manifest still identify the historical181 K maker below.
+
 `round2_submission.json` identifies the current 180,895.19 checkpoint, with exact
 independent CLI agreement; `round2_distribution_180895.json` is immutable evidence.
 `round2_distribution_comparison.csv` / JSON cover 16 new models, source hashes,

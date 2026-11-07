@@ -21,5 +21,97 @@
     "validation_and_private_same_size": true,
     "size_metric": "Unspecified; half size does not establish half elapsed duration or doubled expected PnL."
   },
-  "entries": []
+  "entries": [
+    {
+      "recorded_at_utc": "2026-11-07T21:03:28.241136+00:00",
+      "dataset": "validation",
+      "submission_id": "2d72ef32-8561-4299-8aaf-f8168bb6d003",
+      "pnl": 490359.0,
+      "source_sha256": "13251f09475b6248d4414d7e73d6a8ded667712d27cda09db1a50047999d37f7",
+      "source_snapshot": "round2_server_sources/13251f09475b6248d4414d7e73d6a8ded667712d27cda09db1a50047999d37f7.py",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round2_imported/r2_T2_take_only_safe.py",
+      "provenance": "operator-reported server PnL; operator must match this file to the actual upload",
+      "duration_seconds": 12000,
+      "net_pnl_per_minute": 2451.795,
+      "notes": "Imported separate-session result; exact source association supplied by user. Server result and metadata copied under results/round2_imported_server/r2_T2_take_only_safe. No server source hash available."
+    },
+    {
+      "recorded_at_utc": "2026-11-07T21:03:28.258204+00:00",
+      "dataset": "validation",
+      "submission_id": "3565b31f-807c-4d4b-8423-1d85a33cf172",
+      "pnl": 485667.32,
+      "source_sha256": "adaf97d9fa64b17684a0f8184c2bd52a5f8193ba8f3eb29257410e872ee17631",
+      "source_snapshot": "round2_server_sources/adaf97d9fa64b17684a0f8184c2bd52a5f8193ba8f3eb29257410e872ee17631.py",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round2_imported/r2_T1_take_only.py",
+      "provenance": "operator-reported server PnL; operator must match this file to the actual upload",
+      "duration_seconds": 12000,
+      "net_pnl_per_minute": 2428.3366,
+      "notes": "Imported separate-session result; exact source association supplied by user. Server result and metadata copied under results/round2_imported_server/r2_T1_take_only. No server source hash available."
+    },
+    {
+      "recorded_at_utc": "2026-11-07T21:03:28.267488+00:00",
+      "dataset": "validation",
+      "submission_id": "7042cde4-9196-468b-83c6-3a3af1c76d8b",
+      "pnl": 376082.0,
+      "source_sha256": "8741dfa63244c8cc42903e406b0e6a4b6240d25021b14347841c2d9fd575ceb1",
+      "source_snapshot": "round2_server_sources/8741dfa63244c8cc42903e406b0e6a4b6240d25021b14347841c2d9fd575ceb1.py",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round2_imported/r2_M2_flow_trend.py",
+      "provenance": "operator-reported server PnL; operator must match this file to the actual upload",
+      "duration_seconds": 12000,
+      "net_pnl_per_minute": 1880.41,
+      "notes": "Imported separate-session result; exact source association supplied by user. Server result and metadata copied under results/round2_imported_server/r2_M2_flow_trend. No server source hash available."
+    },
+    {
+      "recorded_at_utc": "2026-11-07T21:03:28.277104+00:00",
+      "dataset": "validation",
+      "submission_id": "9f1d18b6-5792-46a9-93c7-2cef42ec9a09",
+      "pnl": 366342.0,
+      "source_sha256": "79ac764b9903c376cbcfb8d576e92775cf2c57fe2ea34810788d0c0e14a6c0c9",
+      "source_snapshot": "round2_server_sources/79ac764b9903c376cbcfb8d576e92775cf2c57fe2ea34810788d0c0e14a6c0c9.py",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round2_imported/r2_M3_flow_stop_gated.py",
+      "provenance": "operator-reported server PnL; operator must match this file to the actual upload",
+      "duration_seconds": 12000,
+      "net_pnl_per_minute": 1831.71,
+      "notes": "Imported separate-session result; exact source association supplied by user. Server result and metadata copied under results/round2_imported_server/r2_M3_flow_stop_gated. No server source hash available."
+    },
+    {
+      "recorded_at_utc": "2026-11-07T21:03:28.287097+00:00",
+      "dataset": "validation",
+      "submission_id": "1dfb680a-ce3e-4917-b432-26fed8c97814",
+      "pnl": 467703.0,
+      "source_sha256": "aba7b46c807cfb60b633e392db3607d80f6b8258c638f04ed864f0bddceb5255",
+      "source_snapshot": "round2_server_sources/aba7b46c807cfb60b633e392db3607d80f6b8258c638f04ed864f0bddceb5255.py",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round2_imported/r2_RA_flow_window.py",
+      "provenance": "operator-reported server PnL; operator must match this file to the actual upload",
+      "duration_seconds": 12000,
+      "net_pnl_per_minute": 2338.515,
+      "notes": "Imported separate-session result; exact source association supplied by user. Server result and metadata copied under results/round2_imported_server/r2_RA_flow_window. No server source hash available."
+    },
+    {
+      "recorded_at_utc": "2026-11-07T21:03:28.307236+00:00",
+      "dataset": "validation",
+      "submission_id": "04625898-3938-40b1-923b-54d7b9711fa5",
+      "pnl": 71864.15,
+      "source_sha256": "95d284e66dcb59ff53d836987cebef815c7e17409ab89c0bb9d2edbf0537a095",
+      "source_snapshot": "round2_server_sources/95d284e66dcb59ff53d836987cebef815c7e17409ab89c0bb9d2edbf0537a095.py",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round2_imported/r2_V2_vol_exposure_dz18.py",
+      "provenance": "operator-reported server PnL; operator must match this file to the actual upload",
+      "duration_seconds": 12000,
+      "net_pnl_per_minute": 359.32075,
+      "notes": "Imported separate-session result; exact source association supplied by user. Server result and metadata copied under results/round2_imported_server/r2_V2_vol_exposure_dz18. No server source hash available."
+    },
+    {
+      "recorded_at_utc": "2026-11-07T21:03:28.323810+00:00",
+      "dataset": "validation",
+      "submission_id": "9f4843cd-8d59-4e2d-b020-879177fe7ef5",
+      "pnl": -41499.0,
+      "source_sha256": "b411e4970b90b0c5aa9c67c77d11245baaa2a7a7fb744627ada238b88bde9407",
+      "source_snapshot": "round2_server_sources/b411e4970b90b0c5aa9c67c77d11245baaa2a7a7fb744627ada238b88bde9407.py",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round2_imported/r2_E2_low_exposure_keep.py",
+      "provenance": "operator-reported server PnL; operator must match this file to the actual upload",
+      "duration_seconds": 12000,
+      "net_pnl_per_minute": -207.495,
+      "notes": "Imported separate-session result; exact source association supplied by user. Server result and metadata copied under results/round2_imported_server/r2_E2_low_exposure_keep. No server source hash available."
+    }
+  ]
 }

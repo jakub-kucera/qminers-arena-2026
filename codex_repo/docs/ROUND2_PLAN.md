@@ -1,5 +1,7 @@
 # Round-2 evaluation plan
 
+Update: [taker research](ROUND2_TAKER_RESEARCH.md) and [shortlist](ROUND2_TAKER_SHORTLIST.md) supersede the historical checkpoint below. Imported T2 has supplied server validation 490,359; our new liquidity forecast has independently verified public 269,920 and awaits server feedback. All public data is reused.
+
 Current checkpoint:180,895.19 net with exact organizer CLI match. Its 55-feature
 fill-value ensemble uses first 60% public labels and adds narrow-spread shock
 inventory exits. All public data is reused for selection. See

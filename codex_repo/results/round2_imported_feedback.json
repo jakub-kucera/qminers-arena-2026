@@ -1,0 +1,272 @@
+{
+  "imported_at_utc": "2026-11-07T21:03:28.324100+00:00",
+  "references": [
+    {
+      "name": "r2_T2_take_only_safe",
+      "source": "strategies/round2_imported/r2_T2_take_only_safe.py",
+      "source_sha256": "13251f09475b6248d4414d7e73d6a8ded667712d27cda09db1a50047999d37f7",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena/python/bots/qminers/candidates/r2_T2_take_only_safe.py",
+      "reported_validation_pnl": 490359,
+      "submission_id": "2d72ef32-8561-4299-8aaf-f8168bb6d003",
+      "provenance": "User supplied exact file association and submission ID; imported from separate session/repository, not authored here. No cryptographic upload hash in server metadata.",
+      "result": {
+        "fills": 251965,
+        "traded_volume": 1130142,
+        "inventory": 84,
+        "cash": -389981.0,
+        "mark_price": 10480.238095238095,
+        "breach_penalty": 0.0,
+        "pnl": 490359.0,
+        "pnl_se": 47978.87842286735,
+        "abs_inventory_q50": 92,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "server_artifacts": "results/round2_imported_server/r2_T2_take_only_safe",
+      "curve_fields": [
+        "elapsed_s",
+        "pnl"
+      ],
+      "curve_first": {
+        "elapsed_s": "0.0",
+        "pnl": "0.0"
+      },
+      "curve_last": {
+        "elapsed_s": "11999.979714",
+        "pnl": "490359.0"
+      }
+    },
+    {
+      "name": "r2_T1_take_only",
+      "source": "strategies/round2_imported/r2_T1_take_only.py",
+      "source_sha256": "adaf97d9fa64b17684a0f8184c2bd52a5f8193ba8f3eb29257410e872ee17631",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena/python/bots/qminers/candidates/r2_T1_take_only.py",
+      "reported_validation_pnl": 485667.32,
+      "submission_id": "3565b31f-807c-4d4b-8423-1d85a33cf172",
+      "provenance": "User supplied exact file association and submission ID; imported from separate session/repository, not authored here. No cryptographic upload hash in server metadata.",
+      "result": {
+        "fills": 203643,
+        "traded_volume": 1138540,
+        "inventory": 92,
+        "cash": -456557.0,
+        "mark_price": 10480.217391304348,
+        "breach_penalty": 21955.67999999999,
+        "pnl": 485667.32,
+        "pnl_se": 49705.30660793419,
+        "abs_inventory_q50": 100,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "server_artifacts": "results/round2_imported_server/r2_T1_take_only",
+      "curve_fields": [
+        "elapsed_s",
+        "pnl"
+      ],
+      "curve_first": {
+        "elapsed_s": "0.0",
+        "pnl": "0.0"
+      },
+      "curve_last": {
+        "elapsed_s": "11999.979714",
+        "pnl": "485667.32"
+      }
+    },
+    {
+      "name": "r2_M2_flow_trend",
+      "source": "strategies/round2_imported/r2_M2_flow_trend.py",
+      "source_sha256": "8741dfa63244c8cc42903e406b0e6a4b6240d25021b14347841c2d9fd575ceb1",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena/python/bots/qminers/candidates/r2_M2_flow_trend.py",
+      "reported_validation_pnl": 376082,
+      "submission_id": "7042cde4-9196-468b-83c6-3a3af1c76d8b",
+      "provenance": "User supplied exact file association and submission ID; imported from separate session/repository, not authored here. No cryptographic upload hash in server metadata.",
+      "result": {
+        "fills": 4086,
+        "traded_volume": 530500,
+        "inventory": 100,
+        "cash": -671938.0,
+        "mark_price": 10480.2,
+        "breach_penalty": 0.0,
+        "pnl": 376082.0,
+        "pnl_se": 57594.32233600713,
+        "abs_inventory_q50": 100,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "server_artifacts": "results/round2_imported_server/r2_M2_flow_trend",
+      "curve_fields": [
+        "elapsed_s",
+        "pnl"
+      ],
+      "curve_first": {
+        "elapsed_s": "0.0",
+        "pnl": "0.0"
+      },
+      "curve_last": {
+        "elapsed_s": "11999.979714",
+        "pnl": "376082.0"
+      }
+    },
+    {
+      "name": "r2_M3_flow_stop_gated",
+      "source": "strategies/round2_imported/r2_M3_flow_stop_gated.py",
+      "source_sha256": "79ac764b9903c376cbcfb8d576e92775cf2c57fe2ea34810788d0c0e14a6c0c9",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena/python/bots/qminers/candidates/r2_M3_flow_stop_gated.py",
+      "reported_validation_pnl": 366342,
+      "submission_id": "9f1d18b6-5792-46a9-93c7-2cef42ec9a09",
+      "provenance": "User supplied exact file association and submission ID; imported from separate session/repository, not authored here. No cryptographic upload hash in server metadata.",
+      "result": {
+        "fills": 4607,
+        "traded_volume": 555408,
+        "inventory": 100,
+        "cash": -681678.0,
+        "mark_price": 10480.2,
+        "breach_penalty": 0.0,
+        "pnl": 366342.0,
+        "pnl_se": 55470.90070390796,
+        "abs_inventory_q50": 100,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "server_artifacts": "results/round2_imported_server/r2_M3_flow_stop_gated",
+      "curve_fields": [
+        "elapsed_s",
+        "pnl"
+      ],
+      "curve_first": {
+        "elapsed_s": "0.0",
+        "pnl": "0.0"
+      },
+      "curve_last": {
+        "elapsed_s": "11999.979714",
+        "pnl": "366342.0"
+      }
+    },
+    {
+      "name": "r2_RA_flow_window",
+      "source": "strategies/round2_imported/r2_RA_flow_window.py",
+      "source_sha256": "aba7b46c807cfb60b633e392db3607d80f6b8258c638f04ed864f0bddceb5255",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena/python/bots/qminers/candidates/r2_RA_flow_window.py",
+      "reported_validation_pnl": 467703,
+      "submission_id": "1dfb680a-ce3e-4917-b432-26fed8c97814",
+      "provenance": "User supplied exact file association and submission ID; imported from separate session/repository, not authored here. No cryptographic upload hash in server metadata.",
+      "result": {
+        "fills": 6531,
+        "traded_volume": 802700,
+        "inventory": 100,
+        "cash": -580317.0,
+        "mark_price": 10480.2,
+        "breach_penalty": 0.0,
+        "pnl": 467703.0,
+        "pnl_se": 55671.91749589235,
+        "abs_inventory_q50": 100,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "server_artifacts": "results/round2_imported_server/r2_RA_flow_window",
+      "curve_fields": [
+        "elapsed_s",
+        "pnl"
+      ],
+      "curve_first": {
+        "elapsed_s": "0.0",
+        "pnl": "0.0"
+      },
+      "curve_last": {
+        "elapsed_s": "11999.979714",
+        "pnl": "467703.0"
+      }
+    },
+    {
+      "name": "r2_M4_flow_window",
+      "source": "strategies/round2_imported/r2_M4_flow_window.py",
+      "source_sha256": "59023a460c3511057364ef79926912e6201026ed0734c4cba3d063d0b23450ef",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena/python/bots/qminers/candidates/r2_M4_flow_window.py",
+      "reported_validation_pnl": null,
+      "submission_id": null,
+      "provenance": "User supplied exact file association and submission ID; imported from separate session/repository, not authored here. No cryptographic upload hash in server metadata."
+    },
+    {
+      "name": "r2_V2_vol_exposure_dz18",
+      "source": "strategies/round2_imported/r2_V2_vol_exposure_dz18.py",
+      "source_sha256": "95d284e66dcb59ff53d836987cebef815c7e17409ab89c0bb9d2edbf0537a095",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena/python/bots/qminers/candidates/r2_V2_vol_exposure_dz18.py",
+      "reported_validation_pnl": 71864.15,
+      "submission_id": "04625898-3938-40b1-923b-54d7b9711fa5",
+      "provenance": "User supplied exact file association and submission ID; imported from separate session/repository, not authored here. No cryptographic upload hash in server metadata.",
+      "result": {
+        "fills": 42407,
+        "traded_volume": 1817976,
+        "inventory": -10,
+        "cash": 190056.0,
+        "mark_price": 10482.0,
+        "breach_penalty": 13371.850000000008,
+        "pnl": 71864.15,
+        "pnl_se": 35997.01505608734,
+        "abs_inventory_q50": 60,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "server_artifacts": "results/round2_imported_server/r2_V2_vol_exposure_dz18",
+      "curve_fields": [
+        "elapsed_s",
+        "pnl"
+      ],
+      "curve_first": {
+        "elapsed_s": "0.0",
+        "pnl": "0.0"
+      },
+      "curve_last": {
+        "elapsed_s": "11999.979714",
+        "pnl": "71864.15"
+      }
+    },
+    {
+      "name": "r2_E2_low_exposure_keep",
+      "source": "strategies/round2_imported/r2_E2_low_exposure_keep.py",
+      "source_sha256": "b411e4970b90b0c5aa9c67c77d11245baaa2a7a7fb744627ada238b88bde9407",
+      "original_source": "/Users/jakubkucera/Documents/qminers_arena/python/bots/qminers/candidates/r2_E2_low_exposure_keep.py",
+      "reported_validation_pnl": -41499,
+      "submission_id": "9f4843cd-8d59-4e2d-b020-879177fe7ef5",
+      "provenance": "User supplied exact file association and submission ID; imported from separate session/repository, not authored here. No cryptographic upload hash in server metadata.",
+      "result": {
+        "fills": 39523,
+        "traded_volume": 1310730,
+        "inventory": -30,
+        "cash": 272961.0,
+        "mark_price": 10482.0,
+        "breach_penalty": 0.0,
+        "pnl": -41499.0,
+        "pnl_se": 19267.292714241306,
+        "abs_inventory_q50": 30,
+        "abs_inventory_q68": 30,
+        "abs_inventory_q95": 30,
+        "abs_inventory_q997": 30
+      },
+      "server_artifacts": "results/round2_imported_server/r2_E2_low_exposure_keep",
+      "curve_fields": [
+        "elapsed_s",
+        "pnl"
+      ],
+      "curve_first": {
+        "elapsed_s": "0.0",
+        "pnl": "0.0"
+      },
+      "curve_last": {
+        "elapsed_s": "11999.979714",
+        "pnl": "-41499.0"
+      }
+    }
+  ],
+  "scope": "Reported validation evidence from supplied separate-repository files; not private scores and not validation of our prior181K maker.",
+  "hypotheses": [
+    "Validation may emphasize higher-volatility/faster states; synthetic score matching does not identify its distribution.",
+    "Similar maker family failure motivates changing strategy family; does not establish a score for our specific181K source.",
+    "Stitched tapes use public events and can overfit; the M3 stop reportedly improved synthetic proxies but lost on actual validation."
+  ]
+}

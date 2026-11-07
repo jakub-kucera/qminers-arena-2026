@@ -1,0 +1,125 @@
+{
+  "status": "Imported T2: every public field matches independent original organizer CLI; server source association supplied by user.",
+  "source": "strategies/round2_imported/r2_T2_take_only_safe.py",
+  "source_sha256": "13251f09475b6248d4414d7e73d6a8ded667712d27cda09db1a50047999d37f7",
+  "official_cli_match": true,
+  "evaluation": {
+    "result": {
+      "fills": 119403,
+      "traded_volume": 352807,
+      "inventory": -95,
+      "cash": 1114941.0,
+      "mark_price": 9690.0,
+      "breach_penalty": 0.0,
+      "pnl": 194391.0,
+      "pnl_se": 23726.422407878785,
+      "abs_inventory_q50": 92,
+      "abs_inventory_q68": 92,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 186.60487399995327,
+    "max_abs_inventory": 100,
+    "max_potential_inventory_at_submission": 100,
+    "max_drawdown_1s": 5488.0,
+    "submissions": 357698,
+    "order_status_counts": {
+      "accepted": 357698,
+      "canceled": 239412,
+      "filled": 118273,
+      "rejected": 2161,
+      "partially_filled": 3540
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 1000.0,
+        "pnl_increment": 22069.0
+      },
+      {
+        "start_s": 1000.0,
+        "end_s": 2000.0,
+        "pnl_increment": 18137.0
+      },
+      {
+        "start_s": 2000.0,
+        "end_s": 3000.0,
+        "pnl_increment": 22532.0
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 4000.0,
+        "pnl_increment": 56107.0
+      },
+      {
+        "start_s": 4000.0,
+        "end_s": 5000.0,
+        "pnl_increment": 37698.0
+      },
+      {
+        "start_s": 5000.0,
+        "end_s": 5999.995946,
+        "pnl_increment": 37848.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "boundary_pnl": {
+      "3599997635": 80293.0,
+      "4799996824": 145193.0
+    },
+    "source": "strategies/round2_imported/r2_T2_take_only_safe.py",
+    "source_sha256": "13251f09475b6248d4414d7e73d6a8ded667712d27cda09db1a50047999d37f7",
+    "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+    "independent_private_ledger": true,
+    "risk_contract": "strict100"
+  },
+  "server_validation": {
+    "name": "r2_T2_take_only_safe",
+    "source": "strategies/round2_imported/r2_T2_take_only_safe.py",
+    "source_sha256": "13251f09475b6248d4414d7e73d6a8ded667712d27cda09db1a50047999d37f7",
+    "original_source": "/Users/jakubkucera/Documents/qminers_arena/python/bots/qminers/candidates/r2_T2_take_only_safe.py",
+    "reported_validation_pnl": 490359,
+    "submission_id": "2d72ef32-8561-4299-8aaf-f8168bb6d003",
+    "provenance": "User supplied exact file association and submission ID; imported from separate session/repository, not authored here. No cryptographic upload hash in server metadata.",
+    "result": {
+      "fills": 251965,
+      "traded_volume": 1130142,
+      "inventory": 84,
+      "cash": -389981.0,
+      "mark_price": 10480.238095238095,
+      "breach_penalty": 0.0,
+      "pnl": 490359.0,
+      "pnl_se": 47978.87842286735,
+      "abs_inventory_q50": 92,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "server_artifacts": "results/round2_imported_server/r2_T2_take_only_safe",
+    "curve_fields": [
+      "elapsed_s",
+      "pnl"
+    ],
+    "curve_first": {
+      "elapsed_s": "0.0",
+      "pnl": "0.0"
+    },
+    "curve_last": {
+      "elapsed_s": "11999.979714",
+      "pnl": "490359.0"
+    }
+  }
+}

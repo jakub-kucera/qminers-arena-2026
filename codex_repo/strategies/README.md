@@ -1,5 +1,7 @@
 # Strategy index
 
+Latest: [seven-model taker shortlist](../docs/ROUND2_TAKER_SHORTLIST.md), [research](../docs/ROUND2_TAKER_RESEARCH.md). Liquidity forecast: verified public269,920, server pending. Imported T2: public194,391, supplied validation490,359. `round2_submission.py` / its manifest still identify the historical181 K maker below.
+
 ## Frozen round 1
 
 `round1_submission.py` is byte-identical to `round1_quote_flow_624076.py`.

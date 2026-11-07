@@ -1,5 +1,14 @@
 # Handoff for the next session
 
+Updated 7 November 2026: supplied server evidence has shifted priority to takers.
+Read [taker research](docs/ROUND2_TAKER_RESEARCH.md) and the [seven-model shortlist](docs/ROUND2_TAKER_SHORTLIST.md).
+New candidate `strategies/round2_taker_liquidity_269920.py` earns **269,920 public**, zero fees, strict actual/potential 100; every field matches independent organizer CLI. Server validation for this exact file is pending.
+Imported T2 reproduces **194,391 public** and has operator-associated **490,359 validation**, submission `2d72ef32-8561-4299-8aaf-f8168bb6d003`. Imports, original paths, source hashes and server artifacts are recorded; the other repository was not modified.
+**110 tests pass.** Six-candidate synthetic high-volatility stress batch is still in progress at this checkpoint; inspect `logs/round2/taker_stress/highvol_1p25/` and the final `results/round2_taker_stress_highvol_1p25.json` if present. No normal-speed stress batch has been started.
+Use named immutable files: `round2_submission.py` still points to the earlier 181 K maker. Do not infer a new submission or server score from that mutable path. Public scores have been reused for selection. No private result is available.
+
+## Historical distribution-study handoff (superseded status below)
+
 Updated 7 November 2026 after the distribution-driven round 2 research.
 Team: **ThatsMyQuant**.
 
