@@ -39,9 +39,11 @@ All public scores were reused for selection; no private score is available.
 Best next mechanisms: actual fill-conditional return targets, distinct entry
 and holding horizons, and post-sweep replenishment rather than blind momentum.
 
-The earlier plain SSH push was interrupted after hanging without output.
-Do not assume remote sync; inspect subsequent bounded push result. Keep local
-commits and verified bundles. The distribution-study handoff below is history.
+The plain SSH push was interrupted after hanging without output. A bounded
+noninteractive retry failed: github.com could not resolve. Origin was not
+updated. Keep local commits and the verified complete-history bundle at
+`../backups/qminers-arena-round2-takers.bundle`. Source checkpoint178876f
+preserves all three followups. The distribution-study handoff below is history.
 
 ## Historical distribution-study handoff (superseded status below)
 
