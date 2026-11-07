@@ -7,6 +7,10 @@ publish = false
 
 [dependencies]
 
+# arena_sim/: the Arena's own exchange simulator (simulator/ at the repo root) and its strategies, in Rust
+[workspace]
+members = [".", "arena_sim"]
+
 [[bin]]
 name = "arena-rs"
 path = "src/main.rs"

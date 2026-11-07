@@ -1,0 +1,12 @@
+[package]
+name = "arena_sim"
+version = "0.1.0"
+edition = "2021"
+description = "The Arena's exchange simulator (simulator/simulator.py) in Rust, to the bit, with Rust versions of strategies for fast parameter grids (see ../README.md)"
+publish = false
+
+[dependencies]
+
+[[bin]]
+name = "arena-sim"
+path = "src/main.rs"
