@@ -1,0 +1,14 @@
+{
+  "fills": 10364,
+  "traded_volume": 720666,
+  "inventory": -100,
+  "cash": 1174350.0,
+  "mark_price": 9690.0,
+  "breach_penalty": 0.0,
+  "pnl": 205350.0,
+  "pnl_se": 24589.244222819925,
+  "abs_inventory_q50": 100,
+  "abs_inventory_q68": 100,
+  "abs_inventory_q95": 100,
+  "abs_inventory_q997": 100
+}

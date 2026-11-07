@@ -1,0 +1,10 @@
+{
+  "candidate": {
+    "name": "cap1000_hold20ms",
+    "file": "logs\\round2_burst_revisit\\sources\\cap1000_hold20ms.py",
+    "source_sha256": "ba4df9b72d1ab0b5d181661486c143a0933a088f85a5400b37a32cca60cd6306"
+  },
+  "selection_rule": "Require positive later30 and last20 and beat the199689 reference first80 net176875 and later50 net141049. Compare net after native fees; freeze before full replay.",
+  "goal": 250000,
+  "scope": "Consumed public first80%; local-only native-fee experiment."
+}

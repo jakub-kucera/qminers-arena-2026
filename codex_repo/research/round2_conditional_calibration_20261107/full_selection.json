@@ -1,0 +1,11 @@
+{
+  "candidate": {
+    "name": "side_spread1_blend1.0",
+    "file": "logs\\round2_conditional_calibration\\sources\\side_spread1_blend1.0.py",
+    "source_sha256": "505d19d3d36397e4cc9e689ac8130b79167d3823664af54c13ac8f5be91ead33",
+    "risk": "strict100"
+  },
+  "selection_rule": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "goal": 250000,
+  "scope": "Consumed public first80%; no new holdout and no server access."
+}

@@ -1,0 +1,110 @@
+{
+  "result": {
+    "fills": 9780,
+    "traded_volume": 690740,
+    "inventory": -100,
+    "cash": 1169641.0,
+    "mark_price": 9690.0,
+    "breach_penalty": 770.9,
+    "pnl": 199870.1,
+    "pnl_se": 24471.95627766428,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "runtime_seconds": 198.76858689985238,
+  "max_abs_inventory": 183,
+  "max_potential_inventory_at_submission": 1000,
+  "max_drawdown_1s": 10973.0,
+  "submissions": 40272,
+  "order_status_counts": {
+    "accepted": 40272,
+    "canceled": 32834,
+    "filled": 7436,
+    "partially_filled": 6921,
+    "rejected": 107
+  },
+  "blocks": [
+    {
+      "start_s": 0.0,
+      "end_s": 600.0,
+      "pnl_increment": 8086.66
+    },
+    {
+      "start_s": 600.0,
+      "end_s": 1200.0,
+      "pnl_increment": 20214.0
+    },
+    {
+      "start_s": 1200.0,
+      "end_s": 1800.0,
+      "pnl_increment": 7205.000000000004
+    },
+    {
+      "start_s": 1800.0,
+      "end_s": 2400.0,
+      "pnl_increment": 30148.0
+    },
+    {
+      "start_s": 2400.0,
+      "end_s": 3000.0,
+      "pnl_increment": 9959.0
+    },
+    {
+      "start_s": 3000.0,
+      "end_s": 3600.0,
+      "pnl_increment": 8998.0
+    },
+    {
+      "start_s": 3600.0,
+      "end_s": 4200.0,
+      "pnl_increment": 75550.0
+    },
+    {
+      "start_s": 4200.0,
+      "end_s": 4800.0,
+      "pnl_increment": 17296.440000000002
+    },
+    {
+      "start_s": 4800.0,
+      "end_s": 5400.0,
+      "pnl_increment": 6844.0
+    },
+    {
+      "start_s": 5400.0,
+      "end_s": 5999.995946,
+      "pnl_increment": 15569.0
+    }
+  ],
+  "config": {
+    "order_accept_delay_ms": 5,
+    "public_depth": 20,
+    "run_log_path": null,
+    "book_delta_log_path": null,
+    "event_log_path": null,
+    "trade_log_path": null,
+    "max_position": 100,
+    "max_potential_position": 1000,
+    "position_breach_penalty_per_second": 10000.0,
+    "min_log_level": "INFO",
+    "show_progress": false,
+    "progress_fd": 2
+  },
+  "boundary_pnl": {
+    "1800000067": 35505.66,
+    "3599997635": 84610.66,
+    "4799996824": 177457.1
+  },
+  "source_sha256": "ba4df9b72d1ab0b5d181661486c143a0933a088f85a5400b37a32cca60cd6306",
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "later30": 49105.0,
+  "last20": 92846.44,
+  "gross_pnl": 200641.0,
+  "breach_count": 2,
+  "breach_time_us": 77090,
+  "max_breach_us": 43034,
+  "bursts_reaching900": 0,
+  "first80": 177457.1,
+  "final20": 22413.0
+}

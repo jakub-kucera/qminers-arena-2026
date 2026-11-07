@@ -1,0 +1,50 @@
+{
+  "goal": 250000,
+  "candidates": [
+    {
+      "name": "cap250_hold0ms",
+      "file": "logs\\round2_burst_revisit\\sources\\cap250_hold0ms.py",
+      "source_sha256": "0b63d9c61cc124bd7ccf5db5ab716c30dbf12b5bb2211e6ff3c82d895076a385"
+    },
+    {
+      "name": "cap250_hold20ms",
+      "file": "logs\\round2_burst_revisit\\sources\\cap250_hold20ms.py",
+      "source_sha256": "6f147270917acd26bbd99d60436ab0c64e72028aa3433587079565b184e2fed9"
+    },
+    {
+      "name": "cap1000_hold0ms",
+      "file": "logs\\round2_burst_revisit\\sources\\cap1000_hold0ms.py",
+      "source_sha256": "580c79a22b0cc459af3e0ea876b5461c5932a1ff52aeda3ed1ebc25e9dcf7cc7"
+    },
+    {
+      "name": "cap1000_hold20ms",
+      "file": "logs\\round2_burst_revisit\\sources\\cap1000_hold20ms.py",
+      "source_sha256": "ba4df9b72d1ab0b5d181661486c143a0933a088f85a5400b37a32cca60cd6306"
+    }
+  ],
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "scope": "Consumed public first80%; local-only native-fee experiment.",
+  "hypothesis": "Allow250/1000 potential lots only with spread>=4, aligned inventory and prediction>=0.5; withdraw increasing orders on breach, force recovery after0/20ms, cooldown1s.",
+  "selection": "Require positive later30 and last20 and beat the199689 reference first80 net176875 and later50 net141049. Compare net after native fees; freeze before full replay.",
+  "caveat": "Recovery trigger is not a guaranteed exit time. No rules or fee changes."
+}

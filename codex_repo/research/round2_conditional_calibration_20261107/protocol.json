@@ -1,0 +1,54 @@
+{
+  "goal": 250000,
+  "candidates": [
+    {
+      "name": "side_spread0_blend0.5",
+      "file": "logs\\round2_conditional_calibration\\sources\\side_spread0_blend0.5.py",
+      "source_sha256": "588369042e6c82d595741845f7dbaf6ec88df6100685772601cfb5b65babe289",
+      "risk": "strict100"
+    },
+    {
+      "name": "side_spread0_blend1.0",
+      "file": "logs\\round2_conditional_calibration\\sources\\side_spread0_blend1.0.py",
+      "source_sha256": "d09966d2f8468ec1a9d2e1da563c0157e2a9625657f29b48b6e547e194f05191",
+      "risk": "strict100"
+    },
+    {
+      "name": "side_spread1_blend0.5",
+      "file": "logs\\round2_conditional_calibration\\sources\\side_spread1_blend0.5.py",
+      "source_sha256": "088c91bd0d7939ed86e85721ffa60dc87c5a501a919f015829123641b7777f3d",
+      "risk": "strict100"
+    },
+    {
+      "name": "side_spread1_blend1.0",
+      "file": "logs\\round2_conditional_calibration\\sources\\side_spread1_blend1.0.py",
+      "source_sha256": "505d19d3d36397e4cc9e689ac8130b79167d3823664af54c13ac8f5be91ead33",
+      "risk": "strict100"
+    }
+  ],
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "scope": "Consumed public first80%; no new holdout and no server access.",
+  "hypothesis": "Separate mature fill-value residuals by buy/sell side, optionally spread1 versus2+, and blend50/100percent with the existing global correction. Same400ms labels,0.03rate,0.5clip,300sdecay; no future information.",
+  "selection": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "reference": "Frozen 167412 composite remains unchanged; no automatic promotion from prefix alone."
+}

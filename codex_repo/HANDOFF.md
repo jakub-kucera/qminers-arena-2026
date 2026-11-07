@@ -8,22 +8,24 @@ sent to Jakub at the user's explicit request; do not send further models without
 another instruction. See [250k research](docs/ROUND2_250K_RESEARCH.md) for new
 experiments. The sections below describe the completed earlier 150k objective.
 
-Current verified best: **199,689**, exact standalone file
-`strategies/round2/round2_local_199689.py`. Native CLI and audit agree. This adds
-3,968 by increasing the RA stop from 3 to 5 ticks. Selector, hysteresis,
-stopped-shadow, freshness and directional-purity studies are finished and
-archived. Other variants did not improve their reference selection score.
-All 119 tests pass. No live replay remains from these studies. Next investigate
-side-specific or spread-conditioned online fill-value calibration; the current
-single global error correction may hide directional/regime differences.
-The selected
-900-second ridge-memory variant completed at195,460 (CLI parity verified), so
-the195,721 file was retained before the later stop-distance improvement. All replay processes from
-these three studies have finished. Next explore selector/exit logic, with
-predeclared bounded changes and unchanged native risk rules. No new email or
-competition submission has been authorized.
+Current verified best: **209,795**, exact standalone file
+`strategies/round2/round2_local_209795.py`, SHA256
+`df93cf43167894a1fe00a67b459f32d655ecbc8a5d5a2e4f036f54645e05af90`.
+Native CLI and audit agree; exposure <=100, fees0, final20 gain24,815,
+sampled drawdown10,557. All124 tests pass. All scheduled replays finished.
+The latest improvement separates fill-value calibration by direction and
+spread, with update rate0.01, 400ms matured labels,300s decay and0.5 clipping.
+Rate0.03 scored205,350. A native-fee burst probe scored199,870.10 after770.90
+fees, actual peak183, and no900-lot burst; it was not promoted.
 
-## Current checkpoint: 167,412 local result, no server access
+The250k target remains unmet by40,205. All public data is consumed. Next useful
+hypothesis: a small regularized online residual model using the four existing
+calibration groups plus flow alignment and signed price prediction. Store
+features at prediction/fill time, mature labels causally, shrink toward zero,
+and predeclare a small parameter set. Do not hardcode favorable time intervals
+or relax native scoring. No new email or competition submission is authorized.
+
+## Historical checkpoint: 167,412 local result, no server access
 
 The user prohibits all competition website/server access, including read-only
 checks. Continue locally. Read [the current results](docs/ROUND2_LOCAL_PROGRESS.md)
