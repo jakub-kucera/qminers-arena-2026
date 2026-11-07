@@ -12,7 +12,8 @@ price-time book (experiments/day/tape_book.py, the starter's matching):
   order left on the wrong side of it (asks at or below the new lb, bids above) cancels within Exp(`stale_s`) (on top
   of its own clock). Calibrated on round 1 against the profile (the mid's changes a second, its move after a 1-tick
   move): `stale_s` 0.2 s, `jump_rate` 0 (no moves beyond the trades'); `informed` (default 0) sends that share of
-  aggressive orders the way the book lags the latent mid. Without `continuous` the latent mid moves in whole ticks.
+  aggressive orders the way the book lags the latent mid; `wide_table` (default off; dropped: the 2-tick share 9.5%) draws
+  the inserts at a 2+ tick spread from the tape's own offsets there. Without `continuous` the latent mid moves in whole ticks.
 - **Limit inserts (G)**: one Poisson stream (round 1: 180/s, the same rate at a 1- or 2-tick spread), the side a coin
   flip, bids at lb - k and asks at lb + 1 + k (k from round 1's offsets at a 1-tick spread: 0 55%, 1 39%, 2 6%),
   clamped one tick off the other touch (round 1 has no crossing G rows); the size from the empirical sizes of its offset
@@ -219,6 +220,7 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
                             extra.add(entry[0])
                             heapq.heappush(cancels, (ct, entry[0]))
     lb = latent.get("start_bid", 9999)
+    wide = {sp: Sampler(params["offsets"][str(sp)], rng) for sp in (2, 3)} if latent.get("wide_table") else None
     continuous = latent.get("continuous", False)  # True: a real-valued latent mid (lb + 0.5 at the start), moved by impact(q) itself
     level = lb + 0.5
     book = Book()
@@ -301,6 +303,21 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
             else:
                 side = 0 if (u - p_j) / (1 - p_j) < bid_share else 1
                 k = k_draw.draw()
+                if wide is not None and bb is not None and ba is not None and ba - bb >= 2:
+                    # at a 2+ tick spread: the offset from the same side's touch, from the tape's own table there
+                    d = min(wide[min(ba - bb, 3)].draw(), ba - bb - 1)
+                    price = bb + d if side == 0 else ba - d
+                    q = sizes[offset_class(d)].draw()
+                    book.insert(oid, side, price, q, False)
+                    lines.append(f"{t:.6f},Insert,{oid},{'B' if side == 0 else 'A'},{q},{price},G\n")
+                    if not life:
+                        life = np.interp(rng.random(batch), grid, lq).tolist()
+                    ct = t + life.pop()
+                    heapq.heappush(cancels, (ct, oid))
+                    if stale:
+                        due[oid] = ct
+                    oid += 1
+                    continue
                 if side == 0:
                     price = lb - k
                     if ba is not None:
