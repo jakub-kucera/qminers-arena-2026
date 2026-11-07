@@ -9,6 +9,7 @@ so a compacted or restarted session, or the other laptop, picks up where it was.
 - Deadline <the dashboard's submission deadline, HH:MM> (the round ends 18:00); freeze <deadline - 0:30>; E = <minutes an evaluation took>.
 - T = 0 on the public data (the portal is byte-identical to `exchange-simulator`; ON_THE_DAY.md, "From the playground"); recheck on the first upload.
 - Data: D = data/arena/round1/<file>.csv (unzipped: `uv run python -m gzip -d`), one hour, one instrument. Training: the first 75% of the hour. Held out: the last 25% (`arena.qgrid --holdout 0.25`), never used to choose a setting. Repeats: none possible (one file).
+- **SESSION_S / SESSION_US from the file's length** (round_start prints it), on the long side if the private hour may be longer: F2 with SESSION_S 3598 on the 5,750 s sample_v2 wound down after an hour and made +136k instead of +213k.
 - The gate: their simulator, no fill model to choose; a change is kept only if it beats its parent on the first 75% and on the last 25%.
 - Calibrated settings: none needed (their own simulator).
 - Scoring: `0.8·z1 + z2 + z3 + 1.2·z4`, each round's private PnL standardised over the teams with positive PnL, a zero or negative PnL scored as 0 (ON_THE_DAY.md, "How is PnL scored?"); this round's weight: 0.8.
@@ -26,6 +27,7 @@ command in "Trials". Pluses and minuses are measured facts, not hopes.
 | R2 | python/bots/qminers/families/momentum_runner.py --set FLOW_WINDOW_MS=2000 | the runner with a 2 s flow window | sample +305,374 | sample +71,955 | | | 987 | 100 | as M1 | less flip churn | as M1 | re-measure | |
 | T1 | python/bots/qminers/template.py, the momentum PARAMS (lin_momentum 2 / 20 events, take_edge 2.5, clear_edge -1, make_size 0, limit 100) | the template as a momentum taker | sample +211,414 | sample +43,034 | | | | 100 | momentum over 20 events | the template's guards (limit, flatten) | windows count events, not time | re-measure | |
 | P1 | python/bots/qminers/families/protected_maker.py | market maker that pulls quotes after aggressive trades | sample +2,018 | sample +2,592 | | | | 27 | a market that doesn't run after trades | the test of whether making pays here | barely fills on the sample | re-measure | |
+| F2 | python/bots/qminers/candidates/r0_F2_maker_v2.py | F1 with QUOTE 100, SKEW 80, LIMIT 100: join the touch, keep the queue place | sample_v2 +212,831 (portal identical) | sample_v2 +48,200 | | | 232 | 100 | a market where trades don't run (sample_v2) | no adverse selection on sample_v2, linear PnL, 44 s on the server for 2M rows | -25k to -28k where markets trend (sample 1, ABIDES); sits at the limit 5% of the time | uploaded on the playground | +212,831 |
 | F1 | python/bots/qminers/candidates/r0_F1_fallback.py | small market maker in their style, ±50 | sample -5,877 | sample -445 | | | | 24 | a spread worth earning | simplest, safe | picked off in momentum | n/a | |
 
 ## Dropped
