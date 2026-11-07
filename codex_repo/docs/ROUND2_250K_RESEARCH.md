@@ -97,3 +97,72 @@ All scheduled runs in these three studies have finished. Best verified local
 net remains195,721; gap to250k is54,279. Next bounded experiments should examine
 the hybrid's selector/exit rules rather than expand arbitrary feature counts.
 Do not change the native fee, latency or matching rules to inflate the metric.
+
+## Selector and stop follow-up
+
+Six one-factor alternatives around the frozen 195,721 source were declared
+before replay. All used the same consumed first 80% and later-period rule.
+
+| Changed parameter | First 80% | Minutes 30-60 | Minutes 60-80 |
+| --- | ---: | ---: | ---: |
+| Recent-profit gate 10 | 157,661 | 47,083 | 77,775 |
+| Recent-profit gate 40 | 171,123 | 46,946 | 82,542 |
+| Lookback 30 seconds | 170,071 | 55,719 | 70,656 |
+| Lookback 120 seconds | 148,438 | 33,170 | 86,273 |
+| Stop 2 ticks | 170,857 | 39,920 | 90,722 |
+| **Stop 5 ticks** | **176,875** | **48,715** | **92,334** |
+
+Stop 5 won the predeclared rule and is frozen for full audit/CLI comparison.
+These results suggest a profitable stop-distance neighborhood on this tape,
+but no large improvement from simply changing the selector's parameters.
+
+The full stop-5 audit and native CLI both returned **199,689**, matching every
+result field. Final 20% profit: 22,814; sampled maximum drawdown: 10,610;
+filled orders: 9,662; traded volume: 686,722; penalties: zero; actual/potential
+exposure: at most 100. This improves 195,721 by 3,968 but leaves a 50,311 gap.
+Exact source: `strategies/round2/round2_local_199689.py`, SHA256
+`5f69e437ea77d9d494f19427162c26dab6718e76ead392bb6835cb9e19f83343`.
+The source and result are archived in research/round2_ra_selector_20261107.
+
+## Shadow-policy alignment and hysteresis
+
+Four separate hypotheses tested a stopped virtual follower and entry/exit
+hysteresis (enter above 20 recent profit, exit below 5 or 0). The independent
+shadow stop uses its own signal anchor and virtual inventory. All underperform
+the reference's 173,183 first-80% score and its later-period selection score:
+
+| Shadow / exit threshold | First 80% | Minutes 30-60 | Minutes 60-80 |
+| --- | ---: | ---: | ---: |
+| Unstopped / 0 | 155,759 | 33,091 | 88,942 |
+| Unstopped / 5 | 153,993 | 36,413 | 80,173 |
+| Stopped / no hysteresis | 156,336 | 32,482 | 86,662 |
+| Stopped / 5 | 162,585 | 42,465 | 81,749 |
+
+Rejected for promotion; no full replay selected. Causal shadow-stop and
+hysteresis tests pass. Failed hypotheses are retained, not silently dropped.
+
+## Flow quality follow-up
+
+A further five-candidate protocol tests returning to market making after
+250/1,000/3,000ms without a qualifying flow fire, or requiring net flow to be
+at least 25%/50% of gross signed-callback volume. Shadow accounting stays as
+in the reference. Causal expiry and conflict-filter tests pass. Authoritative
+outputs: logs/round2_ra_flow_quality. No claim of fresh validation is made.
+
+| Flow filter | First 80% | Minutes 30-60 | Minutes 60-80 |
+| --- | ---: | ---: | ---: |
+| Freshness 250ms | 153,622 | 57,120 | 51,741 |
+| Freshness 1,000ms | 157,144 | 50,780 | 62,236 |
+| Freshness 3,000ms | 156,114 | 36,495 | 75,594 |
+| Net/gross at least 25% | 173,183 | 51,053 | 86,304 |
+| Net/gross at least 50% | 157,022 | 33,777 | 86,575 |
+
+The 25% filter reproduces the reference's prefix result; other filters lose
+profit. No full replay selected because none improves the reference. All
+15 candidates from this follow-up are retained, including failures.
+
+Current checkpoint: **199,689 verified**, **250k goal still active**. All runs
+above finished and all 119 repository tests pass. No additional email or
+competition submission occurred. Suggested next hypothesis: separate online
+fill-value calibration by direction or spread, rather than further widening
+the selector parameter search. Any new tests must be causal and predeclared.

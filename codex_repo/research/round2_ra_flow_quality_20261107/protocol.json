@@ -1,0 +1,60 @@
+{
+  "goal": 250000,
+  "candidates": [
+    {
+      "name": "fresh250ms",
+      "file": "logs\\round2_ra_flow_quality\\sources\\fresh250ms.py",
+      "source_sha256": "7f26d38f023c51d7743cf80eae52f6f7838203c8d7bec6c76c583200694c2fcb",
+      "risk": "strict100"
+    },
+    {
+      "name": "fresh1000ms",
+      "file": "logs\\round2_ra_flow_quality\\sources\\fresh1000ms.py",
+      "source_sha256": "1e1c116c711a2e3a6a854e8321ed828872bdc21c20d10e99cc1ee8a443684b2b",
+      "risk": "strict100"
+    },
+    {
+      "name": "fresh3000ms",
+      "file": "logs\\round2_ra_flow_quality\\sources\\fresh3000ms.py",
+      "source_sha256": "071ceb24f845f0362ed1d19fdf5c48aa9672012ffb78879a5f122f4ff8db9ff5",
+      "risk": "strict100"
+    },
+    {
+      "name": "purity0.25",
+      "file": "logs\\round2_ra_flow_quality\\sources\\purity0.25.py",
+      "source_sha256": "1aa43c439601e39f9618efb337add4a8ce6d2e762d526198efe75772eba445b1",
+      "risk": "strict100"
+    },
+    {
+      "name": "purity0.5",
+      "file": "logs\\round2_ra_flow_quality\\sources\\purity0.5.py",
+      "source_sha256": "0c81bba4ef8c8c813bf42fb94ee958be2e03755f6f2400d8b22fc05e31792b20",
+      "risk": "strict100"
+    }
+  ],
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "scope": "Consumed public first80%; no new holdout and no server access.",
+  "hypothesis": "Return to the maker after250/1000/3000ms without a qualifying flow fire, or require net flow to exceed25/50percent of gross callback flow. Keep shadow and risk accounting unchanged.",
+  "selection": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "reference": "Frozen 167412 composite remains unchanged; no automatic promotion from prefix alone."
+}

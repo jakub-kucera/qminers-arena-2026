@@ -8,10 +8,17 @@ sent to Jakub at the user's explicit request; do not send further models without
 another instruction. See [250k research](docs/ROUND2_250K_RESEARCH.md) for new
 experiments. The sections below describe the completed earlier 150k objective.
 
-Current verified best: **195,721**, exact standalone file
-`strategies/round2/round2_local_195721.py`. Native CLI and audit agree. The selected
+Current verified best: **199,689**, exact standalone file
+`strategies/round2/round2_local_199689.py`. Native CLI and audit agree. This adds
+3,968 by increasing the RA stop from 3 to 5 ticks. Selector, hysteresis,
+stopped-shadow, freshness and directional-purity studies are finished and
+archived. Other variants did not improve their reference selection score.
+All 119 tests pass. No live replay remains from these studies. Next investigate
+side-specific or spread-conditioned online fill-value calibration; the current
+single global error correction may hide directional/regime differences.
+The selected
 900-second ridge-memory variant completed at195,460 (CLI parity verified), so
-the195,721 file remains the best verified result. All replay processes from
+the195,721 file was retained before the later stop-distance improvement. All replay processes from
 these three studies have finished. Next explore selector/exit logic, with
 predeclared bounded changes and unchanged native risk rules. No new email or
 competition submission has been authorized.

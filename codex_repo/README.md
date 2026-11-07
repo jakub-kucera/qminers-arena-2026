@@ -3,8 +3,8 @@
 Current user objective: **250,000 local net PnL**. The previous 150k objective
 was achieved; the higher objective is still active. See
 [250k research](docs/ROUND2_250K_RESEARCH.md). Competition server access remains off.
-Current verified local best: **195,721**, with zero penalties; see
-[the exact candidate](strategies/round2/round2_local_195721.py).
+Current verified local best: **199,689**, with zero penalties; see
+[the exact candidate](strategies/round2/round2_local_199689.py).
 
 Start with [HANDOFF.md](HANDOFF.md). The next-round workflow is in
 [docs/ROUND2_PLAN.md](docs/ROUND2_PLAN.md); the organizer's original documentation
