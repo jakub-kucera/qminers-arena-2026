@@ -6,6 +6,8 @@ resting orders on the IOC's side are cancelled first until they and the IOC fit 
 ridge_maker with C12's settings and UNWIND_LOTS=100 UNWIND_SAFE=3 UNWIND_TH=0.7 UNWIND_AT=50 UNWIND_US=500000
 (rust/arena_sim/src/strategies/ridge_maker.rs). round1.csv 651,751.75 (24,056 fills; C12 622,920.99); the rebuilt private tape 630,443.32 (C12 602,095.53).
 
+Dominated by R2-FT1 (r2_FT1_forecast_take.py, 688,311 / 663,746), whose reduce-only mode it is; see IDEAS.md.
+
 R1-C12's notes: round-1 market maker with 29 causal microstructure features.
 
 Combines fresh quote-price centers with one-second aggressive-flow groups,
