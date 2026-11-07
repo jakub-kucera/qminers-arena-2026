@@ -1,6 +1,6 @@
 //! arena-sim: the Arena's exchange simulator in Rust.
 //!
-//!   arena-sim --backtest FILE.csv --strategy trend_follower|fallback_maker|room_maker|shrink_maker [--params '{"QUOTE": 5}']
+//!   arena-sim --backtest FILE.csv --strategy trend_follower|fallback_maker|room_maker|shrink_maker|alloc_maker|signal_maker [--params '{"QUOTE": 5}']
 //!             [--log-dir DIR] [--no-logs] [--public-depth 20] [--repeat N]
 //!       one run, printing simulator.main's lines; with --log-dir also result.json and pnl.csv, byte for byte
 //!       as theirs (--no-logs is accepted: the run logs are never written). --repeat times N runs on stderr.
@@ -74,7 +74,7 @@ fn parse_args() -> Result<Args, String> {
     Ok(args)
 }
 
-const USAGE: &str = "usage: arena-sim [batch] --backtest FILE.csv --strategy trend_follower|fallback_maker|room_maker|shrink_maker [--params JSON] [--log-dir DIR] [--no-logs] [--public-depth N] [--repeat N] [--tasks TASKS.jsonl --threads N]";
+const USAGE: &str = "usage: arena-sim [batch] --backtest FILE.csv --strategy trend_follower|fallback_maker|room_maker|shrink_maker|alloc_maker|signal_maker [--params JSON] [--log-dir DIR] [--no-logs] [--public-depth N] [--repeat N] [--tasks TASKS.jsonl --threads N]";
 
 fn run_once(tape: &Tape, strategy: &str, params: &Params, config: &Config) -> Result<Outcome, String> {
     let mut strat = strategies::make(strategy, params)?;

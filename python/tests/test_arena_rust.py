@@ -6,7 +6,9 @@ cap, the penalty). The room maker (python/bots/qminers/families/room_maker.py) o
 two-tick spreads and thin touches, so every knob's path runs; and, with ARENA_SIM_FULL=1 and the playground's
 sample_v2.csv and round 1's tape present (data/arena/, or ARENA_SIM_DATA), F3 and knob settings on them byte for
 byte (about 30 s a Python run). The shrink maker (python/bots/qminers/families/shrink_maker.py, the same Rust struct
-with DEPL_FRAC and REACT_CANCEL) the same two ways. Skipped without cargo."""
+with DEPL_FRAC, REACT_CANCEL and MOM_LOTS) the same two ways, and family 12's alloc_maker.py and signal_maker.py
+(the same struct at R1-F6's defaults, with their knobs; R1-F6b and R1-F7 among the real-tape cases). Skipped
+without cargo."""
 
 from __future__ import annotations
 
@@ -154,10 +156,33 @@ SHRINK = [
     {"DEPLETE_LOTS": 50, "DEPL_FRAC": 0.3, "DEPLETE_SIZE": 20},
     {"REACT_CANCEL": 1},
     {"REACT_CANCEL": 1, "DEPLETE_LOTS": 40, "DEPL_FRAC": 0.5, "SIZE_NARROW": 40, "SHRINK_NARROW": 1},
+    {"MOM_LOTS": 40, "MOM_MS": 500},
+]
+
+# Family 12 (the same struct at R1-F6's defaults): alloc_maker.py's knobs, then signal_maker.py's, each path once.
+ALLOC = [
+    {},
+    {"ALLOC_K": -0.5},
+    {"ALLOC_K": 0.8, "ALLOC_UP": 0, "ALLOC_DEEP": 0},
+    {"INV_K": 0.5},
+    {"ALLOC_K": -0.5, "ALLOC_KU": -0.2, "ALLOC_TH": 0.2, "ALLOC_HI": 1.3},
+    {"ADV_TH": 0.6, "ADV_MIN": 50, "ADV_MS": 500},
+    {"ADV_TH": 1.0, "ADV_MIN": 50, "ADV_MS": 2000, "ADV_SCOPE": 2},
+]
+SIGNAL = [
+    {},
+    {"MOM_LOTS": 40, "MOM_MS": 300, "MOM_BLOCK": 0, "MOM_JOIN": 1, "DYING_DEEP": 80, "DEPL_FRAC": 0.12},
+    {"MOM_LOTS": 40, "MOM_MS": 500},
+    {"MOM_LOTS": 30, "MOM_MS": 500, "MOM_SIZE": 10, "MOM_BLOCK": 0},
+    {"IMB_TRIM": 0.5, "IMB_SIZE": 10},
+    {"DYING_DEEP": 40, "DEPLETE_LOTS": 40, "DEPL_FRAC": 0.5},
+    {"SIZE_SKEW": 0.6},
+    {"SIZE_SKEW": 0.6, "SKEW_TRIM": 1},
 ]
 
 
-@pytest.mark.parametrize("name, settings", [("room_maker", ROOM), ("shrink_maker", SHRINK)])
+@pytest.mark.parametrize("name, settings", [("room_maker", ROOM), ("shrink_maker", SHRINK), ("alloc_maker", ALLOC),
+                                            ("signal_maker", SIGNAL)])
 def test_room_maker_synthetic(tmp_path, name, settings):
     qsim_rust.build()
     tape = write_tape(tmp_path / "tape.csv")
@@ -189,6 +214,15 @@ FULL = [  # (strategy, file, overrides, pnl, fills): F3 and knob settings on the
     ("shrink_maker", "round1/round1.csv", {"SESSION_S": 1000000000, "DEPLETE_LOTS": 60, "DEPL_FRAC": 0.2, "DEPLETE_SIZE": 30}, "437654.00", 32131),
     ("shrink_maker", "round1/round1.csv", {"SESSION_S": 1000000000, "REACT_CANCEL": 1, "SIZE_NARROW": 150, "SHRINK_NARROW": 1, "BACK_POS": 95},
      "393824.00", 53530),
+    # family 12 at R1-F6's defaults: R1-F6b (candidates/r1_F6b_alloc.py) and R1-F7 (candidates/r1_F7_signal.py), two others each
+    ("alloc_maker", "round1/round1.csv", {"ALLOC_K": -0.5}, "489844.00", 60487),
+    ("alloc_maker", "round1/round1.csv", {"INV_K": 0.5, "ALLOC_K": -0.3, "ALLOC_UP": 0}, "486179.00", 54344),
+    ("alloc_maker", "round1/round1.csv", {"ADV_TH": 0.0, "ADV_MIN": 200, "ADV_SCOPE": 2}, "482413.00", 49097),
+    ("signal_maker", "round1/round1.csv", {"MOM_LOTS": 400, "MOM_MS": 50, "MOM_BLOCK": 0, "MOM_JOIN": 1, "DYING_DEEP": 80, "DEPL_FRAC": 0.12},
+     "496564.00", 53919),
+    ("signal_maker", "round1/round1.csv", {"MOM_LOTS": 300, "MOM_MS": 100, "MOM_SIZE": 20, "MOM_BLOCK": 0}, "473635.00", 53169),
+    ("signal_maker", "round1/round1.csv", {"MOM_LOTS": 400, "MOM_MS": 200, "MOM_BLOCK": 1, "IMB_TRIM": 0.2, "IMB_SIZE": 10, "SIZE_SKEW": 0.5,
+                                           "SKEW_TRIM": 1}, "378914.00", 57080),
 ]
 
 

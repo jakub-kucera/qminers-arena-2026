@@ -6,22 +6,53 @@
 //! python/bots/qminers/families/shrink_maker.py (family 10, the strategy name `shrink_maker`), line for line too: its
 //! two knobs, `DEPL_FRAC` (the depletion guard fires only on a touch shrunk below that share of its peak since it
 //! became the touch) and `REACT_CANCEL` (re-run the quoting from the last snapshot when one of our cancels lands),
-//! are off by default, which is room_maker.py.
+//! are off by default, which is room_maker.py; with its `MOM_LOTS` / `MOM_MS` hold (post nothing new on the side a
+//! big aggressive order hit), off too.
+//!
+//! The same struct is also family 12's two files, line for line, each with its own defaults (R1-F6's cell:
+//! `LEVELS` 2, `KEEP_DEPTH` 2, `SIZE_TOUCH` 65, `SIZE_DEEP` 80, `TOPUP` 1, `SESSION_S` 1e9, `SIZE_NARROW` 115,
+//! `DEPLETE_LOTS` 100, `REACT_CANCEL` 1, `DEPL_FRAC` 0.06) and its knobs, off by default:
+//! `alloc_maker` (python/bots/qminers/families/alloc_maker.py, no MOM hold): `ALLOC_K` (0.0), `INV_K` (0.0),
+//! `ALLOC_UP` (1), `ALLOC_HI` (2.0), `ALLOC_KU` (0.0), `ALLOC_TH` (0.0), `ALLOC_DEEP` (1), `ADV_TH` (-1000.0),
+//! `ADV_MIN` (2000), `ADV_MS` (1000), `ADV_SCOPE` (1); `signal_maker` (python/bots/qminers/families/signal_maker.py):
+//! the shrink maker's keys and `MOM_SIZE` (-1), `IMB_TRIM` (0.0), `IMB_SIZE` (0), `MOM_BLOCK` (1), `MOM_JOIN` (0),
+//! `DYING_DEEP` (0), `SIZE_SKEW` (0.0), `SKEW_TRIM` (0). A key outside the file's globals is an error.
 //!
 //! Parameters: every module global of the file by its name, with its default: `LEVELS` (1), `KEEP_DEPTH` (1),
 //! `SIZE_TOUCH` (200), `SIZE_DEEP` (50), `LIMIT` (100), `SKEW` (100), `SKEW_CANCEL` (1), `CANCEL_ALONE` (1),
 //! `REBALANCE` (0), `IMB` (0.0), `MIN_QUEUE` (0), `INSIDE_POS` (1000), `INSIDE_SPREAD` (2), `TOPUP` (10),
 //! `UNWIND` (1000), `UNWIND_TO` (50), `WIND_DOWN_S` (60), `SESSION_S` (5750), `SIZE_NARROW` (200),
 //! `SHRINK_NARROW` (0), `DEPLETE_LOTS` (0), `DEPLETE_SIZE` (0), `BACK_POS` (1000), `FLAT_S` (0); shrink_maker.py's
-//! `REACT_CANCEL` (0) and `DEPL_FRAC` (0.0).
+//! `REACT_CANCEL` (0) and `DEPL_FRAC` (0.0), and `MOM_LOTS` (0) and `MOM_MS` (1000) as `shrink_maker`.
 
-use crate::params::Params;
+use std::collections::VecDeque;
+
+use crate::params::{Params, Value};
 use crate::sim::{Ctx, Owner, PrivateEvent, Side, Snapshot, Status, Strategy, Trade};
 
 const KEYS: [&str; 26] = [
     "LEVELS", "KEEP_DEPTH", "SIZE_TOUCH", "SIZE_DEEP", "LIMIT", "SKEW", "SKEW_CANCEL", "CANCEL_ALONE", "REBALANCE", "IMB",
     "MIN_QUEUE", "INSIDE_POS", "INSIDE_SPREAD", "TOPUP", "UNWIND", "UNWIND_TO", "WIND_DOWN_S", "SESSION_S", "SIZE_NARROW",
     "SHRINK_NARROW", "DEPLETE_LOTS", "DEPLETE_SIZE", "BACK_POS", "FLAT_S", "REACT_CANCEL", "DEPL_FRAC",
+];
+/// shrink_maker.py's hold (and signal_maker.py's)
+const MOM_KEYS: [&str; 2] = ["MOM_LOTS", "MOM_MS"];
+const ALLOC_KEYS: [&str; 11] = [
+    "ALLOC_K", "INV_K", "ALLOC_UP", "ALLOC_HI", "ALLOC_KU", "ALLOC_TH", "ALLOC_DEEP", "ADV_TH", "ADV_MIN", "ADV_MS", "ADV_SCOPE",
+];
+const SIGNAL_KEYS: [&str; 8] = ["MOM_SIZE", "IMB_TRIM", "IMB_SIZE", "MOM_BLOCK", "MOM_JOIN", "DYING_DEEP", "SIZE_SKEW", "SKEW_TRIM"];
+/// family 12's defaults over room_maker.py's: R1-F6's cell
+const F6_DEFAULTS: [(&str, Value); 10] = [
+    ("LEVELS", Value::Int(2)),
+    ("KEEP_DEPTH", Value::Int(2)),
+    ("SIZE_TOUCH", Value::Int(65)),
+    ("SIZE_DEEP", Value::Int(80)),
+    ("TOPUP", Value::Int(1)),
+    ("SESSION_S", Value::Int(1_000_000_000)),
+    ("SIZE_NARROW", Value::Int(115)),
+    ("DEPLETE_LOTS", Value::Int(100)),
+    ("REACT_CANCEL", Value::Int(1)),
+    ("DEPL_FRAC", Value::Float(0.06)),
 ];
 
 /// What the quoting reads of a snapshot: its time and each side's market touch (price, lots).
@@ -65,6 +96,29 @@ pub struct RoomMaker {
     flat_s: f64,
     react_cancel: bool,
     depl_frac: f64,
+    mom_lots: i64,
+    mom_ms: i64,
+    // alloc_maker.py
+    alloc_k: f64,
+    inv_k: f64,
+    alloc_up: bool,
+    alloc_hi: f64,
+    alloc_ku: f64,
+    alloc_th: f64,
+    alloc_deep: bool,
+    adv_th: f64,
+    adv_min: i64,
+    adv_ms: i64,
+    adv_scope: i64,
+    // signal_maker.py
+    mom_size: i64,
+    imb_trim: f64,
+    imb_size: i64,
+    mom_block: bool,
+    mom_join: bool,
+    dying_deep: i64,
+    size_skew: f64,
+    skew_trim: i64,
     position: i64,
     /// the insertion-ordered dict id -> order
     orders: Vec<Order>,
@@ -75,11 +129,36 @@ pub struct RoomMaker {
     snap: Option<Touches>,
     /// the Python's `_peak`: per side (bid, ask), [touch price, the market lots there at their most since]
     peak: [Option<(i64, i64)>; 2],
+    /// the Python's `_hold_until`: per book side (bid, ask), the time until which nothing new is posted there
+    hold_until: [i64; 2],
+    /// alloc_maker.py's `_pending`: (due us, sign, price, lots, state) per fill, for its markout
+    pending: VecDeque<(i64, f64, i64, i64, usize)>,
+    adv_sum: [f64; 6],
+    adv_lots: [i64; 6],
+    bstate: usize,
+    astate: usize,
 }
 
 impl RoomMaker {
-    pub fn new(params: &Params) -> Result<RoomMaker, String> {
-        params.check_keys(&KEYS)?;
+    /// The strategy `name`'s file: room_maker, shrink_maker, alloc_maker or signal_maker (its keys and defaults).
+    pub fn new(name: &str, params: &Params) -> Result<RoomMaker, String> {
+        let mut known: Vec<&str> = KEYS.to_vec();
+        match name {
+            "room_maker" => {}
+            "shrink_maker" => known.extend(MOM_KEYS),
+            "alloc_maker" => known.extend(ALLOC_KEYS),
+            "signal_maker" => known.extend(MOM_KEYS.iter().chain(SIGNAL_KEYS.iter())),
+            _ => return Err(format!("{name:?} is not a room maker")),
+        }
+        params.check_keys(&known)?;
+        let mut merged = Params::default();
+        if name == "alloc_maker" || name == "signal_maker" {
+            for (key, value) in F6_DEFAULTS {
+                merged.0.insert(key.to_string(), value);
+            }
+        }
+        merged.0.extend(params.0.iter().map(|(k, v)| (k.clone(), v.clone())));
+        let params = &merged;
         let flag = |key: &str, default: i64| params.int(key, default).map(|v| v != 0);
         Ok(RoomMaker {
             levels: params.int("LEVELS", 1)?,
@@ -108,6 +187,27 @@ impl RoomMaker {
             flat_s: params.float("FLAT_S", 0.0)?,
             react_cancel: flag("REACT_CANCEL", 0)?,
             depl_frac: params.float("DEPL_FRAC", 0.0)?,
+            mom_lots: params.int("MOM_LOTS", 0)?,
+            mom_ms: params.int("MOM_MS", 1000)?,
+            alloc_k: params.float("ALLOC_K", 0.0)?,
+            inv_k: params.float("INV_K", 0.0)?,
+            alloc_up: flag("ALLOC_UP", 1)?,
+            alloc_hi: params.float("ALLOC_HI", 2.0)?,
+            alloc_ku: params.float("ALLOC_KU", 0.0)?,
+            alloc_th: params.float("ALLOC_TH", 0.0)?,
+            alloc_deep: flag("ALLOC_DEEP", 1)?,
+            adv_th: params.float("ADV_TH", -1000.0)?,
+            adv_min: params.int("ADV_MIN", 2000)?,
+            adv_ms: params.int("ADV_MS", 1000)?,
+            adv_scope: params.int("ADV_SCOPE", 1)?,
+            mom_size: params.int("MOM_SIZE", -1)?,
+            imb_trim: params.float("IMB_TRIM", 0.0)?,
+            imb_size: params.int("IMB_SIZE", 0)?,
+            mom_block: flag("MOM_BLOCK", 1)?,
+            mom_join: flag("MOM_JOIN", 0)?,
+            dying_deep: params.int("DYING_DEEP", 0)?,
+            size_skew: params.float("SIZE_SKEW", 0.0)?,
+            skew_trim: params.int("SKEW_TRIM", 0)?,
             position: 0,
             orders: Vec::new(),
             start_us: None,
@@ -115,6 +215,12 @@ impl RoomMaker {
             flattened: false,
             snap: None,
             peak: [None, None],
+            hold_until: [0, 0],
+            pending: VecDeque::new(),
+            adv_sum: [0.0; 6],
+            adv_lots: [0; 6],
+            bstate: 1,
+            astate: 4,
         })
     }
 
@@ -152,7 +258,12 @@ impl RoomMaker {
 
     /// Cancels this side's orders outside the ladder; posts an order on each empty level the limit has room for.
     #[allow(clippy::too_many_arguments)]
-    fn ladder(&mut self, side: Side, best: i64, want: bool, cancel_all: bool, cap: i64, trim: bool, ctx: &mut Ctx) {
+    /// `deep`: the lots behind the touch (both family-12 files'); `skip_touch`: signal_maker.py's (a dying touch's room
+    /// goes behind it, that order topped up); `top_ok`: alloc_maker.py's (false: no top-up; with ADV_SCOPE 2 no touch order).
+    fn ladder(
+        &mut self, side: Side, best: i64, want: bool, cancel_all: bool, cap: i64, trim: bool, deep: i64, skip_touch: bool,
+        top_ok: bool, ctx: &mut Ctx,
+    ) {
         let sign = if side == Side::Buy { 1 } else { -1 };
         let mut have: Vec<(i64, i64)> = Vec::new(); // ticks behind the touch -> our lots there, in insertion order
         let mut exposure = 0;
@@ -199,15 +310,23 @@ impl RoomMaker {
             }
         }
         for level in 0..self.levels.max(0) {
-            let mut size = if level == 0 { cap } else { self.size_deep };
-            if let Some(lots) = lots_at(&have, level) {
-                if self.topup == 0 || level > 0 || size - lots < self.topup || room < self.topup {
+            let mut size = if level == 0 { cap } else { deep };
+            let held = lots_at(&have, level);
+            if level == 0 && !top_ok && (self.adv_scope == 2 || held.is_some()) {
+                continue;
+            }
+            if let Some(lots) = held {
+                let deep_topup = skip_touch && level == 1;
+                if self.topup == 0 || (level > 0 && !deep_topup) || size - lots < self.topup || room < self.topup {
                     continue;
                 }
                 size -= lots;
             }
             let quantity = size.min(room);
             if quantity <= 0 {
+                if skip_touch && level == 0 {
+                    continue;
+                }
                 return;
             }
             self.send(side, best - sign * level, quantity, false, ctx);
@@ -245,7 +364,7 @@ fn touch(orders: impl Iterator<Item = crate::sim::BookOrder>) -> Option<(i64, i6
 
 impl RoomMaker {
     /// The Python's `on_order_book_change` from the snapshot's touches (also its REACT_CANCEL re-run).
-    fn quote(&mut self, touches: Touches, ctx: &mut Ctx) {
+    fn quote(&mut self, touches: Touches, trades: &[Trade], ctx: &mut Ctx) {
         self.snap = Some(touches);
         let (timestamp_us, bid, ask) = touches;
         let start = *self.start_us.get_or_insert(timestamp_us);
@@ -269,8 +388,27 @@ impl RoomMaker {
         } else if !self.ioc_pending && position < -self.unwind {
             self.send(Side::Buy, best_ask, -position - self.unwind_to, true, ctx);
         }
-        let want_bid = position < self.skew && !(winding_down && position >= 0) && bid_ok;
-        let want_ask = position > -self.skew && !(winding_down && position <= 0) && ask_ok;
+        if self.mom_lots > 0 && !trades.is_empty() {
+            let mut swept: Vec<((u64, Side), i64)> = Vec::new();
+            for trade in trades {
+                if trade.taker_owner == Owner::Market {
+                    let key = (trade.taker_order_id, trade.book_side);
+                    match swept.iter_mut().find(|(k, _)| *k == key) {
+                        Some((_, lots)) => *lots += trade.quantity,
+                        None => swept.push((key, trade.quantity)),
+                    }
+                }
+            }
+            for ((_, book_side), lots) in swept {
+                if lots >= self.mom_lots {
+                    self.hold_until[if book_side == Side::Buy { 0 } else { 1 }] = timestamp_us + self.mom_ms * 1000;
+                }
+            }
+        }
+        let hold_bid = timestamp_us < self.hold_until[0];
+        let hold_ask = timestamp_us < self.hold_until[1];
+        let want_bid = position < self.skew && !(winding_down && position >= 0) && bid_ok && !(hold_bid && self.mom_block);
+        let want_ask = position > -self.skew && !(winding_down && position <= 0) && ask_ok && !(hold_ask && self.mom_block);
         let cancel_bid = (winding_down && position >= 0) || (self.skew_cancel && position >= self.skew) || !bid_ok;
         let cancel_ask = (winding_down && position <= 0) || (self.skew_cancel && position <= -self.skew) || !ask_ok;
         let spread = best_ask - best_bid;
@@ -281,6 +419,12 @@ impl RoomMaker {
         }
         if position <= -self.back_pos {
             ask_anchor = best_ask + 1;
+        }
+        if self.mom_join && spread >= 2 && hold_ask && !hold_bid {
+            bid_anchor = best_bid + 1;
+        }
+        if self.mom_join && spread >= 2 && hold_bid && !hold_ask {
+            ask_anchor = best_ask - 1;
         }
         let mut bid_cap = if spread >= 2 { self.size_touch } else { self.size_narrow };
         let mut ask_cap = bid_cap;
@@ -307,18 +451,122 @@ impl RoomMaker {
             ask_cap = ask_cap.min(self.deplete_size);
             ask_trim = true;
         }
-        self.ladder(Side::Buy, bid_anchor, want_bid, cancel_bid, bid_cap, bid_trim, ctx);
-        self.ladder(Side::Sell, ask_anchor, want_ask, cancel_ask, ask_cap, ask_trim, ctx);
+        // signal_maker.py's caps and deep sizes (off in the other files)
+        if self.mom_size >= 0 && hold_bid {
+            bid_cap = bid_cap.min(self.mom_size);
+            bid_trim = true;
+        }
+        if self.mom_size >= 0 && hold_ask {
+            ask_cap = ask_cap.min(self.mom_size);
+            ask_trim = true;
+        }
+        if self.imb_trim > 0.0 {
+            if (bid_lots as f64) < self.imb_trim * ask_lots as f64 {
+                bid_cap = bid_cap.min(self.imb_size);
+                bid_trim = true;
+            }
+            if (ask_lots as f64) < self.imb_trim * bid_lots as f64 {
+                ask_cap = ask_cap.min(self.imb_size);
+                ask_trim = true;
+            }
+        }
+        let mut bid_deep = self.size_deep;
+        let mut ask_deep = self.size_deep;
+        let bid_skip = self.dying_deep > 0 && bid_dying;
+        let ask_skip = self.dying_deep > 0 && ask_dying;
+        if bid_skip {
+            bid_deep = self.dying_deep;
+        }
+        if ask_skip {
+            ask_deep = self.dying_deep;
+        }
+        if self.size_skew > 0.0 && position != 0 {
+            let factor = py_max(0.0, 1.0 - self.size_skew * position.abs() as f64 / self.limit as f64);
+            if position > 0 {
+                bid_cap = (bid_cap as f64 * factor) as i64;
+                bid_deep = (self.size_deep as f64 * factor) as i64;
+                bid_trim = bid_trim || self.skew_trim == 1;
+            } else {
+                ask_cap = (ask_cap as f64 * factor) as i64;
+                ask_deep = (self.size_deep as f64 * factor) as i64;
+                ask_trim = ask_trim || self.skew_trim == 1;
+            }
+        }
+        // alloc_maker.py's allocation and adverse table (off in the other files)
+        if self.alloc_k != 0.0 || self.inv_k != 0.0 {
+            let mut imb = (bid_lots - ask_lots) as f64 / (bid_lots + ask_lots) as f64;
+            if -self.alloc_th <= imb && imb <= self.alloc_th {
+                imb = 0.0;
+            }
+            let inv = self.inv_k * position as f64 / self.limit as f64;
+            let shift = self.alloc_k * imb - inv;
+            let hi = if self.alloc_up { self.alloc_hi } else { 1.0 };
+            if !bid_dying {
+                let mut factor = 1.0 + shift;
+                if self.alloc_ku != 0.0 && factor > 1.0 {
+                    factor = 1.0 + self.alloc_ku * imb - inv;
+                }
+                let new = (bid_cap as f64 * py_min(hi, py_max(0.0, factor)) + 0.5) as i64;
+                if new < bid_cap && self.alloc_deep {
+                    bid_deep += bid_cap - new;
+                }
+                bid_cap = new;
+            }
+            if !ask_dying {
+                let mut factor = 1.0 - shift;
+                if self.alloc_ku != 0.0 && factor > 1.0 {
+                    factor = 1.0 - self.alloc_ku * imb + inv;
+                }
+                let new = (ask_cap as f64 * py_min(hi, py_max(0.0, factor)) + 0.5) as i64;
+                if new < ask_cap && self.alloc_deep {
+                    ask_deep += ask_cap - new;
+                }
+                ask_cap = new;
+            }
+        }
+        let mut bid_top = true;
+        let mut ask_top = true;
+        if self.adv_th > -1000.0 {
+            let mid = (best_bid + best_ask) as f64 / 2.0;
+            while let Some(&(due, sign, price, lots, state)) = self.pending.front() {
+                if due > timestamp_us {
+                    break;
+                }
+                self.pending.pop_front();
+                self.adv_sum[state] += sign * (mid - price as f64) * lots as f64;
+                self.adv_lots[state] += lots;
+            }
+            let imb = (bid_lots - ask_lots) as f64 / (bid_lots + ask_lots) as f64;
+            let wide = if spread >= 2 { 3 } else { 0 };
+            let third = 1.0 / 3.0;
+            self.bstate = wide + if imb < -third { 0 } else if imb > third { 2 } else { 1 };
+            self.astate = wide + if imb > third { 0 } else if imb < -third { 2 } else { 1 };
+            let n = self.adv_lots[self.bstate];
+            bid_top = n < self.adv_min || self.adv_sum[self.bstate] >= self.adv_th * n as f64;
+            let n = self.adv_lots[self.astate];
+            ask_top = n < self.adv_min || self.adv_sum[self.astate] >= self.adv_th * n as f64;
+        }
+        self.ladder(Side::Buy, bid_anchor, want_bid, cancel_bid, bid_cap, bid_trim, bid_deep, bid_skip, bid_top, ctx);
+        self.ladder(Side::Sell, ask_anchor, want_ask, cancel_ask, ask_cap, ask_trim, ask_deep, ask_skip, ask_top, ctx);
     }
 }
 
+/// Python's `min(a, b)` and `max(a, b)` on floats: the first argument unless the second is strictly beyond it.
+fn py_min(a: f64, b: f64) -> f64 {
+    if b < a { b } else { a }
+}
+
+fn py_max(a: f64, b: f64) -> f64 {
+    if b > a { b } else { a }
+}
+
 impl Strategy for RoomMaker {
-    fn on_book(&mut self, snapshot: &Snapshot, _trades: &[Trade], ctx: &mut Ctx) {
+    fn on_book(&mut self, snapshot: &Snapshot, trades: &[Trade], ctx: &mut Ctx) {
         let bid = snapshot.market_touch(Side::Buy);
         let ask = snapshot.market_touch(Side::Sell);
         debug_assert_eq!(bid, touch(snapshot.bids()));
         debug_assert_eq!(ask, touch(snapshot.asks()));
-        self.quote((snapshot.timestamp_us, bid, ask), ctx);
+        self.quote((snapshot.timestamp_us, bid, ask), trades, ctx);
     }
 
     /// Counts fills into the position; forgets orders that are done.
@@ -332,6 +580,18 @@ impl Strategy for RoomMaker {
                     self.position += event.filled_quantity;
                 } else {
                     self.position -= event.filled_quantity;
+                }
+                if self.adv_th > -1000.0 && !order.ioc {
+                    if let Some(price) = event.fill_price {
+                        let buy = order.side == Side::Buy;
+                        self.pending.push_back((
+                            event.timestamp_us + self.adv_ms * 1000,
+                            if buy { 1.0 } else { -1.0 },
+                            price,
+                            event.filled_quantity,
+                            if buy { self.bstate } else { self.astate },
+                        ));
+                    }
                 }
                 order.quantity = event.remaining_quantity;
                 done = event.status == Status::Filled || event.remaining_quantity == 0;
@@ -351,7 +611,7 @@ impl Strategy for RoomMaker {
             }
             if self.react_cancel && event.status == Status::Canceled {
                 if let Some(touches) = self.snap {
-                    self.quote(touches, ctx);
+                    self.quote(touches, &[], ctx);
                 }
             }
         }
