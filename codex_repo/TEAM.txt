@@ -1,0 +1,9 @@
+ThatsMyQuant
+
+===
+
+OpenAI Codex (GPT-6 family; exact model variant and team-wide usage order to be confirmed)
+
+===
+
+Subscription plans and estimated token/API costs: awaiting team details.
