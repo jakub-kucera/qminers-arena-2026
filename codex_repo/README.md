@@ -1,8 +1,46 @@
 # Qminers trading hackathon starter
 
-**Round 1: submit `strategies/round1_best.py`.** Verified local score on the
-provided `round1.csv`: **476,052**, with zero position penalties. See the
-round-1 evaluation notes at the end of this README.
+**Latest round-1 candidate: `strategies/round1_depth_advantage.py`.** Verified
+local score on the provided `round1.csv`: **534,941**, with zero position
+penalties and maximum actual/submitted potential exposure of 100. This improves
+the supplied 523,999 depth strategy by **10,942 (+2.09%)**. The original 476,052,
+498,056 and 523,999 strategies are preserved.
+
+The candidate uses 16 causal features and online ridge regression to forecast
+100 ms midpoint changes. It adds signed nonlinear transforms of three robust
+depth signals to the supplied 13-feature model. Passive quoting and the
+reservation ledger are unchanged. Unused queue tracking was removed after
+verifying identical baseline results, PnL curves, learned weights and order
+status counts. The inherited flow threshold is inactive, as documented in the
+new strategy; inventory checks remain active.
+
+| Replay | Supplied 13 features | New 16 features |
+| --- | ---: | ---: |
+| Round 1, official 5 ms delay | 523,999 | **534,941** |
+| Round 1, 20 ms stress | 425,699 | **434,107** |
+| Round 1, 50 ms stress | 288,644 | **299,036** |
+| Older sample_v2 | 269,744 | **270,472** |
+
+The extension improved all four chronological periods. At 5 ms, one-second
+sampled drawdown increased slightly from 798 to 814. Four extensions were
+screened under a frozen consistency rule; the multi-horizon blend was rejected
+because it lost in the first half. Both public tapes have already been used in
+research: these checks are not a fresh holdout, and no new website/private
+leaderboard result is claimed.
+
+The exact standalone file reproduced 534,941 using the unmodified engine in
+213.6 local CPU seconds and 42.3 MiB peak working set. All 49 repository tests
+passed on Windows, including the new causal-learning and risk checks.
+
+See the [architecture and results report](research/depth_advantage_20261107/report.html),
+[frozen protocol and results](research/depth_advantage_20261107/README.txt), and
+[machine-readable summary](research/depth_advantage_20261107/summary.json).
+Run the submission with:
+
+```bash
+uv run python -m simulator.main --strategy strategies/round1_depth_advantage.py --backtest data/round1.csv --log-dir logs/depth-advantage --no-logs
+uv run python -m unittest discover -s tests -v
+```
 
 ```
 strategies/   template_strategy.py, an empty strategy to copy and fill in; trend_follower.py, a simple working one
@@ -96,9 +134,9 @@ $$\text{PnL} = \text{cash} + \text{markout}(I) - \text{penalty}$$
 
 $\text{markout}(I)$ is the cash from liquidating $I$ against the resting *market* orders on the opposite side, best price outwards (volume beyond the book at the last swept price, or at the last traded price if that side is empty). It is computed at the end and every second for `pnl.csv` and `pnl_se`.
 
-## Current submission candidate
+## Earlier synthetic-sample submission
 
-Submit **`strategies/arena_strategy.py`** as the single strategy file. Its
+The earlier synthetic-sample candidate is **`strategies/arena_strategy.py`**. Its
 `ArenaStrategy` constructor needs no arguments. The file uses only `math`,
 `collections`, and the permitted simulator imports. No fitted weights, external
 files, sample prices, order IDs, or known session-end time are embedded.
@@ -379,7 +417,7 @@ uv run python -m simulator.main --strategy strategies/passive_v2_champion.py \
   --backtest data/sample_v2.csv --log-dir logs/champion --no-logs
 ```
 
-## Round-1 submission and evaluation
+## Original round-1 submission and evaluation (476,052)
 
 **Submit `strategies/round1_best.py` as the single strategy file.** The model
 returns **476,052** on the supplied full `data/round1.csv`, exceeding the reported

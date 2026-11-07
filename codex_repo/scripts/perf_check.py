@@ -7,7 +7,6 @@ import argparse
 import json
 import platform
 import random
-import resource
 import subprocess
 import sys
 from pathlib import Path
@@ -15,6 +14,34 @@ from pathlib import Path
 from scripts.benchmark import digest, evaluate
 from simulator.main import load_strategy_from_file
 from simulator.simulator import ExchangeSimulator
+
+
+def peak_rss_bytes():
+    """Peak process working set on Windows; ru_maxrss on POSIX."""
+    if sys.platform == 'win32':
+        import ctypes
+        from ctypes import wintypes
+
+        class Counters(ctypes.Structure):
+            _fields_ = [('cb', wintypes.DWORD), ('PageFaultCount', wintypes.DWORD)] + [
+                (name, ctypes.c_size_t) for name in (
+                    'PeakWorkingSetSize', 'WorkingSetSize', 'QuotaPeakPagedPoolUsage',
+                    'QuotaPagedPoolUsage', 'QuotaPeakNonPagedPoolUsage',
+                    'QuotaNonPagedPoolUsage', 'PagefileUsage', 'PeakPagefileUsage')]
+
+        kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+        psapi = ctypes.WinDLL('psapi', use_last_error=True)
+        kernel.GetCurrentProcess.restype = wintypes.HANDLE
+        psapi.GetProcessMemoryInfo.argtypes = [wintypes.HANDLE, ctypes.POINTER(Counters), wintypes.DWORD]
+        psapi.GetProcessMemoryInfo.restype = wintypes.BOOL
+        counters = Counters()
+        counters.cb = ctypes.sizeof(counters)
+        if not psapi.GetProcessMemoryInfo(kernel.GetCurrentProcess(), ctypes.byref(counters), counters.cb):
+            raise ctypes.WinError(ctypes.get_last_error())
+        return counters.PeakWorkingSetSize
+    import resource
+    rss = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    return rss*(1 if platform.system() == 'Darwin' else 1024)
 
 
 def generate_dense(path,rows):
@@ -66,8 +93,7 @@ def main():
         rows=ExchangeSimulator.count_backtest_rows(args.backtest)
         result['rows']=rows
         result['events_per_second']=rows/result['runtime_seconds']
-        rss=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
-        result['peak_rss_bytes']=rss*(1 if platform.system()=='Darwin' else 1024)
+        result['peak_rss_bytes']=peak_rss_bytes()
         result['strategy_sha256']=digest(args.strategy)
         if result['result']['breach_penalty'] or result['max_potential_inventory_at_submission']>strategy.POSITION_LIMIT:
             raise AssertionError('risk invariant failure')

@@ -1,0 +1,116 @@
+{
+  "depth_nonlinear_16": {
+    "source_sha256": "126d8f119a91fa5f8685025cd30ec0ef3266a481b48a45a0a76db2db24e020dc",
+    "data_sha256": "dd4e00e281abe50c9a19e16c147ccbc0b5b69835fee567f00136402ef1e01d08",
+    "result": {
+      "fills": 7456,
+      "traded_volume": 502338,
+      "inventory": -56,
+      "cash": 830696.0,
+      "mark_price": 10004.0,
+      "breach_penalty": 0.0,
+      "pnl": 270472.0,
+      "pnl_se": 5476.955640311772,
+      "abs_inventory_q50": 100,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "boundary_pnl": {
+      "600000000": 28508.0,
+      "1200000000": 58548.0,
+      "1800000000": 86774.0,
+      "2400000000": 116357.0,
+      "3000000000": 143495.0,
+      "3600000000": 174501.0,
+      "4200000000": 200281.0,
+      "4800000000": 225117.0,
+      "5400000000": 254028.0
+    },
+    "blocks": [
+      {
+        "end_us": 600000000,
+        "pnl": 28508.0
+      },
+      {
+        "end_us": 1200000000,
+        "pnl": 30040.0
+      },
+      {
+        "end_us": 1800000000,
+        "pnl": 28226.0
+      },
+      {
+        "end_us": 2400000000,
+        "pnl": 29583.0
+      },
+      {
+        "end_us": 3000000000,
+        "pnl": 27138.0
+      },
+      {
+        "end_us": 3600000000,
+        "pnl": 31006.0
+      },
+      {
+        "end_us": 4200000000,
+        "pnl": 25780.0
+      },
+      {
+        "end_us": 4800000000,
+        "pnl": 24836.0
+      },
+      {
+        "end_us": 5400000000,
+        "pnl": 28911.0
+      }
+    ],
+    "max_drawdown_1s": 200.0,
+    "runtime_seconds": 182.34955159993842,
+    "cpu_seconds": 181.484375,
+    "max_abs_inventory": 100,
+    "max_potential_inventory": 100,
+    "submissions": 13702,
+    "status_counts": {
+      "accepted": 13702,
+      "canceled": 7412,
+      "partially_filled": 5871,
+      "filled": 6288,
+      "rejected": 28
+    },
+    "labels": 55780,
+    "weights": [
+      0.013743437016711222,
+      0.0075995829453631095,
+      -0.051315955899710566,
+      0.05282059542072763,
+      0.07253081068307428,
+      -0.016505881188499542,
+      0.05499630950519272,
+      -0.0284199625988689,
+      -0.04460817559381877,
+      -0.051315955899711725,
+      0.007742776924309051,
+      -0.0008515832948576773,
+      0.08703674439354156,
+      0.043559924010083885,
+      0.054996309505192784,
+      -0.014713490823957513
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "curve_sha256": "347d13769bea2367571ca07f3c362342598227f1e68f7b243110e2303ded2329"
+  }
+}

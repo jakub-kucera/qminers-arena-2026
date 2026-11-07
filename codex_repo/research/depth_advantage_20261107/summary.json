@@ -1,0 +1,212 @@
+{
+  "promoted": true,
+  "baseline_pnl": 523999.0,
+  "candidate_pnl": 534941.0,
+  "gain": 10942.0,
+  "gain_percent": 2.0881719239922214,
+  "periods": [
+    {
+      "period": "First 50 minutes",
+      "baseline": 122087.0,
+      "candidate": 124963.0,
+      "gain": 2876.0
+    },
+    {
+      "period": "Next 49m 50s",
+      "baseline": 132624.0,
+      "candidate": 135903.0,
+      "gain": 3279.0
+    },
+    {
+      "period": "99m 50s to 150m",
+      "baseline": 138273.0,
+      "candidate": 139626.0,
+      "gain": 1353.0
+    },
+    {
+      "period": "Final 50 minutes",
+      "baseline": 131015.0,
+      "candidate": 134449.0,
+      "gain": 3434.0
+    }
+  ],
+  "sample_v2": {
+    "baseline": 269744.0,
+    "candidate": 270472.0
+  },
+  "latency_stress": [
+    {
+      "delay_ms": 20,
+      "baseline": 425699.0,
+      "candidate": 434107.0,
+      "gain": 8408.0,
+      "baseline_drawdown": 861.0,
+      "candidate_drawdown": 1009.0,
+      "baseline_penalty": 0.0,
+      "candidate_penalty": 0.0
+    },
+    {
+      "delay_ms": 50,
+      "baseline": 288644.0,
+      "candidate": 299036.0,
+      "gain": 10392.0,
+      "baseline_drawdown": 1528.0,
+      "candidate_drawdown": 1403.0,
+      "baseline_penalty": 0.0,
+      "candidate_penalty": 0.0
+    }
+  ],
+  "export_benchmark": {
+    "result": {
+      "fills": 22701,
+      "traded_volume": 2207334,
+      "inventory": 100,
+      "cash": -467959.0,
+      "mark_price": 10029.0,
+      "breach_penalty": 0.0,
+      "pnl": 534941.0,
+      "pnl_se": 11051.156976334465,
+      "abs_inventory_q50": 93,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "cpu_seconds": 213.5625,
+    "wall_seconds": 215.09330379986204,
+    "peak_working_set_bytes": 44392448,
+    "source_bytes": 11730,
+    "source_sha256": "83a8aca405e512f9e004b0937de786d017536ff69f1b53c6e93d66e784dace3d",
+    "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+    "engine_sha256": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    }
+  },
+  "baseline_drawdown_1s": 798.0,
+  "candidate_drawdown_1s": 814.0,
+  "source_sha256": "83a8aca405e512f9e004b0937de786d017536ff69f1b53c6e93d66e784dace3d",
+  "selection": {
+    "finalists": [
+      "depth_nonlinear_16"
+    ],
+    "scores": {
+      "depth_nonlinear_16": {
+        "eligible": true,
+        "gain": 6155.0,
+        "gain_percent": 2.416464149565578,
+        "half_gains": [
+          2876.0,
+          3279.0
+        ],
+        "block_gains": [
+          2.0,
+          1034.0,
+          2229.0,
+          -995.0,
+          606.0,
+          -222.0,
+          2305.0,
+          -105.0,
+          251.0,
+          1050.0
+        ],
+        "positive_blocks": 7
+      },
+      "memory_blend": {
+        "eligible": false,
+        "gain": -580.0,
+        "gain_percent": -0.22770905064956048,
+        "half_gains": [
+          -1381.0,
+          801.0
+        ],
+        "block_gains": [
+          -237.0,
+          -105.0,
+          -574.0,
+          127.0,
+          -592.0,
+          164.0,
+          -210.0,
+          341.0,
+          297.0,
+          209.0
+        ],
+        "positive_blocks": 5
+      },
+      "horizon_blend": {
+        "eligible": false,
+        "gain": 6154.0,
+        "gain_percent": 2.4160715477541173,
+        "half_gains": [
+          -926.0,
+          7080.0
+        ],
+        "block_gains": [
+          -1882.0,
+          839.0,
+          -1502.0,
+          1503.0,
+          116.0,
+          1059.0,
+          2872.0,
+          703.0,
+          1896.0,
+          550.0
+        ],
+        "positive_blocks": 8
+      },
+      "depth_changes_15": {
+        "eligible": false,
+        "gain": -4844.0,
+        "gain_percent": -1.9017631747352937,
+        "half_gains": [
+          -2020.0,
+          -2824.0
+        ],
+        "block_gains": [
+          -134.0,
+          320.0,
+          -1665.0,
+          -282.0,
+          -259.0,
+          -310.0,
+          -388.0,
+          -528.0,
+          -365.0,
+          -1233.0
+        ],
+        "positive_blocks": 1
+      }
+    },
+    "baseline_pnl_at_5990s": 254711.0,
+    "cleanup_exact_match": true,
+    "sources": {
+      "depth_nonlinear_16": {
+        "source": "logs\\depth_advantage\\sources\\depth_nonlinear_16.py",
+        "sha256": "126d8f119a91fa5f8685025cd30ec0ef3266a481b48a45a0a76db2db24e020dc"
+      }
+    },
+    "created_utc": "2026-11-07T13:50:57Z"
+  },
+  "limitations": [
+    "All public datasets have been examined previously.",
+    "No new private leaderboard or website result is claimed.",
+    "The prefix screening involved four extensions and three ablations.",
+    "Chronological consistency gates do not prove statistical significance.",
+    "PnL, not forecast error or the reported pnl_se, determined selection.",
+    "Drawdown is sampled once per second; faster losses can be missed.",
+    "Local CPU/memory measurements do not certify server runtime."
+  ]
+}
