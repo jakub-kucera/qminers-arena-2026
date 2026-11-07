@@ -1,0 +1,20 @@
+{
+ "seed": 2,
+ "start": "10:00:00",
+ "end": "11:00:00",
+ "options": {},
+ "rows": 8528,
+ "span_s": 3598.310676,
+ "trades_per_s": 0.898,
+ "inserts_g": 4496,
+ "inserts_f": 1429,
+ "cancels": 2521,
+ "replaces": 0,
+ "resized": 0,
+ "execs": 3231,
+ "snapshot": 82,
+ "unknown": 0,
+ "seconds_differing": 0,
+ "spread_median": 1,
+ "spread_mean": 1.51
+}
