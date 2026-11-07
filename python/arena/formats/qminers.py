@@ -46,7 +46,7 @@ PROVIDED_MODULES = {"api"}  # TODO(day): the module names their bot file imports
 RESTING = False  # TODO(day): True if their orders rest until cancelled: the CLI then runs as with --resting
 CREDITS = 1.0  # TODO(day): the credits a lot one unit of their quoted price is worth, if not 1 (formats/__init__.py)
 ENGINE: dict = {}  # TODO(day): the engine settings their rules fix, e.g. {"queue": "prob", "fee": 1, "maker_fee": 0, "mark": "touch"} (arena.cli.format_config)
-SKELETON = True  # TODO(day): False once this file is the Arena's format (the scaffold tests then skip it)
+SKELETON = False  # the Arena's bot (python/bots/qminers/template.py) is written; its backtests run on their simulator (exchange-simulator), so this loader half is unused
 FILES = {  # TODO(day): their file names
     "limits": "limits.json", "book": "{day}_book.csv", "trades": "{day}_trades.csv"}
 COLUMNS = {  # TODO(day): their column names
@@ -57,6 +57,14 @@ DELIMITER = ","  # TODO(day)
 DEPTH = 10  # TODO(day): book levels a side to look for (bid_price_1 .. bid_price_DEPTH)
 PRICE_SCALE = 100  # TODO(day): price units a currency unit: 100 keeps cents
 ENTRY = ("Strategy", "on_tick")  # TODO(day): the class the bot file defines and the method called once a step; (None, "trade") for a module-level function
+SANDBOX = {  # what their sandbox rejects before a bot runs (the site's info page, 7 Nov, "among them"; arena.validate.sandbox_bans)
+    "modules": {"os", "sys", "subprocess", "socket", "io", "pathlib"},
+    "private_modules": True,  # a module name starting with an underscore; `__future__` too, unless the starter's examples use it
+    "builtins": {"open", "getattr", "type"},
+    "dunders": True,  # dunder attributes and names
+    "str_format": True,
+    "public": {"simulator": None},  # TODO(day): the names simulator exports publicly (its models and BaseStrategy)
+}
 
 # ---------------------------------------------------------------------------- data (TODO(day): the loader half)
 

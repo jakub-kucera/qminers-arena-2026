@@ -10,7 +10,7 @@ tick grid; STRATEGY and EXECUTION work in whole ticks, so ADAPTER converts at th
 Order ids are opaque strings, and orders rest until cancelled.
 """
 
-from __future__ import annotations
+# no import of future annotations: the Arena's sandbox bans private modules, so forward references are quoted
 
 import math
 import traceback
@@ -174,7 +174,7 @@ class Book:
         self.bids = bids
         self.asks = asks
 
-    def copy(self) -> Book:
+    def copy(self) -> "Book":
         return Book([level[:] for level in self.bids], [level[:] for level in self.asks])
 
 

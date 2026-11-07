@@ -12,12 +12,12 @@ so a compacted or restarted session, or the other laptop, picks up where it was.
   Repeats checked (`experiments.day.structure`): <none | which days repeat which>.
 - The gate: `--modes <...> --gate <first|every> --holdout <...>`; scenarios still possible: <`--scenario ...` | none>.
 - Calibrated settings (the plug-in's `ENGINE`, from `experiments.day.calibrate`): <... | refused: why>.
-- Scoring: <raw PnL summed | normalised | ranked | unknown>, and so the final rule below (ON_THE_DAY.md, "How is PnL scored?").
+- Scoring: `0.8·z1 + z2 + z3 + 1.2·z4`, each round's private PnL standardised over the teams with positive PnL, a zero or
+  negative PnL scored as 0 (ON_THE_DAY.md, "How is PnL scored?"); this round's weight: <0.8 | 1.0 | 1.2>.
 - Uploads left: <n>. The spending rule's budget of disagreeing scores left: <2> (ON_THE_DAY.md, "Spend the round's
   submissions by a rule written before the first score").
 - The final rule, written now: <default: StepM's pick from `arena.compare` over the verified candidates against A0
-  under the gate; between candidates within T of each other, the better stress worst, then the fewer changed settings.
-  Round 1 under a raw-PnL total: the best pnl among the verified ones that beat A0 under every gate mode, after asking>.
+  under the gate; between candidates within T of each other, the better stress worst, then the fewer changed settings>.
 
 ## Board
 At most six live candidates; each must differ in kind from the others (the loop's step 2). Every number comes from a

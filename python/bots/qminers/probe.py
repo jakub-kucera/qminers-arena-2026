@@ -25,7 +25,7 @@ Prosperity format, like python/bots/template.py: only ADAPTER (and PRODUCT, LIMI
 State lives in traderData. Standard library only, except what probe 10 tries to import.
 """
 
-from __future__ import annotations
+# no import of future annotations: the Arena's sandbox bans private modules, so forward references are quoted
 
 import json
 
@@ -226,6 +226,10 @@ def probe_mark(k, view, mem, act):
         act.buy(ask, 1, ioc=True)
     return "bought one lot and holds it from here: compare the platform's PnL with the mids in the SEEN lines"
 
+PROBES = {"state": probe_state, "resting": probe_resting, "self_trade": probe_self_trade, "fill_timing": probe_fill_timing,  # by name, not globals():
+          "cancel_filled": probe_cancel_filled, "limits": probe_limits, "queue": probe_queue, "own_impact": probe_own_impact,  # sandboxes
+          "markout": probe_markout, "mark": probe_mark, "prints": probe_prints}  # ban introspection
+
 
 # ------------------------------------------------------------------------------ RISKY PROBES
 # Last in the schedule, since each can end the run: importing numpy, pandas and scipy can take
@@ -274,10 +278,9 @@ def probe_time_limit(k, view, mem, act):
 
 if RISKY:
     SCHEDULE += [("imports", 1), ("exception", 3), ("time_limit", 4)]
+    PROBES.update(imports=probe_imports, exception=probe_exception, time_limit=probe_time_limit)
 # ------------------------------------------------------------------------------ END RISKY PROBES
 
-
-PROBES = {name: globals()[f"probe_{name}"] for name, _ in SCHEDULE}
 
 
 class Act:
@@ -345,7 +348,11 @@ class View:
         self.bids = [[p, v] for p, v in sorted(depth.buy_orders.items(), reverse=True)]
         self.asks = [[p, -v] for p, v in sorted(depth.sell_orders.items())]
         self.position = state.position.get(product, 0)
-        resting = sorted(getattr(state, "open_orders", {}).get(product, []), key=lambda o: (o.timestamp, o.id))
+        try:
+            listed = state.open_orders.get(product, [])
+        except AttributeError:  # IMC's TradingState has none (and the Arena's sandbox bans getattr)
+            listed = []
+        resting = sorted(listed, key=lambda o: (o.timestamp, o.id))
         self.open = [[o.id, o.price, o.quantity] for o in resting]
         own = state.own_trades.get(product, [])
         self.fills = [[t.price, t.quantity if t.buyer == US else -t.quantity] for t in own]

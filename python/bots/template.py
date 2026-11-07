@@ -18,7 +18,7 @@ rewrite ADAPTER and the datamodel import, and leave STRATEGY and EXECUTION alone
 Uses only the standard library so it runs wherever it is submitted.
 """
 
-from __future__ import annotations
+# no import of future annotations: the Arena's sandbox bans private modules, so forward references are quoted
 
 import json
 import math
@@ -234,7 +234,7 @@ class Book:
         self.bids = bids
         self.asks = asks
 
-    def copy(self) -> Book:
+    def copy(self) -> "Book":
         return Book([level[:] for level in self.bids], [level[:] for level in self.asks])
 
 

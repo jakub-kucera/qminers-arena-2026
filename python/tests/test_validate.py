@@ -106,6 +106,39 @@ def test_imports_and_environment_are_checked(check):
     assert code == 0
 
 
+def test_the_sandbox_bans_are_the_formats():
+    import ast
+
+    from arena.formats import qminers
+
+    source = textwrap.dedent(
+        """
+        from __future__ import annotations
+        import os.path
+        from simulator import BaseStrategy, Order
+
+        class Strategy(BaseStrategy):
+            def __init__(self):
+                super().__init__()
+                self.kind = type(self).__name__
+
+            def on_tick(self, state):
+                text = "{}".format(1) + f"{getattr(state, 'x', 0)}"
+                return eval("[]")
+        """
+    )
+    fails, warns = validate.sandbox_bans(ast.parse(source), qminers.SANDBOX)
+    text = " | ".join(fails)
+    for banned in ("import __future__ (a private module) (line 2)", "import os.path (line 3)", "type (line 9)", "getattr (line 12)",
+                   "the dunder attribute .__init__ (line 8)", "the dunder attribute .__name__ (line 9)", ".format (str.format"):
+        assert banned in text, banned
+    assert any("from simulator import BaseStrategy, Order" in w for w in warns)  # its public names aren't known yet
+    assert "eval (line 13)" in warns and "a method named __init__ (line 7)" in warns
+    fails, _ = validate.sandbox_bans(ast.parse(source), dict(qminers.SANDBOX, public={"simulator": {"BaseStrategy"}}))
+    assert "from simulator import Order (not public) (line 4)" in fails
+    assert validate.sandbox_bans(ast.parse(source), None) == ([], [])  # a format without a sandbox: nothing
+
+
 def test_state_outside_trader_data_warns(check):
     code, out = check(
         """

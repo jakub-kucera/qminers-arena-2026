@@ -37,7 +37,7 @@ Exits with 1 if any check fails.
 from __future__ import annotations
 
 import argparse
-from collections import Counter
+from collections import Counter, defaultdict
 import ast
 import re
 import gc
@@ -154,6 +154,14 @@ def static_checks(source: str, fmt, allow: set[str]) -> tuple[list[Check], bool]
         )
     else:
         checks.append(Check(PASS, f"imports: {', '.join(sorted(imported)) or 'none'}"))
+
+    fails, warns = sandbox_bans(tree, getattr(fmt, "SANDBOX", None))
+    if fails:
+        checks.append(Check(FAIL, "the sandbox rejects " + "; ".join(fails)))
+    elif getattr(fmt, "SANDBOX", None):
+        checks.append(Check(PASS, "nothing the sandbox bans"))
+    if warns:
+        checks.append(Check(WARN, "the sandbox may reject " + "; ".join(warns)))
 
     risky = _risky_uses(tree, imported)
     if risky:
@@ -451,6 +459,66 @@ def hash_seed_check(argv: list[str], digest: str, day: str) -> Check:
         return Check(PASS, f"same fills when {day} is replayed in other Python processes (PYTHONHASHSEED {', '.join(HASH_SEEDS)})")
     return Check(WARN, "fills differ between Python processes with other hash seeds: the bot depends on the order of a set of "
                  "strings (or something built from one), so a rerun by the organisers may not reproduce its result")
+
+
+SUSPECT_BUILTINS = {"eval", "exec", "compile", "globals", "locals", "vars", "setattr", "delattr", "hasattr", "input", "breakpoint"}
+
+
+def sandbox_bans(tree: ast.Module, sandbox: dict | None) -> tuple[list[str], list[str]]:
+    """What a format's sandbox rejects before the bot runs (its SANDBOX setting; nothing for a format without one), as
+    (fails, warns), each with its lines. Fails: an import of a banned module or a private one (a name starting with an
+    underscore, `__future__` included), a banned builtin used by name, a dunder attribute (`x.__class__`,
+    `super().__init__`) or name (`__name__`), `.format` (str.format; f-strings are fine), and a name imported from a
+    module whose public names are listed but not among them. Warns: a builtin a sandbox often bans too (SUSPECT_BUILTINS,
+    as the rules ban "among them"), a method named like `__init__` (whether defining one counts as a dunder attribute
+    is the starter's examples' to show), and names imported from a module whose public names aren't known yet."""
+    if not sandbox:
+        return [], []
+    fails, warns = defaultdict(list), defaultdict(list)
+    modules, builtins = sandbox.get("modules", set()), sandbox.get("builtins", set())
+    public = sandbox.get("public", {})
+    dunder = lambda name: len(name) > 4 and name.startswith("__") and name.endswith("__")
+
+    def module_ban(name: str, line: int) -> None:
+        if name.split(".")[0] in modules:
+            fails[f"import {name}"].append(line)
+        elif sandbox.get("private_modules") and any(part.startswith("_") for part in name.split(".")):
+            fails[f"import {name} (a private module)"].append(line)
+
+    for node in ast.walk(tree):
+        line = getattr(node, "lineno", 0)
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                module_ban(alias.name, line)
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            module_ban(node.module, line)
+            root = node.module.split(".")[0]
+            if root in public:
+                names = [alias.name for alias in node.names]
+                if public[root] is None:
+                    warns[f"from {node.module} import {', '.join(names)} (only its public models and base class are allowed)"].append(line)
+                else:
+                    for name in names:
+                        if name not in public[root]:
+                            fails[f"from {node.module} import {name} (not public)"].append(line)
+        elif isinstance(node, ast.Name):
+            if node.id in builtins:
+                fails[f"{node.id}"].append(line)
+            elif node.id in SUSPECT_BUILTINS:
+                warns[f"{node.id}"].append(line)
+            elif sandbox.get("dunders") and dunder(node.id):
+                fails[f"the dunder name {node.id}"].append(line)
+        elif isinstance(node, ast.Attribute):
+            if sandbox.get("dunders") and dunder(node.attr):
+                fails[f"the dunder attribute .{node.attr}"].append(line)
+            elif sandbox.get("str_format") and node.attr == "format":
+                fails[".format (str.format; an f-string instead)"].append(line)
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and sandbox.get("dunders") and dunder(node.name):
+            warns[f"a method named {node.name}"].append(line)
+
+    def listed(found: dict) -> list[str]:
+        return [f"{what} (line{'s' if len(lines) > 1 else ''} {', '.join(map(str, sorted(set(lines))))})" for what, lines in found.items()]
+    return listed(fails), listed(warns)
 
 
 def _imported_modules(tree: ast.Module) -> set[str]:

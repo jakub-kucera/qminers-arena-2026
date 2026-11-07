@@ -15,11 +15,13 @@ ON_THE_DAY.md, "The format swap, step by step", is the checklist. The Rust twin,
 rust/twins.json row (the checklist's step 10; no row until the ADAPTER is real).
 """
 
-from __future__ import annotations
+# no import of future annotations: the Arena's sandbox bans private modules, so forward references are quoted
 
 import math
-import traceback
 from statistics import NormalDist
+
+from simulator.models import OrderBookSnapshot, OrderRequest, OrderStatus, OrderType, PrivateOrderEvent, Side, Trade
+from simulator.strategy import BaseStrategy
 
 # The backtester sets this to True so bugs raise instead of being swallowed.
 STRICT = False
@@ -171,7 +173,7 @@ class Book:
         self.bids = bids
         self.asks = asks
 
-    def copy(self) -> Book:
+    def copy(self) -> "Book":
         return Book([level[:] for level in self.bids], [level[:] for level in self.asks])
 
 
@@ -945,106 +947,125 @@ def went(memory: dict, cancels: list, new: list[tuple[int, int, bool]], delay: i
 
 
 # ------------------------------------------------------------------------------ ADAPTER
-# TODO(day): the Arena's API. Each function's body raises until it is written for their API; the drill's
-# (python/bots/drill/template.py) is in the comment as a model. `api` is whatever their entry hands the bot.
+# The Arena's API (references/qminers-algo-arena, README "Writing a strategy" and "How the exchange works"): one
+# instrument, prices in whole ticks, a call after every market event with the public book (each order, ours marked
+# "user") and the trades since the last call, and a call on every change of one of our orders. Orders, cancels and
+# modifies take effect 5 ms after they are sent, so what is on its way is known exactly: sent and not yet accepted,
+# or cancelled and not yet gone. DELAY and ORDERS_REST are not used: the orders' own states say it.
+
+PRODUCT = "ASSET"  # the instrument's name in PARAMS
+LIMIT = 100  # MAX_POSITION: every second above it costs 10,000 (above 1,000 an order is rejected)
+SESSION_US = 3_600_000_000  # a round's hour, mapped onto the template's clock of 0..999,900
 
 
-def to_ticks(api, symbol: str, price: float) -> int:
-    """Their price as whole ticks of the product."""
-    # drill: return round(price / api.tick_size(symbol))
-    raise NotImplementedError("TODO(day): to_ticks for the Arena's API")
+def read_book(snapshot: OrderBookSnapshot) -> Book:
+    """The market's book in ticks, best first, volumes positive, our own orders left out."""
+    bids: dict[int, int] = {}
+    asks: dict[int, int] = {}
+    for orders, levels in ((snapshot.bids, bids), (snapshot.asks, asks)):
+        for order in orders:
+            if order.owner == "market":
+                levels[order.price] = levels.get(order.price, 0) + order.quantity
+    return Book([[price, size] for price, size in sorted(bids.items(), reverse=True)], [[price, size] for price, size in sorted(asks.items())])
 
 
-def to_price(api, symbol: str, ticks: int) -> float:
-    """Whole ticks back as the price their API takes."""
-    # drill: return round(ticks * api.tick_size(symbol), 10)
-    raise NotImplementedError("TODO(day): to_price for the Arena's API")
+def params_for(product: str) -> dict | None:
+    """DEFAULTS and the product's PARAMS, or None if PARAMS doesn't list it; the limit is at most LIMIT."""
+    if product not in PARAMS:
+        return None
+    unknown = set(PARAMS[product]) - set(DEFAULTS)
+    if unknown:
+        raise ValueError(f"unknown params for {product}: {', '.join(sorted(unknown))}")
+    return {**DEFAULTS, **PARAMS[product], "limit": min(PARAMS[product].get("limit", LIMIT), LIMIT)}
 
 
-def read_book(api, symbol: str) -> Book | None:
-    """The product's book in ticks, best first, volumes positive; None if it has none this step."""
-    # drill: book = api.book(symbol); None if book is None, else
-    #        Book([[to_ticks(api, symbol, l.price), l.size] for l in book.bids], [... book.asks])
-    raise NotImplementedError("TODO(day): read_book for the Arena's API")
+def read_trades(trades: list[Trade]) -> dict[str, list[tuple[str, str, int, int]]]:
+    """The other traders' trades since the last call as (buyer, seller, quantity, price in ticks); ours are fills."""
+    return {PRODUCT: [("", "", trade.quantity, trade.price) for trade in trades if trade.taker_owner == "market" and trade.maker_owner == "market"]}
 
 
-def params_for(api, product: str) -> dict | None:
-    """DEFAULTS and the product's PARAMS, or None for a product PARAMS doesn't list. The limit is the smaller
-    of PARAMS' and the exchange's (the mock round's lesson: a limit below the exchange's is a choice, one
-    above it is rejected orders)."""
-    # drill: if product not in PARAMS: return None; reject unknown keys;
-    #        return {**DEFAULTS, **PARAMS[product], "limit": api.max_position(product)}
-    # here:  "limit": min(PARAMS[product].get("limit", <the exchange's limit>), <the exchange's limit>)
-    #        (not DEFAULTS["limit"]: a placeholder of 50 would cap a larger limit, the 2026-11-03 rehearsal's QUILL at 60)
-    raise NotImplementedError("TODO(day): params_for for the Arena's API")
+def within_limit(new: list[tuple[int, int, bool]], position: int, limit: int, orders) -> list[tuple[int, int, bool]]:
+    """The new orders cut so that, if every order of ours that can still fill does (resting, on its way, and those
+    whose cancel is on its way, this call's included), the position stays within the limit. A cancel takes 5 ms, and
+    the order can fill before it lands (the cancel is then rejected), so the plan's room, which counts a cancelled
+    order as gone, would let a replacement and the order it replaces both fill: on the sample, quoting the full room
+    went to 140 lots and 10.1 million of penalty. A moved quote waits for its cancel instead."""
+    room = {True: limit - position, False: limit + position}  # buying: lots that may still be bought
+    for order in orders:
+        room[order[1] > 0] -= abs(order[1])
+    kept = []
+    for price, quantity, ioc in new:  # takes first, as execute lists them
+        size = min(abs(quantity), max(0, room[quantity > 0]))
+        if size:
+            room[quantity > 0] -= size
+            kept.append((price, size if quantity > 0 else -size, ioc))
+    return kept
 
 
-def read_trades(api) -> dict[str, list[tuple[str, str, int, int]]]:
-    """Trades this step as (buyer, seller, quantity, price in ticks), by product; empty names if they give none."""
-    # drill: {s: [("", "", t.size, to_ticks(api, s, t.price)) for t in api.trades(s)] for s in api.symbols()}
-    raise NotImplementedError("TODO(day): read_trades for the Arena's API")
-
-
-def read_fills(api, fills) -> dict[str, list[tuple[float, int]]]:
-    """Our fills since the last step, by product, as (price in ticks, signed quantity)."""
-    # drill: for f in fills: out.setdefault(f.symbol, []).append((to_ticks(api, f.symbol, f.price), f.size))
-    raise NotImplementedError("TODO(day): read_fills for the Arena's API")
-
-
-def read_resting(api, product: str) -> list[tuple[str, int, int]]:
-    """The product's resting orders as (id, price in ticks, signed quantity), oldest first; [] where orders don't rest."""
-    # drill: [(o.order_id, to_ticks(api, product, o.price), o.size) for o in api.orders(product)]
-    raise NotImplementedError("TODO(day): read_resting for the Arena's API")
-
-
-def _depends(p: dict) -> bool:
-    return p.get("follow") is not None or bool(p.get("hedge"))
-
-
-class Bot:  # TODO(day): their entry class and method (qminers.ENTRY)
+class ArenaBot(BaseStrategy):
     def __init__(self):
+        super().__init__()
         self.memory: dict = {}  # the instance lives all session, so state stays on it
+        self.position = 0
+        self.orders: dict[str, list] = {}  # id -> [price, signed quantity left, ioc, state: "sent", "live" or "cancelling"]
+        self.fills: list[tuple[float, int]] = []  # ours since the last book call, (price, signed quantity)
 
-    def on_tick(self, api) -> None:
-        books = {}
-        for symbol in api.symbols():
-            book = read_book(api, symbol)
-            if book is not None:
-                books[symbol] = book
-        # TODO(day): each api.* call below is the drill's; their time mapped onto 0..999,900 in steps of 100
-        market = Market(books, read_trades(api), read_fills(api, api.fills()), api.time)
-        # Products that follow or hedge another go last, so they see its plan.
-        products = sorted(market.books, key=lambda product: _depends(PARAMS.get(product, {})))
-        for product in products:
-            # Each product is isolated, so a bug in one doesn't stop the others trading.
-            try:
-                p = params_for(api, product)
-                if p is None:
-                    continue
-                mine = self.memory.setdefault(product, {})
-                sent, resting, cancelling = on_the_way(mine, read_resting(api, product))
-                plan = trade_product(product, market.books[product], api.position(product), p, mine, market, sent, cancelling)
-                market.plans[product] = plan
-                cancels, new = execute(plan, resting, sent=sent, topup_min=TOPUP_MIN)  # TODO(day): max_resting=<their cap> if their exchange caps orders working a product
-                went(mine, cancels, new, DELAY, ORDERS_REST)
-                for order_id in cancels:
-                    api.cancel(order_id)
-                for price, quantity, ioc in new:
-                    send = api.buy if quantity > 0 else api.sell
-                    send(product, to_price(api, product, int(price)), abs(int(quantity)), ioc=ioc)
-            except Exception:
-                if STRICT:
-                    raise
-                # Each error once while it repeats: a product broken all day would otherwise print
-                # a traceback every tick, and a platform may cap or slow down on that much output.
-                error = traceback.format_exc()
-                last = self.memory.setdefault("errors", {})
-                if last.get(product) != error.splitlines()[-1]:
-                    last[product] = error.splitlines()[-1]
-                    print(f"{api.time} {product}: {error}")
-                # Don't leave stale quotes resting while this product is broken.
-                try:
-                    for order in api.orders(product):
-                        api.cancel(order.order_id)
-                except Exception:
-                    pass
+    def on_private_order_update(self, event: PrivateOrderEvent) -> None:
+        order = self.orders.get(event.order_id)
+        if order is None:
+            return
+        sign = 1 if order[1] > 0 else -1
+        if event.status == OrderStatus.ACCEPTED:
+            if order[3] == "sent":
+                order[3] = "live"
+        elif event.status == OrderStatus.PARTIALLY_FILLED or event.status == OrderStatus.FILLED:
+            self.position += sign * event.filled_quantity
+            self.fills.append((event.fill_price, sign * event.filled_quantity))
+            order[1] = sign * event.remaining_quantity
+            if event.status == OrderStatus.FILLED or event.remaining_quantity == 0:
+                del self.orders[event.order_id]
+        elif event.status == OrderStatus.MODIFIED:
+            order[1] = sign * event.remaining_quantity
+        else:  # CANCELED (ours, an IOC's residual, or the market's) or REJECTED
+            del self.orders[event.order_id]
+
+    def on_order_book_change(self, snapshot: OrderBookSnapshot, trades: list[Trade]) -> None:
+        try:
+            p = params_for(PRODUCT)
+            if p is None:
+                return
+            book = read_book(snapshot)
+            clock = min(999_900, snapshot.timestamp_us * 1_000_000 // SESSION_US // 100 * 100)
+            market = Market({PRODUCT: book}, read_trades(trades), {PRODUCT: self.fills}, clock)
+            self.fills = []
+            mine = self.memory.setdefault(PRODUCT, {})
+            sent = [(o[0], o[1], o[2]) for o in self.orders.values() if o[3] == "sent"]
+            resting = [(order_id, o[0], o[1]) for order_id, o in self.orders.items() if o[3] == "live" and not o[2]]
+            cancelling = [(order_id, o[0], o[1]) for order_id, o in self.orders.items() if o[3] == "cancelling"]
+            plan = trade_product(PRODUCT, book, self.position, p, mine, market, sent, cancelling)
+            market.plans[PRODUCT] = plan
+            cancels, new = execute(plan, resting, sent=sent, topup_min=TOPUP_MIN)
+            for order_id in cancels:
+                self.cancel_order(order_id)
+                self.orders[order_id][3] = "cancelling"
+            for price, quantity, ioc in within_limit(new, self.position, p["limit"], self.orders.values()):
+                side = Side.BUY if quantity > 0 else Side.SELL
+                kind = OrderType.IOC if ioc else OrderType.LIMIT
+                order_id = self.send_order(OrderRequest(side=side, price=int(price), quantity=abs(int(quantity)), order_type=kind))
+                self.orders[order_id] = [int(price), int(quantity), ioc, "sent"]
+        except Exception as error:
+            if STRICT:
+                raise
+            # Each error once while it repeats: one broken all session would otherwise print on every event.
+            last = self.memory.setdefault("errors", {})
+            if last.get(PRODUCT) != repr(error):
+                last[PRODUCT] = repr(error)
+                print(f"{snapshot.timestamp_us} {PRODUCT}: {error!r}")
+            # Don't leave stale quotes resting while the bot is broken.
+            for order_id, order in list(self.orders.items()):
+                if order[3] == "live":
+                    try:
+                        self.cancel_order(order_id)
+                        order[3] = "cancelling"
+                    except Exception:
+                        pass
