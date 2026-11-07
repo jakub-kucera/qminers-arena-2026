@@ -1,0 +1,147 @@
+{
+  "created_utc": "2026-11-07T14:08:21Z",
+  "git_head": "22bd1f097c335b9aa2a9c8f8fda342c6bf17faa8",
+  "upstream_main": "77d6ea1e5d0efdb794e836e73c797e3d4e14032c",
+  "baseline_file": "strategies\\round1_submission.py",
+  "baseline_sha256": "a3931f72ec906b538c8b8844a10d111a2188e843b222b5587886b09ef7e03751",
+  "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+  "prefix_sha256": "62c77f074eafb168f27e177f2ce9886f71675f53b9672d791827667eafc2f12f",
+  "transfer_sha256": "dd4e00e281abe50c9a19e16c147ccbc0b5b69835fee567f00136402ef1e01d08",
+  "engine_sha256": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+  "sources": {
+    "original_554347": {
+      "source": "logs\\robust_augmentation\\sources\\original_554347.py",
+      "sha256": "a3931f72ec906b538c8b8844a10d111a2188e843b222b5587886b09ef7e03751",
+      "feature_count": 15
+    },
+    "clean_554347": {
+      "source": "logs\\robust_augmentation\\sources\\clean_554347.py",
+      "sha256": "c0a453d0160e7ed4ddf0eb364dade1b5509be4c82d839d950b58f0bea97b643d",
+      "feature_count": 15
+    },
+    "depth_square": {
+      "source": "logs\\robust_augmentation\\sources\\depth_square.py",
+      "sha256": "319559092b089577b0e1114b0891772769300490311d6cf35b048fa82b4d2f2d",
+      "feature_count": 16
+    },
+    "touch_concentration": {
+      "source": "logs\\robust_augmentation\\sources\\touch_concentration.py",
+      "sha256": "f6ce728de020dd475ec8b1d82fca9e964771b21215e69b895cf554b35d79ead7",
+      "feature_count": 17
+    },
+    "size_mix": {
+      "source": "logs\\robust_augmentation\\sources\\size_mix.py",
+      "sha256": "8103d1515f6ea5347de25bc33628ec2bce449b67a13d4df3d1ae07379881fa3b",
+      "feature_count": 17
+    },
+    "disagreement": {
+      "source": "logs\\robust_augmentation\\sources\\disagreement.py",
+      "sha256": "3b174c3b0abea5c3f01793bb55f5b259d8bd8c895d0c8f532168d5995ad4ed46",
+      "feature_count": 17
+    },
+    "spread_pressure": {
+      "source": "logs\\robust_augmentation\\sources\\spread_pressure.py",
+      "sha256": "62cd982f3eb57d4c8d29f9ab934e4700d06941169ad00de2f6b0d0590a98085e",
+      "feature_count": 17
+    },
+    "memory_240s": {
+      "source": "logs\\robust_augmentation\\sources\\memory_240s.py",
+      "sha256": "ac6a3c4bed0fd175eaba3361d4f2ec1d75b2538e6e22394c833f67b0e658ced1",
+      "feature_count": 15
+    },
+    "memory_360s": {
+      "source": "logs\\robust_augmentation\\sources\\memory_360s.py",
+      "sha256": "58efe08069eae9a47e8ae9d795608ee37505ec8a711ff14a189269b797990bed",
+      "feature_count": 15
+    },
+    "ridge_075": {
+      "source": "logs\\robust_augmentation\\sources\\ridge_075.py",
+      "sha256": "7b8abd2c834d41b19a14c286c7aa571c1d6e103607f2abb12c02ec0e6c7fe55b",
+      "feature_count": 15
+    },
+    "ridge_150": {
+      "source": "logs\\robust_augmentation\\sources\\ridge_150.py",
+      "sha256": "557b3e1e3ec03592ee863eda586615d020eac26627a2b4fceff39c15f30aba1c",
+      "feature_count": 15
+    },
+    "horizon_80ms": {
+      "source": "logs\\robust_augmentation\\sources\\horizon_80ms.py",
+      "sha256": "2194b02693ec15e11931b6d15e5edecb5ac0b13434ae60c8056a2185752c2b5b",
+      "feature_count": 15
+    },
+    "horizon_120ms": {
+      "source": "logs\\robust_augmentation\\sources\\horizon_120ms.py",
+      "sha256": "d00186c508864b707b9b9948415b10e563a52a18bdd3b5e4c8c07f1a21dc3e7c",
+      "feature_count": 15
+    }
+  },
+  "features": {
+    "depth_square": [
+      [
+        "depth_imbalance*abs(depth_imbalance)"
+      ],
+      "Transfer the previously useful signed depth nonlinearity."
+    ],
+    "touch_concentration": [
+      [
+        "br/max(1,bd_r)-ar/max(1,ad_r)",
+        "bn/max(1,bd_n)-an/max(1,ad_n)"
+      ],
+      "Asymmetry in the fraction of near-depth liquidity at the touch."
+    ],
+    "size_mix": [
+      [
+        "(br*an-ar*bn)/max(1,br*an+ar*bn)",
+        "(bq*an-aq*bn)/max(1,bq*an+aq*bn)"
+      ],
+      "Capped and raw mean order-size asymmetries, separate from order counts."
+    ],
+    "disagreement": [
+      [
+        "robust_imbalance*abs(robust_imbalance-depth_imbalance)",
+        "count_imbalance*abs(count_imbalance-depth_count)"
+      ],
+      "Nonlinear touch pressure conditional on disagreement with nearby depth."
+    ],
+    "spread_pressure": [
+      [
+        "min(4,spread)*robust_imbalance",
+        "min(4,spread)*count_imbalance"
+      ],
+      "Spread-conditioned robust volume/count pressure; four-tick saturation."
+    ]
+  },
+  "parameters": {
+    "memory_240s": [
+      "MODEL_MEMORY_US = 300000000",
+      "MODEL_MEMORY_US = 240000000"
+    ],
+    "memory_360s": [
+      "MODEL_MEMORY_US = 300000000",
+      "MODEL_MEMORY_US = 360000000"
+    ],
+    "ridge_075": [
+      "0.001 * self._mass",
+      "0.00075 * self._mass"
+    ],
+    "ridge_150": [
+      "0.001 * self._mass",
+      "0.0015 * self._mass"
+    ],
+    "horizon_80ms": [
+      "HORIZON_US = 100000",
+      "HORIZON_US = 80000"
+    ],
+    "horizon_120ms": [
+      "HORIZON_US = 100000",
+      "HORIZON_US = 120000"
+    ]
+  },
+  "trial_count": 11,
+  "screen": "Warm every model from tape start through the existing 6000-second prefix. Use exact in-engine marks every 300 seconds and end at 5990 seconds, before prefix EOF order draining. Compare each candidate with clean_554347 in twenty paired blocks, first ten ending at 3000 seconds. Require positive PnL gain in both halves, >=0.5% total gain, >=12/20 positive paired blocks, zero penalty and actual/potential exposure <=100. Also require a positive one-sided 95% simultaneous max-T lower bound across all eleven variants. Use 20000 circular paired-block bootstrap draws, block length two (10 minutes), resampling within each half after centering each candidate within that half, seed 2026110702. This is a conditional selection diagnostic on consumed data, not a validated probability of generalization.",
+  "freeze": "Choose at most one eligible candidate by highest simultaneous lower bound; tie-break with fewer features, then name. Freeze its source before full round1/transfer/stress evaluation. Do not combine successful changes, retune rejected candidates, or choose a runner-up after confirmation failure.",
+  "confirmation": "Require gains in both 5990-9000 and 9000-end; full gain >=0.5%; sample_v2 and 20/50ms stress PnL each >=99% of the corresponding baseline; one-second drawdown at normal latency <=125% of baseline; zero penalties, actual/potential exposure <=100 in every replay. Otherwise retain the baseline and label candidates experimental.",
+  "fallback": "If no candidate clears screening, retain the cleanup baseline; run a single frozen best-lower-bound candidate through confirmation as an explicit diagnostic only. It cannot be promoted after failing screening.",
+  "constraints": "No additional order-book scan, no stateful feature fitting, no absolute price/time features. Execution, position limits, inside-quote threshold and private-event cache rules remain unchanged. New features are bounded, price-translation invariant and reverse sign when sides swap.",
+  "limitation": "No fresh tape was found. All round1/sample_v2 outcomes were previously consumed."
+}

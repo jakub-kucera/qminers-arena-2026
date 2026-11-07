@@ -1,0 +1,80 @@
+{
+  "created_utc": "2026-11-07T14:21:01Z",
+  "promoted": false,
+  "candidate": "spread_pressure",
+  "recommended": "clean_554347",
+  "checks": {
+    "screen_passed": false,
+    "later_period_1_gain": false,
+    "later_period_2_gain": false,
+    "full_gain_at_least_half_percent": false,
+    "transfer_loss_at_most_one_percent": true,
+    "latency20_loss_at_most_one_percent": true,
+    "latency50_loss_at_most_one_percent": true,
+    "normal_latency_drawdown_within_125_percent": true,
+    "all_risk_invariants": true
+  },
+  "baseline_pnl": 554347.0,
+  "candidate_pnl": 555421.0,
+  "gain": 1074.0,
+  "gain_percent": 0.19374146518335988,
+  "periods": [
+    {
+      "period": "Screen, first 50 minutes",
+      "baseline": 130119.0,
+      "candidate": 132070.0,
+      "gain": 1951.0
+    },
+    {
+      "period": "Screen, next 49m 50s",
+      "baseline": 143116.0,
+      "candidate": 143591.0,
+      "gain": 475.0
+    },
+    {
+      "period": "Confirmation, to 150 minutes",
+      "baseline": 144590.0,
+      "candidate": 143894.0,
+      "gain": -696.0
+    },
+    {
+      "period": "Confirmation, final 50 minutes",
+      "baseline": 136522.0,
+      "candidate": 135866.0,
+      "gain": -656.0
+    }
+  ],
+  "baseline_drawdown": 834.0,
+  "candidate_drawdown": 752.0,
+  "sample_v2": {
+    "baseline": 272830.0,
+    "candidate": 272786.0
+  },
+  "stress": [
+    {
+      "delay_ms": 20,
+      "baseline": 462925.0,
+      "candidate": 463168.0,
+      "baseline_drawdown": 988.0,
+      "candidate_drawdown": 988.0
+    },
+    {
+      "delay_ms": 50,
+      "baseline": 326485.0,
+      "candidate": 328214.0,
+      "baseline_drawdown": 1212.0,
+      "candidate_drawdown": 1212.0
+    }
+  ],
+  "recommended_source": {
+    "source": "logs\\robust_augmentation\\sources\\clean_554347.py",
+    "sha256": "c0a453d0160e7ed4ddf0eb364dade1b5509be4c82d839d950b58f0bea97b643d",
+    "feature_count": 15
+  },
+  "limitation": "Previously consumed public tapes; no independent holdout or new website score.",
+  "export_file": "strategies\\round1_robust_candidate.py",
+  "export_sha256": "c0a453d0160e7ed4ddf0eb364dade1b5509be4c82d839d950b58f0bea97b643d",
+  "experimental_export_file": "strategies\\round1_spread_pressure_experimental.py",
+  "experimental_export_sha256": "15e226382630e7280cf30e50be2d6d0434e46062590f777c2f5fb1be54cea2a7",
+  "experimental_frozen_source_sha256": "62cd982f3eb57d4c8d29f9ab934e4700d06941169ad00de2f6b0d0590a98085e"
+}

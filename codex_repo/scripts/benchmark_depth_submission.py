@@ -1,5 +1,6 @@
 """Measure the exact exported file with the unmodified competition engine."""
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import time
@@ -32,6 +33,7 @@ def main():
               'peak_working_set_bytes': peak_rss_bytes(),
               'source_bytes': a.strategy.stat().st_size,
               'source_sha256': digest(a.strategy), 'data_sha256': digest(a.data),
+              'curve_sha256': hashlib.sha256(json.dumps(engine.pnl_curve(result.pnl)).encode()).hexdigest(),
               'engine_sha256': digest('simulator/simulator.py'),
               'config': config.model_dump(mode='json')}
     a.output.parent.mkdir(parents=True, exist_ok=True)

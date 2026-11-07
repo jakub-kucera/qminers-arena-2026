@@ -10,6 +10,39 @@ These later scores use repeated tuning on the supplied file; no fresh
 independent holdout remains. The new submission has not been scored by the
 competition server.
 
+## Latest bounded augmentation study
+
+The 554,347 submission was independently reproduced after merging main commit
+`77d6ea1`. A frozen experiment tested five cheap feature additions and six small
+memory/ridge/horizon adjustments, while preserving its execution and risk rules.
+None passed every predeclared screening gate, so the verified baseline remains
+the recommendation. `strategies/round1_robust_candidate.py` is the cleaned
+baseline: its complete PnL curve and official result match the original exactly.
+
+Spread-scaled robust volume/count pressure was the most promising feature:
++2,426 PnL through exactly 5,990 seconds, positive in both halves and 16/20
+five-minute blocks. Its simultaneous one-sided 95% bootstrap lower bound across
+all eleven trials was -335, so it was not promoted. The 120 ms horizon had a
+slightly larger screening gain but less consistent block results. Changes to
+memory or ridge produced only small, inconsistent gains. The experiment keeps
+the baseline's 100 ms horizon, 300-second memory and 0.001 ridge coefficient.
+
+The spread-pressure candidate remains separately available as
+`strategies/round1_spread_pressure_experimental.py`. Its later-period, transfer
+and latency results are diagnostic only and cannot override the failed screen.
+It scored 555,421 over the full round (+0.19%), but lost 696 and 656 relative to
+the baseline in the two later periods; sample_v2 fell by 44. Its sampled
+drawdown improved from 834 to 752. The small total gain did not justify a
+replacement under the frozen rules.
+Both public tapes were already consumed; the bootstrap does not account for all
+historical searches or establish performance on new data. No website upload was
+made. Twenty-three replays and sixty repository tests completed, including feature invariance, causal labels,
+bootstrap properties and asynchronous execution accounting.
+
+See the [complete augmentation report](research/robust_augmentation_20261107/report.html),
+[all frozen trials and reproduction notes](research/robust_augmentation_20261107/README.txt),
+and [decision evidence](research/robust_augmentation_20261107/summary.json).
+
 ## Earlier Codex depth experiment (534,941)
 
 **Preserved depth experiment: `strategies/round1_depth_advantage.py`.** Verified
