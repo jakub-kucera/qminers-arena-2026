@@ -466,3 +466,11 @@ five-feature module description; its actual feature count is eight.
 Research code, strategy milestones, tests and result manifests are versioned
 in Git. Raw competition data, detailed replay logs and the local environment
 remain excluded by `.gitignore`.
+
+The subsequent robust-depth candidate is preserved independently as
+`strategies/round1_depth_524k.py`, with audited PnL **523,999**, zero penalty,
+and maximum actual/potential inventory 100 / 100. Its thirteen features include
+order-count imbalance, per-order quantities capped at 100 lots, and liquidity
+within two ticks of each touch. This extends the eight-feature 498,056 model;
+it does not replace that archived source. Full metrics and source/input hashes
+are tracked in `results/round1_523999.json`. It also uses already consumed data.

@@ -1,0 +1,161 @@
+{
+  "name": "depth_all",
+  "parameters": {
+    "mode": "all",
+    "order_volume_cap": 100,
+    "dimensions": 13,
+    "sha256": "d1bd047d4c9d924f67dc3873587f66eca0939f87ee12cc99953672b3da2300fe"
+  },
+  "result": {
+    "result": {
+      "fills": 22280,
+      "traded_volume": 2204428,
+      "inventory": 100,
+      "cash": -478901.0,
+      "mark_price": 10029.0,
+      "breach_penalty": 0.0,
+      "pnl": 523999.0,
+      "pnl_se": 10844.473701390185,
+      "abs_inventory_q50": 92,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 258.6703324581031,
+    "max_abs_inventory": 100,
+    "max_potential_inventory_at_submission": 100,
+    "max_drawdown_1s": 798.0,
+    "submissions": 63935,
+    "order_status_counts": {
+      "accepted": 63935,
+      "partially_filled": 18677,
+      "canceled": 47029,
+      "filled": 16905,
+      "rejected": 114
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 600.0,
+        "pnl_increment": 25798.0
+      },
+      {
+        "start_s": 600.0,
+        "end_s": 1200.0,
+        "pnl_increment": 23566.0
+      },
+      {
+        "start_s": 1200.0,
+        "end_s": 1800.0,
+        "pnl_increment": 23545.0
+      },
+      {
+        "start_s": 1800.0,
+        "end_s": 2400.0,
+        "pnl_increment": 25713.0
+      },
+      {
+        "start_s": 2400.0,
+        "end_s": 3000.0,
+        "pnl_increment": 23465.0
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 3600.0,
+        "pnl_increment": 30127.0
+      },
+      {
+        "start_s": 3600.0,
+        "end_s": 4200.0,
+        "pnl_increment": 24504.0
+      },
+      {
+        "start_s": 4200.0,
+        "end_s": 4800.0,
+        "pnl_increment": 25897.0
+      },
+      {
+        "start_s": 4800.0,
+        "end_s": 5400.0,
+        "pnl_increment": 27477.0
+      },
+      {
+        "start_s": 5400.0,
+        "end_s": 6000.0,
+        "pnl_increment": 25390.0
+      },
+      {
+        "start_s": 6000.0,
+        "end_s": 6600.0,
+        "pnl_increment": 28128.0
+      },
+      {
+        "start_s": 6600.0,
+        "end_s": 7200.0,
+        "pnl_increment": 27682.0
+      },
+      {
+        "start_s": 7200.0,
+        "end_s": 7800.0,
+        "pnl_increment": 25308.0
+      },
+      {
+        "start_s": 7800.0,
+        "end_s": 8400.0,
+        "pnl_increment": 29002.0
+      },
+      {
+        "start_s": 8400.0,
+        "end_s": 9000.0,
+        "pnl_increment": 27382.0
+      },
+      {
+        "start_s": 9000.0,
+        "end_s": 9600.0,
+        "pnl_increment": 26227.0
+      },
+      {
+        "start_s": 9600.0,
+        "end_s": 10200.0,
+        "pnl_increment": 25691.0
+      },
+      {
+        "start_s": 10200.0,
+        "end_s": 10800.0,
+        "pnl_increment": 28299.0
+      },
+      {
+        "start_s": 10800.0,
+        "end_s": 11400.0,
+        "pnl_increment": 26123.0
+      },
+      {
+        "start_s": 11400.0,
+        "end_s": 11999.990364,
+        "pnl_increment": 24675.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "source": "logs/round1/depth_model/sources/depth_all.py",
+    "source_sha256": "d1bd047d4c9d924f67dc3873587f66eca0939f87ee12cc99953672b3da2300fe"
+  },
+  "limitation": "Further tuning on already evaluated round-1 data.",
+  "file": "strategies/round1_depth_524k.py",
+  "source_sha256": "d1bd047d4c9d924f67dc3873587f66eca0939f87ee12cc99953672b3da2300fe",
+  "data_file": "data/round1.csv",
+  "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+  "verification": "Audited full replay; separate unmodified CLI verification pending."
+}

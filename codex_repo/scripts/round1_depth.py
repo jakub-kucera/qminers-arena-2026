@@ -12,7 +12,7 @@ def main():
     ROOT.mkdir(parents=True,exist_ok=True);(ROOT/'sources').mkdir(exist_ok=True)
     if (ROOT/'screening.json').exists():raise SystemExit('Results already exist')
     search_queue.ROOT=ROOT
-    base=Path('logs/round1/nonlinear/sources/nonlinear_8_0.001_100000.py').read_text()
+    base=Path('strategies/round1_nonlinear_498k.py').read_text()
     specs={}
     for mode in ('touch','depth','all','replace50','replace100'):
         n='depth_'+mode
