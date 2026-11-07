@@ -1,0 +1,17 @@
+[package]
+name = "arena_rs"
+version = "0.1.0"
+edition = "2021"
+description = "The Rust twins of python/: the engine, arena.sim's market, the grid's statistics, the Prosperity loader and the bots, laid out as python/ is (see README.md)"
+publish = false
+
+[dependencies]
+
+[[bin]]
+name = "arena-rs"
+path = "src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1

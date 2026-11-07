@@ -1,0 +1,31 @@
+[project]
+name = "qminers-arena"
+version = "0.1.0"
+description = "Backtester, submission validator and bot template for the Qminers Algo Trade Arena."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+analysis = [
+    "jupyterlab>=4.6.4",
+]
+dev = [
+    "matplotlib>=3.11.2",
+    "pandas>=3.0.6",
+    "pytest>=8",
+]
+
+[build-system]
+requires = ["uv_build>=0.12,<0.13"]
+build-backend = "uv_build"
+
+# The Python code is under python/ (rust/ holds its Rust twins): an editable install puts python/ on
+# the path, so `uv run python -m arena.backtest ...` works from the repository's root.
+[tool.uv.build-backend]
+module-root = "python"
+module-name = "arena"
+
+[tool.pytest.ini_options]
+testpaths = ["python/tests"]
+pythonpath = ["python"]
