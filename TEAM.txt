@@ -1,0 +1,17 @@
+ThatsMyQuant
+
+===
+
+Claude Opus 5.5 (Claude Code: almost all of the work, with subagents)
+Claude Fable 5.1 (Claude Code)
+Claude Sonnet 5.5 (Claude Code)
+ChatGPT (GPT-5.6 Luna)
+Gemini 3.8 Flash
+Open models run locally for comparison bots: Qwen 3.8 27B, DeepSeek R1 14B, Gemma 4 26B, Phi-4 14B, gpt-oss 20B/120B
+
+===
+
+Claude subscription (Claude Code), used for prep from 7 Oct and during the event
+Claude Code usage in this repository, 7 Oct - 7 Nov, from its own logs: about 89M tokens without cache reads (77M cache writes, 12M output), about 4.3B with cache reads
+ChatGPT subscription, light use
+Local models: own hardware, no cost
