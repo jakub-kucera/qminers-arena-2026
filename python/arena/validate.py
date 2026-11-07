@@ -31,6 +31,11 @@ an exchange bug) declares it with a module-level GRAY_AREA = "<what it does>": i
 backtested, but validate FAILs it with that reason in capitals, so it can't be uploaded by
 accident. Only --allow-gray-area, after an organiser has said it is allowed, turns that into a WARN.
 
+A format with no loader (`REPLAY = False`: `--format qminers`, whose bots run on the Arena's own
+simulator) gets the file and static checks only, without --data, and a pointer to its replay:
+
+    uv run python -m arena.validate python/bots/qminers/template.py all --format qminers --max-size 1MiB
+
 Exits with 1 if any check fails.
 """
 
@@ -56,6 +61,7 @@ from arena import report
 from arena.botfile import OverrideError
 from arena.cli import Setup, add_common_arguments, setup
 from arena.engine import run_day
+from arena.formats import FORMATS
 
 PASS, WARN, FAIL, INFO = "PASS", "WARN", "FAIL", "INFO"
 
@@ -579,17 +585,20 @@ def main(argv: list[str] | None = None) -> int:
         print(fills_digest(run_day(s.days[0], s.format.load_bot(args.bot, s.overrides, strict=True), s.config).fills))
         return 0
 
+    fmt = FORMATS[args.format]
+    replay = getattr(fmt, "REPLAY", True)  # False: no loader here (the Arena's bots run on their simulator)
     try:
-        s = setup(args)
+        s = setup(args) if replay else None
         source = args.bot.read_text(encoding="utf-8")
         size = args.bot.stat().st_size
     except (ValueError, OSError) as error:
         parser.error(str(error))
 
     allow = {module.strip() for module in args.allow.split(",") if module.strip()}
-    print(f"Validating {args.bot} on {', '.join(day.name for day in s.days)} ({args.format} format)")
+    where = f"on {', '.join(day.name for day in s.days)}" if replay else "source checks only"
+    print(f"Validating {args.bot} {where} ({args.format} format)")
     checks = file_checks(args.bot, size, args.max_size)
-    found, replayable = static_checks(source, s.format, allow)
+    found, replayable = static_checks(source, fmt, allow)
     checks += found
     try:
         tree = ast.parse(source)
@@ -597,7 +606,10 @@ def main(argv: list[str] | None = None) -> int:
         tree = None
     if tree is not None:
         checks += gray_area_check(tree, args.allow_gray_area)
-    if replayable:
+    if not replay:
+        checks.append(Check(INFO, "replay: run exchange-simulator (`uv run exchange-simulator --strategy BOT --backtest DATA.csv "
+                                  "--log-dir logs/<run> --no-logs`): this format has no loader here, so --data is not read"))
+    elif replayable:
         try:
             checks += replay_checks(args.bot, s, args.time_limit_ms, argv, args.max_state, args.late)
             checks += conflict_checks(args.bot, s)

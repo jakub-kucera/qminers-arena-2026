@@ -488,7 +488,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--growth", type=float, default=1.0, help="the next round's median and sd over the last round's (default: 1)")
     parser.add_argument("--growth-from", nargs=2, metavar=("OLD", "NEW"),
                         help="set --growth from a proxy field (--proxy-bots) on the last round's data and the next one's, each DATA:DAY[,DAY...]")
-    parser.add_argument("--proxy-bots", nargs="+", type=Path, help="the proxy field's bot files (default: python/bots/zoo/'s, Prosperity format)")
+    parser.add_argument("--proxy-bots", nargs="+", type=Path, help="the proxy field's bot files (default: python/bots/prosperity/zoo/'s, Prosperity format)")
     parser.add_argument("--format", default="prosperity", help="the data's format for --growth-from (default: prosperity)")
     parser.add_argument("--engine", default="python", choices=("python", "rust"), help="the engine for --growth-from")
     parser.add_argument("--growth-sd", type=float, default=None,
@@ -515,7 +515,7 @@ def main(argv: list[str] | None = None) -> int:
         us = board.teams.index(team)
         growth = args.growth
         if args.growth_from:
-            from experiments.study.zoo import is_local, zoo_bots
+            from experiments.prosperity.zoo import is_local, zoo_bots
 
             if args.format != "prosperity" and not args.proxy_bots:
                 raise ValueError(f"--growth-from on the {args.format} format needs --proxy-bots: bots written for it (the zoo's are Prosperity bots)")

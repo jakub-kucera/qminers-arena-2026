@@ -21,6 +21,7 @@ from pathlib import Path
 IDEAS = Path("IDEAS.md")
 START, END = "<!-- ideas-index:start -->", "<!-- ideas-index:end -->"
 VERDICTS = ("kept", "dropped here", "measured", "open")
+TESTED = ("On the Arena (7 Nov on)", "Tested on Prosperity data")  # the sections whose rows are indexed, in file order
 TRIGGER = 110  # characters of the re-test cell kept
 
 
@@ -55,7 +56,7 @@ def rows(lines: list[str]) -> tuple[list[tuple[int, str, str, str]], list[tuple[
     for number, line in enumerate(lines, 1):
         if line.startswith("## "):
             section = line[3:].strip()
-        elif section == "Tested on Prosperity data" and line.startswith("| **"):
+        elif section in TESTED and line.startswith("| **"):
             row = cells(line)
             tested.append((number, title(row[0]), verdict(row[-2]), short(row[-1])))
         elif section == "Not yet tested" and line.startswith("| ") and not line.startswith("| Idea") and not line.startswith("|---"):

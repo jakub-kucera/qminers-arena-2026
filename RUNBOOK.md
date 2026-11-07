@@ -28,8 +28,8 @@ here). `D` is `data/arena/round<N>/`, `F` its tape (`D/<file>.csv`), and `BOT` i
   `uv run exchange-simulator --strategy BOT --backtest F --log-dir logs/<run>` and
   `uv run backtest-explorer --log-dir logs/<run>` on that full-logs run: spread, depth, trade rate, trend.
 - **Bot (A):** set `PARAMS['ASSET']` (empty sends nothing; e.g. `--set 'PARAMS.ASSET={"fair": "mid"}'`). Check:
-  `uv run python -m arena.validate BOT all --format qminers --data <snapshots folder> --max-size 1MiB` (its import and
-  sandbox lines; the entry-point FAIL is expected, it replays nothing) and a full `exchange-simulator ... --no-logs`
+  `uv run python -m arena.validate BOT all --format qminers --max-size 1MiB` (source checks only, no --data; exit 0
+  on a clean file) and a full `exchange-simulator ... --no-logs`
   run well under 15 min, flat at the end, no `breach_penalty`. Cap 1 MiB ["The format swap, step by step"].
 
 ## Lunch (12:00–13:00)

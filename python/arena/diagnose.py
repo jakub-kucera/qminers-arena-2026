@@ -95,7 +95,7 @@ first data download as soon as its format module exists. For each product, poole
   earlier (`flatten_from`). `--profile` prints the whole table.
 - **`--suggest`:** a PARAMS entry per product for the template, read off the notes as the wiki's
   day-one table says (see `suggest`): a starting point for the first backtest and grid, not a
-  tuned setting. `python/experiments/day/suggest_check.py` scores it against the hand-tuned PARAMS.
+  tuned setting. `python/experiments/prosperity/suggest_check.py` scores it against the hand-tuned PARAMS.
 - **Notes:** which regime the numbers point to, using the thresholds below. They are rules of
   thumb calibrated on Prosperity data, not verdicts.
   `references/wiki/concepts/reading-the-data-on-day-one.md` says what each one means for the

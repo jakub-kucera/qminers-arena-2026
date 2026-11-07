@@ -9,9 +9,9 @@ so a compacted or restarted session, or the other laptop, picks up where it was.
 - Deadline <HH:MM>; freeze <HH:MM> (deadline − 0:30, or − 2E if that is longer); E = <minutes an evaluation took>.
 - T = <the engine's error, from the first upload: HANDOVER.md, "Portal against local">.
 - Data: D = <folder>, DAYS = <...>. Training: <days>. Held out: <day, or the last 25%>, never used to choose a setting.
-  Repeats checked (`experiments.day.structure`): <none | which days repeat which>.
+  Repeats checked (`experiments.prosperity.structure`): <none | which days repeat which>.
 - The gate: `--modes <...> --gate <first|every> --holdout <...>`; scenarios still possible: <`--scenario ...` | none>.
-- Calibrated settings (the plug-in's `ENGINE`, from `experiments.day.calibrate`): <... | refused: why>.
+- Calibrated settings (the plug-in's `ENGINE`, from `experiments.prosperity.calibrate`): <... | refused: why>.
 - Scoring: `0.8·z1 + z2 + z3 + 1.2·z4`, each round's private PnL standardised over the teams with positive PnL, a zero or
   negative PnL scored as 0 (ON_THE_DAY.md, "How is PnL scored?"); this round's weight: <0.8 | 1.0 | 1.2>.
 - Uploads left: <n>. The spending rule's budget of disagreeing scores left: <2> (ON_THE_DAY.md, "Spend the round's

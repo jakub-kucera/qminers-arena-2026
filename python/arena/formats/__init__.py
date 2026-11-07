@@ -27,16 +27,19 @@ Optional:
         overrides its field. Without it, Prosperity's settings (EngineConfig's defaults).
     CREDITS: float
         The credits a lot one unit of the competition's quoted prices is worth, where it isn't 1 (a
-        contract multiplier: points worth 2 credits a lot). experiments.day.calibrate and --metrics turn
+        contract multiplier: points worth 2 credits a lot). experiments.prosperity.calibrate and --metrics turn
         the engine's figures into the portal's credits with it (arena.cli.credits_per_unit). A fee or
         penalty the rules give in credits goes into ENGINE divided by it: ENGINE's are in price units.
 
-The Arena's format is qminers.py, already registered as `--format qminers`: a day-of skeleton (a copy
-of snapshots.py with TODO(day) markers) to fill in on the day, by ON_THE_DAY.md, "The format swap,
-step by step". Its loader and its wrapper are replaced separately, each from the nearest shape:
-snapshots.py (book snapshots in CSV, a bot answering a state with orders), orderlog.py (an
-order-by-order event log, with the drill's bot API) or drill.py (book changes, a callback API,
-decimal prices, orders that rest; the differences from Prosperity marked).
+    REPLAY: bool
+        False for a format with no loader here (its resolve_data_dir, load_days and load_bot raise):
+        arena.validate then runs the file and static checks only, without --data.
+
+The Arena's format is qminers.py, registered as `--format qminers`: since 7 Nov only its source checks
+(check_source, PROVIDED_MODULES, SANDBOX; REPLAY = False), as the Arena's bots run on the organisers'
+simulator. The other skeletons stay as shapes for a format that needs our engine: snapshots.py (book
+snapshots in CSV, a bot answering a state with orders), orderlog.py (an order-by-order event log, with
+the drill's bot API) or drill.py (book changes, a callback API, decimal prices, orders that rest).
 """
 
 from types import ModuleType

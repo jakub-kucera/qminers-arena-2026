@@ -2,7 +2,7 @@
 
 A cell is an index tuple, one position per axis. A Search charges each of a cell's pieces (one
 backtest each: a day under a mode) once, up to a budget of whole cells, and scores a cell by an
-objective once all its pieces are in. The searches (experiments.study.search_methods compares them with
+objective once all its pieces are in. The searches (experiments.prosperity.search_methods compares them with
 random cells, halving and a Gaussian process; IDEAS.md, "Searching a big grid without running all
 of it"):
   coord  coordinate descent from the space's start: each axis in turn (seeded order), every value

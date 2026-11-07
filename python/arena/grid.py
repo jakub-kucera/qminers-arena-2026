@@ -15,7 +15,7 @@ combination also gets:
             exists with optimistic fills is probably a backtest artefact. A --scenario (arena.scenario:
             engine settings and rivals of its own) is one more mode, and with one the summary adds
   worst     the least PnL over the modes and scenarios: a measure to read, not a rule (picked by it,
-            cells lost most often on unseen days: python/experiments/day/selection_rules.py, part 2).
+            cells lost most often on unseen days: python/experiments/prosperity/selection_rules.py, part 2).
 
 Next to them, the shape of the first mode's PnL path, from each day's PnL at the end of every
 FINE_TICKS block (report.PathRisk): max dd (the largest fall from a running high within a day),

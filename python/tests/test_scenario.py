@@ -6,7 +6,7 @@ from arena import compare, grid
 from arena.engine import EngineConfig, Mark, QueueModel, TradeMatching
 from arena.scenario import Rival, Scenario, config_for, parse_scenario, plain, rivals_for, scenarios_from
 
-RIVAL = "python/bots/rivals/sniper.py"
+RIVAL = "python/bots/prosperity/rivals/sniper.py"
 
 
 def test_a_scenario_changes_only_the_settings_it_names():
