@@ -33,6 +33,7 @@ uv run python -m arena.backtest python/bots/template.py 1 [--data p2|p3|p4] [--r
 uv run python -m arena.validate python/bots/template.py 1 [--max-size 100KB] [--time-limit-ms 100]   # exit 1 on FAIL
 uv run python -m arena.compact python/bots/template.py submit/template.py   # over the size cap
 uv run python -m arena.grid python/bots/template.py 1 --grid PARAMS.KELP.make_edge=0.5,1,2 --modes all,worse [--holdout last] [--screen 0.25 | --search tpe --budget 1000] [--scenario rest:resting] --engine rust
+uv run python -m arena.qgrid python/bots/qminers/template.py data/sample.csv.gz --set 'PARAMS.ASSET={"fair": "mid"}' --grid PARAMS.ASSET.make_edge=0,1,2 [--holdout 0.25] [--out results/qgrid.csv]   # on the Arena's simulator
 uv run python -m arena.compare python/bots/template.py 1 --bot python/bots/zoo/claude/*.py --modes all,worse
 uv run python -m arena.stress python/bots/template.py 1              # perturbed days; size stop_loss from it
 uv run python -m arena.sim run python/bots/template.py --days 5      # inside an agent market, against the same days replayed
@@ -53,7 +54,7 @@ notebook: `uv run --group analysis jupyter nbconvert --to notebook --execute pyt
 ## Rules that keep the parts consistent
 
 Read `ARCHITECTURE.md`'s section before changing the engine, a format, bot loading, the grid, the simulator, the Rust port, the analysis or the template.
-- **Standard library only,** except `python/arena/analysis.py` (pandas, matplotlib).
+- **Standard library only,** except `python/arena/analysis.py` (pandas, matplotlib) and `python/arena/qgrid.py` (the Arena's `simulator`).
 - **The engine knows no format.** A plug-in in `python/arena/formats/` provides `PROVIDED_MODULES`, `resolve_data_dir`, `load_days`, `load_bot`, `check_source`, is in `FORMATS`, sets `RESTING = True` if orders rest, and `ENGINE`, the engine settings its rules fix (every tool's defaults, `arena.cli.format_config`).
 - **Change together:** `report.write_csvs`' columns and `analysis.py`; `arena.diagnose`'s note thresholds and the day-one wiki page; the template's DEFAULTS, STRATEGY or EXECUTION and every `python/bots/<format>/template.py` (`format_drill --sync`; `test_drill.py` fails until you do); an `IDEAS.md` row and its index (`experiments.ideas_index`).
 - **Parity with prosperity3bt is pinned:** matching, limits and marking keep `test_parity.py` passing; its fixture `python/tests/fixtures/parity_bot.py` is frozen; resting-mode code stays in its own branch of `run_day`.

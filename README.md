@@ -399,6 +399,44 @@ per-mode totals, `min day` and `nbhd`, then per-day and per-product PnL. Combina
 or limit breaches are left out of the summary's picks and of the heatmaps, and the grid exits with 1
 if every combination failed.
 
+## Grid on the Arena's simulator
+
+`arena.grid` runs on the stand-in engine; `arena.qgrid` runs a grid on the Arena's own exchange simulator
+(`simulator/`, [STARTER.md](STARTER.md)) at the rules' settings (`simulator.main`'s 5 ms accept delay,
+position limit 100, potential-position cap 1,000, 10,000 a second over the limit):
+
+```sh
+uv run python -m arena.qgrid python/bots/qminers/template.py data/sample.csv.gz \
+    --set 'PARAMS.ASSET={"fair": "mid"}' \
+    --grid PARAMS.ASSET.make_edge=0,1,2 --grid PARAMS.ASSET.make_size=5,10 \
+    [--jobs N] [--holdout 0.25] [--sort pnl|holdout|nbhd] [--top 15] [--out results/qgrid.csv]
+```
+
+The bot is any file with a `BaseStrategy` subclass (the alphabetically first is run, as their loader does),
+loaded fresh for each run, `--set` then the cell's `--grid` values applied to its globals (`--grid` takes
+`V1,V2,...` or `START..STOP[..STEP]`, as in `arena.grid`). The template's `PARAMS` is empty, so
+`--set 'PARAMS.ASSET={...}'` creates the asset's entry that the grid's `PARAMS.ASSET.*` keys go into. Data
+files are the starter's CSVs (a `.csv.gz` is unpacked to a temporary file). Every cell, and the bot as is with
+only `--set` (the `base` row, shown first), runs on each file in a process pool (`--jobs`, default the CPU
+count). The columns, summed over the files unless noted:
+
+| Column | Meaning |
+|---|---|
+| `pnl` | the simulator's PnL (cash + inventory marked out − breach penalty); with several files, one column per file follows |
+| `in 75%`, `out 25%` | from the 1-second PnL curve, the PnL over each file's first 1 − `--holdout` of the time and over the last share: a time-split held-out check (`--sort holdout` ranks by the held-out part) |
+| `nbhd` | mean `pnl` of the cell and its one-step neighbours on each axis (`arena.grid`'s rule): prefer a plateau to a peak |
+| `max dd` | the largest fall from a peak of the PnL curve, the files' curves chained |
+| `breach` | the position-breach penalty, already in `pnl` |
+| `fills`, `volume` | our orders that filled, and the lots traded |
+| `\|inv\| q997` | the time-weighted 99.7% quantile of the absolute inventory (the largest over the files) |
+| `pnl se` | the simulator's standard error of the PnL (stdev × √n of its 1-second increments) |
+| `rej`, `cxl rej` | orders the exchange rejected (over the potential-position cap), and cancels or modifies rejected (the order had filled first) |
+
+Below the table: the best cell by each of `pnl`, `holdout` and `nbhd` and whether they agree, a `!` line
+naming the cells with a breach penalty or rejected orders, and `arena.grid`'s axis-end note (the best cell
+on the lowest or highest of a numeric axis' three or more values: widen it). `--out` writes one row per cell
+and the baseline with every number above and the per-file PnL. A cell whose bot raises shows its error.
+
 ## Compare bots
 
 `arena.grid` varies settings inside one file. `arena.compare` runs several bot files, or variants of
