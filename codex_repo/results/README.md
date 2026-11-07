@@ -6,6 +6,12 @@ verified full-public checkpoint: 144,580.19 net, with exact organizer CLI match.
 `round2_volatility_attribution.json` checks actual exposure versus volatility.
 There is no server/private result yet. All public segments are now consumed.
 
+`round2_alternative_mechanisms.json` records24 later development cases with risk
+sizing fixed or a separate fixed-size IOC policy. The queue-wait prototype's
+full-public143,252.19 did not improve the checkpoint. `round2_pretrained_specs.json`
+freezes four pretrained nonlinear-alpha candidates; first60% is fitting data,
+so their full-public scores must not be mistaken for held-out results.
+
 `round2_development_progress.json` records later first-60% tuning studies;
 `round2_development_31840.json` preserves a positive inventory-policy checkpoint.
 Neither is a selected submission or a later-public/server result.

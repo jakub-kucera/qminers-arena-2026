@@ -21,6 +21,12 @@ Run modules from the repository root with `.venv/bin/python -m scripts.NAME`.
 | `round2_volatility_followups.py`, `round2_variance_followups.py` | Small development batches testing faster absolute-volatility adaptation |
 | `round2_shortlist.py` | Freeze six development-chosen candidates and reuse exact audited prefixes before continuous middle-public20% selection |
 | `round2_volatility_ablations.py`, `round2_risk_weighted_learning.py` | Development-only post-freeze alpha ablations and observation-time risk-weighted learners |
+| `round2_inventory_exit_quotes.py`, `round2_queue_value.py` | Separate closing quotes and queue-priority opportunity value, with risk sizing fixed |
+| `round2_queue_wait.py`, `round2_queue_close_only.py` | Queue service-time entry gates using observed trades and cancellations |
+| `round2_next_move.py`, `round2_nextmove_timing.py` | Event-time prediction targets and latency-eligible label frames |
+| `round2_conditional_with_fixed_risk.py` | Conditional public-fill models on the unchanged saved risk policy |
+| `round2_dislocation_taker.py` | Independent fixed20-lot IOC family, with no volatility sizing |
+| `round2_pretrained_alpha.py` | Symmetric offline tree forecasts trained only on public first60%; later40% comparisons explicitly separated and reused |
 | `check_submission.py` | Conservative local check of documented export restrictions |
 | `benchmark.py` | Native-config replay and diagnostic metrics for explicit sources |
 

@@ -38,8 +38,23 @@ are sample tuning, not fresh validation.
 Three post-freeze alpha ablations and three risk-weighted/adaptive learners
 completed on development only. Best development gain was 113,837 versus the
 checkpoint's 112,379; these small gains have not replaced the verified source.
-A further development-only passive-exit quote batch is running under
-`logs/round2/inventory_exit_quotes`; its sources do not change the submission.
+The user then asked us to leave volatility calibration to their other session.
+Keep all sizing constants fixed in this session's further maker experiments.
+Twenty-four alternative-mechanism development replays completed: passive exit
+quotes, queue-priority retention, conditional fill edges, queue waiting-time
+gates, event-time price forecasts and a separate fixed-size IOC family without
+volatility sizing. Queue-wait0.1s made114,996 on development but143,252.19 on
+the full public tape, below144,580.19, so it was not promoted.
+There are now86 completed development replays and96 passing tests. See
+`results/round2_alternative_mechanisms.json`.
+Four new symmetric pretrained nonlinear-alpha candidates are evaluating the
+full public tape under `logs/round2/pretrained_alpha`. They fit only first60%
+public flow/book features, with no price/time/IDs. Exported tree predictions
+match the fitted estimator. Risk parameters are unchanged. First60% PnL is
+in-sample and later40% is beyond fitting but previously inspected globally;
+neither is fresh organizer validation. Frozen candidate sources are tracked
+under `strategies/round2_research/pretrained`, with fit specs in
+`results/round2_pretrained_specs.json`. The submission is unchanged.
 There are now 62 development replays and 87 passing tests. Exact study sources,
 native hashes and results are in `results/round2_development_progress.json`;
 the first frozen shortlist is tracked under `strategies/round2_shortlist_v1`.
