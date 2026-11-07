@@ -63,3 +63,9 @@ Trials so far: 0 experiments, 0 cells.
 
 ## Verifier verdicts
 <!-- each verifier's report, verbatim, under the candidate's id and the time -->
+
+### R2-E1, 19:35 (`python/bots/qminers/candidates/r2_E1_low_exposure.py`): the first round-2 upload
+- R2-FT1 (R1-C12 + the forecast take) with its literals named; EXPOSURE 30 (the hedge sells back above 30 lots), DEAD_ZONE 0.3, the take at 0.25 ticks over half the spread, 200 lots, one per 50 ms.
+- round2_public.csv (`uv run exchange-simulator --strategy python/bots/qminers/candidates/r2_E1_low_exposure.py --backtest data/arena/round2/round2_public.csv --log-dir logs/e1 --no-logs`): pnl 28,418.00 (first 75% 23,430 / last 25% 4,988), 14,068 fills, breach 0, |inv| q997 30; byte-identical to the Rust ridge_maker; 81.6 s (about 165 s on a 12,000-s tape; limit 900 s); validate OK.
+- Chosen on the first 75% from a plateau (EXPOSURE 20-45 x DEAD_ZONE 0.3-0.45 x FT_EDGE 0.1-0.25: in 21-23.6k). Every round-1 bot loses on this tape (R1-C11 -263k, R1-F8 -86k).
+- Expect the validation PnL near twice the public (about 57k) if the tape is the same kind; much less means the regime differs.

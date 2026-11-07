@@ -64,6 +64,16 @@
 //! C12's and --set UNWIND_LOTS=100 --set UNWIND_SAFE=3 --set UNWIND_TH=0.7 --set UNWIND_AT=50 --set UNWIND_US=500000).
 //! `RIDGE_DEBUG` in the environment prints, at the end, the maker lots' edge against the mid at the fill, the IOC
 //! lots' edge, the time-weighted mean |inventory| and the 25-s PnL steps' mean and sd.
+//! Round-2 learned-model knobs (Rust-only, off by default: C12 622920.99 / 21,462 fills unchanged), appended after
+//! the features above: `PRIOR_MASS` (0; the warm start: with the env var RIDGE_WARM naming a stats file, each model
+//! starts from its X'X / X'y scaled to PRIOR_MASS labels and fits on its first book; RIDGE_DUMP writes that file at
+//! `DUMP_US`, else at the run's end); `BUCKET` (0; a mask over 17 more features: 1 six touch-imbalance buckets at a
+//! 1-tick spread and six at 2+, 2 our inventory's sign and it times the imbalance, 4 ln(1 + ms since the mid moved)/8
+//! and it times the imbalance, 8 the imbalance at a 1-tick spread); `SIDE2` (0; 1 two more ridges on the next bid and
+//! the next ask move, each side quoting from mid + (1 - `SIDE_W`) p + SIDE_W p_side; 2 linear-probability models of
+//! the bid falling / the ask rising within the horizon, a side a tick back when its probability is over `CLEAR_TH`
+//! 0.5); `MH` (0; 1 the forecasts of two more ridges at `MH_US1` 100 ms and `MH_US2` 1 s on the base features as two
+//! inputs of the main model).
 //! Each candidate on round1.csv, pnl.csv and result.json the same bytes as its Python run (7 Nov):
 //!   C5  (r1_C5_long_horizon.py, 595441.83, 21,120 fills): --set POSITION_LIMIT=1000 --set EXPOSURE=100
 //!       --set CANCEL_FREE=1.0 --set HEDGE=1 --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000
@@ -74,6 +84,14 @@
 //!       --set FLOWGRP_CAP=1
 //!   C12 (r1_C12_codex_v6.py, 622920.99, 21,462): C5's and --set QUOTEFEAT=1 --set FLOWGRP=2 --set FLOWGRP_CAP=20
 //!       --set FLOWGRP_US=1000000
+//! The forecast take (R2-FT1), off by default (`FT_SZ` 0): once the model has MIN_LABELS labels, when the
+//! prediction net of the skew (`FT_NET` 1; 0: the raw prediction) exceeds `FT_EDGE` (1.0) ticks plus half the
+//! spread, an IOC at the far touch (`FT_THRU` 0 ticks through) for min(FT_SZ, the room) lots, at most one per
+//! `FT_GAP_MS` (100), exempt from the re-quote's cancels for 1 s; the room is EXPOSURE minus the position its way
+//! (`FT_MODE` 0), only the position against it (1: reduce, if at least `FT_INV` 0 lots) or only when not against it
+//! (2: open). `RIDGE_PRED_LOG` (an environment variable, a path) writes each book event's time, mid, prediction,
+//! skew, spread and inventory, for measuring the forecast.
+//!   FT1 (r2_FT1_forecast_take.py, 688311.10, 23,522): C12's and --set FT_EDGE=0.25 --set FT_SZ=200 --set FT_GAP_MS=50
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -81,7 +99,7 @@ use crate::params::Params;
 use crate::sim::{BookOrder, Ctx, Owner, PrivateEvent, Side, Snapshot, Status, Strategy, Trade};
 
 const N: usize = 15;
-const NM: usize = 40;
+const NM: usize = 64;
 const OBS_MAXLEN: usize = 64;
 
 struct Record {
@@ -128,6 +146,9 @@ fn clamp(x: f64, lo: f64, hi: f64) -> f64 {
 
 struct Model {
     horizon_us: i64,
+    n: usize,
+    /// 0 the change; 1 the indicator of a fall, 2 of a rise (SIDE2 2's linear-probability classifiers)
+    label: i64,
     observations: VecDeque<(i64, f64, [f64; NM], i64)>,
     last_fit_us: Option<i64>,
     last_label_us: Option<i64>,
@@ -139,9 +160,11 @@ struct Model {
 }
 
 impl Model {
-    fn new(horizon_us: i64) -> Model {
+    fn new(horizon_us: i64, n: usize) -> Model {
         Model {
             horizon_us,
+            n,
+            label: 0,
             observations: VecDeque::with_capacity(OBS_MAXLEN),
             last_fit_us: None,
             last_label_us: None,
@@ -298,26 +321,33 @@ pub struct RidgeMaker {
     dbg_inv: [f64; 2],
     dbg_inv_t: Option<i64>,
     dbg_steps: [f64; 5],
+    /// the forecast take (R2-FT), off by default (FT_SZ 0)
+    ft_edge: f64,
+    ft_sz: i64,
+    ft_gap_ms: i64,
+    ft_mode: i64,
+    ft_inv: i64,
+    ft_thru: i64,
+    ft_net: i64,
+    ft_last: i64,
+    /// RIDGE_PRED_LOG (env var, a path): each book event's time, mid, prediction, skew, spread, inventory
+    pred_log: Option<std::io::BufWriter<std::fs::File>>,
+    /// round-2 learned-model knobs (all off by default)
+    prior_mass: f64,
+    dump_us: i64,
+    dump_snap: Option<String>,
+    bucket: i64,
+    side2: i64,
+    side_w: f64,
+    clear_th: f64,
+    mh: i64,
+    n_base: usize,
+    /// extra models: 0 the next bid move, 1 the next ask move (SIDE2), 2 / 3 the MH_US1 / MH_US2 mid models (MH)
+    ex: Vec<Model>,
+    last_mid_change_us: i64,
 }
 
-impl Drop for RidgeMaker {
-    fn drop(&mut self) {
-        if std::env::var("RIDGE_DEBUG").is_ok() {
-            eprintln!(
-                "RIDGE_DEBUG maker_lots={} maker_edge={:.1} ioc_lots={} ioc_edge={:.1} at_limit_share={:.3} final_inv={}",
-                self.dbg[0], self.dbg[1], self.dbg[2], self.dbg[3], self.dbg[4] / self.dbg[5].max(1.0), self.inventory
-            );
-            let st = self.dbg_steps;
-            let mean = st[1] / st[0].max(1.0);
-            eprintln!(
-                "RIDGE_DEBUG mean_abs_inv={:.1} step25_n={} step25_mean={:.1} step25_sd={:.1}",
-                self.dbg_inv[0] / self.dbg_inv[1].max(1.0), st[0], mean, (st[2] / st[0].max(1.0) - mean * mean).max(0.0).sqrt()
-            );
-        }
-    }
-}
-
-pub const KEYS: [&str; 71] = [
+pub const KEYS: [&str; 87] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -329,6 +359,8 @@ pub const KEYS: [&str; 71] = [
     "FLOWGRP", "FLOWGRP_CAP", "FLOWGRP_US", "QUOTEFEAT", "QUOTEFEAT_US",
     "SKEW2_K", "SKEW2_X", "REDUCE_IN", "REDUCE_AT", "CONF_EXP", "CONF_TH",
     "UNWIND_LOTS", "UNWIND_AT", "UNWIND_TH", "UNWIND_US", "UNWIND_THRU", "UNWIND_SAFE",
+    "FT_EDGE", "FT_SZ", "FT_GAP_MS", "FT_MODE", "FT_INV", "FT_THRU", "FT_NET",
+    "PRIOR_MASS", "DUMP_US", "BUCKET", "SIDE2", "SIDE_W", "MH", "MH_US1", "MH_US2", "CLEAR_TH",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -342,6 +374,33 @@ fn side_index(sign: i64) -> usize {
 impl RidgeMaker {
     pub fn new(params: &Params) -> Result<RidgeMaker, String> {
         params.check_keys(&KEYS)?;
+        let n_base = N + if params.int("PLACE", 0)? > 0 { 2 } else { 0 }
+                + if params.int("DEPTH5", 0)? > 0 { 1 } else { 0 }
+                + if params.int("FLOW2", 0)? > 0 { 2 } else { 0 }
+                + if params.int("LAST_AGG", 0)? > 0 { 1 } else { 0 }
+                + if params.int("QUOTEFEAT", 0)? > 0 { 6 } else { 0 }
+                + if params.int("FLOWGRP", 0)? > 0 { 8 } else { 0 }
+                + if params.int("BUCKET", 0)? > 0 { 17 } else { 0 };
+        let mh = params.int("MH", 0)?;
+        let n = n_base + if mh > 0 { 2 } else { 0 };
+        let horizon_us = params.int("HORIZON_US", 100_000)?;
+        let mut rm = RidgeMaker::build(params, n_base, n)?;
+        rm.ex = vec![
+            Model::new(horizon_us, n),
+            Model::new(horizon_us, n),
+            Model::new(params.int("MH_US1", 100_000)?, n_base),
+            Model::new(params.int("MH_US2", 1_000_000)?, n_base),
+        ];
+        rm.mh = mh;
+        if rm.side2 == 2 {
+            rm.ex[0].label = 1;
+            rm.ex[1].label = 2;
+        }
+        rm.load_warm();
+        Ok(rm)
+    }
+
+    fn build(params: &Params, n_base: usize, n: usize) -> Result<RidgeMaker, String> {
         let position_limit = params.int("POSITION_LIMIT", 100)?;
         let exposure = params.int("EXPOSURE", 0)?;
         Ok(RidgeMaker {
@@ -387,14 +446,9 @@ impl RidgeMaker {
             desired_buy: None,
             desired_sell: None,
             desired_time: None,
-            m1: Model::new(params.int("HORIZON_US", 100_000)?),
-            m2: Model::new(params.int("H2_US", 500_000)?),
-            n: N + if params.int("PLACE", 0)? > 0 { 2 } else { 0 }
-                + if params.int("DEPTH5", 0)? > 0 { 1 } else { 0 }
-                + if params.int("FLOW2", 0)? > 0 { 2 } else { 0 }
-                + if params.int("LAST_AGG", 0)? > 0 { 1 } else { 0 }
-                + if params.int("QUOTEFEAT", 0)? > 0 { 6 } else { 0 }
-                + if params.int("FLOWGRP", 0)? > 0 { 8 } else { 0 },
+            m1: Model::new(params.int("HORIZON_US", 100_000)?, n),
+            m2: Model::new(params.int("H2_US", 500_000)?, n),
+            n,
             last_observation_us: -100_000,
             place: params.int("PLACE", 0)?,
             place_us1: params.int("PLACE_US1", 100_000)?,
@@ -479,17 +533,101 @@ impl RidgeMaker {
             dbg_inv: [0.0; 2],
             dbg_inv_t: None,
             dbg_steps: [0.0, 0.0, 0.0, 0.0, 25_000_000.0],
+            ft_edge: params.float("FT_EDGE", 1.0)?,
+            ft_sz: params.int("FT_SZ", 0)?,
+            ft_gap_ms: params.int("FT_GAP_MS", 100)?,
+            ft_mode: params.int("FT_MODE", 0)?,
+            ft_inv: params.int("FT_INV", 0)?,
+            ft_thru: params.int("FT_THRU", 0)?,
+            ft_net: params.int("FT_NET", 1)?,
+            ft_last: i64::MIN / 2,
+            pred_log: std::env::var("RIDGE_PRED_LOG")
+                .ok()
+                .map(|p| std::io::BufWriter::new(std::fs::File::create(p).expect("RIDGE_PRED_LOG"))),
+            prior_mass: params.float("PRIOR_MASS", 0.0)?,
+            dump_us: params.int("DUMP_US", 0)?,
+            dump_snap: None,
+            bucket: params.int("BUCKET", 0)?,
+            side2: params.int("SIDE2", 0)?,
+            side_w: params.float("SIDE_W", 1.0)?,
+            clear_th: params.float("CLEAR_TH", 0.5)?,
+            mh: 0,
+            n_base,
+            ex: Vec::new(),
+            last_mid_change_us: 0,
         })
     }
 
+    fn models_mut(&mut self) -> Vec<&mut Model> {
+        let mut v: Vec<&mut Model> = vec![&mut self.m1, &mut self.m2];
+        v.extend(self.ex.iter_mut());
+        v
+    }
+
+    /// the sufficient statistics of every model, as text (the warm start's file format)
+    fn stats_text(&mut self) -> String {
+        let mut out = String::new();
+        for (i, m) in self.models_mut().into_iter().enumerate() {
+            if m.labels == 0 {
+                continue;
+            }
+            out.push_str(&format!("M {} {} {:?} {}\n", i, m.n, m.mass, m.labels));
+            for r in 0..m.n {
+                let row: Vec<String> = (0..m.n).map(|c| format!("{:?}", m.xx[r][c])).collect();
+                out.push_str(&row.join(" "));
+                out.push('\n');
+            }
+            let row: Vec<String> = (0..m.n).map(|c| format!("{:?}", m.xy[c])).collect();
+            out.push_str(&row.join(" "));
+            out.push('\n');
+        }
+        out
+    }
+
+    /// WARM START: with PRIOR_MASS > 0 and RIDGE_WARM naming a stats file, each model whose size matches starts from
+    /// those statistics scaled to PRIOR_MASS labels (and fits on its first book).
+    fn load_warm(&mut self) {
+        if self.prior_mass <= 0.0 {
+            return;
+        }
+        let Ok(path) = std::env::var("RIDGE_WARM") else { return };
+        let text = std::fs::read_to_string(&path).unwrap_or_else(|e| panic!("RIDGE_WARM {path}: {e}"));
+        let (prior, min_labels) = (self.prior_mass, self.min_labels);
+        let mut lines = text.lines();
+        let mut models = self.models_mut();
+        while let Some(head) = lines.next() {
+            let f: Vec<&str> = head.split_whitespace().collect();
+            let (i, n, mass): (usize, usize, f64) = (f[1].parse().unwrap(), f[2].parse().unwrap(), f[3].parse().unwrap());
+            let rows: Vec<Vec<f64>> =
+                (0..=n).map(|_| lines.next().unwrap().split_whitespace().map(|x| x.parse().unwrap()).collect()).collect();
+            if i >= models.len() || models[i].n != n {
+                continue;
+            }
+            let m = &mut models[i];
+            let scale = prior / mass;
+            for r in 0..n {
+                for c in 0..n {
+                    m.xx[r][c] = rows[r][c] * scale;
+                }
+                m.xy[r] = rows[n][r] * scale;
+            }
+            m.mass = prior;
+            m.labels = min_labels;
+        }
+    }
+
     fn learn(&mut self, which: usize, now: i64, mid: f64) {
-        let n = self.n;
         let (min_labels, memory, fit_us, ridge_min, ridge_frac) =
             (self.min_labels, self.model_memory_us, self.fit_us, self.ridge_min, self.ridge_frac);
         // the event-time label is the first model's; the blend's second model stays on clock time
         let (label_mode, label_k, label_cap_us, changes) =
             (if which == 0 { self.label_mode } else { 0 }, self.label_k, self.label_cap_us, self.mid_changes);
-        let m = if which == 0 { &mut self.m1 } else { &mut self.m2 };
+        let m = match which {
+            0 => &mut self.m1,
+            1 => &mut self.m2,
+            k => &mut self.ex[k - 2],
+        };
+        let n = m.n;
         while let Some(&(observed_us, old_mid, features, count)) = m.observations.front() {
             if label_mode > 0 {
                 // event time: the label is the mid at its LABEL_K-th change after the observation
@@ -522,6 +660,11 @@ impl RidgeMaker {
             let mut response = clamp(mid - old_mid, -20.0, 20.0);
             if label_mode == 2 {
                 response = if response > 0.0 { 1.0 } else if response < 0.0 { -1.0 } else { 0.0 };
+            }
+            if m.label == 1 {
+                response = if response < 0.0 { 1.0 } else { 0.0 };
+            } else if m.label == 2 {
+                response = if response > 0.0 { 1.0 } else { 0.0 };
             }
             m.mass = m.mass * decay + 1.0;
             for i in 0..n {
@@ -1075,6 +1218,9 @@ impl Strategy for RidgeMaker {
                 self.slow_mid = mid;
                 self.m1.observations.clear();
                 self.m2.observations.clear();
+                for m in self.ex.iter_mut() {
+                    m.observations.clear();
+                }
             }
         }
         self.model_time = Some(now);
@@ -1153,7 +1299,36 @@ impl Strategy for RidgeMaker {
             }
             features[k + 7] = self.rest_net / (1.0 + self.rest_cnt);
         }
-        let n = self.n;
+        if self.bucket > 0 {
+            let edges = [-0.6, -0.25, 0.0, 0.25, 0.6];
+            let b = edges.iter().filter(|&&e| imbalance > e).count();
+            let s1 = spread == 1;
+            // BUCKET is a mask: 1 the imbalance buckets by spread, 2 our inventory's sign, 4 the time since the mid
+            // moved, 8 the one-tick imbalance; a group left out stays 0 (its weight 0 under the ridge)
+            let mask = self.bucket;
+            for i in 0..6 {
+                if mask & 1 != 0 {
+                    features[k + i] = if s1 && b == i { 1.0 } else { 0.0 };
+                    features[k + 6 + i] = if !s1 && b == i { 1.0 } else { 0.0 };
+                }
+            }
+            if mask & 2 != 0 {
+                let inv_sign = if self.inventory > 0 { 1.0 } else if self.inventory < 0 { -1.0 } else { 0.0 };
+                features[k + 12] = inv_sign;
+                features[k + 13] = inv_sign * imbalance;
+            }
+            if mask & 4 != 0 {
+                let since =
+                    if self.last_mid.is_some() && self.last_mid != Some(mid) { 0 } else { (now - self.last_mid_change_us).max(0) };
+                let tsl = (1.0 + since as f64 / 1000.0).ln() / 8.0;
+                features[k + 14] = tsl;
+                features[k + 15] = tsl * imbalance;
+            }
+            if mask & 8 != 0 {
+                features[k + 16] = if s1 { imbalance } else { 0.0 };
+            }
+        }
+        let n = self.n_base;
         if self.std_on > 0 {
             let d = ((-elapsed) as f64 / self.std_us as f64).exp();
             self.std_mass = self.std_mass * d + 1.0;
@@ -1167,10 +1342,28 @@ impl Strategy for RidgeMaker {
                 self.mid_changes += 1;
             }
             self.last_mid = Some(mid);
+            self.last_mid_change_us = now;
         }
+        if self.mh > 0 {
+            self.learn(4, now, mid);
+            self.learn(5, now, mid);
+            for (j, k) in [(2usize, 0usize), (3, 1)] {
+                let m = &self.ex[j];
+                features[n + k] = if m.labels >= self.min_labels {
+                    clamp(py_sum(m.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x)), -2.0, 2.0)
+                } else {
+                    0.0
+                };
+            }
+        }
+        let n = self.n;
         self.learn(0, now, mid);
         if self.blend_w > 0.0 {
             self.learn(1, now, mid);
+        }
+        if self.side2 > 0 {
+            self.learn(2, now, bid as f64);
+            self.learn(3, now, ask as f64);
         }
         if now - self.last_observation_us >= self.observation_interval_us {
             if self.label_mode == 0 && self.m1.observations.len() == OBS_MAXLEN {
@@ -1183,7 +1376,26 @@ impl Strategy for RidgeMaker {
                 }
                 self.m2.observations.push_back((now, mid, features, self.mid_changes));
             }
+            if self.side2 > 0 {
+                for (j, v) in [(0usize, bid as f64), (1, ask as f64)] {
+                    if self.ex[j].observations.len() == OBS_MAXLEN {
+                        self.ex[j].observations.pop_front();
+                    }
+                    self.ex[j].observations.push_back((now, v, features, self.mid_changes));
+                }
+            }
+            if self.mh > 0 {
+                for j in [2usize, 3] {
+                    if self.ex[j].observations.len() == OBS_MAXLEN {
+                        self.ex[j].observations.pop_front();
+                    }
+                    self.ex[j].observations.push_back((now, mid, features, self.mid_changes));
+                }
+            }
             self.last_observation_us = now;
+        }
+        if self.dump_us > 0 && self.dump_snap.is_none() && now >= self.dump_us {
+            self.dump_snap = Some(self.stats_text());
         }
         let mut prediction = 0.25 * spread_f * imbalance;
         if self.m1.labels >= self.min_labels {
@@ -1228,6 +1440,36 @@ impl Strategy for RidgeMaker {
         }
         let mut buy = Some(bid.min((fair - 0.5).floor() as i64));
         let mut sell = Some(ask.max((fair + 0.5).ceil() as i64));
+        if self.side2 == 2 && self.ex[0].labels >= self.min_labels {
+            // the probability that the touch we quote is cleared within the horizon: past CLEAR_TH, a tick back
+            for j in 0..2usize {
+                let m = &self.ex[j];
+                let p = py_sum(m.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x));
+                if p > self.clear_th {
+                    if j == 0 {
+                        buy = buy.map(|b| b.min(bid - 1));
+                    } else {
+                        sell = sell.map(|a| a.max(ask + 1));
+                    }
+                }
+            }
+        }
+        if self.side2 == 1 && self.ex[0].labels >= self.min_labels {
+            let w = self.side_w;
+            for j in 0..2usize {
+                let m = &self.ex[j];
+                let p = clamp(py_sum(m.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x)), -2.0, 2.0);
+                let mut f = mid + self.pred_mix * ((1.0 - w) * prediction + w * p) - skew;
+                if (f - mid).abs() <= self.dead_zone {
+                    f = mid;
+                }
+                if j == 0 {
+                    buy = Some(bid.min((f - 0.5).floor() as i64));
+                } else {
+                    sell = Some(ask.max((f + 0.5).ceil() as i64));
+                }
+            }
+        }
         if self.fill_learn && spread == 1 {
             let d = raw - mid;
             if let Some(m) = self.fill_mean(now, d, self.queue_class(0)) {
@@ -1375,6 +1617,59 @@ impl Strategy for RidgeMaker {
                 sell = Some(ask + 1);
             }
         }
+        if self.m1.labels >= self.min_labels {
+            if let Some(w) = self.pred_log.as_mut() {
+                use std::io::Write;
+                let _ = writeln!(w, "{},{},{},{},{},{}", now, mid, prediction, skew, spread, self.inventory);
+            }
+        }
+        if self.ft_sz > 0 && self.m1.labels >= self.min_labels && now - self.ft_last >= self.ft_gap_ms * 1000 {
+            let signal = if self.ft_net > 0 { prediction - skew } else { prediction };
+            let need = self.ft_edge + 0.5 * spread_f;
+            let sign = if signal > need {
+                1
+            } else if signal < -need {
+                -1
+            } else {
+                0
+            };
+            if sign != 0 {
+                let pos = sign * self.inventory;
+                let room = match self.ft_mode {
+                    1 => {
+                        if pos < 0 && -pos >= self.ft_inv {
+                            -pos
+                        } else {
+                            0
+                        }
+                    }
+                    2 => {
+                        if pos >= 0 {
+                            self.exposure - pos
+                        } else {
+                            0
+                        }
+                    }
+                    _ => self.exposure - pos,
+                };
+                let reserved: i64 = self.orders.iter().filter(|r| r.sign == sign).map(|r| r.quantity).sum();
+                let quantity = self.ft_sz.min(room).min(self.position_limit - pos - reserved);
+                if quantity > 0 {
+                    let price = if sign > 0 { ask + self.ft_thru } else { 1i64.max(bid - self.ft_thru) };
+                    let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, true);
+                    self.orders.push(Record {
+                        id,
+                        sign,
+                        price,
+                        quantity,
+                        accepted: false,
+                        cancelling: false,
+                        exempt_until: now + 1_000_000,
+                    });
+                    self.ft_last = now;
+                }
+            }
+        }
         self.cached = Some((bid, ask, now));
         self.hedge(now, ctx);
         self.desired_buy = buy;
@@ -1450,6 +1745,33 @@ impl Strategy for RidgeMaker {
         }
         if was_hedge || matches!(event.status, Status::Filled | Status::PartiallyFilled) {
             self.hedge(event.timestamp_us, ctx);
+        }
+    }
+}
+
+impl Drop for RidgeMaker {
+    /// RIDGE_DUMP: the models' sufficient statistics (at DUMP_US, else at the end) to that file, for a warm start
+    fn drop(&mut self) {
+        if std::env::var("RIDGE_DEBUG").is_ok() {
+            eprintln!(
+                "RIDGE_DEBUG maker_lots={} maker_edge={:.1} ioc_lots={} ioc_edge={:.1} at_limit_share={:.3} final_inv={}",
+                self.dbg[0], self.dbg[1], self.dbg[2], self.dbg[3], self.dbg[4] / self.dbg[5].max(1.0), self.inventory
+            );
+            let st = self.dbg_steps;
+            let mean = st[1] / st[0].max(1.0);
+            eprintln!(
+                "RIDGE_DEBUG mean_abs_inv={:.1} step25_n={} step25_mean={:.1} step25_sd={:.1}",
+                self.dbg_inv[0] / self.dbg_inv[1].max(1.0), st[0], mean, (st[2] / st[0].max(1.0) - mean * mean).max(0.0).sqrt()
+            );
+        }
+        let Ok(path) = std::env::var("RIDGE_DUMP") else { return };
+        let text = match self.dump_snap.take() {
+            Some(t) => t,
+            None => self.stats_text(),
+        };
+        let tmp = format!("{path}.{}.tmp", std::process::id() as u64 * 1000 + (self as *const _ as u64 % 997));
+        if std::fs::write(&tmp, text).is_ok() {
+            let _ = std::fs::rename(&tmp, &path);
         }
     }
 }
