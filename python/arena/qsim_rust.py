@@ -38,6 +38,7 @@ STRATEGIES = {
     "trend_follower": "strategies/trend_follower.py",
     "fallback_maker": "python/bots/qminers/candidates/r0_F1_fallback.py",
     "room_maker": "python/bots/qminers/families/room_maker.py",
+    "shrink_maker": "python/bots/qminers/families/shrink_maker.py",  # room_maker.rs, with DEPL_FRAC and REACT_CANCEL
     "probe": "python/tests/fixtures/qsim_probe.py",
 }
 
