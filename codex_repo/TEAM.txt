@@ -7,4 +7,9 @@ Sol
 
 ===
 
-This Codex session only. Subscription plan, token usage and cost estimate are not visible to the agent; to be provided by the user.
+This Codex session only, approximately as of 2026-11-07 14:15 UTC:
+58.77 million total reported tokens.
+58.39 million input tokens, including 57.87 million cached input tokens.
+0.524 million uncached input tokens.
+0.378 million output tokens, including 0.231 million reasoning tokens.
+Counts come from this session's usage counters. Subscription plan and monetary cost are not available to the agent.
