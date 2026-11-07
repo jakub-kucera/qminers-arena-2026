@@ -37,6 +37,10 @@
 //! cancelled that no longer counts toward EXPOSURE (v2: 1.0, `ceil(q * (1 - CANCEL_FREE))`); `HEDGE` (0: off), an
 //! IOC HEDGE_TICKS (10) through the cached touch (at most HEDGE_STALE_US, 100000, old) for |inventory| - EXPOSURE
 //! whenever |inventory| > EXPOSURE, one at a time, from book updates and from private fills (v2's `_hedge`).
+//! Event-time labels (R1-C7), off by default: `LABEL_MODE` (0: clock time; 1: the first model's label is the mid's
+//! change at its `LABEL_K`-th (1) change after the observation, dropped if not within `LABEL_CAP_US` (5000000), its
+//! observations unbounded by the 64 cap; 2: the sign of that change), the blend's second model staying on clock
+//! time; `PRED_SCALE` (1.0), a multiplier on the first model's output before its clamp.
 
 use std::collections::{HashSet, VecDeque};
 
@@ -91,7 +95,7 @@ fn clamp(x: f64, lo: f64, hi: f64) -> f64 {
 
 struct Model {
     horizon_us: i64,
-    observations: VecDeque<(i64, f64, [f64; NM])>,
+    observations: VecDeque<(i64, f64, [f64; NM], i64)>,
     last_fit_us: Option<i64>,
     last_label_us: Option<i64>,
     labels: i64,
@@ -175,6 +179,13 @@ pub struct RidgeMaker {
     std_on: i64,
     std_us: i64,
     blend_w: f64,
+    label_mode: i64,
+    label_k: i64,
+    label_cap_us: i64,
+    pred_scale: f64,
+    /// the number of mid changes seen so far and the last mid
+    mid_changes: i64,
+    last_mid: Option<f64>,
     seen: HashSet<u64>,
     seen_next: HashSet<u64>,
     /// per tau: [bid at/inside, bid all, ask at/inside, ask all]
@@ -197,13 +208,14 @@ pub struct RidgeMaker {
     invalid_since: Option<i64>,
 }
 
-pub const KEYS: [&str; 43] = [
+pub const KEYS: [&str; 47] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
     "DEPLETE_LOTS", "DEPL_FRAC", "TAKE_LOTS", "TAKE_OWN", "TAKE_DEPLETE", "TAKE_MAX", "TAKE_MS",
     "PLACE", "PLACE_US1", "PLACE_US2", "DEPTH5", "FLOW2", "LAST_AGG", "STD", "STD_US", "BLEND_W", "H2_US",
     "EXPOSURE", "CANCEL_FREE", "HEDGE", "HEDGE_TICKS", "HEDGE_STALE_US",
+    "LABEL_MODE", "LABEL_K", "LABEL_CAP_US", "PRED_SCALE",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -278,6 +290,12 @@ impl RidgeMaker {
             std_on: params.int("STD", 0)?,
             std_us: params.int("STD_US", 60_000_000)?,
             blend_w: params.float("BLEND_W", 0.0)?,
+            label_mode: params.int("LABEL_MODE", 0)?,
+            label_k: params.int("LABEL_K", 1)?,
+            label_cap_us: params.int("LABEL_CAP_US", 5_000_000)?,
+            pred_scale: params.float("PRED_SCALE", 1.0)?,
+            mid_changes: 0,
+            last_mid: None,
             seen: HashSet::new(),
             seen_next: HashSet::new(),
             place_acc: [[0.0; 4]; 2],
@@ -304,14 +322,32 @@ impl RidgeMaker {
         let n = self.n;
         let (min_labels, memory, fit_us, ridge_min, ridge_frac) =
             (self.min_labels, self.model_memory_us, self.fit_us, self.ridge_min, self.ridge_frac);
+        // the event-time label is the first model's; the blend's second model stays on clock time
+        let (label_mode, label_k, label_cap_us, changes) =
+            (if which == 0 { self.label_mode } else { 0 }, self.label_k, self.label_cap_us, self.mid_changes);
         let m = if which == 0 { &mut self.m1 } else { &mut self.m2 };
-        while let Some(&(observed_us, old_mid, features)) = m.observations.front() {
-            if observed_us + m.horizon_us > now {
-                break;
-            }
-            m.observations.pop_front();
-            if now - observed_us > m.horizon_us + 1_000_000 {
-                continue;
+        while let Some(&(observed_us, old_mid, features, count)) = m.observations.front() {
+            if label_mode > 0 {
+                // event time: the label is the mid at its LABEL_K-th change after the observation
+                if count + label_k <= changes {
+                    m.observations.pop_front();
+                    if now - observed_us > label_cap_us {
+                        continue;
+                    }
+                } else if now - observed_us > label_cap_us {
+                    m.observations.pop_front();
+                    continue;
+                } else {
+                    break;
+                }
+            } else {
+                if observed_us + m.horizon_us > now {
+                    break;
+                }
+                m.observations.pop_front();
+                if now - observed_us > m.horizon_us + 1_000_000 {
+                    continue;
+                }
             }
             let elapsed = match m.last_label_us {
                 None => 0,
@@ -319,7 +355,10 @@ impl RidgeMaker {
             };
             let decay = ((-(elapsed.max(0))) as f64 / memory as f64).exp();
             m.last_label_us = Some(now);
-            let response = clamp(mid - old_mid, -20.0, 20.0);
+            let mut response = clamp(mid - old_mid, -20.0, 20.0);
+            if label_mode == 2 {
+                response = if response > 0.0 { 1.0 } else if response < 0.0 { -1.0 } else { 0.0 };
+            }
             m.mass = m.mass * decay + 1.0;
             for i in 0..n {
                 m.xy[i] = m.xy[i] * decay + features[i] * response;
@@ -711,27 +750,33 @@ impl Strategy for RidgeMaker {
                 features[i] /= (self.std_m2[i] / self.std_mass).sqrt() + 1e-9;
             }
         }
+        if self.last_mid != Some(mid) {
+            if self.last_mid.is_some() {
+                self.mid_changes += 1;
+            }
+            self.last_mid = Some(mid);
+        }
         self.learn(0, now, mid);
         if self.blend_w > 0.0 {
             self.learn(1, now, mid);
         }
         if now - self.last_observation_us >= self.observation_interval_us {
-            if self.m1.observations.len() == OBS_MAXLEN {
+            if self.label_mode == 0 && self.m1.observations.len() == OBS_MAXLEN {
                 self.m1.observations.pop_front();
             }
-            self.m1.observations.push_back((now, mid, features));
+            self.m1.observations.push_back((now, mid, features, self.mid_changes));
             if self.blend_w > 0.0 {
                 if self.m2.observations.len() == OBS_MAXLEN {
                     self.m2.observations.pop_front();
                 }
-                self.m2.observations.push_back((now, mid, features));
+                self.m2.observations.push_back((now, mid, features, self.mid_changes));
             }
             self.last_observation_us = now;
         }
         let mut prediction = 0.25 * spread_f * imbalance;
         if self.m1.labels >= self.min_labels {
-            prediction =
-                clamp(py_sum(self.m1.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x)), -2.0, 2.0);
+            let raw = py_sum(self.m1.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x));
+            prediction = clamp(if self.pred_scale != 1.0 { raw * self.pred_scale } else { raw }, -2.0, 2.0);
             if self.blend_w > 0.0 && self.m2.labels >= self.min_labels {
                 let p2 =
                     clamp(py_sum(self.m2.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x)), -2.0, 2.0);
