@@ -1,0 +1,57 @@
+{
+  "scope": "Development first 60% only; no final selection.",
+  "hypotheses": [
+    "Persistent slower price drift versus reversion, using identical execution",
+    "Strict 100-lot exposure; full spread crossing and actual native latency",
+    "No virtual-edge guard or parameter fitting; four predeclared causal EMA rules"
+  ],
+  "candidates": [
+    {
+      "name": "trend_1s_10s",
+      "file": "logs\\round2_drift_batch\\sources\\trend_1s_10s.py",
+      "source_sha256": "e9d9453384ef3c9dd2ef26ef29107790781d59dacd111a4b358dc38294a2ca69",
+      "risk": "strict100"
+    },
+    {
+      "name": "reversion_1s_10s",
+      "file": "logs\\round2_drift_batch\\sources\\reversion_1s_10s.py",
+      "source_sha256": "eb06d2353c1564abc341cb83bcbf4afd05e818cea9c90e82f5667cf5bdec658f",
+      "risk": "strict100"
+    },
+    {
+      "name": "trend_5s_30s",
+      "file": "logs\\round2_drift_batch\\sources\\trend_5s_30s.py",
+      "source_sha256": "0e8c720e438296161cbd45b0827608b91b9a7f2cb7ba77d8549d65c7fe4f0bf6",
+      "risk": "strict100"
+    },
+    {
+      "name": "reversion_5s_30s",
+      "file": "logs\\round2_drift_batch\\sources\\reversion_5s_30s.py",
+      "source_sha256": "641a599d1442d6b0a5514017f4ce56061e763612fde67f6b0cc2a66a9ef28889",
+      "risk": "strict100"
+    }
+  ],
+  "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "target_full_public_net": 100000
+}

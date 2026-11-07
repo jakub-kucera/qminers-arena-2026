@@ -1,0 +1,18 @@
+{
+  "100000": {
+    "train_samples": 77450,
+    "test_samples": 77892,
+    "future_return_correlation": 0.4110947924959313,
+    "mae": 0.18264227292001686,
+    "zero_mae": 0.14981641246854618,
+    "export_max_error": 0.0
+  },
+  "400000": {
+    "train_samples": 77402,
+    "test_samples": 77856,
+    "future_return_correlation": 0.34800974690176634,
+    "mae": 0.538857170239609,
+    "zero_mae": 0.5185470612412659,
+    "export_max_error": 0.0
+  }
+}

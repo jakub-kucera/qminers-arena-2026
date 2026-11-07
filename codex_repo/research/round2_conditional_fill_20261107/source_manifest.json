@@ -1,0 +1,20 @@
+[
+  {
+    "name": "fill_value_minus0p1",
+    "file": "logs\\round2_conditional_fill\\sources\\fill_value_minus0p1.py",
+    "source_sha256": "f5582951afb8b94f5ba63efcd6b703857fee6be8a22dde8ca485202da3c11179",
+    "risk": "strict100"
+  },
+  {
+    "name": "fill_value_0",
+    "file": "logs\\round2_conditional_fill\\sources\\fill_value_0.py",
+    "source_sha256": "3f242f92de4b6edf9c12e3fb3ad69688193ed09ea5a393b65f9c0649a661ad66",
+    "risk": "strict100"
+  },
+  {
+    "name": "fill_value_0p1",
+    "file": "logs\\round2_conditional_fill\\sources\\fill_value_0p1.py",
+    "source_sha256": "021c7b60773339ba7242abb5a50bad323fa6b2da432e43cde735ddc85fcefd93",
+    "risk": "strict100"
+  }
+]

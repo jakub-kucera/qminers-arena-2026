@@ -1,0 +1,186 @@
+{
+  "scope": "First 60% public development only; overlapping markouts are descriptive.",
+  "source_sha256": "56152dc8f79f7bfb68ff458ac53af0e807a65b7d8350d96162f81a8d5ed4af3b",
+  "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+  "exact_result_parity": true,
+  "result": {
+    "fills": 12241,
+    "traded_volume": 688520,
+    "inventory": 100,
+    "cash": -1001338.0,
+    "mark_price": 9945.0,
+    "breach_penalty": 0.0,
+    "pnl": -6838.0,
+    "pnl_se": 16578.97553769163,
+    "abs_inventory_q50": 98,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "horizons": {
+    "5000": {
+      "all": {
+        "volume": 683974.0,
+        "markout_per_lot": 0.37707354373119445,
+        "private_fill_events": 15700
+      },
+      "small": {
+        "volume": 59901.0,
+        "markout_per_lot": 0.43256373015475535,
+        "private_fill_events": 6102
+      },
+      "large": {
+        "volume": 624073.0,
+        "markout_per_lot": 0.3717473757076496,
+        "private_fill_events": 9598
+      },
+      "aligned_forecast": {
+        "volume": 222202.0,
+        "markout_per_lot": 0.3600372633909686,
+        "private_fill_events": 5033
+      },
+      "opposed_forecast": {
+        "volume": 33876.0,
+        "markout_per_lot": 0.4677500295194238,
+        "private_fill_events": 839
+      }
+    },
+    "20000": {
+      "all": {
+        "volume": 683664.0,
+        "markout_per_lot": 0.31787617894170234,
+        "private_fill_events": 15687
+      },
+      "small": {
+        "volume": 59865.0,
+        "markout_per_lot": 0.3767894429132214,
+        "private_fill_events": 6097
+      },
+      "large": {
+        "volume": 623799.0,
+        "markout_per_lot": 0.3122223664994654,
+        "private_fill_events": 9590
+      },
+      "aligned_forecast": {
+        "volume": 221515.0,
+        "markout_per_lot": 0.3066857774868519,
+        "private_fill_events": 5017
+      },
+      "opposed_forecast": {
+        "volume": 34197.0,
+        "markout_per_lot": 0.20351200397695704,
+        "private_fill_events": 838
+      }
+    },
+    "100000": {
+      "all": {
+        "volume": 684291.0,
+        "markout_per_lot": 0.2359705154678346,
+        "private_fill_events": 15692
+      },
+      "small": {
+        "volume": 59791.0,
+        "markout_per_lot": 0.33318559649445567,
+        "private_fill_events": 6092
+      },
+      "large": {
+        "volume": 624500.0,
+        "markout_per_lot": 0.22666293034427543,
+        "private_fill_events": 9600
+      },
+      "aligned_forecast": {
+        "volume": 222132.0,
+        "markout_per_lot": 0.2710798084022113,
+        "private_fill_events": 5019
+      },
+      "opposed_forecast": {
+        "volume": 34243.0,
+        "markout_per_lot": -0.1971643839616856,
+        "private_fill_events": 843
+      }
+    },
+    "400000": {
+      "all": {
+        "volume": 682980.0,
+        "markout_per_lot": 0.03363422062139448,
+        "private_fill_events": 15672
+      },
+      "small": {
+        "volume": 59865.0,
+        "markout_per_lot": 0.24254572788774742,
+        "private_fill_events": 6087
+      },
+      "large": {
+        "volume": 623115.0,
+        "markout_per_lot": 0.013563306933712075,
+        "private_fill_events": 9585
+      },
+      "aligned_forecast": {
+        "volume": 221783.0,
+        "markout_per_lot": 0.10051491773490304,
+        "private_fill_events": 5014
+      },
+      "opposed_forecast": {
+        "volume": 34337.0,
+        "markout_per_lot": -0.4738620147362903,
+        "private_fill_events": 844
+      }
+    },
+    "2000000": {
+      "all": {
+        "volume": 683656.0,
+        "markout_per_lot": -0.021760212738570275,
+        "private_fill_events": 15707
+      },
+      "small": {
+        "volume": 60035.0,
+        "markout_per_lot": 0.15470975264429082,
+        "private_fill_events": 6108
+      },
+      "large": {
+        "volume": 623621.0,
+        "markout_per_lot": -0.038748695120914785,
+        "private_fill_events": 9599
+      },
+      "aligned_forecast": {
+        "volume": 221565.0,
+        "markout_per_lot": 0.0874528919278767,
+        "private_fill_events": 5021
+      },
+      "opposed_forecast": {
+        "volume": 34403.0,
+        "markout_per_lot": -0.2029764846089004,
+        "private_fill_events": 847
+      }
+    },
+    "5000000": {
+      "all": {
+        "volume": 682498.0,
+        "markout_per_lot": 0.017200050403078104,
+        "private_fill_events": 15659
+      },
+      "small": {
+        "volume": 59724.0,
+        "markout_per_lot": 0.2571328109302793,
+        "private_fill_events": 6086
+      },
+      "large": {
+        "volume": 622774.0,
+        "markout_per_lot": -0.00580949108344279,
+        "private_fill_events": 9573
+      },
+      "aligned_forecast": {
+        "volume": 220929.0,
+        "markout_per_lot": 0.04293687112149152,
+        "private_fill_events": 5004
+      },
+      "opposed_forecast": {
+        "volume": 34190.0,
+        "markout_per_lot": 0.048625329043579996,
+        "private_fill_events": 842
+      }
+    }
+  },
+  "caveat": "Prefill state is the last public callback; future sampled midpoint within 20 ms of target. Markouts are not completed round-trip PnL.",
+  "fill_count_definition": "Native fills counts distinct filled order IDs; callbacks include partial fills. Neither equals completed round trips."
+}

@@ -45,12 +45,13 @@ def build():
     return cases
 
 
-def main():
+def run(root, cases, hypotheses):
+    ROOT = root
     intake = load_manifest(Path('logs/round2_local_intake'))
     ROOT.mkdir(parents=True, exist_ok=True)
     (ROOT/'sources').mkdir(exist_ok=True)
     candidates = []
-    for name, text in build().items():
+    for name, text in cases.items():
         path = ROOT/'sources'/(name+'.py')
         if path.exists():
             assert path.read_text() == text, 'Frozen source changed'
@@ -59,9 +60,7 @@ def main():
         assert not check(path), check(path)
         candidates.append(dict(name=name, file=str(path), source_sha256=digest(path), risk='strict100'))
     protocol = dict(scope='Development first 60% only; no final selection.',
-                    hypotheses=['Clipped response limits jump influence',
-                                'Smaller child orders replenish without canceling equal-price orders',
-                                'Rich-feature longer-horizon IOC entry with explicit spread hurdle'],
+                    hypotheses=hypotheses,
                     candidates=candidates, data_sha256=intake['development_sha256'],
                     native=intake['native'], target_full_public_net=100000)
     frozen = ROOT/'protocol.json'
@@ -71,6 +70,11 @@ def main():
         write_json(frozen, protocol)
     destination = ROOT/'results.json'
     results = json.loads(destination.read_text()) if destination.exists() else {}
+    for candidate in candidates:
+        if candidate['name'] in results:
+            cached = results[candidate['name']]
+            assert cached['source_sha256'] == candidate['source_sha256']
+            assert cached['data_sha256'] == intake['development_sha256']
     with ProcessPoolExecutor(max_workers=6) as pool:
         jobs = {pool.submit(run_candidate, c, intake['development'], ROOT/c['name'],
                             (intake['development_cutoff_us'],)):c['name']
@@ -83,4 +87,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    run(ROOT, build(), ['Clipped response limits jump influence',
+                       'Smaller child orders replenish without canceling equal-price orders',
+                       'Rich-feature longer-horizon IOC entry with explicit spread hurdle'])

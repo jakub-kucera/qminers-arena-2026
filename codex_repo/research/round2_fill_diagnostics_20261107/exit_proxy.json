@@ -1,0 +1,17 @@
+{
+  "scope": "Development only; hypothetical touch exit, no latency or depth replay. Not executable PnL.",
+  "horizons": {
+    "100000": {
+      "mid_markout_per_lot": 0.2359705154678346,
+      "touch_exit_proxy_per_lot": -0.3618051384571768
+    },
+    "400000": {
+      "mid_markout_per_lot": 0.03363422062139448,
+      "touch_exit_proxy_per_lot": -0.5771677062285865
+    },
+    "2000000": {
+      "mid_markout_per_lot": -0.021760212738570275,
+      "touch_exit_proxy_per_lot": -0.6194913816305276
+    }
+  }
+}

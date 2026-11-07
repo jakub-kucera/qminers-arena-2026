@@ -161,3 +161,12 @@ jump-resistant prediction and selective taker policies. Do not optimize raw
 fill count as a substitute for competition net PnL or copy a round-1 regime
 assumption into round 2. This evidence does not justify increasing exposure
 without measured incremental net profit.
+
+The local scorer was subsequently inspected: `SimulationResult.fills` is
+`len(self._filled_order_ids)`, the number of distinct user orders that received
+a fill. It is not the number of individual executions or private callbacks.
+On the robust round-2 development replay, 12,241 native filled orders generated
+more private fill callbacks because orders could fill partially. Confirm that
+the reported leaderboard statistic uses this same definition before inferring
+execution-event frequency. Smaller child orders can increase this metric at
+unchanged traded volume.

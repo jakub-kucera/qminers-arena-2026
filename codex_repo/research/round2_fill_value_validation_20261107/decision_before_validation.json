@@ -1,0 +1,8 @@
+{
+  "candidate": "fill_value_0p1",
+  "reason": "Highest later-development PnL among three nearby positive thresholds; freeze this single active model before reserved validation.",
+  "comparison": "No-trade control; no further threshold choice on validation.",
+  "requirement": "Positive next-20% net gain to beat flat; unchanged source then evaluated on final20%. Full target >=100000 is not yet achieved.",
+  "development_training_warning": "First30m trained the fixed model. Next30m is out-of-time for fitting but previously inspected development data.",
+  "source_sha256": "021c7b60773339ba7242abb5a50bad323fa6b2da432e43cde735ddc85fcefd93"
+}
