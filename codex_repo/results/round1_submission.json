@@ -1,132 +1,137 @@
 {
-  "name": "release_1.0_private_True",
+  "name": "supplied_claude_595k",
+  "file": "strategies/round1_submission.py",
+  "archive_file": "strategies/round1_claude_595k.py",
+  "source_sha256": "964531acc36a7209fa965a1a045a28e76c79b0f797fe46861f58392b28a04e2b",
+  "data_file": "data/round1.csv",
+  "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
   "result": {
     "result": {
-      "fills": 24015,
-      "traded_volume": 2247040,
+      "fills": 21120,
+      "traded_volume": 2108898,
       "inventory": 100,
-      "cash": -429793.0,
+      "cash": -405738.0,
       "mark_price": 10029.0,
-      "breach_penalty": 1869.7499999999995,
-      "pnl": 571237.25,
-      "pnl_se": 11199.083980039984,
-      "abs_inventory_q50": 95,
+      "breach_penalty": 1720.1699999999998,
+      "pnl": 595441.83,
+      "pnl_se": 11199.542570427433,
+      "abs_inventory_q50": 100,
       "abs_inventory_q68": 100,
       "abs_inventory_q95": 100,
       "abs_inventory_q997": 100
     },
-    "runtime_seconds": 129.22669487493113,
+    "runtime_seconds": 158.31721404218115,
     "max_abs_inventory": 256,
-    "max_potential_inventory_at_submission": 358,
-    "max_drawdown_1s": 728.0,
-    "submissions": 72326,
+    "max_potential_inventory_at_submission": 378,
+    "max_drawdown_1s": 818.0,
+    "submissions": 74231,
     "order_status_counts": {
-      "accepted": 72326,
-      "partially_filled": 19023,
-      "canceled": 53121,
-      "filled": 19204,
-      "rejected": 143
+      "accepted": 74231,
+      "partially_filled": 17894,
+      "canceled": 58383,
+      "filled": 15847,
+      "rejected": 115
     },
     "blocks": [
       {
         "start_s": 0.0,
         "end_s": 600.0,
-        "pnl_increment": 28074.25
+        "pnl_increment": 25820.0
       },
       {
         "start_s": 600.0,
         "end_s": 1200.0,
-        "pnl_increment": 27265.0
+        "pnl_increment": 27518.0
       },
       {
         "start_s": 1200.0,
         "end_s": 1800.0,
-        "pnl_increment": 26401.0
+        "pnl_increment": 25614.0
       },
       {
         "start_s": 1800.0,
         "end_s": 2400.0,
-        "pnl_increment": 28024.0
+        "pnl_increment": 30601.0
       },
       {
         "start_s": 2400.0,
         "end_s": 3000.0,
-        "pnl_increment": 25736.0
+        "pnl_increment": 27021.0
       },
       {
         "start_s": 3000.0,
         "end_s": 3600.0,
-        "pnl_increment": 34058.0
+        "pnl_increment": 34292.0
       },
       {
         "start_s": 3600.0,
         "end_s": 4200.0,
-        "pnl_increment": 29800.0
+        "pnl_increment": 31606.0
       },
       {
         "start_s": 4200.0,
         "end_s": 4800.0,
-        "pnl_increment": 27564.0
+        "pnl_increment": 30323.829999999987
       },
       {
         "start_s": 4800.0,
         "end_s": 5400.0,
-        "pnl_increment": 27770.0
+        "pnl_increment": 31968.00000000003
       },
       {
         "start_s": 5400.0,
         "end_s": 6000.0,
-        "pnl_increment": 28962.0
+        "pnl_increment": 30248.0
       },
       {
         "start_s": 6000.0,
         "end_s": 6600.0,
-        "pnl_increment": 28998.0
+        "pnl_increment": 29407.0
       },
       {
         "start_s": 6600.0,
         "end_s": 7200.0,
-        "pnl_increment": 31136.0
+        "pnl_increment": 31897.0
       },
       {
         "start_s": 7200.0,
         "end_s": 7800.0,
-        "pnl_increment": 26490.0
+        "pnl_increment": 29385.0
       },
       {
         "start_s": 7800.0,
         "end_s": 8400.0,
-        "pnl_increment": 30252.0
+        "pnl_increment": 33216.0
       },
       {
         "start_s": 8400.0,
         "end_s": 9000.0,
-        "pnl_increment": 30593.0
+        "pnl_increment": 30166.0
       },
       {
         "start_s": 9000.0,
         "end_s": 9600.0,
-        "pnl_increment": 27143.0
+        "pnl_increment": 29127.0
       },
       {
         "start_s": 9600.0,
         "end_s": 10200.0,
-        "pnl_increment": 26828.0
+        "pnl_increment": 29348.0
       },
       {
         "start_s": 10200.0,
         "end_s": 10800.0,
-        "pnl_increment": 30731.0
+        "pnl_increment": 32234.99999999994
       },
       {
         "start_s": 10800.0,
         "end_s": 11400.0,
-        "pnl_increment": 27645.0
+        "pnl_increment": 27372.0
       },
       {
         "start_s": 11400.0,
         "end_s": 11999.990364,
-        "pnl_increment": 27767.0
+        "pnl_increment": 28277.0
       }
     ],
     "config": {
@@ -143,32 +148,14 @@
       "show_progress": false,
       "progress_fd": 2
     },
-    "source": "logs/round1/cancel_replace/sources/release_1.0_private_True.py",
-    "source_sha256": "c42e224efa618f3b8ca6ab502513157bf8087598b09725752c79fa8084a971c9",
-    "gross_pnl_before_penalty": 573107.0
+    "source": "strategies/round1_claude_595k.py",
+    "source_sha256": "964531acc36a7209fa965a1a045a28e76c79b0f797fe46861f58392b28a04e2b",
+    "gross_pnl_before_penalty": 597162.0
   },
-  "parameters": {
-    "released_cancel_reservation_fraction": 1.0,
-    "private_hedge": true,
-    "source_sha256": "c42e224efa618f3b8ca6ab502513157bf8087598b09725752c79fa8084a971c9"
-  },
-  "limitation": "Sample tuning. Actual inventory can exceed 100 temporarily; native penalties are included in net PnL.",
-  "file": "strategies/round1_submission.py",
-  "source_sha256": "967f085a93038e60b651fa38846bb146a953602d7a5ba4bfc99ad2cf462b0c4d",
-  "audited_source_sha256": "c42e224efa618f3b8ca6ab502513157bf8087598b09725752c79fa8084a971c9",
-  "ast_equivalent_except_module_docstring": true,
-  "data_file": "data/round1.csv",
-  "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
-  "verification": "Every unmodified CLI result field matches the audited replay; source and data SHA-256 verified.",
   "official_cli_match": true,
-  "tests_passed": 51,
-  "archive_file": "strategies/round1_pipeline_571k.py",
+  "official_cli_result": "logs/round1/claude_improvements/official_baseline/result.json",
+  "verification": "Every result field exactly matches the unmodified organizer CLI.",
+  "limitation": "Sample tuning on previously evaluated data; temporary actual inventory breaches are fully charged.",
   "comparison_threshold": 650000,
-  "margin_vs_threshold": -78762.75,
-  "all_ten_minute_blocks_positive": true,
-  "limitations": [
-    "Sample-tuned: no fresh independent holdout.",
-    "Temporary actual inventory breaches are allowed and fully charged; this is not the zero-penalty strategy.",
-    "Competition server has not evaluated this exact file."
-  ]
+  "margin_vs_threshold": -54558.17000000004
 }

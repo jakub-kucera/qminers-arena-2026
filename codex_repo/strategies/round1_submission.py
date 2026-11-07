@@ -1,4 +1,6 @@
-"""Round-1 market maker with pipelined cancel/replace and charged risk.
+"""Round 1 candidate R1-C5 (7 Nov, 17:05): R1-C1b (the codex v2) with HORIZON_US 400000, MODEL_MEMORY_US 1e11 and the dead zone 0.18, the centre of the plateau of a Rust ridge_maker grid on the first 75% of round1.csv: 595,441.83 (penalty 1,720). The notes of R1-C1b follow.
+
+Round-1 market maker with pipelined cancel/replace and charged risk.
 
 The online fifteen-feature forecast uses matured 100 ms labels. Replacement
 orders may be submitted while cancellations are in flight. Provisional
@@ -17,10 +19,10 @@ from simulator.strategy import BaseStrategy
 
 class PassiveStrategy(BaseStrategy):
     FEATURE_COUNT = 15
-    HORIZON_US = 100000
+    HORIZON_US = 400000
     OBSERVATION_INTERVAL_US = 20000
     MIN_LABELS = 200
-    MODEL_MEMORY_US = 300000000
+    MODEL_MEMORY_US = 100000000000
     POSITION_LIMIT = 1000
     QUOTE_SIZE = 200
     REQUOTE_US = 0
@@ -263,7 +265,7 @@ class PassiveStrategy(BaseStrategy):
         if self._labels >= self.MIN_LABELS:
             prediction = max(-2.0,min(2.0,sum(w*x for w,x in zip(self._weights,features))))
         fair = mid + 1.0*prediction + 0.0*0.25*spread*imbalance - skew
-        if abs(fair-mid) <= 0.1:
+        if abs(fair-mid) <= 0.18:
             fair = mid
         buy = min(bid,floor(fair-0.5))
         sell = max(ask,ceil(fair+0.5))
