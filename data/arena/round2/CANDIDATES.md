@@ -186,3 +186,8 @@ Trials so far (this worktree): 4 experiments, 34 cells.
 
 ### 21:50: R2-T2 on the validation tape: the round-2 final (uploaded 21:43; `data/arena/round2/r2_T2_take_only_safe_res/`)
 - **+490,359.00** (fills 251,965, volume 1,130,142, end +84 at 10,480.24, **breach 0** (T1 21,956), pnl_se 47,979, |pos| q50 92, 5 min 50 s). The best validation score of the round; the breach fix worked on the server's tape.
+
+### 22:10: R2-M4 (`python/bots/qminers/candidates/r2_M4_flow_window.py`): M2 with a 125-ms flow window at 575 lots
+- R2-M2 with the big signal from the net market-taker lots over the last FLOW_MS 125 ms (from the diagnosis agent's working copy `m2x.py`), MIN_LOTS 575, no stop; the default-off form is M2 exactly.
+- Grid (`arena.qgrid ... --grid FLOW_MS=0,50,100,150,250 --grid MIN_LOTS=500,600,700`, then `--grid FLOW_MS=100,125,150 --grid MIN_LOTS=550,600,650`) on round 2 public, the mirror, the stitched validation-like tapes (hi_vol_fast1.25, hi_vol, hi_vol_fast1.5) and round 1: FLOW 100-150 x MIN 550-600 a plateau (public 164-177k; hi_vol_fast1.25 683-757k; hi_vol 553-578k); 650+ drops; round 1 -1.1k to 0 (the gate).
+- R2-M4: round2_public 175,116 (M2 116,620), the mirror 175,116, hi_vol_fast1.25 715,261 (M2 424,204), hi_vol 577,719 (M2 345,646), round1 0, rebuilt round-1 private 0; breach 0 everywhere; validate OK; ~10-20 s a run. Caveat: the stitched tapes reuse the public tape's events, so their levels are in-sample; M2's stitched-to-validation ratio was 0.89.
