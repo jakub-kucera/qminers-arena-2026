@@ -12,6 +12,10 @@ run's results and `leaderboard.json` go in this folder too.
 - The Rust `ridge_maker` reproduces R2-T2, L1, L3, L8 and L9 to the byte on `round2_public.csv` (pnl.csv, result.json; `test_ridge_maker_round2_takers`): 10-13 s a run against 140-180 s in Python, 4 threads a grid. The `--set` line of each is in `rust/README.md` ("R2-T2 ... R2-L9") and `rust/arena_sim/src/strategies/ridge_maker.rs`'s doc comment; L9's is L3's and `--set POSITION_LIMIT=100 --set IMPACT_US=500000 --set HUBER=6.0 --set RIDGE_MIN=30 --set RIDGE_FRAC=0.003`.
 - First look (public tape only, not a choice): L9 with L8's quote switch (`--set QUOTE_SIZE=1 --grid QS_RATE=1.5,2.5,3.5`) 325,171 / 318,954 / 322,695 against L9's 317,057 (in 75% 253,490 / 250,191 / 253,836 against 248,287); HUBER 4 / 6 / 9 317,046 / 317,057 / 316,329.
 
+## Rule for round 3: Rust first (8 Nov, 01:05)
+- Round 2's last 90 minutes ran every L-family test in Python (2-6 min a run) because the winners' Rust twin was only built after midnight; batches of 5 cells instead of hundreds. Now T2, L1, L3, L8 and L9 are in the Rust ridge_maker byte for byte (10-13 s a run; the --set lines in rust/README.md and this file's fast-grid note).
+- So: grid every setting in Rust (`uv run python -m arena.qsim_rust ridge_maker CSV --threads N <sets> --grid ...`); use Python only for the final check of the file to upload. The moment a new bot wins on validation, start an agent porting its change to ridge_maker while the round goes on.
+
 ## Start here (written 00:00, 8 Nov, from round 2)
 
 Round 2's whole story is in `data/arena/round2/HANDOVER.md`, "Round 2 results, marked" (every upload, its validation score, what transferred). The short version: on the server's volatile tapes **the forecast taker won** (R2-L8, the forecast taker with quotes only in slow markets, +826,778 on validation; R2-L3, the pure taker, +804,018), the learned maker with size lost, big-order momentum worked (+376k to +468k), and the edge sits in the bursts.
