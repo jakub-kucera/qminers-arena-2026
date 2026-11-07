@@ -78,3 +78,5 @@ Trials (15:10): 11 experiments, 103 cells, every choice by `in 75%` (F7 368,589)
 4. Robustness: full +22,463; last 25% +4,117; 12 of 12 segments; max drawdown 519 vs F7's 570 (9% smaller); wall 55.9 s x3 = 168 s against the 900 s limit; sample_v2 234,661 against the floor 205,937, +5,768 over F7.
 5. The claim: every stated figure reproduces; nothing overstated. The docstring's "last 25% 132,063" is qgrid's out column (its cut lands 116 before pnl.csv's 9,000-s point), the board's 131,947 the pnl.csv figure, both +4.1k; wall 45 s claimed, 55.9 s under load. By-product: the take alone on F7 (ALLOC_K 0, JOIN_OWN 0) gives 504,264 (in 374,999), so each of the three additions contributes.
 PASS.
+
+Paired block bootstrap, 15:35 (logs/r1_F8_full and logs/r1_F7_full pnl.csv, 1-s PnL steps resampled in blocks, 2,000 draws, seed 7): F8 p5 507,068 / 509,182 / 511,765 with 60 / 300 / 1,000-s blocks (F7's p5 484.5k); F8 minus F7 mean +22.2k to +23.1k, p5 +17.0k to +18.2k, no draw below 0. The gain is not one lucky stretch.
