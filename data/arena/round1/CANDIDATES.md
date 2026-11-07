@@ -36,7 +36,8 @@ command in "Trials". Pluses and minuses are measured facts, not hopes.
 
 ## F5 or F6 (the user: decide before the 17:30 freeze; F5 uploaded as the final meanwhile)
 - F6 against F5 on round1 in twelve 1,000 s segments (both runs' pnl.csv): F6 ahead in 8 of 12, mean +2,271 a segment (sd 2,566, t = 3.1), worst -1,025, best +5,700: a steady edge on round 1's market, not one stretch.
-- Against it: sample_v2 (2-tick spread 58% of the time) -35k for F6. The private round-1 tape is most likely from round1.csv's generator (1-tick 93%), where F6 leads.
+- Against it: sample_v2 (2-tick spread 58% of the time) -35k for F6.
+- Resampled hours (14:35; 10,000 paired resamples of round1's 48 blocks of 250 s, from each run's pnl.csv): mean / 5th percentile: F5 455,745 / 439,895, F6 483,040 / 468,866, F6b 489,788 / 476,700, F7 496,535 / 484,473; P(F7 > F6b) 0.987, P(F7 > F6) and P(F7 > F5) 1.000. Within round 1's market F7 is ahead almost always; this says nothing about a different regime (sample_v2: F7 -8k against F6). The private round-1 tape is most likely from round1.csv's generator (1-tick 93%), where F6 leads.
 
 ## Dropped
 <!-- id, why (with the numbers), the iteration -->
