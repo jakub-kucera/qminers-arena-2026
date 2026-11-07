@@ -23,7 +23,11 @@ class CandidateEngine(AuditedSimulator):
 
 def run(source,data,out):
     source,data,out=Path(source),Path(data),Path(out)
-    result=evaluate(load_strategy_from_file(source),data,out,600,CandidateEngine)
+    strategy=load_strategy_from_file(source)
+    result=evaluate(strategy,data,out,600,CandidateEngine)
+    if hasattr(strategy,'_weights'):
+        result['learner_at_end']={'weights':strategy._weights,'matured_labels':strategy._labels,
+                                  'effective_mass':strategy._mass}
     result['source']=str(source)
     result['source_sha256']=digest(source)
     if result['result']['breach_penalty'] or result['max_potential_inventory_at_submission']>100:

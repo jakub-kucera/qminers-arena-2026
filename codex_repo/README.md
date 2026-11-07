@@ -1,6 +1,18 @@
 # Qminers trading hackathon starter
 
-**Latest round-1 candidate: `strategies/round1_depth_advantage.py`.** Verified
+**Round 1: submit `strategies/round1_submission.py`.** The unmodified
+simulator CLI verifies **554,347** on the supplied `data/round1.csv`, with zero
+position penalty and maximum actual/potential inventory 100 / 100. Final
+metrics and source/input hashes are tracked in `results/round1_submission.json`.
+Earlier 498,056 and 523,999 versions remain separately preserved.
+
+These later scores use repeated tuning on the supplied file; no fresh
+independent holdout remains. The new submission has not been scored by the
+competition server.
+
+## Earlier Codex depth experiment (534,941)
+
+**Preserved depth experiment: `strategies/round1_depth_advantage.py`.** Verified
 local score on the provided `round1.csv`: **534,941**, with zero position
 penalties and maximum actual/submitted potential exposure of 100. This improves
 the supplied 523,999 depth strategy by **10,942 (+2.09%)**. The original 476,052,
@@ -35,7 +47,7 @@ passed on Windows, including the new causal-learning and risk checks.
 See the [architecture and results report](research/depth_advantage_20261107/report.html),
 [frozen protocol and results](research/depth_advantage_20261107/README.txt), and
 [machine-readable summary](research/depth_advantage_20261107/summary.json).
-Run the submission with:
+Reproduce this earlier experiment with:
 
 ```bash
 uv run python -m simulator.main --strategy strategies/round1_depth_advantage.py --backtest data/round1.csv --log-dir logs/depth-advantage --no-logs
@@ -419,7 +431,7 @@ uv run python -m simulator.main --strategy strategies/passive_v2_champion.py \
 
 ## Original round-1 submission and evaluation (476,052)
 
-**Submit `strategies/round1_best.py` as the single strategy file.** The model
+**Earlier validated candidate: `strategies/round1_best.py`.** The model
 returns **476,052** on the supplied full `data/round1.csv`, exceeding the reported
 430,000 reference by 46,052. The unmodified simulator CLI reproduces the entire
 result from the audited replay exactly. The new model has not yet been evaluated
@@ -512,6 +524,90 @@ order-count imbalance, per-order quantities capped at 100 lots, and liquidity
 within two ticks of each touch. This extends the eight-feature 498,056 model;
 it does not replace that archived source. Full metrics and source/input hashes
 are tracked in `results/round1_523999.json`. It also uses already consumed data.
+
+`strategies/round1_depth_nonlinear_534k.py` preserves a later **534,332**
+audited round-1 replay with zero penalty. It adds signed nonlinear transforms
+of touch order-count imbalance and capped-quantity imbalance, for fifteen
+features in total. Metrics and verification status are tracked in
+`results/round1_534332.json`. This is another sample-tuned version; the earlier
+498,056 and 523,999 files remain separately preserved.
+
+Later sample-tuned milestones are preserved as `strategies/round1_queue_538k.py`
+(**538,075**) and `strategies/round1_queue_545k.py` (**544,764**). The latter
+samples training observations every 20 ms and may replenish free exposure
+while cancels are pending. Pending cancellations still reserve their remaining
+quantity until confirmation. Both actual and potential inventory stay within
+100 lots; all replay penalties are zero. Result manifests are tracked in
+`results/round1_538075.json` and `results/round1_544764.json`.
+
+Transfer checks for the 534,332 model returned 270,735 on sample v2 and -13,506
+on the original thin-book sample. These are checks on previously consumed data,
+not independent validation. Their metrics are saved in
+`results/round1_534k_transfer.json`; the round-1 candidates are specialized for
+the denser round-1 market. Forty-three tests pass, including 10,000 randomized
+fill/cancel/reject transitions with overlapping quote replacements.
+
+`strategies/round1_inside_551k.py` preserves an audited **550,873** round-1
+replay: zero penalty, maximum actual/potential inventory 100 / 100, sampled
+maximum drawdown 744. It quotes one tick inside spreads of at least two ticks
+only when predicted price edge after inventory skew exceeds 0.25 ticks.
+The 0.10 threshold scored 520,553; the 0.50 threshold scored 545,129. The
+threshold is selected from the same already evaluated round-1 file.
+Metrics and verification status are tracked in `results/round1_550873.json`.
+
+`strategies/round1_private_554k.py` preserves an audited **554,318** round-1
+replay. It extends the 550,873 candidate by replenishing from cached desired
+quotes immediately after cancellation confirmations, provided the cache is no
+older than 5 ms. Partial-fill notifications update inventory and cash without
+triggering that cached replenishment. Invalid public books clear the cache.
+Actual/potential inventory remain bounded by 100, with zero penalty. Metrics
+and verification status are in `results/round1_554318.json`.
+
+## Latest round-1 submission: 554,347
+
+Use the single standalone file `strategies/round1_submission.py`. Its executable
+AST matches the exact scored experiment; only the module description was
+updated. The canonical file was separately replayed through the unmodified CLI,
+and every result field matches its audited replay.
+
+| Metric | Result |
+| --- | ---: |
+| PnL | 554,347 |
+| Position penalty | 0 |
+| Maximum actual/potential inventory | 100 / 100 |
+| Filled orders | 37,087 |
+| Traded lots | 2,192,606 |
+| End inventory | +100 |
+| Cash | -448,553 |
+| Mark-out price | 10,029 |
+| PnL standard error | 11,205.47 |
+| Maximum drawdown on the 1-second curve | 834 |
+
+The model uses fifteen causal features, 100 ms matured return labels sampled
+every 20 ms, and one-second regression refits. Per-order quantities are capped
+at 20 lots for robust imbalance features. Inventory skew is 0.025 and the
+neutral fair-price band is 0.10 ticks. Selective one-tick inside quotes require
+a spread of at least two ticks and predicted edge after skew above 0.30 ticks.
+Confirmed cancellations replenish from desired quotes at most 5 ms old;
+invalid books clear this cache. All pending exposure remains reserved.
+
+The final 0.30 inside threshold scored only 29 more than 0.25 (554,318), so
+that difference provides little evidence of an improvement on another file.
+The exact 0.25 version is preserved as `strategies/round1_private_554k.py`, and
+the byte-identical 554,347 experiment as `strategies/round1_private_554347.py`.
+All ten-minute PnL increments are positive. Forty-seven tests pass, including
+inside-quote thresholds, non-crossing prices, mature-label timing, randomized
+order races, exact exposure reservations, and stale/invalid cache behavior.
+
+```bash
+.venv/bin/python -m simulator.main --strategy strategies/round1_submission.py \
+  --backtest data/round1.csv --log-dir logs/round1/reproduce_final --no-logs
+```
+
+This exceeds the 550,000 comparison threshold by 4,347. The other team's exact
+current score is unknown. The final result is sample-tuned, has no new holdout,
+and has not yet been evaluated on the competition server. Earlier model files
+and their metrics remain preserved; Git tags identify the score milestones.
 
 ## Additional Codex round-1 research
 
