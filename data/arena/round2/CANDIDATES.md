@@ -183,3 +183,6 @@ Trials so far (this worktree): 4 experiments, 34 cells.
 ### 21:40: a colleague's `round2_composite_local.py` on validation (uploaded 21:35; results in `data/arena/round2/round2_composite_local_res_pep/`; the bot file is not in the repo)
 - +247,165.00 (fills 14,532, volume 1,013,972, end +100, breach 0, pnl_se 47,886, |pos| 100 throughout, 5 min 47 s): below T1 (+485,667), RA (+467,703) and M2 (+376,082).
 - It is now the last upload: the final must be re-uploaded after it.
+
+### 21:50: R2-T2 on the validation tape: the round-2 final (uploaded 21:43; `data/arena/round2/r2_T2_take_only_safe_res/`)
+- **+490,359.00** (fills 251,965, volume 1,130,142, end +84 at 10,480.24, **breach 0** (T1 21,956), pnl_se 47,979, |pos| q50 92, 5 min 50 s). The best validation score of the round; the breach fix worked on the server's tape.
