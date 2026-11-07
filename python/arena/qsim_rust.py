@@ -38,7 +38,9 @@ STRATEGIES = {
     "trend_follower": "strategies/trend_follower.py",
     "fallback_maker": "python/bots/qminers/candidates/r0_F1_fallback.py",
     "room_maker": "python/bots/qminers/families/room_maker.py",
-    "shrink_maker": "python/bots/qminers/families/shrink_maker.py",  # room_maker.rs, with DEPL_FRAC and REACT_CANCEL
+    "shrink_maker": "python/bots/qminers/families/shrink_maker.py",  # room_maker.rs, with DEPL_FRAC, REACT_CANCEL, MOM_LOTS
+    "alloc_maker": "python/bots/qminers/families/alloc_maker.py",  # room_maker.rs at R1-F6's defaults, with ALLOC_K ... ADV_SCOPE
+    "signal_maker": "python/bots/qminers/families/signal_maker.py",  # room_maker.rs at R1-F6's defaults, with MOM_SIZE ... SKEW_TRIM
     "probe": "python/tests/fixtures/qsim_probe.py",
 }
 
