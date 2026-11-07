@@ -1,0 +1,31 @@
+{
+ "g_inserts": 1069859,
+ "f_inserts": 53423,
+ "cancels": 1069782,
+ "g_without_cancel": 77,
+ "g_rate_by_spread_state": {
+  "1": 905019,
+  "2": 125318,
+  "3": 38970
+ },
+ "lifetime_median_by_class": {
+  "touch": 0.31933749999984684,
+  "behind1": 0.31695799999988594,
+  "inside": 0.28241799999977957,
+  "deeper": 0.27159799999986944
+ },
+ "lifetime_median_small_vs_large_orders": [
+  0.31254899999930785,
+  0.31223099999988335
+ ],
+ "f_side_same_as_previous": 0.5017782935869117,
+ "f_interarrival_cv": 1.0418452486496212,
+ "f_per_1000s": [
+  10121,
+  10466,
+  10256,
+  11865,
+  10715
+ ]
+}
+g_rate 178.31/s, f_rate 8.904/s; wrote logs/r2_params.json

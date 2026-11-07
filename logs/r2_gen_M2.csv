@@ -1,0 +1,4 @@
+cell,SELF_GATE,pnl,in_pnl,out_pnl,nbhd,max_drawdown,breach_penalty,fills,traded_volume,abs_inventory_q997,pnl_se,rejected,cancel_rejected,error,pnl:round2_public.csv,pnl:seed1.csv,pnl:seed2.csv,pnl:seed3.csv,pnl:seed4.csv,pnl:seed5.csv,pnl:seed6.csv,pnl:seed7.csv,pnl:seed8.csv,pnl:seed9.csv,pnl:seed10.csv
+baseline,,116486.0,95245.0,21241.0,,19543.0,0.0,1945,277100,100,30565.991653649857,0,0,,116620.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,-134.0,0.0
+grid,0,-2227261.0,-1680803.0,-546458.0,-1055387.5,2347588.0,0.0,41694,5599462,100,68849.32605098888,0,0,,118374.0,-218783.0,-228537.0,-214583.0,-235902.0,-235264.0,-259300.0,-235397.0,-236245.0,-276203.0,-205421.0
+grid,1,116486.0,95245.0,21241.0,-1055387.5,19543.0,0.0,1945,277100,100,30565.991653649857,0,0,,116620.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,-134.0,0.0

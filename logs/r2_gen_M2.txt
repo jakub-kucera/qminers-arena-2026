@@ -1,0 +1,11 @@
+33 runs (2 cells + baseline, 11 files) on 6 jobs
+rank  SELF_GATE         pnl  round2_public.csv  seed1.csv  seed2.csv  seed3.csv  seed4.csv  seed5.csv  seed6.csv  seed7.csv  seed8.csv  seed9.csv  seed10.csv      in 75%   out 25%        nbhd     max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base    (as is)     116,486            116,620          0          0          0          0          0          0          0          0       -134           0      95,245    21,241           -     19,543       0   1,945    277,100         100  30,566    0        0
+   1          1     116,486            116,620          0          0          0          0          0          0          0          0       -134           0      95,245    21,241  -1,055,388     19,543       0   1,945    277,100         100  30,566    0        0
+   2          0  -2,227,261            118,374   -218,783   -228,537   -214,583   -235,902   -235,264   -259,300   -235,397   -236,245   -276,203    -205,421  -1,680,803  -546,458  -1,055,388  2,347,588       0  41,694  5,599,462         100  68,849    0        0
+
+best by pnl      SELF_GATE=1  (116,486)
+best by holdout  SELF_GATE=1  (21,241)
+best by nbhd     SELF_GATE=0  (-1,055,388)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+wrote logs/r2_gen_M2.csv

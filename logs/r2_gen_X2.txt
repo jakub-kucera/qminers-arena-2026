@@ -1,0 +1,8 @@
+20 runs (1 cells + baseline, 10 files) on 4 jobs
+rank  QUOTE_SIZE        pnl  seed1.csv  seed2.csv  seed3.csv  seed4.csv  seed5.csv  seed6.csv  seed7.csv  seed8.csv  seed9.csv  seed10.csv     in 75%  out 25%  nbhd  max dd  breach    fills      volume  |inv| q997  pnl se  rej  cxl rej
+base     (as is)  3,492,224    342,227    357,509    354,623    360,672    341,792    330,033    364,182    341,689    347,636     351,861  2,600,000  892,224     -   2,359  19,126  289,277  22,985,080         100  42,229    0     3948                                                                            !
+   1         200                                                                                                                                                                                                                             ! OverrideError: --set QUOTE_SIZE: the bot has no global named 'QUOTE_SIZE'
+
+! breach penalty in 1 cells (|position| over the limit costs 10,000 a second): base
+! 1 cells raised: QUOTE_SIZE=200 (first: OverrideError: --set QUOTE_SIZE: the bot has no global named 'QUOTE_SIZE')
+wrote logs/r2_gen_X2.csv

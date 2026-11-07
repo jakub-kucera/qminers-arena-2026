@@ -1,0 +1,14 @@
+Simulation complete
+fills=15
+traded_volume=1400
+inventory=0
+cash=-1242.00
+mark_price=10029.00
+breach_penalty=0.00
+pnl=-1242.00
+pnl_se=724.61
+abs_inventory_q50=0
+abs_inventory_q68=0
+abs_inventory_q95=0
+abs_inventory_q997=0
+log_dir=logs/RC_round1

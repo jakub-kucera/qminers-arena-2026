@@ -1,0 +1,23 @@
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:215:5
+    |
+214 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+215 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+33 runs (2 cells + baseline, 11 files) on 6 threads (Rust)
+done in 326.36 s
+rank  EXPOSURE             pnl  round2_public.csv     seed1.csv     seed2.csv     seed3.csv     seed4.csv     seed5.csv     seed6.csv     seed7.csv     seed8.csv     seed9.csv    seed10.csv        in 75%       out 25%       nbhd         max dd         breach      fills      volume  |inv| q997   pnl se  rej  cxl rej
+base   (as is)  -1,127,242,746        -55,811,968  -107,969,916  -107,724,532  -107,444,234  -106,727,276  -106,103,031  -107,325,844  -107,162,924  -106,862,599  -107,449,671  -106,660,752  -845,701,142  -281,541,603          -  1,127,242,746  1,129,971,212  1,013,312  71,036,265        1000  931,570    0    17792  !
+   1       100       4,941,714            -87,574       494,499       510,546       495,867       514,729       502,383       493,261       509,991       495,748       500,282       511,982     3,674,904     1,266,810  3,726,349        147,071        358,790    439,798  28,824,156         100   59,438    0     4588  !
+   2        30       2,510,984             47,098       243,905       248,038       247,965       249,852       243,178       239,616       252,155       244,002       246,633       248,542     1,865,770       645,214  3,726,349         14,715              0    351,834  11,155,198          30   17,602    0     3750
+
+best by pnl      EXPOSURE=100  (4,941,714)
+best by holdout  EXPOSURE=100  (1,266,810)
+best by nbhd     EXPOSURE=30  (3,726,349)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+! breach penalty in 2 cells (|position| over the limit costs 10,000 a second): base | EXPOSURE=100
+wrote logs/r2_gen_E2.csv
