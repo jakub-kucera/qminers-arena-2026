@@ -54,7 +54,7 @@ Each agent session starts from [`KICKOFF_PROMPT.md`](KICKOFF_PROMPT.md), the pro
 Three tracks can run in parallel (with two of us: A the checklist and the bot; B the data; "The day: timeline and roles"):
 - **Checklist:** read the docs and fill in every answer they give; most are in "Known so far" (7 Nov) and `STARTER.md` already.
 - **Probes (optional):** their simulator runs locally and answers most probe questions ("Probes" below); `python/bots/qminers/probe.py` is still the Prosperity probe.
-- **Data:** no loader to fill in: unzip the round's file (`uv run python -m gzip -d D/<file>.csv.gz`), run `uv run exchange-simulator --strategy BOT --backtest D/<file>.csv --log-dir logs/<run>` on it, and read the run with `uv run backtest-explorer --log-dir logs/<run>` (full logs; `--no-logs` runs are for results only).
+- **Data:** no loader to fill in: unzip the round's file (`uv run python -m gzip -d D/<file>.csv.gz`), run `uv run exchange-simulator --strategy BOT --backtest D/<file>.csv --log-dir logs/<run>` on it, and read the run with `uv run backtest-explorer --log-dir logs/<run>` (full logs; `--no-logs` runs are for results only). First, at T+0:15: `uv run python -m experiments.day.round_start D/<file>.csv.gz --out results/r<N>` (the tape's profile and markouts after a trade, every prepared candidate ranked, the top two's next `arena.qgrid` grids; a few minutes on a full round).
 
 ## The format swap, step by step
 
