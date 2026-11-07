@@ -6,8 +6,8 @@ wrote them), merged with our prep for the Arena: the tools below, built before t
 
 Tooling for the Qminers Algo Trade Arena (7–8 Nov 2026, MFF UK, Prague): a backtester, a
 parameter grid search, charts and fill statistics, a pre-submission validator and a
-single-file bot template. Until the real API is known,
-everything runs on IMC Prosperity data and its bot format as a stand-in.
+single-file bot template, built on IMC Prosperity data as a stand-in. The day's bot,
+`python/bots/qminers/template.py` (`ArenaBot`), runs on their `exchange-simulator`; our engine's results are priors.
 
 | Path | What it is |
 |---|---|
@@ -15,11 +15,11 @@ everything runs on IMC Prosperity data and its bot format as a stand-in.
 | `python/bots/template.py` | Single-file market maker to copy for each round |
 | `python/bots/probe.py` | The first-hour probe bot: runs the probes in `ON_THE_DAY.md` and prints what it finds |
 | `python/bots/drill/template.py` | The template with its ADAPTER rewritten for the drill format, the worked example of the format swap |
-| `python/bots/qminers/` | The day's bot and probe, prepared: the template with PARAMS empty and its ADAPTER to write, for `python/arena/formats/qminers.py` (a registered skeleton) |
+| `python/bots/qminers/` | The day's bot: `template.py` (`ArenaBot`, a `BaseStrategy` subclass: the template's STRATEGY and EXECUTION with an ADAPTER for their API; set `PARAMS["ASSET"]`), run with `exchange-simulator` and tuned with `arena.qgrid`; `candidates/` (the playground's `r0_A0_mm.py`); `probe.py`, still the Prosperity probe |
 | `python/bots/research/` | Copies of the template that test an idea before it is ported (no Rust twin, no drill copy): `online_edge.py` learns `make_edge` from its own fills |
 | `python/notebooks/analysis.ipynb` | Backtest → PnL, fills, one product's fills against the book, markouts, PnL split, market-trade impact, grid heatmaps |
 | `references/` | Reference repos and the Prosperity data; see [references/README.md](references/README.md) |
-| `literature_md/` | Market-microstructure papers and books as markdown with LaTeX equations, for learning the theory; see [literature_md/README.md](literature_md/README.md) |
+| `literature_md/` | Market-microstructure papers and books as markdown with LaTeX equations, for learning the theory; only its README and scripts are in git, the converted papers are local only; see [literature_md/README.md](literature_md/README.md) |
 | `python/tests/` | Unit tests, plus a regression test pinned to jmerle's backtester |
 | `python/experiments/` | `day/`: the experiments re-run on the day's data (`--data`, `--format`); `study/`: Prosperity one-offs whose results are in `IDEAS.md`; the tools at the top. [Its README](python/experiments/README.md) lists all of them |
 | `rust/` | The Rust twins of the engine, the simulator, the grid's statistics and the bots, laid out as `python/` is (`rust/src/arena/engine.rs` for `python/arena/engine.py`); see [rust/README.md](rust/README.md) |
@@ -35,7 +35,7 @@ everything runs on IMC Prosperity data and its bot format as a stand-in.
 
 ```sh
 references/clone.sh   # reference repos + Prosperity data (~2 GB)
-uv sync               # installs python/ as the project (editable), so `python -m arena...` runs from here; the engine needs only the standard library, dev adds pytest, pandas, matplotlib
+uv sync               # Python 3.13; installs the starter's packages and ours, python/ as the project (editable), so `python -m arena...` runs from here; the engine needs only the standard library, dev adds pytest and matplotlib
 uv run pytest
 uv run --group analysis jupyter lab python/notebooks/analysis.ipynb   # optional: Jupyter
 ```
@@ -494,7 +494,7 @@ It fails (exit code 1) on:
 - what the portal's upload form refuses: a name not ending in `.py`, an empty file, or one bigger than `--max-size` (bytes, or the dashboard's figure: `100KB`, `1.5MB`; the dashboard rounds to a tenth of a binary unit, so `100KB` is checked as 99.95 × 1,024 bytes). Without `--max-size` it prints the size.
 - a syntax error, or a missing entry point (`class Trader` with `run`)
 - imports from outside the standard library that aren't listed in `--allow`
-- what the format's sandbox rejects before a bot runs, where the plug-in lists it (`SANDBOX`; `--format qminers` has the Arena's from its info page: `os`, `sys`, `subprocess`, `socket`, `io`, `pathlib` and private modules, `__future__` included; `open`, `getattr`, `type`; dunder attributes and names, `super().__init__` too; `str.format`), each with its lines. It warns on builtins a sandbox often bans as well (`eval`, `exec`, `globals`, `setattr`, ...), on methods named like `__init__`, and on names imported from `simulator` until its public ones are listed. The templates and the probe pass: their forward references are quoted, so they need no `from __future__ import annotations`
+- what the format's sandbox rejects before a bot runs, where the plug-in lists it (`SANDBOX`; `--format qminers` has the Arena's, from their info page and `STARTER.md`: `os`, `sys`, `subprocess`, `socket`, `io`, `pathlib`, `threading`, `importlib`, `inspect`, `gc` and private modules; `open`, `getattr`, `type`, `eval`, `exec`; dunder attributes and names; `str.format`; from `simulator` only `simulator.models`' public names and `simulator.strategy.BaseStrategy`), each with its lines. `__future__` and `__init__` are allowed, as their own examples use `from __future__ import annotations` and `super().__init__()` and pass. It warns on builtins a sandbox often bans as well (`globals`, `setattr`, ...).
 - any exception, or malformed orders (e.g. float prices)
 - orders the engine cancels for possibly breaching a position limit
 - a tick slower than `--time-limit-ms`, timed without the garbage collections that run inside the call (the backtester's objects, not the bot's work; the line says when it left some out, and the bot's own garbage is left out with them; a WARN when the figure with them is over the limit, since their clock may count them)
@@ -741,7 +741,7 @@ mode (`IDEAS.md`, "The LLM zoo" and "Why the zoo beat the template head to head"
 
 ## On the day: adapting to the real format
 
-Start from [`RUNBOOK.md`](RUNBOOK.md), one page of the day's commands, each line naming the [`ON_THE_DAY.md`](ON_THE_DAY.md) section behind it. The format swap is that file's one checklist, "The format swap, step by step": the plug-in `python/arena/formats/qminers.py` is registered already (a skeleton to fill in), and the bot and the probe are prepared (`python/bots/qminers/template.py`, `probe.py`). Practise it: `uv run python -m experiments.format_drill <folder>` makes drill data from simulated days, then any tool runs with `--format drill --data <folder>/drill`. `python/experiments/README.md` says which experiment answers what on the day's data.
+Start from [`RUNBOOK.md`](RUNBOOK.md), one page of the day's commands, each line naming the [`ON_THE_DAY.md`](ON_THE_DAY.md) section behind it. The format swap is done (7 Nov; "The format swap, step by step" keeps what is left each round): `python/bots/qminers/template.py` runs on their `exchange-simulator`, and `python/arena/formats/qminers.py` serves only `arena.validate`'s import and sandbox checks. Practise it: `uv run python -m experiments.format_drill <folder>` makes drill data from simulated days, then any tool runs with `--format drill --data <folder>/drill`. `python/experiments/README.md` says which experiment answers what on the day's data.
 
 ## Known gaps
 

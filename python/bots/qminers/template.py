@@ -1,18 +1,18 @@
-"""DAY-OF SKELETON: the template for the Arena's format (python/arena/formats/qminers.py), prepared.
+"""The day's bot: the template's STRATEGY and EXECUTION with an ADAPTER for the Arena's BaseStrategy (ArenaBot).
 
 The same file as python/bots/template.py down to the end of EXECUTION, except PARAMS
 (python/tests/test_drill.py checks DEFAULTS, STRATEGY and EXECUTION word for word; after a change to
-the template, `uv run python -m experiments.format_drill --sync`). On the day rewrite only:
-  - the imports, if their API needs any (their SDK module is provided by the format, not copied here);
-  - PARAMS: one entry per product from `arena.diagnose all --format qminers --data D --suggest`, prices
-    in the product's ticks;
-  - ADAPTER: the seven functions below (to_ticks, to_price, read_book, params_for, read_trades,
-    read_fills, read_resting) keep their signatures and docstrings; each body raises until written, and
-    the drill's body (python/bots/drill/template.py) sits beside it as a model; then the entry class:
-    `class Bot.on_tick` renamed to their entry (qminers.ENTRY) and each API call in it replaced.
-Ticks at the boundary: STRATEGY and EXECUTION work in whole ticks (+1 = one tick inside), ADAPTER converts.
-ON_THE_DAY.md, "The format swap, step by step", is the checklist. The Rust twin, if grids get slow, is a
-rust/twins.json row (the checklist's step 10; no row until the ADAPTER is real).
+the template, `uv run python -m experiments.format_drill --sync`). On the day change only:
+  - PARAMS["ASSET"]: the one instrument's settings (empty PARAMS sends nothing), e.g. on the command line
+    `--set 'PARAMS.ASSET={"fair": "mid"}'`, prices in whole ticks;
+  - nothing in ADAPTER without a reason: it turns their callbacks (on_order_book_change,
+    on_private_order_update) into STRATEGY's book and EXECUTION's orders, leaves our own orders (owner
+    'user') out of the book, and keeps |position| <= 100 counting every order that can still fill
+    (within_limit).
+Run it with `uv run exchange-simulator --strategy python/bots/qminers/template.py --backtest D/<file>.csv
+--log-dir logs/<run> [--no-logs]`; tune PARAMS["ASSET"] with arena.qgrid (README.md, "Grid on the Arena's
+simulator"). Allowed imports: the standard library, numpy, pandas, scipy, scikit-learn, simulator.models
+and simulator.strategy.BaseStrategy (formats/qminers.py's SANDBOX); state lives on the instance.
 """
 
 # no import of future annotations: the Arena's sandbox bans private modules, so forward references are quoted
@@ -27,9 +27,9 @@ from simulator.strategy import BaseStrategy
 STRICT = False
 # Steps an order takes to reach the exchange: what a call sends meets the book DELAY steps later
 # (the rules, probe 3, or calibrate's delay). 0: by the next call it is listed or done.
-DELAY = 0  # TODO(day): the rules' or probe 3's delay
+DELAY = 0  # unused here: the orders' states track the 5 ms
 # With DELAY: whether an order that doesn't fill stays on the book between calls.
-ORDERS_REST = True  # TODO(day): False if their orders don't rest
+ORDERS_REST = True  # unused here: the orders' states track the 5 ms
 # Where an exchange charges for every order placed: a quote's shortfall at a price where an order already works is
 # posted only once it reaches this many lots (0 posts every shortfall). 10 paid on the 2026-11-03 rehearsal's portal,
 # 11% fewer orders, +8% public and +6% hidden (IDEAS.md, "Top-ups where every order costs a fee").
@@ -155,8 +155,8 @@ DEFAULTS = {
 # stop_loss is about 3 times the product's largest intraday drawdown on the days it was tuned on
 # (arena.stress prints it), so it never fires there: it caps a day the regime changes (IDEAS.md,
 # "Stress: what a regime change costs").
-# TODO(day): one entry per product from `arena.diagnose all --format qminers --data D --suggest`, prices in the
-# product's ticks; the limit comes from the exchange in params_for, so it can't drift from theirs.
+# PARAMS["ASSET"]: the one instrument's entry, tuned with arena.qgrid on the round's data (--holdout), prices
+# in whole ticks; the limit comes from the exchange in params_for, so it can't drift from theirs.
 PARAMS: dict = {}
 
 
