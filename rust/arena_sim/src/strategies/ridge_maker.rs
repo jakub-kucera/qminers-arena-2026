@@ -120,6 +120,8 @@
 //!       the same bytes): FT1's sets with --set DEAD_ZONE=0.3 --set SKEW_K=0.025 --set QUOTE_SIZE=200 --set KEEP_LOTS=20
 //!       --set KEEP_TH=0.3 --set OBS_CAP=2000 --set TREND=1 --set TREND_US1=2000000 --set TREND_US2=60000000
 //!       --set EXPOSURE=100 --set VOL_EXP=2 --set VOL_REF=2.5 --set VOL_US=5000000 --set VOL_MAX=100 --set VOL_NOHEDGE=1
+//!   R2-V2 (r2_V2_vol_exposure_dz18.py; 167288.05 / 21,637 and 699370.05 / 36,719, the same bytes): R2-V1's sets with
+//!       --set DEAD_ZONE=0.18 --set TREND=0
 
 use std::collections::{HashMap, HashSet, VecDeque};
 

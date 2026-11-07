@@ -91,3 +91,14 @@ Trials so far: 0 experiments, 0 cells.
 - R2-E1 with a confidence-dependent exposure: EXPOSURE 50, but a side's quoting may reach only CONF_EXP 10 lots unless the forecast its way is at least CONF_TH 0.05 ticks; the take, the skew and the hedge keep the 50. DEAD_ZONE 0.3 (E1's). No queue-keeping.
 - round2_public.csv 58,360.74 (first 75% 37,695 / last 25% 20,665), penalty 1,515, 15,301 fills; the Python file equals Rust to the cent; validate OK. Round 1 public 333,542, rebuilt private 330,245 (E1 287,058 / 281,395).
 - Not yet combined with R2-E2's queue-keeping (E1 + KEEP: +19k on round 2).
+
+### R2-V1 / R2-V2, 20:05 (`python/bots/qminers/candidates/r2_V1_vol_exposure.py`, `r2_V2_vol_exposure_dz18.py`; the trend agent's)
+- R2-E2 plus an exposure that follows the tape's speed: at every valid book, exposure = clip(100 x (2.5 / fast)^2, 10, 100), fast the mid's |change| in ticks a second decayed over 5 s; the hedge stays at 100 (VOL_NOHEDGE 1), so a shrinking exposure stops new risk but forces no IOC. Round 1 runs at 1.23 ticks a second (exposure 100 nearly always), round 2 public at 3.22 (1.6-7.4 per 600 s). V1 adds two trend features (mid minus its 2-s / 60-s EWMA) at DEAD_ZONE 0.3; V2 is E2's 29 features at DEAD_ZONE 0.18.
+- | tape | V1 | **V2** | E2 (30 lots) | E2 at 100 lots |
+  |---|---|---|---|---|
+  | round 2 public (in / out) | 169,262.76 (127,172 / 42,091) | **167,288.05 (125,149 / 42,139)** | 47,098 (35,094 / 12,004) | -87,574 |
+  | round 1 public | 670,461.77 | **699,370.05** | 294,949 | 699,697 |
+  | round 1 rebuilt private | 660,398 | **681,633** | 287,960 | 684,271 |
+- Both Python files equal Rust ridge_maker to the byte (pnl.csv, result.json) on both public tapes; validate OK; run time 88-112 s for 6,000 s, 188-220 s for 12,000 s (with a second simulator running).
+- V2 against E2 on round 2, 1,000-s segments: ahead in 6 of 6, t 9.01, worst +12,783. On round 1 V2 is E2 at 100 lots (12 segments, mean -27, t -0.45).
+- Recommended upload: V2 (one rule on E2, no new features; keeps round 1's regime whole). Expect the validation score near twice the public (about 330k) on a round-2-like tape, near round 1's rate (about 700k) on a calm one.
