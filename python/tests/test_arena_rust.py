@@ -8,7 +8,8 @@ sample_v2.csv and round 1's tape present (data/arena/, or ARENA_SIM_DATA), F3 an
 byte (about 30 s a Python run). The shrink maker (python/bots/qminers/families/shrink_maker.py, the same Rust struct
 with DEPL_FRAC, REACT_CANCEL and MOM_LOTS) the same two ways, and family 12's alloc_maker.py and signal_maker.py
 (the same struct at R1-F6's defaults, with their knobs; R1-F6b and R1-F7 among the real-tape cases), and R1-F8
-(candidates/r1_F8_take_join.py, the same struct at its own defaults, as `take_maker`). Skipped
+(candidates/r1_F8_take_join.py, the same struct at its own defaults, as `take_maker`). The ridge maker at R1-C1,
+the codex candidates on round 1 and round 2's forecast takers (R2-T2, L1, L3, L8, L9) on round2_public.csv. Skipped
 without cargo."""
 
 from __future__ import annotations
@@ -316,6 +317,46 @@ def test_ridge_maker_codex_features(tmp_path, name, knobs, pnl, fills):
                           check=True)
     lines = ours.stdout.splitlines()
     assert f"pnl={pnl}" in lines and f"fills={fills}" in lines
+
+
+# Round 2's forecast takers (R2-T2 -> L1 -> L3 / L8, L3 -> L9; each the step before plus knobs, all off by default):
+# ridge_maker on round2_public.csv, every result line as each Python file's run printed it (pnl.csv and result.json
+# matched byte for byte, 2026-11-08); with ARENA_SIM_FULL=1 the Python file runs too and the two are compared byte for
+# byte (about 3 min a Python run). The --set line of each: ridge_maker.rs's doc comment, rust/README.md.
+T2 = {"POSITION_LIMIT": 1000, "EXPOSURE": 100, "HEDGE": 1, "MODEL_MEMORY_US": 100000000000, "HORIZON_US": 400000,
+      "DEAD_ZONE": 0.18, "QUOTEFEAT": 1, "FLOWGRP": 2, "FLOWGRP_CAP": 20, "FLOWGRP_US": 1000000, "FT_EDGE": 0.15,
+      "FT_SZ": 200, "FT_GAP_MS": 50, "QUOTE_SIZE": 1, "KEEP_LOTS": 20, "KEEP_TH": 0.3, "FT_MAXSPREAD": 1,
+      "FT_ROOM_LIVE": 1}
+L1 = {**T2, "LIQ": 1}
+L3 = {**L1, "QUOTE_SIZE": 0}
+TAKERS = [
+    ("r2_T2_take_only_safe.py", T2, "194391.00", 119403),
+    ("r2_L1_taker_liquidity.py", L1, "269920.00", 117072),
+    ("r2_L3_taker_pure.py", L3, "294098.00", 2492),
+    ("r2_L8_quote_switch.py", {**L1, "QS_RATE": 2.5}, "296181.00", 75762),
+    ("r2_L9_taker_huber.py", {**L3, "POSITION_LIMIT": 100, "IMPACT_US": 500000, "HUBER": 6.0, "RIDGE_MIN": 30,
+                              "RIDGE_FRAC": 0.003}, "317057.00", 2803),
+]
+
+
+@pytest.mark.parametrize("bot, knobs, pnl, fills", TAKERS)
+def test_ridge_maker_round2_takers(tmp_path, bot, knobs, pnl, fills):
+    data = ARENA_DATA / "round2" / "round2_public.csv"
+    if not data.exists():
+        pytest.skip(f"no {data}")
+    qsim_rust.build()
+    ours = subprocess.run([str(qsim_rust.BINARY), "--backtest", str(data), "--strategy", "ridge_maker", "--params",
+                           json.dumps(knobs), "--log-dir", str(tmp_path / "rs")], capture_output=True, text=True, check=True)
+    lines = [line for line in ours.stdout.splitlines() if not line.startswith("log_dir=")]
+    assert f"pnl={pnl}" in lines and f"fills={fills}" in lines
+    if os.environ.get("ARENA_SIM_FULL") != "1":
+        return
+    theirs = subprocess.run([sys.executable, "-m", "simulator.main", "--strategy",
+                             str(ROOT / "python" / "bots" / "qminers" / "candidates" / bot), "--backtest", str(data),
+                             "--log-dir", str(tmp_path / "py"), "--no-logs"], capture_output=True, text=True, check=True, cwd=ROOT)
+    assert [line for line in theirs.stdout.splitlines() if not line.startswith("log_dir=")] == lines
+    for name in ("result.json", "pnl.csv"):
+        assert (tmp_path / "rs" / name).read_bytes() == (tmp_path / "py" / name).read_bytes(), name
 
 
 def test_grid_table(sample, capsys):

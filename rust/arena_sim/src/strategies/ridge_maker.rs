@@ -128,6 +128,31 @@
 //! one tick behind the desired price, an old touch order a tick back kept there shrunk to L2_LOTS (the rest
 //! cancelled), not counted in MAX_ORDERS, a new one at most one a quote call and one per SLICE_US; their lots count
 //! toward EXPOSURE unless L2_FREE is 1 (then the position can pass 100: the breach penalty).
+//! Round 2's takers (R2-T2 / L1 / L3 / L8 / L9, 8 Nov), off by default (every result above unchanged):
+//! `FT_MAXSPREAD` (0: off), the forecast take only while the spread is at most that many ticks (T1's
+//! TAKE_MAXSPREAD); `FT_ROOM_LIVE` (0; 1: the take's room is EXPOSURE minus the position its way minus every live
+//! same-side order's lots, T2's TAKE_ROOM_LIVE); `LIQ` (0; 1 adds four features after the ones above, L1's: the
+//! touch's young-order imbalance (market orders at the touch first seen at most 100 ms ago, bids minus asks over 1
+//! plus both), it, the flow and the count imbalance each times the dispersion, min(3, the market orders more than 4
+//! ticks from their touch / 10), recomputed unless within 5 ms of the last at the same mid); `IMPACT_US` (0: off;
+//! else three more after those, L9's: the market takers' signed and gross lots decayed over IMPACT_US at every book,
+//! clip(signed / 500, +-3), signed / (1 + gross) * min(9, gross / 500)^0.5, and clip(signed / (1 + the far touch's
+//! lots), +-3)); `HUBER` (0.0: off; else the first model's labels weighted min(1, HUBER / |label - the forecast
+//! stored at the observation|), L9's Huber-robust fit); `QS_RATE` (0.0: off) with `QS_US` (5000000): the quotes
+//! are QUOTE_SIZE only while the |mid change| rate decayed over QS_US, in ticks a second, is below QS_RATE, else 0
+//! (L8). Each candidate on round2_public.csv, pnl.csv and result.json the same bytes as its Python run (8 Nov):
+//!   T2  (r2_T2_take_only_safe.py, 194391.00): --set POSITION_LIMIT=1000 --set EXPOSURE=100 --set HEDGE=1
+//!       --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000 --set DEAD_ZONE=0.18 --set QUOTEFEAT=1
+//!       --set FLOWGRP=2 --set FLOWGRP_CAP=20 --set FLOWGRP_US=1000000 --set FT_EDGE=0.15 --set FT_SZ=200
+//!       --set FT_GAP_MS=50 --set QUOTE_SIZE=1 --set KEEP_LOTS=20 --set KEEP_TH=0.3 --set FT_MAXSPREAD=1
+//!       --set FT_ROOM_LIVE=1 (CANCEL_FREE stays 0.0)
+//!   L1  (r2_L1_taker_liquidity.py, 269920.00): T2's and --set LIQ=1
+//!   L3  (r2_L3_taker_pure.py, 294098.00): L1's and --set QUOTE_SIZE=0
+//!   L8  (r2_L8_quote_switch.py, 296181.00): L1's and --set QS_RATE=2.5
+//!   L9  (r2_L9_taker_huber.py, 317057.00): L3's and --set POSITION_LIMIT=100 --set IMPACT_US=500000
+//!       --set HUBER=6.0 --set RIDGE_MIN=30 --set RIDGE_FRAC=0.003 (its `_quote`'s `effective=reserved` is this
+//!       file's quote room at CANCEL_FREE 0 while no KEEP shrink is in flight: with quotes of at most KEEP_LOTS too,
+//!       so L9 with L8's switch is L9's and --set QUOTE_SIZE=1 --set QS_RATE=2.5)
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -189,7 +214,8 @@ struct Model {
     n: usize,
     /// 0 the change; 1 the indicator of a fall, 2 of a rise (SIDE2 2's linear-probability classifiers)
     label: i64,
-    observations: VecDeque<(i64, f64, [f64; NM], i64)>,
+    /// (time, mid, features, mid changes so far, the forecast at the observation: HUBER's)
+    observations: VecDeque<(i64, f64, [f64; NM], i64, f64)>,
     last_fit_us: Option<i64>,
     last_label_us: Option<i64>,
     labels: i64,
@@ -437,6 +463,25 @@ pub struct RidgeMaker {
     stat_lots: [i64; 5],
     stat_inv: (f64, f64),
     stat_tag: String,
+    /// round 2's takers (8 Nov, all off by default): FT_MAXSPREAD, FT_ROOM_LIVE, LIQ, IMPACT_US, HUBER, QS_RATE, QS_US
+    ft_maxspread: i64,
+    ft_room_live: bool,
+    liq: i64,
+    /// LIQ: the last recompute's time and mid, each market order's first-seen time, the young imbalance, the dispersion
+    liq_time: Option<i64>,
+    liq_mid: f64,
+    liq_seen: HashMap<u64, i64>,
+    liq_young: f64,
+    liq_disp: f64,
+    impact_us: i64,
+    impact_net: f64,
+    impact_vol: f64,
+    impact_frame: [f64; 2],
+    huber: f64,
+    qs_th: f64,
+    qs_us: i64,
+    qs_last: Option<(i64, f64)>,
+    qs_rate: f64,
 }
 
 impl RidgeMaker {
@@ -489,7 +534,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 118] = [
+pub const KEYS: [&str; 125] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -507,6 +552,7 @@ pub const KEYS: [&str; 118] = [
     "LEAN_K", "LEAN_SRC", "FT_SRC", "VOL_REF", "VOL_NOHEDGE", "BIG_LOTS", "BIG_US",
     "KEEP_LOTS", "KEEP_TH", "FRONT_LOTS", "FRONT_TH", "FRONT_NONE", "SLICE_LOTS", "SLICE_US", "LADDER_LOTS", "KEEP_FREE", "KEEP_AHEAD", "KEEP_NOBACK",
     "L2_LOTS", "L2_ORDERS", "L2_FREE", "BURST",
+    "FT_MAXSPREAD", "FT_ROOM_LIVE", "LIQ", "IMPACT_US", "HUBER", "QS_RATE", "QS_US",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -527,6 +573,8 @@ impl RidgeMaker {
                 + if params.int("QUOTEFEAT", 0)? > 0 { 6 } else { 0 }
                 + if params.int("FLOWGRP", 0)? > 0 { 8 } else { 0 }
                 + if params.int("BUCKET", 0)? > 0 { 17 } else { 0 }
+                + if params.int("LIQ", 0)? > 0 { 4 } else { 0 }
+                + if params.int("IMPACT_US", 0)? > 0 { 3 } else { 0 }
                 + if params.int("TREND", 0)? > 0 { 2 } else { 0 };
         let mh = params.int("MH", 0)?;
         let n = n_base + if mh > 0 { 2 } else { 0 };
@@ -754,6 +802,23 @@ impl RidgeMaker {
                 params.float("FRONT_TH", 99.0)?, params.int("FRONT_NONE", 0)?, params.int("SLICE_LOTS", 0)?,
                 params.int("SLICE_US", 0)?, params.float("DEAD_ZONE", 0.1)?, params.int("EXPOSURE", 0)?
             ),
+            ft_maxspread: params.int("FT_MAXSPREAD", 0)?,
+            ft_room_live: params.int("FT_ROOM_LIVE", 0)? != 0,
+            liq: params.int("LIQ", 0)?,
+            liq_time: None,
+            liq_mid: 0.0,
+            liq_seen: HashMap::new(),
+            liq_young: 0.0,
+            liq_disp: 0.0,
+            impact_us: params.int("IMPACT_US", 0)?,
+            impact_net: 0.0,
+            impact_vol: 0.0,
+            impact_frame: [0.0; 2],
+            huber: params.float("HUBER", 0.0)?,
+            qs_th: params.float("QS_RATE", 0.0)?,
+            qs_us: params.int("QS_US", 5_000_000)?,
+            qs_last: None,
+            qs_rate: 0.0,
         })
     }
 
@@ -821,13 +886,15 @@ impl RidgeMaker {
         // the event-time label is the first model's; the blend's second model stays on clock time
         let (label_mode, label_k, label_cap_us, changes) =
             (if which == 0 { self.label_mode } else { 0 }, self.label_k, self.label_cap_us, self.mid_changes);
+        // HUBER: the first model's labels down-weighted by their residual against the forecast stored with them
+        let huber = if which == 0 { self.huber } else { 0.0 };
         let m = match which {
             0 => &mut self.m1,
             1 => &mut self.m2,
             k => &mut self.ex[k - 2],
         };
         let n = m.n;
-        while let Some(&(observed_us, old_mid, features, count)) = m.observations.front() {
+        while let Some(&(observed_us, old_mid, features, count, stored)) = m.observations.front() {
             if label_mode > 0 {
                 // event time: the label is the mid at its LABEL_K-th change after the observation
                 if count + label_k <= changes {
@@ -865,11 +932,26 @@ impl RidgeMaker {
             } else if m.label == 2 {
                 response = if response > 0.0 { 1.0 } else { 0.0 };
             }
-            m.mass = m.mass * decay + 1.0;
-            for i in 0..n {
-                m.xy[i] = m.xy[i] * decay + features[i] * response;
-                for j in 0..n {
-                    m.xx[i][j] = m.xx[i][j] * decay + features[i] * features[j];
+            if huber > 0.0 {
+                // L9: weight = min(1, HUBER / max(1e-12, |response - stored|)), in the Python's operation order
+                let residual = (response - stored).abs();
+                let r = if residual > 1e-12 { residual } else { 1e-12 };
+                let q = huber / r;
+                let weight = if q < 1.0 { q } else { 1.0 };
+                m.mass = m.mass * decay + weight;
+                for i in 0..n {
+                    m.xy[i] = m.xy[i] * decay + weight * features[i] * response;
+                    for j in 0..n {
+                        m.xx[i][j] = m.xx[i][j] * decay + weight * features[i] * features[j];
+                    }
+                }
+            } else {
+                m.mass = m.mass * decay + 1.0;
+                for i in 0..n {
+                    m.xy[i] = m.xy[i] * decay + features[i] * response;
+                    for j in 0..n {
+                        m.xx[i][j] = m.xx[i][j] * decay + features[i] * features[j];
+                    }
                 }
             }
             m.labels += 1;
@@ -1134,6 +1216,44 @@ impl RidgeMaker {
         self.known_ids = current_ids;
     }
 
+    /// LIQ (R2-L1's `_distribution_features`, the parts its four features use): the market orders at each touch
+    /// first seen at most 100 ms ago (young) and those more than 4 ticks from their touch (far); kept from the last
+    /// call while it was under 5 ms ago at the same mid, first-seen times included.
+    fn liquidity(&mut self, snapshot: &Snapshot, now: i64, bid: i64, ask: i64, mid: f64) {
+        if let Some(t) = self.liq_time {
+            if now - t < 5000 && mid == self.liq_mid {
+                return;
+            }
+        }
+        let mut seen: HashMap<u64, i64> = HashMap::with_capacity(self.liq_seen.len() + 16);
+        let mut young = [0.0f64; 2];
+        let mut far = [0.0f64; 2];
+        for (k, side, touch) in [(0usize, Side::Buy, bid), (1usize, Side::Sell, ask)] {
+            for order in snapshot.side(side) {
+                if order.owner != Owner::Market {
+                    continue;
+                }
+                let distance = (order.price - touch).abs();
+                let first = *self.liq_seen.get(&order.order_id).unwrap_or(&now);
+                seen.insert(order.order_id, first);
+                if distance > 4 {
+                    far[k] += 1.0;
+                    continue;
+                }
+                if distance == 0 && now - first <= 100_000 {
+                    young[k] += 1.0;
+                }
+            }
+        }
+        self.liq_seen = seen;
+        self.liq_young = (young[0] - young[1]) / (1.0 + young[0] + young[1]);
+        let count = far[0] + far[1];
+        let e = (if count < 100.0 { count } else { 100.0 }) / 10.0;
+        self.liq_disp = if e < 3.0 { e } else { 3.0 };
+        self.liq_time = Some(now);
+        self.liq_mid = mid;
+    }
+
     fn cancel(&mut self, index: usize, ctx: &mut Ctx) {
         let record = &mut self.orders[index];
         if record.accepted && !record.cancelling {
@@ -1291,8 +1411,9 @@ impl RidgeMaker {
                 }
             })
             .sum();
-        let mut quantity = self
-            .quote_size
+        // QS_RATE (L8): one quote size only while the decayed |mid change| rate is below QS_RATE, else none
+        let size = if self.qs_th > 0.0 && !(self.qs_rate < self.qs_th) { 0 } else { self.quote_size };
+        let mut quantity = size
             .min(if self.conf_exp > 0 { self.side_exp[side_index(sign)] } else { self.exposure } - sign * self.inventory - effective)
             .min(self.position_limit - sign * self.inventory - reserved);
         if self.slice_lots > 0 {
@@ -1356,6 +1477,23 @@ impl Strategy for RidgeMaker {
             Some(t) => (now - t).max(0),
         };
         self.last_us = Some(now);
+        if self.impact_us > 0 {
+            // L9's `_impact_features`, at every book (an invalid one too): the market takers' lots over IMPACT_US
+            let (mut net, mut volume) = (0i64, 0i64);
+            for trade in trades {
+                if trade.taker_owner == Owner::Market {
+                    net += if trade.book_side == Side::Sell { trade.quantity } else { -trade.quantity };
+                    volume += trade.quantity;
+                }
+            }
+            let d = ((-elapsed) as f64 / self.impact_us as f64).exp();
+            self.impact_net = self.impact_net * d + net as f64;
+            self.impact_vol = self.impact_vol * d + volume as f64;
+            let (signed, gross) = (self.impact_net, self.impact_vol);
+            let g = gross / 500.0;
+            let g = if g < 9.0 { g } else { 9.0 };
+            self.impact_frame = [clamp(signed / 500.0, -3.0, 3.0), signed / (1.0 + gross) * g.powf(0.5)];
+        }
         if self.flowgrp > 0 {
             self.flow_groups(snapshot, trades, elapsed);
         }
@@ -1442,6 +1580,14 @@ impl Strategy for RidgeMaker {
             self.quote_centres(snapshot, trades, now, bid, ask);
         }
         let mid = (bid + ask) as f64 * 0.5;
+        if self.qs_th > 0.0 {
+            // L8: the |mid change| ticks a second, decayed over QS_US, at every valid book
+            if let Some((t, m)) = self.qs_last {
+                let k = ((-((now - t).max(0))) as f64 / self.qs_us as f64).exp();
+                self.qs_rate = self.qs_rate * k + (mid - m).abs() / (self.qs_us as f64 / 1e6);
+            }
+            self.qs_last = Some((now, mid));
+        }
         let spread = ask - bid;
         let flow = self.net / (1.0 + self.volume);
         let imbalance = (bq - aq) as f64 / (bq + aq) as f64;
@@ -1710,6 +1856,25 @@ impl Strategy for RidgeMaker {
                 features[k + 16] = if s1 { imbalance } else { 0.0 };
             }
         }
+        // LIQ's four and IMPACT_US's three sit just before TREND's two, at the end of the base features
+        let trend_n = if self.trend > 0 { 2 } else { 0 };
+        let tail = trend_n + if self.impact_us > 0 { 3 } else { 0 };
+        if self.liq > 0 {
+            self.liquidity(snapshot, now, bid, ask, mid);
+            let k = self.n_base - tail - 4;
+            let (young, dispersion) = (self.liq_young, self.liq_disp);
+            features[k] = young;
+            features[k + 1] = young * dispersion;
+            features[k + 2] = flow * dispersion;
+            features[k + 3] = count_imbalance * dispersion;
+        }
+        if self.impact_us > 0 {
+            let k = self.n_base - trend_n - 3;
+            features[k] = self.impact_frame[0];
+            features[k + 1] = self.impact_frame[1];
+            let far = if self.impact_net >= 0.0 { aq } else { bq };
+            features[k + 2] = clamp(self.impact_net / (1 + far) as f64, -3.0, 3.0);
+        }
         if self.trend > 0 {
             let k = self.n_base - 2;
             features[k] = clamp(mid - self.trend_e[0], -20.0, 20.0);
@@ -1757,19 +1922,25 @@ impl Strategy for RidgeMaker {
             if self.label_mode == 0 && self.m1.observations.len() >= self.obs_cap {
                 self.m1.observations.pop_front();
             }
-            self.m1.observations.push_back((now, mid, features, self.mid_changes));
+            // HUBER: the forecast with the weights as they stand, stored with the observation (L9's stored_forecast)
+            let stored = if self.huber > 0.0 {
+                clamp(py_sum(self.m1.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x)), -2.0, 2.0)
+            } else {
+                0.0
+            };
+            self.m1.observations.push_back((now, mid, features, self.mid_changes, stored));
             if m2_on {
                 if self.m2.observations.len() >= self.obs_cap {
                     self.m2.observations.pop_front();
                 }
-                self.m2.observations.push_back((now, mid, features, self.mid_changes));
+                self.m2.observations.push_back((now, mid, features, self.mid_changes, 0.0));
             }
             if self.side2 > 0 {
                 for (j, v) in [(0usize, bid as f64), (1, ask as f64)] {
                     if self.ex[j].observations.len() >= self.obs_cap {
                         self.ex[j].observations.pop_front();
                     }
-                    self.ex[j].observations.push_back((now, v, features, self.mid_changes));
+                    self.ex[j].observations.push_back((now, v, features, self.mid_changes, 0.0));
                 }
             }
             if self.mh > 0 {
@@ -1777,7 +1948,7 @@ impl Strategy for RidgeMaker {
                     if self.ex[j].observations.len() >= self.obs_cap {
                         self.ex[j].observations.pop_front();
                     }
-                    self.ex[j].observations.push_back((now, mid, features, self.mid_changes));
+                    self.ex[j].observations.push_back((now, mid, features, self.mid_changes, 0.0));
                 }
             }
             self.last_observation_us = now;
@@ -2058,7 +2229,11 @@ impl Strategy for RidgeMaker {
                 let _ = writeln!(w, "{},{},{},{},{},{}", now, mid, prediction, skew, spread, self.inventory);
             }
         }
-        if self.ft_sz > 0 && self.m1.labels >= self.min_labels && now - self.ft_last >= self.ft_gap_ms * 1000 {
+        if self.ft_sz > 0
+            && self.m1.labels >= self.min_labels
+            && now - self.ft_last >= self.ft_gap_ms * 1000
+            && (self.ft_maxspread <= 0 || spread <= self.ft_maxspread)
+        {
             let source = if self.ft_src == 1 { p2_only } else { prediction };
             let signal = if self.ft_net > 0 { source - skew } else { source };
             let need = self.ft_edge + 0.5 * spread_f;
@@ -2089,6 +2264,8 @@ impl Strategy for RidgeMaker {
                     _ => self.exposure - pos,
                 };
                 let reserved: i64 = self.orders.iter().filter(|r| r.sign == sign).map(|r| r.quantity).sum();
+                // FT_ROOM_LIVE (T2): every live same-side order can fill first, so it comes off the room
+                let room = if self.ft_room_live { room - reserved } else { room };
                 let quantity = self.ft_sz.min(room).min(self.position_limit - pos - reserved);
                 if quantity > 0 {
                     let price = if sign > 0 { ask + self.ft_thru } else { 1i64.max(bid - self.ft_thru) };
