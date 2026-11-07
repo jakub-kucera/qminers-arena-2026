@@ -33,6 +33,7 @@ run's results and `leaderboard.json` go in this folder too.
 
 ## Rule answers
 <!-- which ON_THE_DAY.md items the rules or probes answered (written under each item, with the source), and the ones still open -->
+- **The final is chosen, not just the last upload** (the user, 22:25): any earlier submission can be marked as the final on the dashboard, so an experiment costs one upload, not two. Round 2 had 5 uploads left at 22:25 (a per-round cap). Mark the chosen submission before the deadline: as of 22:25 that is R2-H1, submission 8f29efb0-69c6-421f-a517-25f104f73afa (+567,739.71).
 - **The organisers' restatement (18:45):** three backtests. (1) **Public**: downloaded from the website, for training; **about half the length** of the other two. (2) **Validation**: every submission is run on it on the server, and we get **only the PnL, no logs**. (3) **Private**: the score, run after the deadline. Validation and private keep round 1's size (round 1's tapes were 12,000 s). Consequences:
   - the public tape is ~6,000 s: the first 75% to choose on is ~4,500 s, so use `pnl_segments --count 6` (or `--seconds 1000`) and expect noisier choices; prefer structural changes and learned weights over tuned constants even more than in round 1;
   - nothing in the bots depends on the length (SESSION_S 1e9, no wind-down), and the online model learns on each tape, so the shorter public tape costs only the warm-up's share;
