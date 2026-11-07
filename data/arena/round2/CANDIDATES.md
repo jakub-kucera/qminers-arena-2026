@@ -86,3 +86,8 @@ Trials so far: 0 experiments, 0 cells.
 - R2-E1 + R2-Q1's queue-keeping (on the dead-zone step-back, the touch order is shrunk to KEEP_LOTS 20 by modify instead of cancelled while the forecast toward its side is at least -KEEP_TH 0.3); EXPOSURE 30, DEAD_ZONE 0.18.
 - round2_public.csv: pnl 47,098.00 (first 75% 35,094 / last 25% 12,004), 18,012 fills, breach 0, |inv| q997 30; byte-identical to the Rust ridge_maker; 90 s (about 180 s on a 12,000-s tape); validate OK.
 - On round 1's tapes (Rust, the same sets): 294,949 public, 287,960 rebuilt private (EXPOSURE 100 there makes ~690k): it bets on the trending regime.
+
+### R2-E3, 20:20 (`python/bots/qminers/candidates/r2_E3_conf_exposure.py`, the inventory agent's; it named it R2-E2)
+- R2-E1 with a confidence-dependent exposure: EXPOSURE 50, but a side's quoting may reach only CONF_EXP 10 lots unless the forecast its way is at least CONF_TH 0.05 ticks; the take, the skew and the hedge keep the 50. DEAD_ZONE 0.3 (E1's). No queue-keeping.
+- round2_public.csv 58,360.74 (first 75% 37,695 / last 25% 20,665), penalty 1,515, 15,301 fills; the Python file equals Rust to the cent; validate OK. Round 1 public 333,542, rebuilt private 330,245 (E1 287,058 / 281,395).
+- Not yet combined with R2-E2's queue-keeping (E1 + KEEP: +19k on round 2).
