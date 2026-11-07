@@ -81,3 +81,8 @@ Trials so far: 0 experiments, 0 cells.
 | 100 / 0.18 / 20 | -87,574 | 699,697 | 684,271 |
 - The exposure is the regime choice: 30 lots wins on round 2's trending tape and costs ~400k on round 1's; the validation upload tells which regime the server's tapes are. Queue-keeping (KEEP 20) adds +16-19k on round 2 at exposure 30 and +4-20k on round 1 at 100. R2-E2 (30 / 0.18 / KEEP 20) is being written as a Python file.
 - The momentum agent (interim, 19:37): holding 100 lots on the side of the last 500+ lot aggressor makes +118,374 on round 2 public (in 97,133 / out 21,241; pnl_se 30.6k), flat over MIN_LOTS 333-650 (`r2_M2_flow_trend.py`, in its worktree): big orders move the mid +1.3-2.0 ticks by 5 s on this tape (round 1: +0.5).
+
+### R2-E2, 20:05 (`python/bots/qminers/candidates/r2_E2_low_exposure_keep.py`)
+- R2-E1 + R2-Q1's queue-keeping (on the dead-zone step-back, the touch order is shrunk to KEEP_LOTS 20 by modify instead of cancelled while the forecast toward its side is at least -KEEP_TH 0.3); EXPOSURE 30, DEAD_ZONE 0.18.
+- round2_public.csv: pnl 47,098.00 (first 75% 35,094 / last 25% 12,004), 18,012 fills, breach 0, |inv| q997 30; byte-identical to the Rust ridge_maker; 90 s (about 180 s on a 12,000-s tape); validate OK.
+- On round 1's tapes (Rust, the same sets): 294,949 public, 287,960 rebuilt private (EXPOSURE 100 there makes ~690k): it bets on the trending regime.
