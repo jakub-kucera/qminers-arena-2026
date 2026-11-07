@@ -269,6 +269,26 @@ def test_room_maker_full_byte_for_byte(tmp_path, name, file, overrides, pnl, fil
         assert (tmp_path / "rs" / name).read_bytes() == (tmp_path / "py" / name).read_bytes(), name
 
 
+# strategy_codex_best_v2_571k.py (the user's v2 of R1-C1, run by the Arena's simulator into logs/codex_v2_571k):
+# ridge_maker with the v2 knobs on, every result line as v2's run printed it (its pnl.csv and result.json matched
+# byte for byte, 2026-11-07)
+V2 = {"POSITION_LIMIT": 1000, "EXPOSURE": 100, "CANCEL_FREE": 1.0, "HEDGE": 1}
+V2_LINES = ["fills=24015", "traded_volume=2247040", "inventory=100", "cash=-429793.00", "breach_penalty=1869.75",
+            "pnl=571237.25", "pnl_se=11199.08"]
+
+
+def test_ridge_maker_v2(tmp_path):
+    data = ARENA_DATA / "round1" / "round1.csv"
+    if not data.exists():
+        pytest.skip(f"no {data}")
+    qsim_rust.build()
+    ours = subprocess.run([str(qsim_rust.BINARY), "--backtest", str(data), "--strategy", "ridge_maker", "--params",
+                           json.dumps(V2), "--log-dir", str(tmp_path / "rs")], capture_output=True, text=True, check=True)
+    lines = ours.stdout.splitlines()
+    for line in V2_LINES:
+        assert line in lines
+
+
 def test_grid_table(sample, capsys):
     assert qsim_rust.main(["fallback_maker", str(sample), "--grid", "QUOTE=3,5", "--grid", "LIMIT=30,50", "--threads", "2"]) == 0
     out = capsys.readouterr().out
