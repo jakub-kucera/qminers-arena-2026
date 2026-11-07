@@ -1,7 +1,9 @@
 # Round-2 evaluation plan
 
-No round-2 data has arrived yet. These candidates are prepared hypotheses;
-historical results do not establish performance in the next round.
+Round-2 public data is now at `data/round2_public.csv`. Read the
+[initial findings](ROUND2_INITIAL_FINDINGS.md): all active reference candidates
+lost on its first 60%, and volatility changed materially. The later public
+segments remain unreplayed. Historical results do not establish next-round profitability.
 The [structural research backlog](ROUND2_STRUCTURAL_IDEAS.md) prioritizes new
 mechanisms beyond the six prepared reference/adaptation candidates.
 The [round-1 curve evidence](ROUND1_CHART_EVIDENCE.md) is a prior only. Reassess

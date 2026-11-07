@@ -31,14 +31,22 @@ direct transfer, strict-100 maker, faster adaptation, dual-memory maker,
 guarded IOC trend, and a no-trade control. They are hypotheses for new data;
 **no round-2 winner has been selected**.
 
-After the new tape arrives, run these commands from the repository root:
+The public tape has arrived at `data/round2_public.csv` (100 minutes, 2.19M
+events). Its first-hour diagnostics show about **3.65x** the old 25-second
+price volatility; all active reference strategies lost on that prefix. Read
+[the initial findings](docs/ROUND2_INITIAL_FINDINGS.md). The later public
+segments are still unreplayed; no server score has been received.
+
+The reference workflow below is for a fresh study directory. The default
+`logs/round2` intake, profile and screen have already completed; do not overwrite
+it or freeze a no-trade winner prematurely while developing new policies:
 
 ```bash
-.venv/bin/python -m scripts.round2_workbench prepare --backtest data/round2.csv
-.venv/bin/python -m scripts.profile_round --backtest logs/round2/development.csv --output logs/round2/profile
-.venv/bin/python -m scripts.round2_workbench screen --workers 3
-.venv/bin/python -m scripts.round2_workbench select --workers 3
-.venv/bin/python -m scripts.round2_workbench public-check
+.venv/bin/python -m scripts.round2_workbench prepare --backtest data/round2_public.csv --output logs/round2_next_study
+.venv/bin/python -m scripts.profile_round --backtest logs/round2_next_study/development.csv --output logs/round2_next_study/profile
+.venv/bin/python -m scripts.round2_workbench screen --output logs/round2_next_study --workers 3
+.venv/bin/python -m scripts.round2_workbench select --output logs/round2_next_study --workers 3
+.venv/bin/python -m scripts.round2_workbench public-check --output logs/round2_next_study
 ```
 
 These are internal splits of the **public** tape. The organizer separately

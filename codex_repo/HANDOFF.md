@@ -1,7 +1,16 @@
 # Handoff for the next session
 
 Prepared 7 November 2026 after round 1. Team: **ThatsMyQuant**. The user expects
-the next session about an hour after round 1. No round-2 CSV has been provided.
+the next session about an hour after round 1. Round-2 public data has now arrived
+and is at `data/round2_public.csv`. Read
+[ROUND2_INITIAL_FINDINGS.md](docs/ROUND2_INITIAL_FINDINGS.md) before doing more work.
+Only the first public 60% has been replayed; all six active/control references
+and four development diagnostics have completed. Every active policy lost on
+that prefix. Four further inventory/entry prototypes also lost; their naive
+resizing caused large queue churn and does not isolate the effect of smaller
+positions. See the findings and source hashes before reusing these prototypes.
+No round-2 winner or server score is established. The provisional
+deadline is Sunday **00:15 CET** with a planned ready-by time of **23:45 CET**.
 The organizer has announced three separate datasets: downloadable public,
 server validation with PnL-only feedback, and private scoring after the deadline.
 Public is roughly half the size of either hidden dataset; the size metric is
@@ -151,6 +160,7 @@ integration test. The latter checks exact native equality and exact-split
 penalty accounting; modifying a frozen source is rejected. The test suite has
 **66 passing tests** at the original preparation checkpoint; **70** after the
 organizer-protocol update and server-score ledger tests.
+The suite now has **76** passing tests after the initial public investigation.
 The recorded checks are in `results/round2_preparation_checks.json`.
 Preparation checkpoint tag: `round2-preparation-20261107`.
 The final preparation history is also backed up in the workspace parent at
@@ -161,8 +171,9 @@ Historical characterization completed all 18 candidate/tape combinations; see
 `results/round2_historical_characterization.json`. The transfer reproduced
 624,076 exactly on round 1, the strict maker scored 606,310 without penalties,
 the dual-memory maker scored 622,789.99, and guarded trend scored 225,487 on the
-thin original sample. These are historical checks, not fresh round-2 evidence. No actual
-`logs/round2` experiment has been prepared, and no round-2 submission is selected.
+thin original sample. These are historical checks, not fresh round-2 evidence. The
+`logs/round2` experiment has since been prepared; see the
+initial findings for current status. No round-2 submission is selected.
 If an experiment has `final_report.json`, its final segment has been evaluated;
 the selection file's flag records the state at selection time, not current freshness.
 This segment is internal to the PUBLIC tape. Organizer private scoring happens

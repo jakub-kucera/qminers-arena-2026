@@ -1,5 +1,11 @@
 # Result manifests
 
+[round2_initial_investigation.json](round2_initial_investigation.json) is the
+current public-data intake comparison and first-60% test evidence. It records
+the new data hash, volatility/signal changes, all six reference results, four
+controlled diagnostics, and the provisional deadline. It contains no server
+validation or organizer private score.
+
 `round1_reported_leaderboard.json` records the user's reported 602,526.53,
 rank 8/61, with no source/dataset attribution. It must not be silently attached
 to the 624,076 local replay. `round2_competition_protocol.json` records the

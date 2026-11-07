@@ -9,6 +9,9 @@ Run modules from the repository root with `.venv/bin/python -m scripts.NAME`.
 | `round2_characterize.py` | Historical transfer checks; no round-2 model selection |
 | `round2_server_results.py` | Record operator-reported validation/private PnL against immutable upload-source snapshots |
 | `profile_round.py` | Read-only market diagnostics; use development data before selection |
+| `compare_market_dynamics.py` | No-trade spread tails and pre-event sampled price dynamics on explicit development tapes |
+| `round2_development_diagnostics.py` | Four controlled alpha/quote-width ablations on the existing public development prefix |
+| `round2_inventory_probes.py` | Four public-development target/entry prototypes; inspect the recorded queue-churn limitations |
 | `check_submission.py` | Conservative local check of documented export restrictions |
 | `benchmark.py` | Native-config replay and diagnostic metrics for explicit sources |
 
