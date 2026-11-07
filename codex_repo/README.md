@@ -1,14 +1,15 @@
 # Qminers trading hackathon starter
 
-**Round 1: submit `strategies/round1_submission.py`.** The unmodified
-simulator CLI verifies **554,347** on the supplied `data/round1.csv`, with zero
-position penalty and maximum actual/potential inventory 100 / 100. Final
-metrics and source/input hashes are tracked in `results/round1_submission.json`.
-Earlier 498,056 and 523,999 versions remain separately preserved.
+**Round 1: current verified leader is `strategies/round1_submission.py`,
+571,237.25 NET PnL.** Identical named copy: `strategies/round1_pipeline_571k.py`.
+This includes 1,869.75 in inventory penalties; actual inventory briefly reached
+256 lots. It uses the native 1,000-lot acceptance wall and latency-bound IOC
+hedges. The earlier zero-penalty candidate is `strategies/round1_size_555389.py`
+(555,389, actual/potential inventory at most 100).
 
-These later scores use repeated tuning on the supplied file; no fresh
-independent holdout remains. The new submission has not been scored by the
-competition server.
+Source hashes and all metrics are in `results/round1_submission.json`. These
+results are sample-tuned and have not been scored by the competition server.
+The corrected user-reported target is approximately 650K, still not reached.
 
 ```
 strategies/   template_strategy.py, an empty strategy to copy and fill in; trend_follower.py, a simple working one
@@ -577,3 +578,19 @@ the baseline, so promoting a different `round1_submission.py` cannot silently
 change the research templates. Experimental tree families explicitly record
 whether they fit earlier periods or the entire supplied file. Full-sample
 training scores are in-sample evidence, not independent validation.
+
+## Verified net-PnL leader: 571,237.25
+
+`strategies/round1_pipeline_571k.py` and `strategies/round1_submission.py` are
+byte-identical. The unmodified CLI exactly reproduces the audited result:
+24,015 fills, 2,247,040 traded lots, final inventory +100, cash -429,793,
+mark-out price 10,029 and **1,869.75 penalty**, leaving **571,237.25 net PnL**.
+Maximum actual inventory was 256 and maximum potential exposure at submission
+was 358, below the native 1,000-lot acceptance wall. These are temporary charged
+breaches of the 100-lot free threshold, not a strict 100-lot strategy.
+
+The predictor remains the fifteen-feature causal learner. New orders pipeline
+while old cancellations are pending; excess inventory is hedged with IOC orders
+that also wait five milliseconds. Net PnL includes every charged breach and
+liquidation/hedge execution. Fifty-one tests pass. Earlier strict-100 versions
+and their source hashes remain preserved. The corrected target is around 650K.

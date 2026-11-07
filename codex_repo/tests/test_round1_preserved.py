@@ -11,12 +11,13 @@ from strategies.round1_inside_551k import PassiveStrategy as InsideStrategy
 from strategies.round1_private_554k import PassiveStrategy as PrivateStrategy
 from strategies.round1_submission import PassiveStrategy as SubmissionStrategy
 from strategies.round1_size_555389 import PassiveStrategy as SizeStrategy
+from strategies.round1_pipeline_571k import PassiveStrategy as PipelineStrategy
 from test_strategy import Gateway
 
 
 class PreservedRound1Tests(unittest.TestCase):
     def test_mature_labels_and_solver_for_expanded_models(self):
-        for cls in (NonlinearStrategy, DepthStrategy, NonlinearDepthStrategy, QueueStrategy, InsideStrategy, PrivateStrategy, SubmissionStrategy, SizeStrategy):
+        for cls in (NonlinearStrategy, DepthStrategy, NonlinearDepthStrategy, QueueStrategy, InsideStrategy, PrivateStrategy, SubmissionStrategy, SizeStrategy, PipelineStrategy):
             with self.subTest(model=cls.__name__, dimensions=cls.FEATURE_COUNT):
                 s = cls()
                 features = (1,) + (0,) * (s.FEATURE_COUNT - 1)
@@ -62,6 +63,7 @@ class PreservedRound1Tests(unittest.TestCase):
             ('strategies/round1_submission.py', SubmissionStrategy),
             ('strategies/round1_private_554347.py', SubmissionStrategy),
             ('strategies/round1_size_555389.py', SizeStrategy),
+            ('strategies/round1_pipeline_571k.py', PipelineStrategy),
         ):
             self.assertEqual(check(path), [])
             for inventory in range(-100, 101):
@@ -74,6 +76,34 @@ class PreservedRound1Tests(unittest.TestCase):
                 sells = sum(r[2] for r in s._orders.values() if r[0] < 0)
                 self.assertLessEqual(inventory + buys, 100)
                 self.assertGreaterEqual(inventory - sells, -100)
+
+    def test_pipeline_overlap_retains_actual_reservations_and_hedges_only_excess(self):
+        s=PipelineStrategy();gateway=Gateway(s);cancels=[]
+        s._ctx.cancel_order=cancels.append
+        s._quote(0,1,99);first=next(iter(s._orders))
+        s.on_private_order_update(PrivateOrderEvent(timestamp_us=5000,order_id=first,
+            status=OrderStatus.ACCEPTED,remaining_quantity=100))
+        s._quote(6000,1,98)
+        self.assertEqual(cancels,[first])
+        self.assertEqual(sum(r[2] for r in s._orders.values() if r[0]>0),200)
+        second=next(oid for oid in s._orders if oid!=first)
+        s.on_private_order_update(PrivateOrderEvent(timestamp_us=7000,order_id=first,
+            status=OrderStatus.FILLED,filled_quantity=100,remaining_quantity=0,fill_price=99))
+        s.on_private_order_update(PrivateOrderEvent(timestamp_us=11000,order_id=second,
+            status=OrderStatus.ACCEPTED,remaining_quantity=100))
+        s._cached_bid,s._cached_ask,s._cached_time=97,99,12000
+        s.on_private_order_update(PrivateOrderEvent(timestamp_us=12000,order_id=second,
+            status=OrderStatus.PARTIALLY_FILLED,filled_quantity=20,remaining_quantity=80,fill_price=98))
+        self.assertEqual((s.inventory,s.cash),(120,-11860))
+        hedge=s._hedge_id
+        self.assertIsNotNone(hedge)
+        self.assertEqual((gateway.sent[-1].side,gateway.sent[-1].quantity),(Side.SELL,20))
+        s.on_private_order_update(PrivateOrderEvent(timestamp_us=17000,order_id=hedge,
+            status=OrderStatus.ACCEPTED,remaining_quantity=20))
+        s.on_private_order_update(PrivateOrderEvent(timestamp_us=17000,order_id=hedge,
+            status=OrderStatus.FILLED,filled_quantity=20,remaining_quantity=0,fill_price=97))
+        self.assertEqual((s.inventory,s.cash),(100,-9920))
+        self.assertIsNone(s._hedge_id)
 
     def test_size_buckets_separate_touch_and_deeper_liquidity(self):
         s=SizeStrategy();Gateway(s)

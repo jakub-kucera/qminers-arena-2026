@@ -1,17 +1,12 @@
-"""Round-1 submission: online fair-price prediction and passive execution.
+"""Round-1 market maker with pipelined cancel/replace and charged risk.
 
-Fifteen features describe trade flow, momentum, touch and nearby queue
-imbalance, order counts, capped quantities, and signed nonlinear transforms.
-The ridge model learns 100 ms midpoint returns after labels mature, samples
-observations every 20 ms, and refits once per second with exponential decay.
-
-Exposure is bounded by +/-100 lots, including all pending submissions and
-cancellations. Up to eight orders per side preserve queue priority. Selective
-inside-spread quotes require more than 0.30 ticks of predicted price edge
-after inventory skew. Confirmed cancellations may replenish from desired
-prices cached for at most 5 ms; invalid books clear that cache.
-
-No external files, pre-fitted weights, or session-end timing are used.
+The online fifteen-feature forecast uses matured 100 ms labels. Replacement
+orders may be submitted while cancellations are in flight. Provisional
+exposure targets 100 lots; actual and potential exposure may exceed 100.
+The acceptance wall is 1000 lots. All actual time beyond 100 incurs the
+native 10000-per-second penalty. IOC hedges also incur 5 ms latency.
+This variant hedges excess inventory from private fills as well as public
+updates. Results must be compared using net PnL after the full penalty.
 """
 from collections import deque
 from math import exp, ceil, floor, isfinite
@@ -26,7 +21,7 @@ class PassiveStrategy(BaseStrategy):
     OBSERVATION_INTERVAL_US = 20000
     MIN_LABELS = 200
     MODEL_MEMORY_US = 300000000
-    POSITION_LIMIT = 100
+    POSITION_LIMIT = 1000
     QUOTE_SIZE = 200
     REQUOTE_US = 0
 
@@ -35,6 +30,8 @@ class PassiveStrategy(BaseStrategy):
         self.inventory = 0
         self.cash = 0
         self._orders = {}
+        self._hedge_id = None
+        self._cached_bid = self._cached_ask = self._cached_time = None
         self._desired_buy = self._desired_sell = None
         self._desired_time = None
         self._observations = deque(maxlen=64)
@@ -102,6 +99,22 @@ class PassiveStrategy(BaseStrategy):
         if all(isfinite(w) for w in weights):
             self._weights = weights
 
+    def _hedge(self, now):
+        if abs(self.inventory) <= 100 or self._hedge_id is not None:
+            return
+        if self._cached_time is None or now-self._cached_time > 100000:
+            return
+        sign = -1 if self.inventory > 0 else 1
+        reserved = sum(r[2] for r in self._orders.values() if r[0] == sign)
+        quantity = min(abs(self.inventory)-100,max(0,self.POSITION_LIMIT-sign*self.inventory-reserved))
+        if quantity <= 0:
+            return
+        price = self._cached_ask+10 if sign > 0 else max(1,self._cached_bid-10)
+        oid = self.send_order(OrderRequest(side=Side.BUY if sign > 0 else Side.SELL,
+            price=price,quantity=quantity,order_type=OrderType.IOC))
+        self._orders[oid] = [sign,price,quantity,False,False,now]
+        self._hedge_id = oid
+
     def _cancel(self, order_id):
         record = self._orders[order_id]
         if record[3] and not record[4]:
@@ -120,7 +133,9 @@ class PassiveStrategy(BaseStrategy):
         if price is None or price <= 0 or now-self._last_action[sign] < self.REQUOTE_US:
             return
         reserved = sum(r[2] for r in self._orders.values() if r[0] == sign)
-        quantity = min(self.QUOTE_SIZE, self.POSITION_LIMIT-sign*self.inventory-reserved)
+        effective=sum(ceil(r[2]*(1-1.0)) if r[4] else r[2] for r in self._orders.values() if r[0]==sign)
+        quantity=min(self.QUOTE_SIZE,100-sign*self.inventory-effective,
+                     self.POSITION_LIMIT-sign*self.inventory-reserved)
         if quantity <= 0 or (current and quantity < 1):
             return
         order_id = self.send_order(OrderRequest(side=Side.BUY if sign > 0 else Side.SELL,
@@ -218,7 +233,7 @@ class PassiveStrategy(BaseStrategy):
         depth_imbalance = (bd_r-ad_r)/max(1,bd_r+ad_r)
         depth_mid = (bd_value/max(1,bd_r)+ad_value/max(1,ad_r))*0.5-mid
 
-        skew = 0.025 * self.inventory/self.POSITION_LIMIT * max(1.0,spread)
+        skew = 0.025 * self.inventory/100 * max(1.0,spread)
         if self._model_time is None or now-self._model_time > 10000000:
             self._fast_mid = self._slow_mid = mid
             self._observations.clear()
@@ -258,10 +273,12 @@ class PassiveStrategy(BaseStrategy):
             elif prediction-skew < -0.3:
                 sell = max(bid+1,ask-1)
         # Withdraw the side vulnerable to a persistent aggressive sweep.
-        if flow < -1.1 or self.inventory >= self.POSITION_LIMIT:
+        if flow < -1.1 or self.inventory >= 100:
             buy = None
-        if flow > 1.1 or self.inventory <= -self.POSITION_LIMIT:
+        if flow > 1.1 or self.inventory <= -100:
             sell = None
+        self._cached_bid,self._cached_ask,self._cached_time = bid,ask,now
+        self._hedge(now)
         self._desired_buy,self._desired_sell,self._desired_time = buy,sell,now
         self._quote(now,1,buy)
         self._quote(now,-1,sell)
@@ -288,7 +305,13 @@ class PassiveStrategy(BaseStrategy):
             else:
                 record[4] = False
 
-        if (self._desired_time is not None and 0 <= event.timestamp_us-self._desired_time <= 5000
+        was_hedge = event.order_id == self._hedge_id
+        if was_hedge and event.status in (OrderStatus.FILLED,OrderStatus.CANCELED,OrderStatus.REJECTED):
+            self._hedge_id = None
+        if (not was_hedge and self._desired_time is not None and 0 <= event.timestamp_us-self._desired_time <= 5000
                 and event.status in (OrderStatus.CANCELED,)):
             self._quote(event.timestamp_us,1,self._desired_buy)
             self._quote(event.timestamp_us,-1,self._desired_sell)
+
+        if was_hedge or event.status in (OrderStatus.FILLED,OrderStatus.PARTIALLY_FILLED):
+            self._hedge(event.timestamp_us)
