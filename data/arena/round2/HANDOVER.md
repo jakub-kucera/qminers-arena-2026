@@ -21,6 +21,7 @@ run's results and `leaderboard.json` go in this folder too.
 
 ## Rule answers
 <!-- which ON_THE_DAY.md items the rules or probes answered (written under each item, with the source), and the ones still open -->
+- **Three datasets** (the user, from the organisers, 7 Nov ~18:00): (1) the public tape, local as in round 1; (2) on upload the portal runs a **private** tape, so an upload's score is no longer the public replay (round 1's portal was byte-identical to a local run); (3) after the round closes the final score comes from **another, different private** tape. So the portal's score on upload is an out-of-sample check, but the final is a third draw: use the upload score as a holdout of *the strategy family*, not as a tuning target (picking the best of many uploads by their private score overfits that tape just as tuning on the public one does).
 
 ## Re-tests
 <!-- which of last round's choices were tested again this round, which were kept untested ("Choose the approach again each round") -->
@@ -35,6 +36,7 @@ run's results and `leaderboard.json` go in this folder too.
 Round 2 is generated differently, so round 1's settings are priors, not answers. D = `data/arena/round2/<file>.csv` (unzip first). `C5` below = `--set POSITION_LIMIT=1000 --set EXPOSURE=100 --set CANCEL_FREE=1.0 --set HEDGE=1 --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000 --set DEAD_ZONE=0.18` on `uv run python -m arena.qsim_rust ridge_maker D --threads 6 --holdout 0.25` (Rust, ~3 s a run; defaults = R1-C1).
 
 ### Protocol (every experiment)
+- **The portal's score is a private tape (round 2 on).** Keep a table: each upload's local public PnL against its portal (private-tape) PnL. A strategy whose ratio holds across uploads generalises; one that loses its edge on the private tape is overfit to the public one. Upload few, different candidates (e.g. the safe one, the base, one tuned variant) rather than many near-copies, and choose the final by local evidence plus that ratio, not by the highest single private score.
 - Choose only on the first 75% (`in_pnl`), prefer the centre of a flat neighbourhood; then check once: the last 25%, `uv run python -m experiments.pnl_segments NEW/pnl.csv BASE/pnl.csv` (12 segments), the paired block bootstrap. Round 2's own CSV only.
 - Replacement bar against the current best: about +9k full, +4.5k on the last 25%, ahead in 8 of 12 (scale them by the new tape's pnl_se).
 - A Rust pick becomes a Python file that matches Rust to the cent (`uv run exchange-simulator --strategy FILE --backtest D --log-dir logs/X --no-logs`), then `uv run python -m arena.validate FILE all --format qminers`, run time well under 900 s. Upload a safe candidate in the first hour; the final by T-15 min.
