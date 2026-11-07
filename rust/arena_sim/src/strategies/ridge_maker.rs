@@ -62,6 +62,14 @@
 //!       --set FLOWGRP_CAP=1
 //!   C12 (r1_C12_codex_v6.py, 622920.99, 21,462): C5's and --set QUOTEFEAT=1 --set FLOWGRP=2 --set FLOWGRP_CAP=20
 //!       --set FLOWGRP_US=1000000
+//! The forecast take (R2-FT1), off by default (`FT_SZ` 0): once the model has MIN_LABELS labels, when the
+//! prediction net of the skew (`FT_NET` 1; 0: the raw prediction) exceeds `FT_EDGE` (1.0) ticks plus half the
+//! spread, an IOC at the far touch (`FT_THRU` 0 ticks through) for min(FT_SZ, the room) lots, at most one per
+//! `FT_GAP_MS` (100), exempt from the re-quote's cancels for 1 s; the room is EXPOSURE minus the position its way
+//! (`FT_MODE` 0), only the position against it (1: reduce, if at least `FT_INV` 0 lots) or only when not against it
+//! (2: open). `RIDGE_PRED_LOG` (an environment variable, a path) writes each book event's time, mid, prediction,
+//! skew, spread and inventory, for measuring the forecast.
+//!   FT1 (r2_FT1_forecast_take.py, 688311.10, 23,522): C12's and --set FT_EDGE=0.25 --set FT_SZ=200 --set FT_GAP_MS=50
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -263,9 +271,20 @@ pub struct RidgeMaker {
     cancel_net: f64,
     cancel_mass: f64,
     new_quote_time: Option<i64>,
+    /// the forecast take (R2-FT), off by default (FT_SZ 0)
+    ft_edge: f64,
+    ft_sz: i64,
+    ft_gap_ms: i64,
+    ft_mode: i64,
+    ft_inv: i64,
+    ft_thru: i64,
+    ft_net: i64,
+    ft_last: i64,
+    /// RIDGE_PRED_LOG (env var, a path): each book event's time, mid, prediction, skew, spread, inventory
+    pred_log: Option<std::io::BufWriter<std::fs::File>>,
 }
 
-pub const KEYS: [&str; 59] = [
+pub const KEYS: [&str; 66] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -275,6 +294,7 @@ pub const KEYS: [&str; 59] = [
     "FILL_LEARN", "FILL_H_US", "FILL_MIN", "FILL_WARM", "FILL_MEM_US", "FILL_BIN", "FILL_Q",
     "LABEL_MODE", "LABEL_K", "LABEL_CAP_US", "PRED_SCALE",
     "FLOWGRP", "FLOWGRP_CAP", "FLOWGRP_US", "QUOTEFEAT", "QUOTEFEAT_US",
+    "FT_EDGE", "FT_SZ", "FT_GAP_MS", "FT_MODE", "FT_INV", "FT_THRU", "FT_NET",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -405,6 +425,17 @@ impl RidgeMaker {
             cancel_net: 0.0,
             cancel_mass: 0.0,
             new_quote_time: None,
+            ft_edge: params.float("FT_EDGE", 1.0)?,
+            ft_sz: params.int("FT_SZ", 0)?,
+            ft_gap_ms: params.int("FT_GAP_MS", 100)?,
+            ft_mode: params.int("FT_MODE", 0)?,
+            ft_inv: params.int("FT_INV", 0)?,
+            ft_thru: params.int("FT_THRU", 0)?,
+            ft_net: params.int("FT_NET", 1)?,
+            ft_last: i64::MIN / 2,
+            pred_log: std::env::var("RIDGE_PRED_LOG")
+                .ok()
+                .map(|p| std::io::BufWriter::new(std::fs::File::create(p).expect("RIDGE_PRED_LOG"))),
         })
     }
 
@@ -1206,6 +1237,59 @@ impl Strategy for RidgeMaker {
             }
             if ask_dying && sell == Some(ask) {
                 sell = Some(ask + 1);
+            }
+        }
+        if self.m1.labels >= self.min_labels {
+            if let Some(w) = self.pred_log.as_mut() {
+                use std::io::Write;
+                let _ = writeln!(w, "{},{},{},{},{},{}", now, mid, prediction, skew, spread, self.inventory);
+            }
+        }
+        if self.ft_sz > 0 && self.m1.labels >= self.min_labels && now - self.ft_last >= self.ft_gap_ms * 1000 {
+            let signal = if self.ft_net > 0 { prediction - skew } else { prediction };
+            let need = self.ft_edge + 0.5 * spread_f;
+            let sign = if signal > need {
+                1
+            } else if signal < -need {
+                -1
+            } else {
+                0
+            };
+            if sign != 0 {
+                let pos = sign * self.inventory;
+                let room = match self.ft_mode {
+                    1 => {
+                        if pos < 0 && -pos >= self.ft_inv {
+                            -pos
+                        } else {
+                            0
+                        }
+                    }
+                    2 => {
+                        if pos >= 0 {
+                            self.exposure - pos
+                        } else {
+                            0
+                        }
+                    }
+                    _ => self.exposure - pos,
+                };
+                let reserved: i64 = self.orders.iter().filter(|r| r.sign == sign).map(|r| r.quantity).sum();
+                let quantity = self.ft_sz.min(room).min(self.position_limit - pos - reserved);
+                if quantity > 0 {
+                    let price = if sign > 0 { ask + self.ft_thru } else { 1i64.max(bid - self.ft_thru) };
+                    let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, true);
+                    self.orders.push(Record {
+                        id,
+                        sign,
+                        price,
+                        quantity,
+                        accepted: false,
+                        cancelling: false,
+                        exempt_until: now + 1_000_000,
+                    });
+                    self.ft_last = now;
+                }
             }
         }
         self.cached = Some((bid, ask, now));
