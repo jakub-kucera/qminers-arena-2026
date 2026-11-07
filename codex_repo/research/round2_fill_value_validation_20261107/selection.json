@@ -1,0 +1,11 @@
+{
+  "name": "round2_flat",
+  "frozen_file": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\logs\\round2_fill_value_validation\\frozen_submission.py",
+  "source_sha256": "2e386e9f37b28e88f664fccd614f71b1f84bc11ea39be4dfe0f3a045ac00612d",
+  "evaluation_scope": "local_public_only",
+  "organizer_private_evaluated": false,
+  "risk": "strict100",
+  "criterion": "Highest next-20% net PnL increment; lower sampled drawdown breaks ties.",
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "final_segment_inspected": false
+}

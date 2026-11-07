@@ -26,6 +26,14 @@ later tuning results are sample-tuned, not independent holdouts.
 
 ## Round-2 preparation
 
+Latest research-branch finding: a composite conditional-fill model reached
+85,435 on the development hour (including its first 30 minutes of training),
+but lost **21,593** on the previously reserved next 20 minutes. It was rejected;
+the **100,000 target remains unmet**. The first 80% of the public tape is now
+consumed; the last 20% remains unreplayed. See
+[the development and validation findings](docs/ROUND2_COMPOSITE_FINDINGS.md).
+No round-2 submission is promoted and no server score is claimed.
+
 Six standalone candidates are prepared under [strategies/round2/](strategies/round2/):
 direct transfer, strict-100 maker, faster adaptation, dual-memory maker,
 guarded IOC trend, and a no-trade control. They are hypotheses for new data;

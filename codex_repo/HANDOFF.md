@@ -1,5 +1,27 @@
 # Handoff for the next session
 
+## Research branch update: composite model failed reserved validation
+
+Read [ROUND2_COMPOSITE_FINDINGS.md](docs/ROUND2_COMPOSITE_FINDINGS.md) first for
+the latest research-branch state. Main's initial investigation is preserved
+below as history. The new public goal is at least 100,000 net PnL. It is not
+achieved. Thirty-four additional development variants were evaluated; a
+fill-conditioned boosted-tree gate made 85,435 in the first hour, including
+training-period profit, but lost 21,593 on minutes 60-80 after being frozen.
+The no-trade control won that validation comparison; it is not a solution to
+the user's profit goal. No model was promoted. First 80% is now consumed;
+last 20% remains unreplayed. Do not run public-check on the flat selection and
+declare success. All local replay processes for this study have finished.
+
+Next investigate why the static conditional gate failed, including causal
+online calibration/adaptation and inventory reduction when the gate withdraws
+quotes. Keep the final public segment reserved for a genuinely frozen next
+candidate. Do not relabel minutes 60-80 as fresh validation after using them
+for development. Server validation remains a separate possible evidence source.
+The benchmark, matching engine, latency and penalties were unchanged. All 98
+merged repository tests passed, and exported tree predictions matched sklearn.
+Exact sources, protocols and results are archived under research/round2_*.
+
 Prepared 7 November 2026 after round 1. Team: **ThatsMyQuant**. The user expects
 the next session about an hour after round 1. Round-2 public data has now arrived
 and is at `data/round2_public.csv`. Read
