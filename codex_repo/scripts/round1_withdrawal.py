@@ -11,7 +11,7 @@ ROOT=Path('logs/round1/withdrawal')
 def main():
     ROOT.mkdir(parents=True,exist_ok=True);(ROOT/'sources').mkdir(exist_ok=True)
     if (ROOT/'screening.json').exists():raise SystemExit('Results already exist')
-    search_queue.ROOT=ROOT;base=Path('strategies/round1_submission.py').read_text();specs={}
+    search_queue.ROOT=ROOT;base=Path('strategies/round1_private_554347.py').read_text();specs={}
     for threshold in (0.05,0.1,0.15,0.2,0.3):
         for retreat in (None,2,3):
             name=f'withdraw_{threshold}_{retreat}'

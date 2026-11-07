@@ -10,12 +10,13 @@ from strategies.round1_queue_545k import PassiveStrategy as QueueStrategy
 from strategies.round1_inside_551k import PassiveStrategy as InsideStrategy
 from strategies.round1_private_554k import PassiveStrategy as PrivateStrategy
 from strategies.round1_submission import PassiveStrategy as SubmissionStrategy
+from strategies.round1_size_555389 import PassiveStrategy as SizeStrategy
 from test_strategy import Gateway
 
 
 class PreservedRound1Tests(unittest.TestCase):
     def test_mature_labels_and_solver_for_expanded_models(self):
-        for cls in (NonlinearStrategy, DepthStrategy, NonlinearDepthStrategy, QueueStrategy, InsideStrategy, PrivateStrategy, SubmissionStrategy):
+        for cls in (NonlinearStrategy, DepthStrategy, NonlinearDepthStrategy, QueueStrategy, InsideStrategy, PrivateStrategy, SubmissionStrategy, SizeStrategy):
             with self.subTest(model=cls.__name__, dimensions=cls.FEATURE_COUNT):
                 s = cls()
                 features = (1,) + (0,) * (s.FEATURE_COUNT - 1)
@@ -60,6 +61,7 @@ class PreservedRound1Tests(unittest.TestCase):
             ('strategies/round1_private_554k.py', PrivateStrategy),
             ('strategies/round1_submission.py', SubmissionStrategy),
             ('strategies/round1_private_554347.py', SubmissionStrategy),
+            ('strategies/round1_size_555389.py', SizeStrategy),
         ):
             self.assertEqual(check(path), [])
             for inventory in range(-100, 101):
@@ -72,6 +74,18 @@ class PreservedRound1Tests(unittest.TestCase):
                 sells = sum(r[2] for r in s._orders.values() if r[0] < 0)
                 self.assertLessEqual(inventory + buys, 100)
                 self.assertGreaterEqual(inventory - sells, -100)
+
+    def test_size_buckets_separate_touch_and_deeper_liquidity(self):
+        s=SizeStrategy();Gateway(s)
+        bids=[BookOrderView('b'+str(i),Side.BUY,99,q,'market') for i,q in enumerate((2,15,50,250))]
+        asks=[BookOrderView('a1',Side.SELL,101,3,'market'),
+              BookOrderView('a2',Side.SELL,101,100,'market'),
+              BookOrderView('a3',Side.SELL,102,250,'market')]
+        s.on_order_book_change(OrderBookSnapshot(0,bids,asks),[])
+        features=s._observations[-1][2]
+        self.assertEqual(len(features),23)
+        self.assertEqual(features[15:19],(0,1,0,1))
+        self.assertEqual(features[19:23],(0,1,0,0))
 
     def test_inside_quotes_require_spread_and_edge_and_never_cross(self):
         for spread, weight, inventory, expected_buy, expected_sell in (

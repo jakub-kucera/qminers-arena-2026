@@ -15,7 +15,7 @@ ROOT=Path('logs/round1/standing_liquidity')
 
 
 def source_for(size,target):
-    text=Path('strategies/round1_submission.py').read_text()
+    text=Path('strategies/round1_private_554347.py').read_text()
     text=text.replace('POSITION_LIMIT = 100','POSITION_LIMIT = 1000').replace('QUOTE_SIZE = 200',f'QUOTE_SIZE = {size}')
     text=text.replace('self.inventory/self.POSITION_LIMIT','self.inventory/100')
     text=text.replace('        self._orders = {}', '''        self._orders = {}

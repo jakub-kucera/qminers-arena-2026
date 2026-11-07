@@ -12,7 +12,7 @@ def main():
     ROOT.mkdir(parents=True,exist_ok=True);(ROOT/'sources').mkdir(exist_ok=True)
     if (ROOT/'screening.json').exists():raise SystemExit('Results already exist')
     search_queue.ROOT=ROOT
-    base=Path('strategies/round1_submission.py').read_text().replace('        self._learn(now,mid)\n','')
+    base=Path('strategies/round1_private_554347.py').read_text().replace('        self._learn(now,mid)\n','')
     expressions={}
     for feature in ('count_imbalance','robust_imbalance','depth_count','depth_imbalance','imbalance','depth_mid'):
         for alpha in (-0.5,0.25,0.5,1.0,2.0):

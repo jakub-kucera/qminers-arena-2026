@@ -9,7 +9,7 @@ ROOT=Path('logs/round1/conditional_fills')
 
 
 def source_for(horizon, threshold, mode):
-    text=Path('strategies/round1_submission.py').read_text()
+    text=Path('strategies/round1_private_554347.py').read_text()
     text=text.replace('        self._orders = {}', '''        self._orders = {}
         self._fill_pending = deque(maxlen=4096)
         self._fill_features = None

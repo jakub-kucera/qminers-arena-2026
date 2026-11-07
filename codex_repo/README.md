@@ -564,3 +564,16 @@ This exceeds the 550,000 comparison threshold by 4,347. The other team's exact
 current score is unknown. The final result is sample-tuned, has no new holdout,
 and has not yet been evaluated on the competition server. Earlier model files
 and their metrics remain preserved; Git tags identify the score milestones.
+
+The size-cohort extension is preserved as `strategies/round1_size_555389.py`:
+**555,389**, verified field-for-field with the unmodified CLI, zero penalty,
+maximum actual/potential inventory 100 / 100. It adds eight count-imbalance
+features separating quantities 1–5, 6–20, 21–100 and >100 lots at the touch and
+within two ticks. It has 23 features. Metrics and source/input hashes are tracked
+in `results/round1_555389.json`; 48 tests pass. This is still sample-tuned.
+
+New research scripts use the frozen `strategies/round1_private_554347.py` as
+the baseline, so promoting a different `round1_submission.py` cannot silently
+change the research templates. Experimental tree families explicitly record
+whether they fit earlier periods or the entire supplied file. Full-sample
+training scores are in-sample evidence, not independent validation.

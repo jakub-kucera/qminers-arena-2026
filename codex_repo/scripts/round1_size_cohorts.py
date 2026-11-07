@@ -9,7 +9,7 @@ ROOT=Path('logs/round1/size_cohorts')
 
 
 def source_for(cutoff, filter_volume=True, minimum=False):
-    text=Path('strategies/round1_submission.py').read_text()
+    text=Path('strategies/round1_private_554347.py').read_text()
     text=text.replace('        bn = an = bd_n = ad_n = 0','        bf = af = 0\n        bn = an = bd_n = ad_n = 0')
     operator='<' if minimum else '>'
     text=text.replace('                weight = min(20,order.quantity)',f'''                if order.quantity {operator} {cutoff}:
@@ -27,7 +27,7 @@ def source_for(cutoff, filter_volume=True, minimum=False):
 
 
 def bucket_source():
-    text=Path('strategies/round1_submission.py').read_text().replace('FEATURE_COUNT = 15','FEATURE_COUNT = 23')
+    text=Path('strategies/round1_private_554347.py').read_text().replace('FEATURE_COUNT = 15','FEATURE_COUNT = 23')
     text=text.replace('        bn = an = bd_n = ad_n = 0', '''        bucket_b = [0,0,0,0]
         bucket_a = [0,0,0,0]
         bucket_db = [0,0,0,0]

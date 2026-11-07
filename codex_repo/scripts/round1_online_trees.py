@@ -9,7 +9,7 @@ ROOT = Path('logs/round1/online_trees')
 
 
 def source_for(iterations, leaves, window, gain=1.0):
-    base = Path('strategies/round1_submission.py').read_text()
+    base = Path('strategies/round1_private_554347.py').read_text()
     base = base.replace('isfinite\n', 'isfinite, log\n')
     base = base.replace('from simulator.models import', '''import numpy as np
 from sklearn.ensemble import HistGradientBoostingRegressor

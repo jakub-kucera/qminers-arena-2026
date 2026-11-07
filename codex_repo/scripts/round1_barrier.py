@@ -9,7 +9,7 @@ ROOT=Path('logs/round1/barrier')
 
 
 def source_for(barrier, lag, gain):
-    text=Path('strategies/round1_submission.py').read_text()
+    text=Path('strategies/round1_private_554347.py').read_text()
     text=text.replace('deque(maxlen=64)','deque(maxlen=256)')
     old='''        while self._observations and self._observations[0][0] + self.HORIZON_US <= now:
             observed_us, old_mid, features = self._observations.popleft()

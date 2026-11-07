@@ -9,7 +9,7 @@ ROOT=Path('logs/round1/soft_inventory')
 
 
 def source_for(mode, threshold, adverse=0, band=50):
-    text=Path('strategies/round1_submission.py').read_text()
+    text=Path('strategies/round1_private_554347.py').read_text()
     text=text.replace('        self._orders = {}','        self._orders = {}\n        self._forecast = 0.0',1)
     if mode=='gated':
         body=f'''        lower,upper = -100,100
