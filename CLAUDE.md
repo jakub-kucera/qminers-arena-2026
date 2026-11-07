@@ -35,6 +35,7 @@ uv run python -m arena.validate python/bots/template.py 1 [--max-size 100KB] [--
 uv run python -m arena.compact python/bots/template.py submit/template.py   # over the size cap
 uv run python -m arena.grid python/bots/template.py 1 --grid PARAMS.KELP.make_edge=0.5,1,2 --modes all,worse [--holdout last] [--screen 0.25 | --search tpe --budget 1000] [--scenario rest:resting] --engine rust
 uv run python -m arena.qgrid python/bots/qminers/template.py data/sample.csv.gz --set 'PARAMS.ASSET={"fair": "mid"}' --grid PARAMS.ASSET.make_edge=0,1,2 [--holdout 0.25] [--out results/qgrid.csv]   # on the Arena's simulator
+uv run python -m arena.qsim_rust fallback_maker data/sample.csv.gz --grid QUOTE=2,5 --threads 4   # the same, its Rust port (rust/arena_sim)
 uv run python -m arena.compare python/bots/template.py 1 --bot python/bots/zoo/claude/*.py --modes all,worse
 uv run python -m arena.stress python/bots/template.py 1              # perturbed days; size stop_loss from it
 uv run python -m arena.sim run python/bots/template.py --days 5      # inside an agent market, against the same days replayed
