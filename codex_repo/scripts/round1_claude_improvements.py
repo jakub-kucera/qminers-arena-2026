@@ -36,6 +36,9 @@ def transfer_features(text, generated):
         if not before:
             before = old[a]
             after += before
+        if text.count(before) != 1 and before.endswith('\n'):
+            before = before.rstrip('\n')
+            after = after.rstrip('\n')
         assert before and text.count(before) == 1, (before, text.count(before))
         text = text.replace(before, after, 1)
     return text.replace(f'FEATURE_COUNT = {dimension}', f'FEATURE_COUNT = {dimension + extra}', 1)
@@ -95,7 +98,8 @@ def main():
     names = generate()
     screen = batch(names, 'logs/round1/screening.csv', 'screening', args.workers)
     ranked = sorted(screen, key=lambda n: screen[n]['result']['pnl'], reverse=True)
-    finalists = list(dict.fromkeys(['baseline'] + ranked[:5]))
+    finalists = list(dict.fromkeys(['baseline'] + ranked[:5] +
+                                  ['buckets', 'groups_fast', 'groups_slow', 'new_quotes']))
     full = batch(finalists, 'data/round1.csv', 'full', args.workers)
     winner = max(full, key=lambda n: full[n]['result']['pnl'])
     record = dict(name=winner, result=full[winner],

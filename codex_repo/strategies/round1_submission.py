@@ -1,14 +1,11 @@
-"""Round 1 candidate R1-C5 (7 Nov, 17:05): R1-C1b (the codex v2) with HORIZON_US 400000, MODEL_MEMORY_US 1e11 and the dead zone 0.18, the centre of the plateau of a Rust ridge_maker grid on the first 75% of round1.csv: 595,441.83 (penalty 1,720). The notes of R1-C1b follow.
+"""Round-1 market maker with 23 causal public microstructure features.
 
-Round-1 market maker with pipelined cancel/replace and charged risk.
-
-The online fifteen-feature forecast uses matured 100 ms labels. Replacement
-orders may be submitted while cancellations are in flight. Provisional
-exposure targets 100 lots; actual and potential exposure may exceed 100.
-The acceptance wall is 1000 lots. All actual time beyond 100 incurs the
-native 10000-per-second penalty. IOC hedges also incur 5 ms latency.
-This variant hedges excess inventory from private fills as well as public
-updates. Results must be compared using net PnL after the full penalty.
+Extends the supplied 595K model with decayed aggressive-flow and price
+statistics, separating takers still visible after execution. Labels mature
+after 400 ms; training uses a long expanding memory. Pipelined replacements
+can cause brief inventory breaches, charged at the native 10000/second fee.
+The audited round1.csv replay scored 605752.82 net after all penalties.
+This model was tuned on the supplied sample; no independent holdout remains.
 """
 from collections import deque
 from math import exp, ceil, floor, isfinite
@@ -18,7 +15,7 @@ from simulator.strategy import BaseStrategy
 
 
 class PassiveStrategy(BaseStrategy):
-    FEATURE_COUNT = 15
+    FEATURE_COUNT = 23
     HORIZON_US = 400000
     OBSERVATION_INTERVAL_US = 20000
     MIN_LABELS = 200
@@ -34,6 +31,10 @@ class PassiveStrategy(BaseStrategy):
         self._orders = {}
         self._hedge_id = None
         self._cached_bid = self._cached_ask = self._cached_time = None
+        self._group_net=[0.0,0.0,0.0]
+        self._group_volume=[0.0,0.0,0.0]
+        self._group_price=[0.0,0.0,0.0]
+        self._rest_count_net=self._rest_count=0.0
         self._desired_buy = self._desired_sell = None
         self._desired_time = None
         self._observations = deque(maxlen=64)
@@ -149,6 +150,36 @@ class PassiveStrategy(BaseStrategy):
         now = snapshot.timestamp_us
         elapsed = 0 if self._last_us is None else max(0,now-self._last_us)
         self._last_us = now
+        group_decay=exp(-elapsed/500000)
+        for i in range(3):
+            self._group_net[i]*=group_decay
+            self._group_volume[i]*=group_decay
+            self._group_price[i]*=group_decay
+        self._rest_count_net*=group_decay
+        self._rest_count*=group_decay
+        if trades:
+            visible={o.order_id:o for orders in (snapshot.bids,snapshot.asks) for o in orders if o.owner=='market'}
+            counted=set()
+            for trade in trades:
+                if trade.taker_owner!='market':
+                    continue
+                direction=1 if trade.book_side=='ask' else -1
+                group=0 if trade.taker_order_id in visible else 1
+                self._group_net[group]+=direction*trade.quantity
+                self._group_volume[group]+=trade.quantity
+                self._group_price[group]+=trade.quantity*trade.price
+                if group==0 and trade.taker_order_id not in counted:
+                    counted.add(trade.taker_order_id)
+                    remaining=visible[trade.taker_order_id]
+                    self._group_net[0]+=direction*remaining.quantity
+                    self._group_volume[0]+=remaining.quantity
+                    self._group_price[0]+=remaining.quantity*remaining.price
+                    self._rest_count_net+=direction
+                    self._rest_count+=1
+                if trade.maker_owner=='user':
+                    self._group_net[2]+=direction*trade.quantity
+                    self._group_volume[2]+=trade.quantity
+                    self._group_price[2]+=trade.quantity*trade.price
         decay = exp(-elapsed/500_000)
         self._net *= decay
         self._volume *= decay
@@ -256,7 +287,14 @@ class PassiveStrategy(BaseStrategy):
         self._previous_touch = (bid,ask,bq,aq)
         ofi = max(-3,min(3,self._ofi))
         features=(flow,max(-5,min(5,self._fast_mid-self._slow_mid)),imbalance,
-                  ofi,spread*imbalance,flow*abs(flow),imbalance*abs(imbalance),ofi*abs(ofi),count_imbalance,robust_imbalance,depth_count,depth_imbalance,depth_mid,count_imbalance*abs(count_imbalance),robust_imbalance*abs(robust_imbalance))
+                  ofi,spread*imbalance,flow*abs(flow),imbalance*abs(imbalance),ofi*abs(ofi),count_imbalance,robust_imbalance,depth_count,depth_imbalance,depth_mid,count_imbalance*abs(count_imbalance),robust_imbalance*abs(robust_imbalance),self._group_net[0]/(1+self._group_volume[0]),
+                  self._group_net[1]/(1+self._group_volume[1]),
+                  self._group_net[2]/(1+self._group_volume[2]),
+                  self._group_volume[0]/(1+self._group_volume[0]+self._group_volume[1]),
+                  max(-5,min(5,(self._group_price[0]-mid*self._group_volume[0])/(1+self._group_volume[0]))),
+                  max(-5,min(5,(self._group_price[1]-mid*self._group_volume[1])/(1+self._group_volume[1]))),
+                  max(-5,min(5,(self._group_price[2]-mid*self._group_volume[2])/(1+self._group_volume[2]))),
+                  self._rest_count_net/(1+self._rest_count))
         self._learn(now,mid)
         if now-self._last_observation_us >= self.OBSERVATION_INTERVAL_US:
             self._observations.append((now,mid,features))
