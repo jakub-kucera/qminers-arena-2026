@@ -1,5 +1,74 @@
 # Round 2: supplied liquidity model plus50,000 (target319,920)
 
+## Current verified improvement:296,715
+
+No-passive plus ridge3x reached296715, with native CLI matching every audited
+result field. Source `strategies/round2/round2_local_296715.py`, SHA256
+`33ec43e71347d9bf3ea81e7ee48c2bfd48d2310abc784a33c1ed614f5218fd55`.
+Fee0; actual/potential100; sampled drawdown6012; fills2335; volume271946;
+first80=226129; final20=70586. Improvement over supplied269920 is26795;
+the target319920 still needs23205. Lower drawdown than294098, but higher
+than the supplied reference4658. No unseen-tape superiority is claimed.
+
+Four combination cases were frozen before screening:
+
+|Case|First80|30–60|60–80|
+|---|---:|---:|---:|
+|No-passive ridge3x|226129|80825|108116|
+|No-passive flow0.2|229622|73573|113083|
+|No-passive flow0.3|221242|68599|112300|
+|No-passive flow0.2+ridge3x|229708|75455|112811|
+
+Ridge3x won by combined30–80 gain188941, despite a lower total prefix than
+some alternatives. It was frozen before full replay. The exact rule remains
+positive30–60 and60–80, then maximize their combined gain. Archive:
+`research/round2_t2_noquote_combo_20261107`.
+
+### Causal forecast calibration: rejected after full check
+
+Past raw forecasts and observed spreads were stored with features, then matched
+to400ms outcomes. Only observed spread1 and absforecast>=0.1 entered the
+calibrator; responseclip3, ridge prior20 toward identity, slopeclip0.5..1.5.
+Tested memory300/1800s and blend50/100%. Later30–80 gains were185988,182162,
+183312,182147 respectively (300/50,300/100,1800/50,1800/100).
+Selected300s/50% full285091, final20=68685, fees0, drawdown6112, native parity.
+Not promoted. Archive `research/round2_t2_forecast_calibration_20261107`.
+
+### Stronger inventory skew: rejected on prefix
+
+From294098, fixed skew0.1/0.25/0.5/0.75 produced first80 PnL211949,179713,
+51274,-488322. Later30–80 gains167947,148230,74991,-240149 all underperformed
+reference185349. No full candidate selected. Stronger reversal pressure can
+cause costly repeated trading; this is not an automatic risk improvement.
+Archive `research/round2_t2_inventory_response_20261107`.
+
+All138 tests pass, including calibration maturity, stored forecast use, stale
+and wide-label exclusion, bounded/decaying gain, and weighting all learner
+sufficient statistics consistently using spread known at observation time.
+
+### Match training spread to execution spread
+
+From294098 (not the newly selected ridge3x source), three variants assign
+weight0/0.25/0.5 to samples whose spread at observation exceeded1 tick.
+Narrow-spread samples retain weight1. The weighted mass, covariance and cross
+product use the same weight; zero-weight labels do not count toward warmup.
+This changes learning, not the execution spread gate or target horizon.
+
+|Wide-spread weight|First80|30–60|60–80|
+|---|---:|---:|---:|
+|0|222558|85774|106815|
+|0.25|224023|86734|104281|
+|0.5|218595|80604|103479|
+
+Weight0 won the frozen later-period criterion with192589 and was selected
+before full replay. It starts weaker, so prefix total is not the selection
+criterion. No future spread or reconstructed past features enter training.
+
+Full weight0 replay292908, final20=70350, zero penalties, native CLI parity.
+Not promoted: later-prefix gain did not overcome its weaker early period.
+Archive `research/round2_t2_training_spread_20261107`. All15 new candidates
+across these four studies are terminal; no live process remains. Best296715.
+
 ## New user target and supplied reference
 
 The user superseded250k with **at least50,000 above the supplied liquidity T2**.

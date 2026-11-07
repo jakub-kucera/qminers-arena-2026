@@ -9,26 +9,34 @@ Exact supplied source: research/round2_t2_liquidity_supplied_20261107/original_s
 SHA25654658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4.
 Native CLI/audit match all fields; actual/potential100, fees0, drawdown4658,
 first80=209280,final20=60640. All public data consumed; no new holdout.
-Current improved best **294,098** (+24,178), still25,822 short of319,920.
-Source strategies/round2/round2_local_294098.py, SHA256
-06acfa3b209a6a3ccbf7beb08ec0715774c87bf98becdeae07f52465c3380f09.
-No-passive variant of supplied T2: QUOTE_SIZE0, strict all-live reservations,
-POSITION_LIMIT100. All other forecast and execution settings remain supplied.
-Native CLI/audit parity; fees0, maxactual/potential100, drawdown6222,
-first80=223851,final20=70247, filled orders2492, volume288516.
+Current improved best **296,715** (+26,795), still23,205 short of319,920.
+Source strategies/round2/round2_local_296715.py, SHA256
+33ec43e71347d9bf3ea81e7ee48c2bfd48d2310abc784a33c1ed614f5218fd55.
+No-passive T2 with strict100 and ridge max(30,0.003*mass) instead of
+max(10,0.001*mass). Same33features,400ms target,50ms IOC pacing and spread1.
+Native CLI/audit parity; fees0, maxactual/potential100, drawdown6012,
+first80=226129,final20=70586, filled orders2335, volume271946.
 
-Six structural variants completed: best later-prefix ridge3x full268433,
-zero fees, drawdown3751, not promoted. Six execution variants completed:
-no_passive was best by later30-80 before full; gap10/25/100ms and edge0/.3
-all worse. All133 tests pass. All scheduled runs terminal; no live sessions.
-Archives: research/round2_t2_structural_20261107 and round2_t2_execution_20261107.
+Latest15 fixed cases across4 studies completed:
+- noquote_combo: ridge3x winner full296715. Flow0.2/0.3 and flow0.2+ridge3x
+  had weaker declared later-period score, despite higher totalprefix in some.
+- forecast_calibration: stored past raw forecasts,400ms causal labels, narrow
+  spread only, slopeprior20/cap0.5..1.5, memory300/1800 and blend50/100%.
+  Winner300s/50% full285091, native parity; not promoted.
+- inventory_response: skew0.1/.25/.5/.75 all worse prefix. Strongest lost488322;
+  no full replay. Do not fine-tune this failed family blindly.
+- training_spread: wide-label weights0/.25/.5; weight0 winner full292908,
+  native parity, not promoted. Early period weaker despite stronger later gain.
+All138 tests passed. All scheduled processes terminal; no live sessions.
+Archives research/round2_t2_<study>_20261107 contain source/protocol/results.
 
-Next useful hypothesis: causal calibration of forecast-taker edge using stored
-past forecasts and matured400ms outcomes; or a small combination of no-passive
-with flow bias/regularization. Do not assume additive gains. Reference-relative
-goal is recorded in protocols and resolved by checkpoint tool after validating
-reference source/tape/native parity. The system goal string may still say250k;
-the user's latest319920 requirement takes precedence, and remains incomplete.
+Next useful structural hypothesis: encode aggressive-flow magnitude as well
+as its current normalized ratio, with causal bounded signed-volume features
+on a small set of horizons. Alternatively ensemble broad/narrow learners
+with a predeclared causal weighting rule; do not assume their gains add.
+Avoid further tiny parameter grids on known full scores. All public data is
+consumed, no unseen validation claims. Goal319920 overrides the stale system
+string250k. Original reference269920 remains unchanged, all fees/latency native.
 
 Current studies and completion are documented at the top of
 [research](docs/ROUND2_250K_RESEARCH.md). Native matching, latency and fees stay

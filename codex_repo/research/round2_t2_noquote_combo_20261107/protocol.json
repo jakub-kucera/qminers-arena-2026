@@ -1,0 +1,58 @@
+{
+  "goal": {
+    "reference_audit": "logs/round2_t2_liquidity_supplied/full_audit.json",
+    "reference_source_sha256": "54658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4",
+    "increment": 50000
+  },
+  "candidates": [
+    {
+      "name": "flow_bias0.2",
+      "file": "logs\\round2_t2_noquote_combo\\sources\\flow_bias0.2.py",
+      "source_sha256": "ea79fb66fba87da788a0a9010bdc184c1279a377eb4f62a0ba67b862dbc434ce",
+      "risk": "strict100"
+    },
+    {
+      "name": "flow_bias0.3",
+      "file": "logs\\round2_t2_noquote_combo\\sources\\flow_bias0.3.py",
+      "source_sha256": "2e8025bbb905e239499c29f683d615de5543752db36c6eb42dac6f38620da08e",
+      "risk": "strict100"
+    },
+    {
+      "name": "ridge3x",
+      "file": "logs\\round2_t2_noquote_combo\\sources\\ridge3x.py",
+      "source_sha256": "33ec43e71347d9bf3ea81e7ee48c2bfd48d2310abc784a33c1ed614f5218fd55",
+      "risk": "strict100"
+    },
+    {
+      "name": "flow02_ridge3x",
+      "file": "logs\\round2_t2_noquote_combo\\sources\\flow02_ridge3x.py",
+      "source_sha256": "f7c1fe8316a4e768a6cb8cba9310dbccbfdf2c4b3d2fc00e5cb0f9fafe8e1921",
+      "risk": "strict100"
+    }
+  ],
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "scope": "Consumed public first80%; no new holdout and no server access.",
+  "hypothesis": "Four fixed combinations: no passive plus flow0.2/0.3, ridge3x, or flow0.2+ridge3x. Reference294098 first80=223851,later30-80=185349. No additive-gain assumption; same native fees and latency.",
+  "selection": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "reference": "Frozen 167412 composite remains unchanged; no automatic promotion from prefix alone."
+}

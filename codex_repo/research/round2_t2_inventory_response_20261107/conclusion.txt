@@ -1,0 +1,1 @@
+All four stronger inventory skews underperformed294098 on the consumed public prefix and later30-80 metric. No full candidate selected. Strongest0.75 lost488322 on prefix; stronger reducing/reversing pressure is not a free risk improvement. Native rules unchanged.
