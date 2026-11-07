@@ -59,7 +59,9 @@ this market, one line, from this data); the exact command; the training days; th
 
 ## Trials
 <!-- every experiment run, in order: time; id; command; cells or bots tried; result; kept or dropped; commit -->
-Trials so far: 0 experiments, 0 cells.
+Trials so far (this worktree): 4 experiments, 34 cells.
+- 20:15 (the fable worktree `worktree-fable-r2-cascade`): family 14 `python/bots/qminers/families/flow_holder.py` (hold EXPOSURE lots on the side of the last MIN_LOTS+ aggressor; GRACE_MS 0 = the board's momentum agent, reproduced to the cent: `--grid GRACE_MS=0,100,1000 --grid MIN_LOTS=333,500,650` (9): 0 / 500 118,374 (in 97,133 / out 21,241), 0 / 650 117,451 (70,731 / 46,720), 0 / 333 101,017; a passive entry with a 100-ms grace -5,954 and -37,089, 1,000 ms +10,222 and +30,439: the impact lands inside 100 ms, so the entry must cross). `--set GRACE_MS=0 --grid FLAT_S=0,10,30,90 --grid EXIT_PASSIVE=0,1 --grid CLEAR_ONLY=0,1` (16): FLAT_S and EXIT_PASSIVE tie (big orders come every ~2 s), CLEAR_ONLY 1 50,675 (18,601 / 32,074). `--grid STOP=5,10,20` then `2,3,4` (6): **STOP 3 132,005 (in 109,253 / out 22,752), 4 129,685 (107,626 / 22,059), 5 126,863 (104,510 / 22,353), 2 123,062, 10 117,669, 20 116,738**; max drawdown 17,140 against 19,543, pnl_se 29.3k. Candidate R2-FH1 `python/bots/qminers/candidates/r2_FH1_flow_stop.py` (GRACE_MS 0, STOP 3), one run 132,005.00, validate OK. The stop is the only knob above the base; its gain is mostly in the first 75% (+12.1k) with +1.5k on the last 25%.
+
 
 ## Verifier verdicts
 <!-- each verifier's report, verbatim, under the candidate's id and the time -->
