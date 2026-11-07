@@ -21,6 +21,11 @@ run's results and `leaderboard.json` go in this folder too.
 
 ## Rule answers
 <!-- which ON_THE_DAY.md items the rules or probes answered (written under each item, with the source), and the ones still open -->
+- **The organisers' restatement (18:45):** three backtests. (1) **Public**: downloaded from the website, for training; **about half the length** of the other two. (2) **Validation**: every submission is run on it on the server, and we get **only the PnL, no logs**. (3) **Private**: the score, run after the deadline. Validation and private keep round 1's size (round 1's tapes were 12,000 s). Consequences:
+  - the public tape is ~6,000 s: the first 75% to choose on is ~4,500 s, so use `pnl_segments --count 6` (or `--seconds 1000`) and expect noisier choices; prefer structural changes and learned weights over tuned constants even more than in round 1;
+  - nothing in the bots depends on the length (SESSION_S 1e9, no wind-down), and the online model learns on each tape, so the shorter public tape costs only the warm-up's share;
+  - compare an upload's validation PnL with **twice** its public PnL (the same rate per second); round 1's private run kept 0.93-0.98 of the public rate, so a ratio well under ~0.9 means overfit to the public tape;
+  - no validation logs, so `tape_from_logs` can't rebuild the validation tape; it still works on any full-logs results folder we get (the private one after the deadline, if given).
 - **Three datasets** (the user, from the organisers, 7 Nov ~18:00): (1) the public tape, local as in round 1; (2) on upload the portal runs a **private** tape, so an upload's score is no longer the public replay (round 1's portal was byte-identical to a local run); (3) after the round closes the final score comes from **another, different private** tape. So the portal's score on upload is an out-of-sample check, but the final is a third draw: use the upload score as a holdout of *the strategy family*, not as a tuning target (picking the best of many uploads by their private score overfits that tape just as tuning on the public one does).
 
 ## Re-tests
