@@ -310,9 +310,26 @@ pub struct RidgeMaker {
     /// extra models: 0 the next bid move, 1 the next ask move (SIDE2), 2 / 3 the MH_US1 / MH_US2 mid models (MH)
     ex: Vec<Model>,
     last_mid_change_us: i64,
+    /// round-2 trend knobs (all off by default)
+    obs_cap: usize,
+    trend: i64,
+    trend_us: [i64; 2],
+    trend_e: [f64; 2],
+    trend_time: Option<i64>,
+    exposure_base: i64,
+    vol_exp: f64,
+    vol_us: [i64; 2],
+    vol_min: i64,
+    vol_max: i64,
+    /// per window (fast, base): [decayed |mid change| ticks, decayed microseconds]
+    vol_acc: [[f64; 2]; 2],
+    vol_last: Option<(i64, f64)>,
+    lean_k: f64,
+    lean_src: i64,
+    ft_src: i64,
 }
 
-pub const KEYS: [&str; 75] = [
+pub const KEYS: [&str; 87] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -324,6 +341,8 @@ pub const KEYS: [&str; 75] = [
     "FLOWGRP", "FLOWGRP_CAP", "FLOWGRP_US", "QUOTEFEAT", "QUOTEFEAT_US",
     "FT_EDGE", "FT_SZ", "FT_GAP_MS", "FT_MODE", "FT_INV", "FT_THRU", "FT_NET",
     "PRIOR_MASS", "DUMP_US", "BUCKET", "SIDE2", "SIDE_W", "MH", "MH_US1", "MH_US2", "CLEAR_TH",
+    "OBS_CAP", "TREND", "TREND_US1", "TREND_US2", "VOL_EXP", "VOL_US", "VOL_BASE_US", "VOL_MIN", "VOL_MAX",
+    "LEAN_K", "LEAN_SRC", "FT_SRC",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -343,7 +362,8 @@ impl RidgeMaker {
                 + if params.int("LAST_AGG", 0)? > 0 { 1 } else { 0 }
                 + if params.int("QUOTEFEAT", 0)? > 0 { 6 } else { 0 }
                 + if params.int("FLOWGRP", 0)? > 0 { 8 } else { 0 }
-                + if params.int("BUCKET", 0)? > 0 { 17 } else { 0 };
+                + if params.int("BUCKET", 0)? > 0 { 17 } else { 0 }
+                + if params.int("TREND", 0)? > 0 { 2 } else { 0 };
         let mh = params.int("MH", 0)?;
         let n = n_base + if mh > 0 { 2 } else { 0 };
         let horizon_us = params.int("HORIZON_US", 100_000)?;
@@ -498,6 +518,24 @@ impl RidgeMaker {
             n_base,
             ex: Vec::new(),
             last_mid_change_us: 0,
+            obs_cap: match params.int("OBS_CAP", 0)? {
+                c if c > 0 => c as usize,
+                _ => OBS_MAXLEN,
+            },
+            trend: params.int("TREND", 0)?,
+            trend_us: [params.int("TREND_US1", 10_000_000)?, params.int("TREND_US2", 60_000_000)?],
+            trend_e: [0.0; 2],
+            trend_time: None,
+            exposure_base: if exposure > 0 { exposure } else { position_limit },
+            vol_exp: params.float("VOL_EXP", 0.0)?,
+            vol_us: [params.int("VOL_US", 10_000_000)?, params.int("VOL_BASE_US", 600_000_000)?],
+            vol_min: params.int("VOL_MIN", 10)?,
+            vol_max: params.int("VOL_MAX", 100)?,
+            vol_acc: [[0.0; 2]; 2],
+            vol_last: None,
+            lean_k: params.float("LEAN_K", 0.0)?,
+            lean_src: params.int("LEAN_SRC", 0)?,
+            ft_src: params.int("FT_SRC", 0)?,
         })
     }
 
@@ -1144,6 +1182,38 @@ impl Strategy for RidgeMaker {
             depth5_feat = ratio(tot[0], tot[1]);
         }
 
+        if self.vol_exp != 0.0 {
+            // VOL_EXP: EXPOSURE scaled by (base rate / fast rate)^VOL_EXP of |mid change| ticks per second
+            if let Some((t, m)) = self.vol_last {
+                let dt = (now - t).max(0) as f64;
+                let mv = (mid - m).abs();
+                for k in 0..2 {
+                    let d = (-dt / self.vol_us[k] as f64).exp();
+                    self.vol_acc[k][0] = self.vol_acc[k][0] * d + mv;
+                    self.vol_acc[k][1] = self.vol_acc[k][1] * d + dt;
+                }
+            }
+            self.vol_last = Some((now, mid));
+            let rate = |a: [f64; 2]| if a[1] > 0.0 { a[0] / a[1] } else { 0.0 };
+            let (fast, base) = (rate(self.vol_acc[0]), rate(self.vol_acc[1]));
+            self.exposure = if fast > 0.0 && base > 0.0 {
+                ((self.exposure_base as f64 * (base / fast).powf(self.vol_exp)).round() as i64).clamp(self.vol_min, self.vol_max)
+            } else {
+                self.exposure_base
+            };
+        }
+        if self.trend > 0 {
+            match self.trend_time {
+                Some(t) => {
+                    let dt = (now - t).max(0) as f64;
+                    for k in 0..2 {
+                        self.trend_e[k] += (1.0 - (-dt / self.trend_us[k] as f64).exp()) * (mid - self.trend_e[k]);
+                    }
+                }
+                None => self.trend_e = [mid; 2],
+            }
+            self.trend_time = Some(now);
+        }
         let spread_f = spread as f64;
         let skew = self.skew_k * self.inventory as f64 / self.exposure as f64 * spread_f.max(1.0);
         match self.model_time {
@@ -1267,6 +1337,11 @@ impl Strategy for RidgeMaker {
                 features[k + 16] = if s1 { imbalance } else { 0.0 };
             }
         }
+        if self.trend > 0 {
+            let k = self.n_base - 2;
+            features[k] = clamp(mid - self.trend_e[0], -20.0, 20.0);
+            features[k + 1] = clamp(mid - self.trend_e[1], -20.0, 20.0);
+        }
         let n = self.n_base;
         if self.std_on > 0 {
             let d = ((-elapsed) as f64 / self.std_us as f64).exp();
@@ -1297,7 +1372,8 @@ impl Strategy for RidgeMaker {
         }
         let n = self.n;
         self.learn(0, now, mid);
-        if self.blend_w > 0.0 {
+        let m2_on = self.blend_w > 0.0 || (self.lean_k != 0.0 && self.lean_src == 0) || self.ft_src == 1;
+        if m2_on {
             self.learn(1, now, mid);
         }
         if self.side2 > 0 {
@@ -1305,19 +1381,19 @@ impl Strategy for RidgeMaker {
             self.learn(3, now, ask as f64);
         }
         if now - self.last_observation_us >= self.observation_interval_us {
-            if self.label_mode == 0 && self.m1.observations.len() == OBS_MAXLEN {
+            if self.label_mode == 0 && self.m1.observations.len() >= self.obs_cap {
                 self.m1.observations.pop_front();
             }
             self.m1.observations.push_back((now, mid, features, self.mid_changes));
-            if self.blend_w > 0.0 {
-                if self.m2.observations.len() == OBS_MAXLEN {
+            if m2_on {
+                if self.m2.observations.len() >= self.obs_cap {
                     self.m2.observations.pop_front();
                 }
                 self.m2.observations.push_back((now, mid, features, self.mid_changes));
             }
             if self.side2 > 0 {
                 for (j, v) in [(0usize, bid as f64), (1, ask as f64)] {
-                    if self.ex[j].observations.len() == OBS_MAXLEN {
+                    if self.ex[j].observations.len() >= self.obs_cap {
                         self.ex[j].observations.pop_front();
                     }
                     self.ex[j].observations.push_back((now, v, features, self.mid_changes));
@@ -1325,7 +1401,7 @@ impl Strategy for RidgeMaker {
             }
             if self.mh > 0 {
                 for j in [2usize, 3] {
-                    if self.ex[j].observations.len() == OBS_MAXLEN {
+                    if self.ex[j].observations.len() >= self.obs_cap {
                         self.ex[j].observations.pop_front();
                     }
                     self.ex[j].observations.push_back((now, mid, features, self.mid_changes));
@@ -1346,6 +1422,21 @@ impl Strategy for RidgeMaker {
                 prediction = (1.0 - self.blend_w) * prediction + self.blend_w * p2;
             }
         }
+        // the second model's own forecast (LEAN_SRC 0, FT_SRC 1)
+        let p2_only = if m2_on && self.m2.labels >= self.min_labels {
+            clamp(py_sum(self.m2.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x)), -2.0, 2.0)
+        } else {
+            0.0
+        };
+        // LEAN_K: the skew aims at an inventory target that follows the slow forecast instead of at 0
+        let skew = if self.lean_k != 0.0 {
+            let src = if self.lean_src == 0 { p2_only } else { prediction };
+            let e = self.exposure as f64;
+            let target = clamp(self.lean_k * src, -e, e);
+            self.skew_k * (self.inventory as f64 - target) / e * spread_f.max(1.0)
+        } else {
+            skew
+        };
         let mut fair = mid + self.pred_mix * prediction + 0.0 * 0.25 * spread_f * imbalance - skew;
         let raw = fair;
         if self.fill_learn && self.fill_q > 0 {
@@ -1474,7 +1565,8 @@ impl Strategy for RidgeMaker {
             }
         }
         if self.ft_sz > 0 && self.m1.labels >= self.min_labels && now - self.ft_last >= self.ft_gap_ms * 1000 {
-            let signal = if self.ft_net > 0 { prediction - skew } else { prediction };
+            let source = if self.ft_src == 1 { p2_only } else { prediction };
+            let signal = if self.ft_net > 0 { source - skew } else { source };
             let need = self.ft_edge + 0.5 * spread_f;
             let sign = if signal > need {
                 1
