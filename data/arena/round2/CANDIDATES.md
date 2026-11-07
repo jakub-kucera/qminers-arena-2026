@@ -236,3 +236,15 @@ Trials so far (this worktree): 4 experiments, 34 cells.
 ### 23:52: R2-L8 (`python/bots/qminers/candidates/r2_L8_quote_switch.py`): quotes switched by regime
 - R2-L1 with its one-lot quotes on only while the 5-s decayed |mid change| rate is below QS_RATE ticks/s (else the pure taker, R2-L3). QS_RATE 1.5 / 2.5 / 3.5: round2_public 298,415 / 296,181 / 293,527; hi_vol_fast1.25 929,399 / 923,993 / 913,601; hi_vol 807,205 / 840,191 / 835,105; round1 147,341 / 174,109 / 174,713 (breach 0 in all). At 2.5 it is at least L3 on every round-2 tape (+2k / +1k / +35k) and L1's level on the calm tape (+69k over L3). validate OK. Uploaded as the last experiment.
 - **R2-L8 on validation (uploaded 23:53, submission 5c00a472-759f-42cf-8cb3-e9557734f081): +826,778.00** (fills 108,379, volume 1,092,586, end +100, breach 0, pnl_se 48,501, |pos| 100, 7 min 1.2 s). +22.8k over L3; at least L3 on every local tape and +69k on the calm round-1 tape: **the round-2 final** (the last upload; not re-tuned before the 00:14 deadline: QS_RATE 1.5-3.5 is a plateau locally; tune it on round 3's tape).
+
+### 00:08: L8's QS_RATE, the full local curve (round2_public / hi_vol_fast1.25 / hi_vol / round1; exchange-simulator)
+| QS_RATE | public | hi_vol_fast1.25 | hi_vol | round1 |
+|---|---|---|---|---|
+| 1.0 | 293,773 | 932,088 | 803,285 | 115,734 |
+| 1.5 | 298,415 | 929,399 | 807,205 | 147,341 |
+| 2.0 | 290,243 | 927,365 | 833,532 | 168,336 |
+| **2.5 (L8)** | 296,181 | 923,993 | **840,191** | 174,109 |
+| 3.0 | 296,497 | **933,030** | 827,777 | 174,137 |
+| 3.5 | 293,527 | 913,601 | 835,105 | 174,713 |
+| 5.0 | 291,053 | 909,679 | 819,842 | 174,686 |
+- A broad plateau from 2.0 to 3.5 (public 290-296k, hi_vol_fast 914-933k, hi_vol 828-840k, round1 168-175k); below 2 the calm tape loses (quotes off too often), above 3.5 the fast tapes lose a little. 2.5-3.0 is the centre: L8's 2.5 stays. Round 3: re-run this curve on the new tape first (its price speed may differ).
