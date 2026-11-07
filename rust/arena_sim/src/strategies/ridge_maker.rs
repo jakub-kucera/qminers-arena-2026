@@ -37,6 +37,11 @@
 //! cancelled that no longer counts toward EXPOSURE (v2: 1.0, `ceil(q * (1 - CANCEL_FREE))`); `HEDGE` (0: off), an
 //! IOC HEDGE_TICKS (10) through the cached touch (at most HEDGE_STALE_US, 100000, old) for |inventory| - EXPOSURE
 //! whenever |inventory| > EXPOSURE, one at a time, from book updates and from private fills (v2's `_hedge`).
+//! The dead zone learned from our own fills, off by default: `FILL_LEARN` (0), `FILL_H_US` (400000, the markout
+//! horizon), `FILL_MIN` (0.0, ticks), `FILL_WARM` (50.0, fills a bin needs), `FILL_MEM_US` (0: no decay), `FILL_BIN`
+//! (0.05), `FILL_Q` (0: off; else the lots ahead that count as the queue's front): each maker fill at a 1-tick touch
+//! is binned by the latest forecast toward our side (fair - mid, signed) and our queue class, its markout averaged
+//! by lots; at a 1-tick spread a side whose bin is warm steps back only when that mean is below FILL_MIN.
 
 use std::collections::{HashSet, VecDeque};
 
@@ -195,15 +200,31 @@ pub struct RidgeMaker {
     net: f64,
     volume: f64,
     invalid_since: Option<i64>,
+    fill_learn: bool,
+    fill_h_us: i64,
+    fill_min: f64,
+    fill_warm: f64,
+    fill_mem_us: i64,
+    fill_bin: f64,
+    last_d: Option<f64>,
+    /// maker fills at a 1-tick touch awaiting their markout: (time, sign, price, lots, forecast toward our side)
+    pending: VecDeque<(i64, i64, i64, i64, f64, usize)>,
+    /// per bin of the signed forecast: [fills, lots, lots * markout], decayed together
+    bins: Vec<[f64; 3]>,
+    bins_time: Option<i64>,
+    fill_q: i64,
+    /// per side: the market lots ahead of our first order at the touch, from the last book
+    front_ahead: [Option<i64>; 2],
 }
 
-pub const KEYS: [&str; 43] = [
+pub const KEYS: [&str; 50] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
     "DEPLETE_LOTS", "DEPL_FRAC", "TAKE_LOTS", "TAKE_OWN", "TAKE_DEPLETE", "TAKE_MAX", "TAKE_MS",
     "PLACE", "PLACE_US1", "PLACE_US2", "DEPTH5", "FLOW2", "LAST_AGG", "STD", "STD_US", "BLEND_W", "H2_US",
     "EXPOSURE", "CANCEL_FREE", "HEDGE", "HEDGE_TICKS", "HEDGE_STALE_US",
+    "FILL_LEARN", "FILL_H_US", "FILL_MIN", "FILL_WARM", "FILL_MEM_US", "FILL_BIN", "FILL_Q",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -297,6 +318,18 @@ impl RidgeMaker {
             net: 0.0,
             volume: 0.0,
             invalid_since: None,
+            fill_learn: params.int("FILL_LEARN", 0)? != 0,
+            fill_h_us: params.int("FILL_H_US", 400_000)?,
+            fill_min: params.float("FILL_MIN", 0.0)?,
+            fill_warm: params.float("FILL_WARM", 50.0)?,
+            fill_mem_us: params.int("FILL_MEM_US", 0)?,
+            fill_bin: params.float("FILL_BIN", 0.05)?,
+            last_d: None,
+            pending: VecDeque::new(),
+            bins: vec![[0.0; 3]; 2 * ((2.0 / params.float("FILL_BIN", 0.05)?).ceil() as usize + 1)],
+            fill_q: params.int("FILL_Q", 0)?,
+            front_ahead: [None, None],
+            bins_time: None,
         })
     }
 
@@ -373,6 +406,63 @@ impl RidgeMaker {
         if weights.iter().all(|w| w.is_finite()) {
             m.weights = weights;
         }
+    }
+
+    fn fill_bin_index(&self, ps: f64, back: usize) -> usize {
+        let nb = self.bins.len() / 2;
+        let i = ((clamp(ps, -1.0, 1.0) + 1.0) / self.fill_bin).floor() as usize;
+        i.min(nb - 1) + back * nb
+    }
+
+    /// 1 when our queue on that side is behind FILL_Q lots (or we have no order at the touch), 0 at the front
+    fn queue_class(&self, key: usize) -> usize {
+        if self.fill_q <= 0 {
+            return 0;
+        }
+        match self.front_ahead[key] {
+            Some(a) if a <= self.fill_q => 0,
+            _ => 1,
+        }
+    }
+
+    /// the decay of the bins from their last update to `now` (1 without FILL_MEM_US)
+    fn fill_decay(&self, now: i64) -> f64 {
+        match self.bins_time {
+            Some(t) if self.fill_mem_us > 0 => ((-((now - t).max(0))) as f64 / self.fill_mem_us as f64).exp(),
+            _ => 1.0,
+        }
+    }
+
+    fn fill_mature(&mut self, now: i64, mid: f64) {
+        while let Some(&(t, sign, price, lots, ps, back)) = self.pending.front() {
+            if t + self.fill_h_us > now {
+                break;
+            }
+            self.pending.pop_front();
+            let markout = sign as f64 * (mid - price as f64);
+            let decay = self.fill_decay(now);
+            self.bins_time = Some(now);
+            if decay != 1.0 {
+                for b in self.bins.iter_mut() {
+                    b[0] *= decay;
+                    b[1] *= decay;
+                    b[2] *= decay;
+                }
+            }
+            let i = self.fill_bin_index(ps, back);
+            self.bins[i][0] += 1.0;
+            self.bins[i][1] += lots as f64;
+            self.bins[i][2] += lots as f64 * markout;
+        }
+    }
+
+    /// the learned mean markout of a touch fill at the forecast `ps` toward our side, once its bin is warm
+    fn fill_mean(&self, now: i64, ps: f64, back: usize) -> Option<f64> {
+        let b = self.bins[self.fill_bin_index(ps, back)];
+        if b[0] * self.fill_decay(now) < self.fill_warm || b[1] <= 0.0 {
+            return None;
+        }
+        Some(b[2] / b[1])
     }
 
     fn cancel(&mut self, index: usize, ctx: &mut Ctx) {
@@ -739,11 +829,49 @@ impl Strategy for RidgeMaker {
             }
         }
         let mut fair = mid + self.pred_mix * prediction + 0.0 * 0.25 * spread_f * imbalance - skew;
+        let raw = fair;
+        if self.fill_learn && self.fill_q > 0 {
+            for (key, side, touch) in [(0usize, Side::Buy, bid), (1usize, Side::Sell, ask)] {
+                let sign = if key == 0 { 1 } else { -1 };
+                let mut ahead = 0i64;
+                let mut found = None;
+                for order in snapshot.side(side) {
+                    if order.price != touch {
+                        if (key == 0 && order.price < touch) || (key == 1 && order.price > touch) {
+                            break;
+                        }
+                        continue;
+                    }
+                    if order.owner == Owner::Market {
+                        ahead += order.quantity;
+                    } else if self.orders.iter().any(|r| r.id == order.order_id && r.sign == sign) {
+                        found = Some(ahead);
+                        break;
+                    }
+                }
+                self.front_ahead[key] = found;
+            }
+        }
+        if self.fill_learn {
+            self.fill_mature(now, mid);
+            self.last_d = Some(raw - mid);
+        }
         if (fair - mid).abs() <= self.dead_zone {
             fair = mid;
         }
         let mut buy = Some(bid.min((fair - 0.5).floor() as i64));
         let mut sell = Some(ask.max((fair + 0.5).ceil() as i64));
+        if self.fill_learn && spread == 1 {
+            let d = raw - mid;
+            if let Some(m) = self.fill_mean(now, d, self.queue_class(0)) {
+                let f = if m >= self.fill_min { mid } else { raw };
+                buy = Some(bid.min((f - 0.5).floor() as i64));
+            }
+            if let Some(m) = self.fill_mean(now, -d, self.queue_class(1)) {
+                let f = if m >= self.fill_min { mid } else { raw };
+                sell = Some(ask.max((f + 0.5).ceil() as i64));
+            }
+        }
         if spread >= 2 {
             if prediction - skew > self.inside_th {
                 buy = Some((ask - 1).min(bid + 1));
@@ -805,6 +933,22 @@ impl Strategy for RidgeMaker {
         match event.status {
             Status::Accepted => self.orders[index].accepted = true,
             Status::Filled | Status::PartiallyFilled => {
+                let record = &self.orders[index];
+                if self.fill_learn && self.hedge_id != Some(event.order_id) {
+                    if let (Some((bid, ask, _)), Some(d)) = (self.cached, self.last_d) {
+                        let touch = if record.sign > 0 { bid } else { ask };
+                        if ask - bid == 1 && record.price == touch {
+                            self.pending.push_back((
+                                event.timestamp_us,
+                                record.sign,
+                                record.price,
+                                event.filled_quantity,
+                                record.sign as f64 * d,
+                                self.queue_class(side_index(record.sign)),
+                            ));
+                        }
+                    }
+                }
                 let record = &mut self.orders[index];
                 self.inventory += record.sign * event.filled_quantity;
                 record.quantity = event.remaining_quantity;
