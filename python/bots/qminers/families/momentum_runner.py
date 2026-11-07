@@ -43,6 +43,7 @@ MIN_TRADE = 0  # >0: trades smaller than this many lots don't count as flow
 MAX_SPREAD = 0  # >0: send no taker order while the spread is wider than this many ticks
 MAX_RUNS_PER_MIN = 0  # >0: no new run (and no flip) once this many have started in the last 60 s
 LOSS_STOP = 0  # >0: once the PnL (cash + position at the mid) is below -LOSS_STOP, flatten and stop for the session
+MIN_TOUCH = 0  # >0: take only while at least this many lots of the market's sit at the touch we take from (a thin touch is the move's end)
 
 
 class MomentumRunnerStrategy(BaseStrategy):
@@ -165,6 +166,16 @@ class MomentumRunnerStrategy(BaseStrategy):
             return
         if MAX_SPREAD > 0 and best_ask - best_bid > MAX_SPREAD and self._dir != 0:
             return
+        if MIN_TOUCH > 0 and self._dir != 0 and not self._stopped and not late:
+            touch = 0
+            for order in (snapshot.asks if self._dir * MAX_POS > self._pos else snapshot.bids):
+                if order.owner != 'market':
+                    continue
+                if order.price != (best_ask if self._dir * MAX_POS > self._pos else best_bid):
+                    break
+                touch += order.quantity
+            if touch < MIN_TOUCH:
+                return
         target = self._dir * MAX_POS
         want = target - self._pos
         if want > 0:
