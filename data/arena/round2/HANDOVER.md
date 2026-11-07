@@ -4,6 +4,13 @@ The template (`docs/HANDOVER_TEMPLATE.md`): copy it to `data/arena/round<N>/HAND
 fill it in during the round and finish it by deadline − 0:10; the template itself stays as it is. Committed and pushed so the other laptop has it (ON_THE_DAY.md, "Handover note"); the private
 run's results and `leaderboard.json` go in this folder too.
 
+## Round 2's public tape against round 1's (19:20, `data/arena/round2/round2_public.csv`, ignored by git; `uv run python -m experiments.day.round_start data/arena/round2/round2_public.csv --jobs 8 --out data/arena/round2/round_start`)
+- **The same order flow:** 6,000 s (half of round 1's 12,000), 2,193,064 rows; G inserts 178/s (round 1 180), F (IOC) 8.9/s (8.0), F sizes median / p90 / p99 61 / 367 / 1,543 (61 / 360 / 1,543), G sizes 14 / 143 (the same); touch depth median 878 lots (1,065).
+- **A different price process:** the mid changes 4.85 times a second (round 1: 2.57); the spread is 1 tick 83.9%, 2 ticks 11.6%, 3+ 4.4% (93 / 7 / 0); the price wanders about 550 ticks (10,000 -> 9,850 -> 10,000 at 3,000 s -> 9,480 at 4,200-4,500 s -> 9,765 -> 9,689 at the end; round 1's whole range was 107 ticks). Moves persist: after a trade the mid moves +0.44 ticks its way at 1 s and +0.39 at 60 s (trades over 58 lots +0.69 / +0.97); after a 1-tick move with no trade +0.60 at 1 s, +0.95 at 5 s, +1.47 at 60 s.
+- **Every round-1 bot loses on it** (round_start, the files at their defaults, full / first 75% / last 25%): R1-C1 -219,331; R1-C5 -247,210; R1-C11 -263,201 (breach 6,999); R1-F8 -86,391; R1-F3 -216,175; the momentum runner -3.4M; pmaker -3,110, A0 -14,584, F1 -22,272 (barely trading). In Rust: R1-C12 -261,847, R2-FT1 (C12 + the forecast take) -88,432.
+- **What works so far: less inventory.** R2-FT1 with EXPOSURE 30 (the hedge sells back above 30 lots) and DEAD_ZONE 0.3: +28,418 (in 23,430 / out 4,988, breach 0); the plateau EXPOSURE 20-45 x DEAD_ZONE 0.3-0.45 x FT_EDGE 0.1-0.25 is in 21-23.6k, full 28-35k (`results/r2_ft_grid2.csv`).
+- **Run time:** R1-C11 took 121 s on this 2.2M-row tape under load, so about 240 s on a 12,000-s validation tape, and 2-3x that on a slower server: check every candidate's run time before uploading.
+
 ## Uploaded
 <!-- each upload: file, time, why; local PnL under all / worse / --resting; the metrics expected (arena.backtest --metrics) -->
 
