@@ -2,22 +2,30 @@
 //! (LEVELS price levels a side from the touch, queue places kept within KEEP_DEPTH ticks, a limit counting every
 //! order able to fill, TOPUP behind our touch order, SKEW / UNWIND / WIND_DOWN_S inventory rules) with the room
 //! maker's knobs (SIZE_NARROW / SHRINK_NARROW, DEPLETE_LOTS / DEPLETE_SIZE, BACK_POS, FLAT_S). Its defaults are
-//! candidate F3 (python/bots/qminers/candidates/r0_F3_full_room.py).
+//! candidate F3 (python/bots/qminers/candidates/r0_F3_full_room.py). The same struct is
+//! python/bots/qminers/families/shrink_maker.py (family 10, the strategy name `shrink_maker`), line for line too: its
+//! two knobs, `DEPL_FRAC` (the depletion guard fires only on a touch shrunk below that share of its peak since it
+//! became the touch) and `REACT_CANCEL` (re-run the quoting from the last snapshot when one of our cancels lands),
+//! are off by default, which is room_maker.py.
 //!
 //! Parameters: every module global of the file by its name, with its default: `LEVELS` (1), `KEEP_DEPTH` (1),
 //! `SIZE_TOUCH` (200), `SIZE_DEEP` (50), `LIMIT` (100), `SKEW` (100), `SKEW_CANCEL` (1), `CANCEL_ALONE` (1),
 //! `REBALANCE` (0), `IMB` (0.0), `MIN_QUEUE` (0), `INSIDE_POS` (1000), `INSIDE_SPREAD` (2), `TOPUP` (10),
 //! `UNWIND` (1000), `UNWIND_TO` (50), `WIND_DOWN_S` (60), `SESSION_S` (5750), `SIZE_NARROW` (200),
-//! `SHRINK_NARROW` (0), `DEPLETE_LOTS` (0), `DEPLETE_SIZE` (0), `BACK_POS` (1000), `FLAT_S` (0).
+//! `SHRINK_NARROW` (0), `DEPLETE_LOTS` (0), `DEPLETE_SIZE` (0), `BACK_POS` (1000), `FLAT_S` (0); shrink_maker.py's
+//! `REACT_CANCEL` (0) and `DEPL_FRAC` (0.0).
 
 use crate::params::Params;
 use crate::sim::{Ctx, Owner, PrivateEvent, Side, Snapshot, Status, Strategy, Trade};
 
-const KEYS: [&str; 24] = [
+const KEYS: [&str; 26] = [
     "LEVELS", "KEEP_DEPTH", "SIZE_TOUCH", "SIZE_DEEP", "LIMIT", "SKEW", "SKEW_CANCEL", "CANCEL_ALONE", "REBALANCE", "IMB",
     "MIN_QUEUE", "INSIDE_POS", "INSIDE_SPREAD", "TOPUP", "UNWIND", "UNWIND_TO", "WIND_DOWN_S", "SESSION_S", "SIZE_NARROW",
-    "SHRINK_NARROW", "DEPLETE_LOTS", "DEPLETE_SIZE", "BACK_POS", "FLAT_S",
+    "SHRINK_NARROW", "DEPLETE_LOTS", "DEPLETE_SIZE", "BACK_POS", "FLAT_S", "REACT_CANCEL", "DEPL_FRAC",
 ];
+
+/// What the quoting reads of a snapshot: its time and each side's market touch (price, lots).
+type Touches = (i64, Option<(i64, i64)>, Option<(i64, i64)>);
 
 /// The Python's `[side, price, quantity left, cancelling, is_ioc, modify target]`.
 struct Order {
@@ -55,12 +63,18 @@ pub struct RoomMaker {
     deplete_size: i64,
     back_pos: i64,
     flat_s: f64,
+    react_cancel: bool,
+    depl_frac: f64,
     position: i64,
     /// the insertion-ordered dict id -> order
     orders: Vec<Order>,
     start_us: Option<i64>,
     ioc_pending: bool,
     flattened: bool,
+    /// the Python's `_snap`: the last snapshot's touches, for REACT_CANCEL
+    snap: Option<Touches>,
+    /// the Python's `_peak`: per side (bid, ask), [touch price, the market lots there at their most since]
+    peak: [Option<(i64, i64)>; 2],
 }
 
 impl RoomMaker {
@@ -92,11 +106,15 @@ impl RoomMaker {
             deplete_size: params.int("DEPLETE_SIZE", 0)?,
             back_pos: params.int("BACK_POS", 1000)?,
             flat_s: params.float("FLAT_S", 0.0)?,
+            react_cancel: flag("REACT_CANCEL", 0)?,
+            depl_frac: params.float("DEPL_FRAC", 0.0)?,
             position: 0,
             orders: Vec::new(),
             start_us: None,
             ioc_pending: false,
             flattened: false,
+            snap: None,
+            peak: [None, None],
         })
     }
 
@@ -225,18 +243,17 @@ fn touch(orders: impl Iterator<Item = crate::sim::BookOrder>) -> Option<(i64, i6
     best.map(|b| (b, lots))
 }
 
-impl Strategy for RoomMaker {
-    fn on_book(&mut self, snapshot: &Snapshot, _trades: &[Trade], ctx: &mut Ctx) {
-        let start = *self.start_us.get_or_insert(snapshot.timestamp_us);
-        let bid = snapshot.market_touch(Side::Buy);
-        let ask = snapshot.market_touch(Side::Sell);
-        debug_assert_eq!(bid, touch(snapshot.bids()));
-        debug_assert_eq!(ask, touch(snapshot.asks()));
+impl RoomMaker {
+    /// The Python's `on_order_book_change` from the snapshot's touches (also its REACT_CANCEL re-run).
+    fn quote(&mut self, touches: Touches, ctx: &mut Ctx) {
+        self.snap = Some(touches);
+        let (timestamp_us, bid, ask) = touches;
+        let start = *self.start_us.get_or_insert(timestamp_us);
         let (Some((best_bid, bid_lots)), Some((best_ask, ask_lots))) = (bid, ask) else { return };
         let bid_ok = bid_lots >= self.min_queue && bid_lots as f64 >= self.imb * ask_lots as f64;
         let ask_ok = ask_lots >= self.min_queue && ask_lots as f64 >= self.imb * bid_lots as f64;
 
-        let elapsed_s = (snapshot.timestamp_us - start) as f64 / 1_000_000.0;
+        let elapsed_s = (timestamp_us - start) as f64 / 1_000_000.0;
         let winding_down = elapsed_s > self.session_s - self.wind_down_s;
         let position = self.position;
         if self.flat_s != 0.0 && !self.flattened && !self.ioc_pending && elapsed_s > self.session_s - self.flat_s {
@@ -269,20 +286,43 @@ impl Strategy for RoomMaker {
         let mut ask_cap = bid_cap;
         let mut bid_trim = self.shrink_narrow && spread < 2;
         let mut ask_trim = bid_trim;
-        if bid_lots < self.deplete_lots {
+        let mut bid_dying = bid_lots < self.deplete_lots;
+        let mut ask_dying = ask_lots < self.deplete_lots;
+        if self.depl_frac > 0.0 {
+            for (key, price, lots) in [(0, best_bid, bid_lots), (1, best_ask, ask_lots)] {
+                match &mut self.peak[key] {
+                    Some((p, most)) if *p == price => *most = (*most).max(lots),
+                    slot => *slot = Some((price, lots)),
+                }
+            }
+            let peak = |key: usize| self.peak[key].map_or(0, |(_, most)| most) as f64;
+            bid_dying = bid_dying && (bid_lots as f64) < self.depl_frac * peak(0);
+            ask_dying = ask_dying && (ask_lots as f64) < self.depl_frac * peak(1);
+        }
+        if bid_dying {
             bid_cap = bid_cap.min(self.deplete_size);
             bid_trim = true;
         }
-        if ask_lots < self.deplete_lots {
+        if ask_dying {
             ask_cap = ask_cap.min(self.deplete_size);
             ask_trim = true;
         }
         self.ladder(Side::Buy, bid_anchor, want_bid, cancel_bid, bid_cap, bid_trim, ctx);
         self.ladder(Side::Sell, ask_anchor, want_ask, cancel_ask, ask_cap, ask_trim, ctx);
     }
+}
+
+impl Strategy for RoomMaker {
+    fn on_book(&mut self, snapshot: &Snapshot, _trades: &[Trade], ctx: &mut Ctx) {
+        let bid = snapshot.market_touch(Side::Buy);
+        let ask = snapshot.market_touch(Side::Sell);
+        debug_assert_eq!(bid, touch(snapshot.bids()));
+        debug_assert_eq!(ask, touch(snapshot.asks()));
+        self.quote((snapshot.timestamp_us, bid, ask), ctx);
+    }
 
     /// Counts fills into the position; forgets orders that are done.
-    fn on_private(&mut self, event: &PrivateEvent, _ctx: &mut Ctx) {
+    fn on_private(&mut self, event: &PrivateEvent, ctx: &mut Ctx) {
         let Some(index) = self.orders.iter().position(|o| o.id == event.order_id) else { return };
         let order = &mut self.orders[index];
         let mut done = false;
@@ -308,6 +348,11 @@ impl Strategy for RoomMaker {
             let order = self.orders.remove(index);
             if order.ioc {
                 self.ioc_pending = false;
+            }
+            if self.react_cancel && event.status == Status::Canceled {
+                if let Some(touches) = self.snap {
+                    self.quote(touches, ctx);
+                }
             }
         }
     }

@@ -5,7 +5,8 @@ result field, the PnL curve and the reject counts for parameter variants and the
 cap, the penalty). The room maker (python/bots/qminers/families/room_maker.py) on a synthetic tape with one- and
 two-tick spreads and thin touches, so every knob's path runs; and, with ARENA_SIM_FULL=1 and the playground's
 sample_v2.csv and round 1's tape present (data/arena/, or ARENA_SIM_DATA), F3 and knob settings on them byte for
-byte (about 30 s a Python run). Skipped without cargo."""
+byte (about 30 s a Python run). The shrink maker (python/bots/qminers/families/shrink_maker.py, the same Rust struct
+with DEPL_FRAC and REACT_CANCEL) the same two ways. Skipped without cargo."""
 
 from __future__ import annotations
 
@@ -146,51 +147,67 @@ ROOM = [
 ]
 
 
-def test_room_maker_synthetic(tmp_path):
+# The shrink maker's two knobs (off: the room maker), alone and with the knobs they act through.
+SHRINK = [
+    {},
+    {"DEPLETE_LOTS": 40, "DEPL_FRAC": 0.5},
+    {"DEPLETE_LOTS": 50, "DEPL_FRAC": 0.3, "DEPLETE_SIZE": 20},
+    {"REACT_CANCEL": 1},
+    {"REACT_CANCEL": 1, "DEPLETE_LOTS": 40, "DEPL_FRAC": 0.5, "SIZE_NARROW": 40, "SHRINK_NARROW": 1},
+]
+
+
+@pytest.mark.parametrize("name, settings", [("room_maker", ROOM), ("shrink_maker", SHRINK)])
+def test_room_maker_synthetic(tmp_path, name, settings):
     qsim_rust.build()
     tape = write_tape(tmp_path / "tape.csv")
-    rust_runs = qsim_rust.run_batch("room_maker", ROOM, [tape], threads=4)
+    rust_runs = qsim_rust.run_batch(name, settings, [tape], threads=4)
     pnls = set()
-    for overrides, [ours] in zip(ROOM, rust_runs):
-        theirs = python_run(qsim_rust.STRATEGIES["room_maker"], overrides, tape)
+    for overrides, [ours] in zip(settings, rust_runs):
+        theirs = python_run(qsim_rust.STRATEGIES[name], overrides, tape)
         assert ours.get("error") is None, ours
         for key in FIELDS + ["rejected", "cancel_rejected"]:
             assert ours[key] == theirs[key], (overrides, key, ours[key], theirs[key])
         assert ours["curve"] == theirs["curve"], overrides
         pnls.add(theirs["pnl"])
-    assert len(pnls) == len(ROOM), pnls  # every setting changes the run: its path is taken
+    assert len(pnls) == len(settings), pnls  # every setting changes the run: its path is taken
 
 
 ARENA_DATA = Path(os.environ.get("ARENA_SIM_DATA", ROOT / "data" / "arena"))
-FULL = [  # (file, overrides, pnl, fills): F3 and knob settings on the real tapes (SESSION_S 1e9: round 1 never winds down)
-    ("playground/sample_v2.csv", {}, "263282.00", 7764),
-    ("playground/sample_v2.csv", {"LEVELS": 2, "SIZE_DEEP": 30, "KEEP_DEPTH": 2}, "220177.00", 8300),
-    ("playground/sample_v2.csv", {"DEPLETE_LOTS": 30, "DEPLETE_SIZE": 40}, "264775.00", 8537),
-    ("playground/sample_v2.csv", {"SIZE_NARROW": 150, "SHRINK_NARROW": 1}, "257145.00", 9467),
-    ("playground/sample_v2.csv", {"UNWIND": 60, "UNWIND_TO": 30}, "45646.67", 19536),
-    ("round1/round1.csv", {"SESSION_S": 1000000000}, "425553.00", 30452),
-    ("round1/round1.csv", {"SESSION_S": 1000000000, "DEPLETE_LOTS": 20}, "399672.00", 26527),
-    ("round1/round1.csv", {"SESSION_S": 1000000000, "BACK_POS": 95}, "425216.00", 29646),
-    ("round1/round1.csv", {"SESSION_S": 5700, "FLAT_S": 30, "WIND_DOWN_S": 10}, "184793.35", 14353),
+FULL = [  # (strategy, file, overrides, pnl, fills): F3 and knob settings on the real tapes (SESSION_S 1e9: round 1 never winds down)
+    ("room_maker", "playground/sample_v2.csv", {}, "263282.00", 7764),
+    ("room_maker", "playground/sample_v2.csv", {"LEVELS": 2, "SIZE_DEEP": 30, "KEEP_DEPTH": 2}, "220177.00", 8300),
+    ("room_maker", "playground/sample_v2.csv", {"DEPLETE_LOTS": 30, "DEPLETE_SIZE": 40}, "264775.00", 8537),
+    ("room_maker", "playground/sample_v2.csv", {"SIZE_NARROW": 150, "SHRINK_NARROW": 1}, "257145.00", 9467),
+    ("room_maker", "playground/sample_v2.csv", {"UNWIND": 60, "UNWIND_TO": 30}, "45646.67", 19536),
+    ("room_maker", "round1/round1.csv", {"SESSION_S": 1000000000}, "425553.00", 30452),
+    ("room_maker", "round1/round1.csv", {"SESSION_S": 1000000000, "DEPLETE_LOTS": 20}, "399672.00", 26527),
+    ("room_maker", "round1/round1.csv", {"SESSION_S": 1000000000, "BACK_POS": 95}, "425216.00", 29646),
+    ("room_maker", "round1/round1.csv", {"SESSION_S": 5700, "FLAT_S": 30, "WIND_DOWN_S": 10}, "184793.35", 14353),
+    # the shrink maker: R1-F5's settings (python/bots/qminers/candidates/r1_F5_shrink_react.py), then two others
+    ("shrink_maker", "round1/round1.csv", {"SESSION_S": 1000000000, "DEPLETE_LOTS": 100, "DEPL_FRAC": 0.06, "REACT_CANCEL": 1}, "455822.00", 37847),
+    ("shrink_maker", "round1/round1.csv", {"SESSION_S": 1000000000, "DEPLETE_LOTS": 60, "DEPL_FRAC": 0.2, "DEPLETE_SIZE": 30}, "437654.00", 32131),
+    ("shrink_maker", "round1/round1.csv", {"SESSION_S": 1000000000, "REACT_CANCEL": 1, "SIZE_NARROW": 150, "SHRINK_NARROW": 1, "BACK_POS": 95},
+     "393824.00", 53530),
 ]
 
 
 @pytest.mark.skipif(os.environ.get("ARENA_SIM_FULL") != "1", reason="ARENA_SIM_FULL=1: about 30 s a Python run")
-@pytest.mark.parametrize("file, overrides, pnl, fills", FULL)
-def test_room_maker_full_byte_for_byte(tmp_path, file, overrides, pnl, fills):
+@pytest.mark.parametrize("name, file, overrides, pnl, fills", FULL)
+def test_room_maker_full_byte_for_byte(tmp_path, name, file, overrides, pnl, fills):
     data = ARENA_DATA / file
     if not data.exists():
         pytest.skip(f"no {data}")
     qsim_rust.build()
-    source = (ROOT / qsim_rust.STRATEGIES["room_maker"]).read_text()
+    source = (ROOT / qsim_rust.STRATEGIES[name]).read_text()
     for key, value in overrides.items():
         source, n = re.subn(rf"^{key} = \S+", f"{key} = {value!r}", source, flags=re.M)
         assert n == 1, key
-    bot = tmp_path / "room_maker.py"
+    bot = tmp_path / f"{name}.py"
     bot.write_text(source)
     theirs = subprocess.run([sys.executable, "-m", "simulator.main", "--strategy", str(bot), "--backtest", str(data),
                              "--log-dir", str(tmp_path / "py"), "--no-logs"], capture_output=True, text=True, check=True, cwd=ROOT)
-    ours = subprocess.run([str(qsim_rust.BINARY), "--backtest", str(data), "--strategy", "room_maker", "--params", json.dumps(overrides),
+    ours = subprocess.run([str(qsim_rust.BINARY), "--backtest", str(data), "--strategy", name, "--params", json.dumps(overrides),
                            "--log-dir", str(tmp_path / "rs")], capture_output=True, text=True, check=True)
     lines = [line for line in theirs.stdout.splitlines() if not line.startswith("log_dir=")]
     assert [line for line in ours.stdout.splitlines() if not line.startswith("log_dir=")] == lines
