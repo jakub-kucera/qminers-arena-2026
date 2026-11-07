@@ -1,8 +1,11 @@
 # Qminers trading hackathon starter
 
-**Round 1: submit `strategies/round1_best.py`.** Verified local score on the
-provided `round1.csv`: **476,052**, with zero position penalties. See the
-round-1 evaluation notes at the end of this README.
+**Round 1: strongest separately CLI-verified candidate is currently
+`strategies/round1_depth_nonlinear_534k.py` (534,332).** It has zero position
+penalty on the supplied `round1.csv`. Earlier 498,056 and 523,999 versions are
+preserved separately. Scores above 476,052 use further tuning on already
+evaluated data; no fresh independent holdout remains. See `results/` for
+versioned metrics and the evaluation notes below.
 
 ```
 strategies/   template_strategy.py, an empty strategy to copy and fill in; trend_follower.py, a simple working one
@@ -381,7 +384,7 @@ uv run python -m simulator.main --strategy strategies/passive_v2_champion.py \
 
 ## Round-1 submission and evaluation
 
-**Submit `strategies/round1_best.py` as the single strategy file.** The model
+**Earlier validated candidate: `strategies/round1_best.py`.** The model
 returns **476,052** on the supplied full `data/round1.csv`, exceeding the reported
 430,000 reference by 46,052. The unmodified simulator CLI reproduces the entire
 result from the audited replay exactly. The new model has not yet been evaluated
