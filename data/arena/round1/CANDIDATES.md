@@ -6,7 +6,7 @@ and leave the template as it is. The loop reads this file at the start of every 
 so a compacted or restarted session, or the other laptop, picks up where it was. Committed (`.gitignore` keeps it).
 
 ## Round
-- Deadline <the dashboard's submission deadline, HH:MM> (the round ends 18:00); freeze <deadline - 0:30>; E = <minutes an evaluation took>.
+- Deadline 18:00 (the user, from the dashboard); freeze 17:30; E = ~1 min (R1-F3's simulation took 1 min 2.8 s): the last upload starts by 17:35, 17:45 at the latest.
 - T = 0 on the public data (the portal is byte-identical to `exchange-simulator`; ON_THE_DAY.md, "From the playground"); recheck on the first upload.
 - Data: D = data/arena/round1/<file>.csv (unzipped: `uv run python -m gzip -d`), one hour, one instrument. Training: the first 75% of the hour. Held out: the last 25% (`arena.qgrid --holdout 0.25`), never used to choose a setting. Repeats: none possible (one file).
 - **SESSION_S / SESSION_US from the file's length** (round_start prints it), on the long side if the private hour may be longer: F2 with SESSION_S 3598 on the 5,750 s sample_v2 wound down after an hour and made +136k instead of +213k.

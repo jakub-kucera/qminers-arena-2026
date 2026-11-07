@@ -1,4 +1,4 @@
-# Round 1 handover (7 Nov, 13:00-18:00)
+# Round 1 handover (7 Nov, 13:00-18:00; submissions close 18:00, freeze 17:30, last upload by 17:35)
 
 The template (`docs/HANDOVER_TEMPLATE.md`): copy it to `data/arena/round<N>/HANDOVER.md` at the start of round N,
 fill it in during the round and finish it by deadline − 0:10; the template itself stays as it is. Committed and pushed so the other laptop has it (ON_THE_DAY.md, "Handover note"); the private
