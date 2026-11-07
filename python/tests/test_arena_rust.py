@@ -65,7 +65,8 @@ def python_run(bot: str, overrides: dict, data: Path) -> dict:
     return result
 
 
-@pytest.mark.parametrize("name, pnl, fills", [("trend_follower", "1878.00", 305), ("fallback_maker", "-5877.00", 303)])
+@pytest.mark.parametrize("name, pnl, fills", [("trend_follower", "1878.00", 305), ("fallback_maker", "-5877.00", 303),
+                                             ("ridge_maker", "-91974.00", 1316)])
 def test_cli_byte_for_byte(sample, tmp_path, name, pnl, fills):
     bot = ROOT / qsim_rust.STRATEGIES[name]
     theirs = subprocess.run([sys.executable, "-m", "simulator.main", "--strategy", str(bot), "--backtest", str(sample),
@@ -239,6 +240,8 @@ FULL = [  # (strategy, file, overrides, pnl, fills): F3 and knob settings on the
     # R1-F8 (candidates/r1_F8_take_join.py) as written
     ("take_maker", "round1/round1.csv", {}, "519027.00", 66371),
     ("take_maker", "playground/sample_v2.csv", {}, "234661.00", 28134),
+    # R1-C1 (candidates/r1_C1_codex_ridge.py) as written: ridge_maker.rs
+    ("ridge_maker", "round1/round1.csv", {}, "554347.00", 37087),
 ]
 
 
