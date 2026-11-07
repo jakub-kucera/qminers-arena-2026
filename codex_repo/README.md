@@ -38,6 +38,12 @@ See the [penalty tradeoff report](research/penalty_tradeoff_20261107/report.html
 [protocols and reproduction notes](research/penalty_tradeoff_20261107/README.txt),
 and [complete results](research/penalty_tradeoff_20261107/summary.json).
 
+For later rounds, [the near-1,000-lot burst research note](research/penalty_tradeoff_20261107/FUTURE_ROUNDS.md)
+records the remaining test gap and break-even economics. Wider executable
+spreads could make the flat time penalty more affordable per filled lot, but
+this requires sufficiently large fills and fast recovery; the hypothesis is
+not yet validated.
+
 ## Latest bounded augmentation study
 
 The 554,347 submission was independently reproduced after merging main commit
