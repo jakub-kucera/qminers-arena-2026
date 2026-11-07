@@ -26,18 +26,22 @@ later tuning results are sample-tuned, not independent holdouts.
 
 ## Round-2 current checkpoint
 
-[Seven-model comparison](docs/ROUND2_MODEL_COMPARISON.md) includes stable source
-paths, scores, risk metrics and CLI verification. Machine-readable:
-[CSV](results/round2_model_comparison.csv), [JSON](results/round2_model_comparison.json).
+[Distribution research and sixteen-model comparison](docs/ROUND2_DISTRIBUTION_RESEARCH.md)
+cover order-size tails, liquidity state, fill selection and executable shock exits.
+Machine-readable: [CSV](results/round2_distribution_comparison.csv),
+[JSON](results/round2_distribution_comparison.json).
 
 The current source [round2_submission.py](strategies/round2_submission.py) earns
-**162,253.08 net** on the public tape, including 989.92 penalties, with exact
+**180,895.19 net** on the public tape, including 536.81 penalties, with exact
 organizer CLI agreement. The named archive is
-[round2_fill_value_162253.py](strategies/round2_fill_value_162253.py).
-It adds a latency-aligned conditional maker-fill value model while keeping
-volatility sizing fixed. See [the research report](docs/ROUND2_FILL_VALUE_RESEARCH.md).
-This model fits first 60% public data; later 40% is beyond fitting but globally
-reused. No server/private result is established.
+[round2_distribution_ensemble_shock_180895.py](strategies/round2_distribution_ensemble_shock_180895.py).
+It combines two 55-feature fill-value models and closes inventory opposed to
+observed price shocks when crossing is affordable. Volatility sizing is fixed.
+Later 40% PnL is 52,659.19 and sampled drawdown 6,779, versus 39,091.19 and 12,656
+for the previous verified 162 K source. Fits use first 60% public data; all public
+results are reused selection, not organizer validation/private scores.
+The earlier [seven-model export table](docs/ROUND2_MODEL_COMPARISON.md) and
+every named source remain preserved.
 
 ## Earlier round-2 checkpoint and preparation
 
@@ -47,7 +51,7 @@ The separate organizer CLI replay matched all fields; the selected source
 earned +19,052.19 on the middle public 20% and +13,149 on the final public 20%.
 It uses the user's absolute-volatility exposure idea with native queue-preserving
 shrinks. Read [the research report](docs/ROUND2_VOLATILITY_RESEARCH.md) and
-[the result manifest](results/round2_submission.json).
+[the result manifest](results/round2_144580.json).
 All public segments have now been inspected. No server or private score exists.
 
 Six standalone candidates are prepared under [strategies/round2/](strategies/round2/):

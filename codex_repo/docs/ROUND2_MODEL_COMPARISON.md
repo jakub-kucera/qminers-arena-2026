@@ -1,5 +1,9 @@
 # Round-2 model comparison
 
+Historical seven-model export. The new verified 180,895.19 checkpoint and 16
+distribution-derived candidates are in [the newer report](ROUND2_DISTRIBUTION_RESEARCH.md).
+All paths and scores below remain valid for these preserved files.
+
 All scores are net PnL on `data/round2_public.csv`, about 100 minutes. Paths are relative to the repository root.
 
 Fill-value models are pretrained only on the first 60% public data. Their last 40% increments are beyond fitting, but all public outcomes have been reused for model selection. No server/private scores are available.
@@ -16,13 +20,15 @@ Fill-value models are pretrained only on the first 60% public data. Their last 4
 
 Every row passed native position-wall and private-ledger auditing. Independent CLI means a second replay through the unmodified organizer CLI matched every field. Audit-only rows have not received that extra replay.
 
-The current `strategies/round2_submission.py` is byte-identical to `strategies/round2_fill_value_162253.py`. The top-scoring163429 source is separately preserved; it is not yet promoted over the verified 162253 checkpoint.
+At export time, `strategies/round2_submission.py` matched `strategies/round2_fill_value_162253.py`.
+The submission pointer has since advanced; use these immutable named sources
+to identify an old upload. The 163429 source is separately preserved.
 
 ## Mechanisms and review targets
 
 - **Fill value + fresh quotes:** Same fill-value trees plus four 100 ms fresh-quote alpha features; risk sizing unchanged.
 - **Fill value, +0.1 edge margin:** Require predicted fill edge at least 0.1 tick for opening/reversing exposure; unchanged pretrained trees.
-- **Fill value, zero edge margin:** Current submission. Conditional fill value from public first 60%,5 ms latency-aligned features,400 ms future markout.
+- **Fill value, zero edge margin:** Previous verified submission. Conditional fill value from public first 60%,5 ms latency-aligned features,400 ms future markout.
 - **Fill value, fast refresh:** Refresh fill-value forecast at 5 ms rather than 20 ms; same weights and risk sizing.
 - **Fill value, -0.1 edge margin:** Looser conditional fill-value gate, allowing predicted edge down to -0.1 tick.
 - **Fresh quote alpha only:** Online learner with four extra 100 ms fresh-quote features; no pretrained fill-value gate.
@@ -32,6 +38,6 @@ The four leading fill-value variants share the same pretrained 18-feature tree m
 
 Training implementation: `scripts/round2_pretrained_fill_value.py`. Quote integration: `fill_value_source`. Its conditional feature mapping depends on the saved 29-feature definitions and native order bookkeeping; port those definitions explicitly before combining with a different strategy.
 
-The previous144K source has no offline fitted model. It remains the clearest reference for measuring the incremental fill-value mechanism.
+The previous 144 K source has no offline fitted model. It remains the clearest reference for measuring the incremental fill-value mechanism.
 
 Machine-readable versions: [CSV](../results/round2_model_comparison.csv), [JSON](../results/round2_model_comparison.json). JSON includes source/data hashes, fills, volume, actual/potential maxima and all chronological increments.

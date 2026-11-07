@@ -1,37 +1,70 @@
 # Handoff for the next session
 
-Updated 7 November 2026 after the first verified round-2 public checkpoint.
+Updated 7 November 2026 after the distribution-driven round 2 research.
 Team: **ThatsMyQuant**.
 
-Current round-2 source: **strategies/round2_submission.py**, byte-identical to
-`strategies/round2_fill_value_162253.py`. It earns **162,253.08 net on the full
-PUBLIC tape**, including **989.92** native position penalties. Every result field
-matched a separate unmodified organizer CLI replay. Source SHA-256:
-`1e06031145b06a67bd0b661c27af3d338b46b19b2514d29f1c9cd06046da3c49`.
-Read [the conditional-fill report](docs/ROUND2_FILL_VALUE_RESEARCH.md).
-This model keeps all volatility-sizing parameters unchanged and adds a
-pretrained nonlinear conditional maker-fill value gate. Fit uses 33,296 public
-first 60% fills with feature frames at least 5 ms before execution. Runtime quote
-budgets can close but not reverse inventory when predicted fill edge is negative.
-Full actual/potential exposure maxima were 300/300; fees are fully included.
-The later 40%, beyond fitting but previously inspected globally, earned 39,091.19
-versus 32,201.19 for the earlier checkpoint. All public comparisons are reused
-sample tuning; no server/private score is available.
-The previous 144,580.19 source remains immutable at
-`strategies/round2_volatility_144580.py`, with `results/round2_144580.json`.
-An earlier pending server-PnL question named that 144K file: identify the exact
-uploaded immutable source before recording any server result.
-There are 100 passing tests, 86 separate development-prefix replays, and 14
-new full-public candidate replays. All batches have completed. The highest
-public audited result is 163,429.08 at `strategies/round2_fill_fresh_163429.py`;
-its later 40% is 39,005.19, slightly below the current 162K source's 39,091.19.
-It has not received an independent CLI replay or promotion. The +0.1 edge
-margin alternative earns 163,043.19 with 336.81 penalties and median exposure 63.
-Use [the model table](docs/ROUND2_MODEL_COMPARISON.md), machine-readable
-`results/round2_model_comparison.csv` / JSON, and immutable named files when
-handing candidates to another session. No experiments remain running.
+Current source: [strategies/round2_submission.py](strategies/round2_submission.py), byte-identical to
+`strategies/round2_distribution_ensemble_shock_180895.py`.
+**180,895.19 net full PUBLIC PnL**, including 536.81 native penalties; every
+field matched a separate unmodified organizer CLI replay. Source SHA-256:
+`c6f6a25629cb3ba94924305f17793c8c8426dbe14b418e6607a73b5f132a3d75`.
+All 16 new full-public candidates, two restarted diagnostics and four CLI checks
+have finished. **No research process remains running. 105 tests pass.**
 
-Historical first 144K checkpoint and earlier research follow.
+Read [distribution research](docs/ROUND2_DISTRIBUTION_RESEARCH.md),
+`results/round2_distribution_comparison.csv` / JSON and
+`results/round2_distribution_180895.json`. Full statistics and per-horizon
+markout tables are tracked in `results/round2_distribution_statistics.json`
+and `results/round2_distribution_markouts.csv`. Raw 103 MB extraction is ignored
+under `logs/round2/distribution_research/observations.npz`.
+
+This session keeps the saved absolute-volatility sizing constants unchanged;
+the user's other session explores sizing. The new model averages two 55-feature
+conditional-fill heads (public fills and actual/public blend), then actively
+closes inventory opposed to observed>=2 tick jumps for 100 ms when spread<=2.
+IOC exits have one-tick crossing allowance, native 5 ms latency and one pending
+hedge. They do not open new directional targets. Native paid overlap remains:
+maximum actual 184, potential 300, penalty 536.81; not a strict 100-lot strategy.
+
+All fitted labels use first 60% public data only. Rich/public head:33,296
+latency-aligned fills,400 ms labels clipped to 3 ticks. Mixed head also uses 9,479
+mature actual maker fills of the frozen 162 K policy, with 5 x actual-fill weight
+and 5 tick label clipping. Both 64-tree heads use identical 55-feature layouts;
+ensemble weights are fixed 1/2. All online and offline inputs are public/causal;
+queue exhaustion is an offline sample-weight diagnostic, never a future input.
+The ensemble/shock combination was adaptively selected on consumed public data.
+
+Current period PnL: first 60%128,236; middle 20%27,236.19; last 20%25,423;
+later 40%52,659.19 versus 39,091.19 for the old 162 K checkpoint. Sampled 1 second
+drawdown 6,779 versus 12,656. Restarting on the later 40% from empty state yields
+46,184.19 versus 37,248.19 baseline. This is reused-public sensitivity analysis,
+not new independent validation. Rare jumps account for a substantial gain.
+
+Useful preserved alternatives:
+- `strategies/round2_distribution_ensemble_174940.py`: strongest non-shock
+  alternative 174,940.19; later 40%46,125.19; audited, no separate CLI replay.
+- `strategies/round2_distribution_shock_175867.py`: simpler single-head shock
+  model 175,867.19; later 40%51,313.19; independent CLI verified.
+- `strategies/round2_distribution_mixed_170252.py`: actual/public fill head,
+ 170,252.19; independent CLI verified.
+- `strategies/round2_distribution_rich_167958.py`:55-feature public-fill head,
+ 167,958.19; independent CLI verified.
+- Earlier 162253,163429 and 144580 archives remain unchanged. The old seven-model
+  Downloads export/table is historical and contains those original bytes.
+
+The prior phase had 86 development-prefix replays and 14 new full-public
+candidates; this phase adds 16 full-public candidates and two restarted tests.
+No server/private score is established. Earlier pending server-PnL question
+named 144580; always identify the actual uploaded immutable file before recording
+feedback. The current submission pointer has changed repeatedly.
+
+The GitHub SSH remote is the user's authorized repository. Last push failed
+because github.com cannot resolve in this environment. Local commits/bundles
+are not evidence of remote synchronization. Preserve the frozen round 1 source
+and every named result; simulator/evaluator hashes are unchanged.
+
+Historical first144K checkpoint and earlier research follow.
+
 
 Read [the volatility research report](docs/ROUND2_VOLATILITY_RESEARCH.md) and
 `results/round2_submission.json`. Public data is `data/round2_public.csv`:

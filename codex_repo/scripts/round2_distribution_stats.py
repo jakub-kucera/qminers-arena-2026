@@ -71,6 +71,28 @@ def raw_statistics(path):
         limitation='Cancellation rows may refer to orders already filled; these are scheduled CSV lifetimes, not actual resting survival.')
 
 
+def jump_followthrough(data):
+    t=data['mid_t'];mid=data['mid'];change=np.diff(mid)
+    selected=[];last=-1000000000
+    for i in np.flatnonzero(abs(change)>=2)+1:
+        if t[i]-last>=100000:selected.append(i);last=t[i]
+    ix=np.array(selected,dtype=int)
+    spread=data['spread'][np.searchsorted(data['book_t'],t[ix],side='right')-1]
+    groups={}
+    for name,mask in [('all',np.ones(len(ix),bool)),('spread_le2',spread<=2),
+        ('spread_gt2',spread>2),('jump_ge5',abs(change[ix-1])>=5)]:
+        rows={}
+        for h in (5000,25000,100000,400000,1000000,2000000):
+            valid=mask&(t[ix]+h<=data['book_t'][-1]);ind=ix[valid]
+            j=np.searchsorted(t,t[ind]+h,side='left')-1
+            y=np.sign(change[ind-1])*(mid[j]-mid[ind])
+            rows[str(h)]={'n':len(y),'mean_signed_followthrough':float(np.mean(y)),
+                'median':float(np.median(y)),'reversal_fraction':float(np.mean(y<0))}
+        groups[name]=rows
+    return dict(scope='Reused full-public descriptive outcomes; no executable-price/latency profitability claim',
+        minimum_initial_jump_ticks=2,minimum_cluster_spacing_us=100000,groups=groups)
+
+
 def main():
     data=dict(np.load(ROOT/'observations.npz'));meta=json.loads((ROOT/'metadata.json').read_text())
     end=meta['last_event_us'];report=dict(data_sha256=meta['data_sha256'],extractor_metadata=meta,
@@ -134,6 +156,7 @@ def main():
         'Cancellation lifetimes include later no-op cancellation requests after fills.',
         'No result is an organizer validation or private score.']
     write_json(Path('results/round2_distribution_statistics.json'),report)
+    write_json(Path('results/round2_distribution_jump_followthrough.json'),jump_followthrough(data))
     with Path('results/round2_distribution_markouts.csv').open('w',newline='') as f:
         writer=csv.writer(f,lineterminator='\n');writer.writerow(['horizon_ms','group','count','mean','median','sd','weight20_mean','weight100_mean','clipped3_mean','loss_gt3_fraction'])
         for h,groups in report['fill_markouts'].items():

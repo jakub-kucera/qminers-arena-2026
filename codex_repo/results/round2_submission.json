@@ -1,8 +1,8 @@
 {
-  "status": "Verified current checkpoint. Chosen using reused PUBLIC outcomes; no fresh local/server/private score.",
+  "status": "Verified on reused full PUBLIC data; every result field matches independent unmodified organizer CLI",
   "submission_source": "strategies/round2_submission.py",
-  "immutable_source": "strategies/round2_fill_value_162253.py",
-  "source_sha256": "1e06031145b06a67bd0b661c27af3d338b46b19b2514d29f1c9cd06046da3c49",
+  "immutable_source": "strategies/round2_distribution_ensemble_shock_180895.py",
+  "source_sha256": "c6f6a25629cb3ba94924305f17793c8c8426dbe14b418e6607a73b5f132a3d75",
   "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
   "native": {
     "python": "3.13.16",
@@ -27,82 +27,82 @@
   },
   "result": {
     "result": {
-      "fills": 12931,
-      "traded_volume": 908420,
+      "fills": 12918,
+      "traded_volume": 884310,
       "inventory": -100,
-      "cash": 1132243.0,
+      "cash": 1150432.0,
       "mark_price": 9690.0,
-      "breach_penalty": 989.9200000000001,
-      "pnl": 162253.08,
-      "pnl_se": 18299.875327049533,
-      "abs_inventory_q50": 67,
+      "breach_penalty": 536.81,
+      "pnl": 180895.19,
+      "pnl_se": 15078.8687855716,
+      "abs_inventory_q50": 64,
       "abs_inventory_q68": 100,
       "abs_inventory_q95": 100,
       "abs_inventory_q997": 100
     },
-    "runtime_seconds": 112.74134304211475,
-    "max_abs_inventory": 300,
+    "runtime_seconds": 148.60164716700092,
+    "max_abs_inventory": 184,
     "max_potential_inventory_at_submission": 300,
-    "max_drawdown_1s": 12656.0,
-    "submissions": 50838,
+    "max_drawdown_1s": 6779.0,
+    "submissions": 50783,
     "order_status_counts": {
-      "accepted": 50838,
-      "canceled": 40544,
-      "partially_filled": 7913,
-      "filled": 10293,
-      "modified": 898,
-      "rejected": 204
+      "accepted": 50783,
+      "canceled": 40483,
+      "filled": 10299,
+      "partially_filled": 7735,
+      "modified": 1622,
+      "rejected": 214
     },
     "blocks": [
       {
         "start_s": 0.0,
         "end_s": 600.0,
-        "pnl_increment": 14605.0
+        "pnl_increment": 16303.0
       },
       {
         "start_s": 600.0,
         "end_s": 1200.0,
-        "pnl_increment": 25838.0
+        "pnl_increment": 25457.0
       },
       {
         "start_s": 1200.0,
         "end_s": 1800.0,
-        "pnl_increment": 25834.0
+        "pnl_increment": 27450.0
       },
       {
         "start_s": 1800.0,
         "end_s": 2400.0,
-        "pnl_increment": 13808.0
+        "pnl_increment": 17278.0
       },
       {
         "start_s": 2400.0,
         "end_s": 3000.0,
-        "pnl_increment": 26401.0
+        "pnl_increment": 27761.0
       },
       {
         "start_s": 3000.0,
         "end_s": 3600.0,
-        "pnl_increment": 16675.89
+        "pnl_increment": 13987.0
       },
       {
         "start_s": 3600.0,
         "end_s": 4200.0,
-        "pnl_increment": 7792.0
+        "pnl_increment": 10843.0
       },
       {
         "start_s": 4200.0,
         "end_s": 4800.0,
-        "pnl_increment": 16551.189999999988
+        "pnl_increment": 16393.190000000002
       },
       {
         "start_s": 4800.0,
         "end_s": 5400.0,
-        "pnl_increment": 5478.0
+        "pnl_increment": 14462.0
       },
       {
         "start_s": 5400.0,
         "end_s": 5999.995946,
-        "pnl_increment": 9270.0
+        "pnl_increment": 10961.0
       }
     ],
     "config": {
@@ -120,35 +120,38 @@
       "progress_fd": 2
     },
     "boundary_pnl": {
-      "3599997635": 123161.89,
-      "4799996824": 147505.08
+      "3599997635": 128236.0,
+      "4799996824": 155472.19
     },
-    "source": "logs/round2/pretrained_fill_value/sources/latency_fill_value_threshold0.0.py",
-    "source_sha256": "1e06031145b06a67bd0b661c27af3d338b46b19b2514d29f1c9cd06046da3c49",
+    "source": "logs/round2/distribution_research/combination_replays/sources/distribution_ensemble_shock2.py",
+    "source_sha256": "c6f6a25629cb3ba94924305f17793c8c8426dbe14b418e6607a73b5f132a3d75",
     "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
     "strategy_state": {
-      "_labels": 260603,
-      "_mass": 252940.5302322331
+      "_labels": 260600,
+      "_mass": 252937.64203011422
     },
     "rates": {
       "observed_duration_seconds": 5999.995946,
-      "net_pnl_per_minute": 1622.5318962907177,
-      "volume_per_minute": 9084.20613789528,
+      "net_pnl_per_minute": 1808.9531222493263,
+      "volume_per_minute": 8843.105974991937,
       "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
     },
-    "training_prefix_pnl": 123161.89,
-    "post_fit_last40_pnl": 39091.18999999999
+    "first60_pnl": 128236.0,
+    "later40_pnl": 52659.19,
+    "last20_pnl": 25423.0
   },
   "official_cli_match": true,
   "evaluation_scope": "reused_public_sample_tuning",
   "organizer_private_evaluated": false,
-  "training_scope": "Pretrained conditional fill-profit model fit only first60% public fills, with features at least5ms before fill. Native online forecast continues causally. Later40% globally reused, outside fitting.",
+  "training_scope": "Equal-weight55-feature heads fit only public first60%; one head public fills, one actual/public blend. Shock exit and combination selected after reused-public analysis.",
   "full_public_period_pnl": {
-    "first60": 123161.89,
-    "next20": 24343.189999999988,
-    "last20": 14748.0
+    "first60": 128236.0,
+    "next20": 27236.190000000002,
+    "last20": 25423.0
   },
-  "baseline_source": "strategies/round2_volatility_144580.py",
-  "baseline_net": 144580.19,
-  "pending_server_feedback": "Do not attach a server PnL without identifying the exact uploaded immutable source; the earlier question named the144580 checkpoint."
+  "baseline_source": "strategies/round2_fill_value_162253.py",
+  "baseline_net": 162253.08,
+  "previous_public_high_source": "strategies/round2_fill_fresh_163429.py",
+  "previous_public_high_net": 163429.08,
+  "pending_server_feedback": "No server score established. Earlier pending request named144580; always identify exact immutable uploaded source."
 }

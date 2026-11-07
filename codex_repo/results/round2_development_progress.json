@@ -1,6 +1,6 @@
 {
-  "updated_at_utc": "2026-11-07T19:57:02.074330+00:00",
-  "status": "86 development-prefix replays and14 new full-public candidate replays complete. Current exact CLI-verified checkpoint162253.08. Highest audited public candidate163429.08 is separately saved but not independently CLI-verified/promoted. All public outcomes reused; first60% pretrained fitting overlap explicit. No server/private result.",
+  "updated_at_utc": "2026-11-07T20:45:48.307712+00:00",
+  "status": "86 development-prefix replays;30 new full-public candidate replays across later studies, plus2 restarted diagnostics. Exact CLI-verified current180895.19. All jobs complete;105 tests. All public outcomes reused, no server/private result.",
   "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
   "studies": {
     "jump_models": {
@@ -7057,7 +7057,7 @@
   "no_private_evaluation": true,
   "completed_development_replays_in_this_report": 72,
   "total_development_replays_including_initial14": 86,
-  "latest_test_suite_passed": 100,
+  "latest_test_suite_passed": 105,
   "full_public_followup_studies": {
     "pretrained_alpha": {
       "results": {
@@ -8812,5 +8812,7 @@
       "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4"
     }
   },
-  "completed_new_full_public_candidate_replays": 14
+  "completed_new_full_public_candidate_replays": 30,
+  "distribution_research_summary": "results/round2_distribution_comparison.json",
+  "restarted_diagnostics": "results/round2_distribution_restarted.json"
 }

@@ -1,5 +1,5 @@
 {
-  "status": "Audited public result; independent CLI pending",
+  "status": "Exact independent unmodified organizer CLI match on reused public data",
   "source": "strategies/round2_distribution_mixed_170252.py",
   "evaluation": {
     "result": {
@@ -115,5 +115,6 @@
     "first60_pnl": 127230.0,
     "later40_pnl": 43022.19,
     "last20_pnl": 18118.0
-  }
+  },
+  "official_cli_match": true
 }

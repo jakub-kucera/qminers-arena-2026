@@ -1,0 +1,62 @@
+{
+  "distribution_young_touch": {
+    "source_sha256": "33352428ebddf8ffdaf36c3821e8496de017068ab02e9ccfa6a12c6d0633aff0",
+    "columns": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      38
+    ],
+    "training_rows": 33296,
+    "horizon_us": 400000,
+    "clip": 3,
+    "weight_cap": 20,
+    "export_max_error": 0.0
+  },
+  "distribution_young_state": {
+    "source_sha256": "d892808225e3ada97283177aa1501bf8585241738c57c7a38ee04b8d77f367b4",
+    "columns": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      38,
+      54,
+      43
+    ],
+    "training_rows": 33296,
+    "horizon_us": 400000,
+    "clip": 3,
+    "weight_cap": 20,
+    "export_max_error": 0.0
+  }
+}

@@ -1,21 +1,26 @@
 # Result manifests
 
-`round2_model_comparison.csv` / JSON compare seven saved source files, full
-public PnL, later-period PnL, fees, inventory, drawdown and exact source hashes.
-The current independently CLI-verified source earns 162,253.08; the highest
-audited candidate earns163,429.08 and remains a separate unpromoted model.
-`round2_162253.json` is immutable evidence for the current checkpoint.
+`round2_submission.json` identifies the current 180,895.19 checkpoint, with exact
+independent CLI agreement; `round2_distribution_180895.json` is immutable evidence.
+`round2_distribution_comparison.csv` / JSON cover 16 new models, source hashes,
+training overlap, later-period PnL, fees, inventory and drawdown.
+`round2_distribution_statistics.json` and markouts CSV preserve the descriptive
+analysis; `round2_distribution_restarted.json` records two cold-start diagnostics.
+All public data is reused; no hidden/server score is established.
+
+`round2_model_comparison.csv` / JSON preserve the earlier seven-source export.
+`round2_162253.json` is immutable evidence for the previous checkpoint.
 `round2_pretrained_fill_value_results.json`, `round2_fill_value_followups_results.json`
 and `round2_fresh_quote_alpha_results.json` preserve the later full-public
 comparisons. Their fitting overlap/reused-data scope is explicit.
 
-`round2_submission.json` and immutable `round2_144580.json` identify the first
+Immutable `round2_144580.json` identifies the first
 verified full-public checkpoint: 144,580.19 net, with exact organizer CLI match.
 `round2_selection_v1.json` records six-candidate chronological selection;
 `round2_volatility_attribution.json` checks actual exposure versus volatility.
 There is no server/private result yet. All public segments are now consumed.
 
-`round2_alternative_mechanisms.json` records24 later development cases with risk
+`round2_alternative_mechanisms.json` records 24 later development cases with risk
 sizing fixed or a separate fixed-size IOC policy. The queue-wait prototype's
 full-public 143,252.19 did not improve the checkpoint. `round2_pretrained_specs.json`
 freezes four pretrained nonlinear-alpha candidates; first 60% is fitting data,
@@ -46,7 +51,7 @@ the user's private log have not been supplied here.
   round-1 source, exact native result, hashes and verification.
 - [round1_624076.json](round1_624076.json) preserves its named archive evidence.
 - [round1_claude_research.json](round1_claude_research.json) summarizes the 77 full
-  and 121 screening comparisons after the supplied 595K model. These are
+  and 121 screening comparisons after the supplied 595 K model. These are
   sample-tuned results on already consumed data.
 - Earlier `round1_*.json` files preserve earlier checkpoints and provenance.
 - `round2_historical_characterization.json`, produced by the preparation tool,

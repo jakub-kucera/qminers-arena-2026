@@ -21,19 +21,21 @@ Its result manifest is [round1_624076.json](../results/round1_624076.json).
 
 Other earlier checkpoints remain at their original filenames. All later round-1
 tuning used previously consumed data; none guarantees transfer to round 2.
-The 624K model permits short paid breaches over 100 lots, rather than enforcing
+The 624 K model permits short paid breaches over 100 lots, rather than enforcing
 a strict 100-lot bound. The native acceptance wall remains 1,000.
 
 ## Round-2 hypotheses
 
 The verified local public checkpoint is [round2_submission.py](round2_submission.py),
-byte-identical to [round2_fill_value_162253.py](round2_fill_value_162253.py).
-It earns 162,253.08 net including 989.92 penalties, with exact native CLI equality.
-The earlier 144K archive remains at [round2_volatility_144580.py](round2_volatility_144580.py).
-[The model table](../docs/ROUND2_MODEL_COMPARISON.md) compares seven saved candidates.
-Its middle-public 20% and frozen final-public 20% increments were both positive.
+byte-identical to [round2_distribution_ensemble_shock_180895.py](round2_distribution_ensemble_shock_180895.py).
+It earns 180,895.19 net including 536.81 penalties, with exact native CLI equality.
+The prior 162 K source remains at [round2_fill_value_162253.py](round2_fill_value_162253.py).
+The earlier 144 K archive remains at [round2_volatility_144580.py](round2_volatility_144580.py).
+[Distribution research](../docs/ROUND2_DISTRIBUTION_RESEARCH.md) compares 16 new candidates;
+[the earlier table](../docs/ROUND2_MODEL_COMPARISON.md) preserves the seven-model export.
+The new model's later 40% increment is 52,659.19 on already-consumed public data.
 This is not a server/private score; see the
-[research report](../docs/ROUND2_FILL_VALUE_RESEARCH.md).
+[research report](../docs/ROUND2_DISTRIBUTION_RESEARCH.md).
 
 The [registry](round2/manifest.json) records exact source hashes, intended roles
 and risk contracts for the original preparation controls.

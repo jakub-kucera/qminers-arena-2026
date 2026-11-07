@@ -31,6 +31,12 @@ Run modules from the repository root with `.venv/bin/python -m scripts.NAME`.
 | `round2_full_public_study.py` | Immutable-source native audits for reused-full-public follow-up studies |
 | `round2_fresh_quote_alpha.py` | Faster fresh-quote centers and observable near-touch age features, with risk sizing fixed |
 | `round2_fill_value_followups.py` | Fixed-weight fill-value margins, score refresh and fresh-quote combinations |
+| `round2_distribution_collect.py`, `round2_distribution_features.py` | Public-only55-feature frames, raw multi-horizon fill outcomes, exact5ms alignment |
+| `round2_distribution_stats.py` | Size/lifetime distributions, time-weighted spreads, return tails, conditional markouts and jump follow-through |
+| `round2_distribution_models.py`, `round2_distribution_ownfills.py` | First60% nonlinear fill heads; actual-policy/public-fill comparisons |
+| `round2_distribution_compact.py`, `round2_distribution_pricing.py` | Compact feature ablations and conditional-fill quote-price alternatives |
+| `round2_distribution_ensemble.py`, `round2_distribution_shock_exit.py`, `round2_distribution_combinations.py` | Fixed-weight fill ensembles and affordable observed-shock inventory exits |
+| `round2_distribution_restart.py` | Explicitly reused-public later40% cold-start diagnostic with exactly rebased timestamps |
 | `check_submission.py` | Conservative local check of documented export restrictions |
 | `benchmark.py` | Native-config replay and diagnostic metrics for explicit sources |
 

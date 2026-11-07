@@ -1,14 +1,14 @@
 # Round-2 evaluation plan
 
-Current checkpoint:162,253.08 net with exact organizer CLI match; its fill-value
-model uses first 60% public training data. All public data is now reused for
-model selection. See [the model comparison](ROUND2_MODEL_COMPARISON.md) and
-[conditional-fill research](ROUND2_FILL_VALUE_RESEARCH.md). No server/private
-score has been supplied. The original chronological protocol follows.
+Current checkpoint:180,895.19 net with exact organizer CLI match. Its 55-feature
+fill-value ensemble uses first 60% public labels and adds narrow-spread shock
+inventory exits. All public data is reused for selection. See
+[distribution research and all16 new models](ROUND2_DISTRIBUTION_RESEARCH.md).
+No server/private score has been supplied. The original chronological protocol follows.
 
 Round-2 public data is now at `data/round2_public.csv`. Read the
 [initial findings](ROUND2_INITIAL_FINDINGS.md): all active reference candidates
-lost on its first 60%, and volatility changed materially. The first frozen selection and final public check completed at144,580.19 net
+lost on its first 60%, and volatility changed materially. The first frozen selection and final public check completed at 144,580.19 net
 with exact organizer CLI agreement. All public segments are now consumed. See
 [the volatility research report](ROUND2_VOLATILITY_RESEARCH.md). No server or
 private score exists. The workflow below documents the chronological procedure;
@@ -212,7 +212,7 @@ All 18 runs completed using native fees and private-event ledger checks. The
 transfer's round-1 result matched the immutable 624,076 checkpoint field for
 field. All strict exposure contracts passed. Values below are net PnL.
 
-| Candidate | Original thin sample | Sample v2 | Round 1 |
+| Candidate | Original thin sample | Sample v 2 | Round 1 |
 | --- | ---: | ---: | ---: |
 | Transfer | -80,846.00 | 294,271.00 | 624,076.00 |
 | Strict 100 | -46,259.00 | 293,659.00 | 606,310.00 |

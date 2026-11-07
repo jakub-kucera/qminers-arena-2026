@@ -9,9 +9,12 @@ from scripts.benchmark import digest
 from scripts.round2_distribution_collect import collect
 from scripts.round2_distribution_features import augment,ODD_NAMES,EVEN_NAMES
 from scripts.round2_distribution_stats import labels
+from scripts.round2_distribution_shock_exit import shock_exit
+from scripts.round2_distribution_ensemble import blend
 from scripts.round2_pretrained_alpha import BASE
 from simulator.main import load_strategy_from_file
 from simulator.models import BookOrderView,OrderBookSnapshot,Side
+from test_strategy import Gateway
 
 
 class DistributionTests(unittest.TestCase):
@@ -43,6 +46,31 @@ class DistributionTests(unittest.TestCase):
         valid,y=labels(data,np.array([0,11]),np.array([100,100]),np.array([1,-1]),10,20)
         np.testing.assert_array_equal(valid,[True,False])
         self.assertEqual(y[0],1.)
+
+    def test_shock_exit_closes_only_opposed_inventory_and_expires(self):
+        with tempfile.TemporaryDirectory() as folder:
+            p=Path(folder)/'s.py';p.write_text(shock_exit(BASE.read_text(),2));s=load_strategy_from_file(p)
+        g=Gateway(s);s.inventory=-40;s._shock_sign=1;s._shock_until=100000
+        s._cached_bid=102;s._cached_ask=103;s._cached_time=0
+        s._hedge(100000)
+        self.assertEqual(g.sent,[])
+        s._hedge(1000)
+        self.assertEqual(len(g.sent),1)
+        self.assertEqual(g.sent[0].side,Side.BUY)
+        self.assertEqual(g.sent[0].quantity,40)
+        self.assertEqual(g.sent[0].price,104)
+        s._hedge(2000)
+        self.assertEqual(len(g.sent),1)
+
+    def test_ensemble_predictions_equal_arithmetic_average(self):
+        a=Path('strategies/round2_distribution_rich_167958.py')
+        b=Path('strategies/round2_distribution_mixed_170252.py')
+        sa=load_strategy_from_file(a);sb=load_strategy_from_file(b)
+        with tempfile.TemporaryDirectory() as folder:
+            p=Path(folder)/'s.py';p.write_text(blend(a.read_text(),b.read_text()));s=load_strategy_from_file(p)
+        for frame in (np.zeros(55),np.linspace(-1,1,55),np.linspace(2,-2,55)):
+            expected=(sa._predict_fixed_trees(frame)+sb._predict_fixed_trees(frame))*.5
+            self.assertAlmostEqual(s._predict_fixed_trees(frame),expected,places=12)
 
     def test_latency_and_exhaustion_labels_are_separate_from_features(self):
         tape='''Time,Operation,OrderId,Side,Volume,Price,Lifespan
