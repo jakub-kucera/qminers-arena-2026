@@ -120,7 +120,8 @@ private run against its +888,195 on validation (0.93x; round 2's final went 873,
 694,136, median 729,472, sd 287,729 (the sample sd matches the dashboard's round-2 z of 0.398), so **our z3 = 0.463**. The top:
 Team 1 1,458,005 (z 2.68, first again after round 2's 1,875,116), Team 3 1,240,532, Team 2 1,198,047, Team 4 1,134,420,
 Team 6 1,073,870, Team 7 1,071,858; 10th 929,224. The top six made 1.30x-1.76x our PnL, about round 2's ratio (1.6x-2.5x),
-so the gap narrowed but stayed. Round 3's weight in the total is not known (the dashboard showed only 0.8 z1 + 1.0 z2).
+so the gap narrowed but stayed. Round 3's weight is 1.0, as round 2's (the user, 8 Nov ~06:35), so our total is 0.8 x 1.212 + 0.398 + 0.463 = **1.831, 15th of 61**
+(teams with no round-3 result counted at z 0); 10th has 2.276, 5th 3.883; Team 1 5.89, Team 2 5.26, Team 3 4.81 lead.
 
 ## Fill model and mark
 The organisers' simulator as given (5 ms latency, FIFO, mark at the end); the Rust port reproduces it byte for byte.
