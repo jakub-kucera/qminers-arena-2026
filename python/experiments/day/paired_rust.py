@@ -4,12 +4,13 @@ paired with the first over S-second segments (the mean difference, its t and the
 
     uv run python -m experiments.day.paired_rust TAPE.csv [MORE.csv ...] --bot F3=B1:'--set FILTER=1'
         --bot X=B1:'--set FILTER=1 --set FT_SZ=150' [--grid FT_EDGE=0.1,0.2] [--threads 4] [--segment 500]
-        [--holdout 0.25] [--strategy ridge_maker]
+        [--holdout 0.25] [--strategy ridge_maker] [--window 2935-2950 ...]
 
 `--bot NAME=BASE:'--set K=V ...'` as `experiments.day.family_rust` (BASE one of its FAMILY or empty); the first bot is
 the reference. `--grid K=V1,V2` (repeatable) expands every bot after the first into the grid's cells. Prints, per tape,
 each bot's PnL, first 75% / last 25% (`--holdout`), the difference with the reference and the paired segments; then the
-differences, bots by tapes. Standard library only.
+differences, bots by tapes. `--window S-E` (seconds, repeatable) adds each bot's PnL change over that window of every
+tape (the reference's, then the others' differences). Standard library only.
 """
 
 from __future__ import annotations
@@ -46,6 +47,18 @@ def segments(curve: list[tuple[int, float]], seconds: int) -> list[float]:
     return [b - a for a, b in zip(marks, marks[1:])]
 
 
+def window_pnl(curve: list[tuple[int, float]], start: float, end: float) -> float:
+    """The PnL change from `start` to `end` seconds on a [(ts_us, pnl), ...] curve (the last point at or before each)."""
+    def at(sec: float) -> float:
+        value = 0.0
+        for ts, pnl in curve:
+            if ts > sec * 1_000_000:
+                break
+            value = pnl
+        return value
+    return at(end) - at(start)
+
+
 def paired(ref: list[float], other: list[float]) -> tuple[float, float, int, int]:
     n = min(len(ref), len(other))
     d = [other[i] - ref[i] for i in range(n)]
@@ -65,6 +78,7 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--threads", type=int, default=4)
     ap.add_argument("--segment", type=int, default=500)
     ap.add_argument("--holdout", type=float, default=0.25)
+    ap.add_argument("--window", action="append", default=[], help="S-E seconds: each bot's PnL over it (repeatable)")
     a = ap.parse_args(argv)
     for tape in a.tapes:
         if not tape.exists():
@@ -83,6 +97,7 @@ def main(argv: list[str] | None = None) -> int:
                 cell.update(dict([parse_override(f"{k}={v}")]))
             bots[name + "[" + ",".join(f"{k}={v}" for (k, _), v in zip(axes, combo)) + "]"] = cell
     names = list(bots)
+    windows = [tuple(float(x) for x in w.split("-", 1)) for w in a.window]
     qsim_rust.build()
     runs = qsim_rust.run_batch(a.strategy, [bots[n] for n in names], a.tapes, a.threads)
     width = max(len(n) for n in names) + 1
@@ -103,6 +118,10 @@ def main(argv: list[str] | None = None) -> int:
             p_in, p_out = qgrid.split_at(row["curve"], a.holdout)
             mean, tstat, won, n = paired(ref_seg, segments(row["curve"], a.segment))
             pair = "" if t == 0 else f"  mean {mean:+,.0f} t {tstat:+.2f} won {won}/{n}"
+            if windows:
+                own = [window_pnl(row["curve"], s, e) for s, e in windows]
+                base = [0.0] * len(windows) if t == 0 else [window_pnl(ref["curve"], s, e) for s, e in windows]
+                pair += "  windows " + " ".join(f"{s:g}-{e:g} {o - b:+,.0f}" for (s, e), o, b in zip(windows, own, base))
             print(f"{name:<{width}} {row['pnl']:>10,.0f} {p_in:>10,.0f} {p_out:>9,.0f} {row['pnl'] - ref['pnl']:>+9,.0f}"
                   f" {p_in - ref_in:>+9,.0f} {p_out - ref_out:>+8,.0f} {row['breach_penalty']:>7,.0f} {row['fills']:>7}{pair}")
             diffs[(name, tape)] = f"{row['pnl'] - ref['pnl']:+,.0f}" if t else f"{row['pnl']:,.0f}"
