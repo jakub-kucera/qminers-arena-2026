@@ -1,0 +1,70 @@
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:311:5
+    |
+310 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+311 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/round3/round3_public.csv
+bot            pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5         515,670    382,366   133,304        +0        +0       +0       0   53233
+F3         505,212    378,332   126,880   -10,458    -4,034   -6,424       0   53001  mean -872 t -1.75 won 2/12
+S3best     517,460    379,973   137,487    +1,790    -2,393   +4,183       0   53206  mean +149 t +0.44 won 5/12
+S3mean     517,882    379,520   138,362    +2,212    -2,846   +5,058       0   53285  mean +184 t +0.40 won 6/12
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/round2/round2_public.csv
+bot            pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5         330,980    260,348    70,632        +0        +0       +0       0   70770
+F3         315,397    252,178    63,219   -15,583    -8,170   -7,413       0   70417  mean -1,299 t -4.56 won 1/12
+S3best     329,914    260,533    69,381    -1,066      +185   -1,251       0   70843  mean -89 t -0.31 won 7/12
+S3mean     329,917    261,438    68,479    -1,063    +1,090   -2,153       0   71026  mean -89 t -0.27 won 6/12
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/gen/r3b/seed201.csv
+bot            pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5       1,005,066    742,167   262,899        +0        +0       +0       0   40150
+F3       1,001,663    738,975   262,688    -3,403    -3,192     -211       0   39932  mean -142 t -0.48 won 13/24
+S3best   1,015,646    753,130   262,516   +10,580   +10,963     -383       0   40292  mean +441 t +1.59 won 15/24
+S3mean   1,016,832    754,459   262,373   +11,766   +12,292     -526       0   40097  mean +490 t +1.62 won 16/24
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/gen/r3b/seed202.csv
+bot            pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5         993,650    820,202   173,448        +0        +0       +0       0   42286
+F3         988,480    815,476   173,004    -5,170    -4,726     -444       0   41836  mean -215 t -0.87 won 11/24
+S3best   1,005,662    827,415   178,247   +12,012    +7,213   +4,799       0   42207  mean +500 t +2.10 won 16/24
+S3mean   1,007,119    829,129   177,990   +13,469    +8,927   +4,542       0   41888  mean +561 t +1.75 won 16/24
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/gen/r3b/seed203.csv
+bot            pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5       1,013,425    786,971   226,454        +0        +0       +0       0   40486
+F3       1,003,553    777,317   226,236    -9,872    -9,654     -218       0   39996  mean -411 t -1.83 won 9/24
+S3best   1,015,718    793,432   222,286    +2,293    +6,461   -4,168       0   40228  mean +96 t +0.34 won 13/24
+S3mean   1,010,283    785,380   224,903    -3,142    -1,591   -1,551       0   40260  mean -131 t -0.53 won 12/24
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/gen/r3b/seed211.csv
+bot            pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5         986,391    745,334   241,057        +0        +0       +0       0   41415
+F3         977,933    741,160   236,773    -8,458    -4,174   -4,284       0   40737  mean -352 t -1.33 won 11/24
+S3best     989,681    752,887   236,794    +3,290    +7,553   -4,263       0   41269  mean +137 t +0.50 won 11/24
+S3mean     993,519    753,659   239,860    +7,128    +8,325   -1,197       0   41574  mean +297 t +0.97 won 13/24
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/gen/r3b/seed212.csv
+bot            pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5       1,274,816    998,613   276,203        +0        +0       +0       0   37319
+F3       1,264,974    992,204   272,770    -9,842    -6,409   -3,433       0   37093  mean -410 t -1.59 won 8/24
+S3best   1,280,487  1,000,241   280,246    +5,671    +1,628   +4,043       0   37345  mean +236 t +0.80 won 11/24
+S3mean   1,295,467  1,012,561   282,906   +20,651   +13,948   +6,703       0   37156  mean +860 t +1.78 won 13/24
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/gen/r3b/seed213.csv
+bot            pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5       1,000,439    739,372   261,067        +0        +0       +0       0   39062
+F3       1,000,123    736,104   264,019      -316    -3,268   +2,952       0   38639  mean -13 t -0.05 won 12/24
+S3best   1,012,715    750,091   262,624   +12,276   +10,719   +1,557       0   39209  mean +512 t +2.28 won 18/24
+S3mean   1,013,512    750,661   262,851   +13,073   +11,289   +1,784       0   38875  mean +545 t +2.26 won 17/24
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/round1/round1.csv
+bot            pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5         196,324    148,132    48,192        +0        +0       +0       0  209424
+F3         221,100    170,279    50,821   +24,776   +22,147   +2,629       0  207712  mean +1,032 t +4.20 won 20/24
+S3best     196,683    149,631    47,052      +359    +1,499   -1,140       0  209291  mean +15 t +0.21 won 12/24
+S3mean     202,535    153,915    48,620    +6,211    +5,783     +428       0  208791  mean +259 t +2.20 won 15/24
+== the reference's pnl, then each bot's difference; bots by tapes
+bot     round3_publi round2_publi      seed201      seed202      seed203      seed211      seed212      seed213       round1
+F5           515,670      330,980    1,005,066      993,650    1,013,425      986,391    1,274,816    1,000,439      196,324
+F3           -10,458      -15,583       -3,403       -5,170       -9,872       -8,458       -9,842         -316      +24,776
+S3best        +1,790       -1,066      +10,580      +12,012       +2,293       +3,290       +5,671      +12,276         +359
+S3mean        +2,212       -1,063      +11,766      +13,469       -3,142       +7,128      +20,651      +13,073       +6,211

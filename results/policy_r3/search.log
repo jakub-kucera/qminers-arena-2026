@@ -1,0 +1,22 @@
+Using CPython 3.13.16
+Creating virtual environment at: .venv
+   Building qminers-arena @ file:///Users/jakubkucera/Documents/qminers_arena/.claude/worktrees/agent-a03f6bb62e5d2cc3c
+      Built qminers-arena @ file:///Users/jakubkucera/Documents/qminers_arena/.claude/worktrees/agent-a03f6bb62e5d2cc3c
+Installed 53 packages in 291ms
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:306:5
+    |
+305 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+306 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+base F5: round3_public_first75 382,385  seed204_first34 433,125  seed205_first34 327,781  seed206_first34 322,070
+start point (the base decoded): objective +0.000%  {"FT_EDGE": 0.25, "FT_JUMP": 3.0, "FT_JUMP_MS": 200, "FT_JUMP_HOLD_MS": 5000, "FT_JUMP_EDGE": 0.15, "FT_LGAP": 99.0, "FT_LGAP_EDGE": 0.15, "FT_FLIP_M": 99.0, "FT_GAP_MS": 50, "QS_RATE": 2.5, "QS_US": 5000000, "DEAD_ZONE": 0.18, "KEEP_TH": 0.3}
+gen  1 evals   12    123 s  best of gen -0.263%  mean -3.711%  overall +0.000%  sigma 0.139
+gen  2 evals   23    256 s  best of gen +0.195%  mean -4.321%  overall +0.195%  sigma 0.123
+gen  3 evals   34    395 s  best of gen +0.451%  mean -3.721%  overall +0.451%  sigma 0.111
+gen  4 evals   45    535 s  best of gen +0.357%  mean -2.461%  overall +0.451%  sigma 0.101
+gen  5 evals   56    674 s  best of gen +0.034%  mean -0.703%  overall +0.451%  sigma 0.097

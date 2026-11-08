@@ -1,0 +1,62 @@
+S4e32: --set FT_EDGE=0.312082 --set FT_JUMP=3.5 --set FT_JUMP_MS=297 --set FT_JUMP_HOLD_MS=7912 --set FT_JUMP_EDGE=0.226645 --set FT_LGAP=4.532102 --set FT_LGAP_EDGE=0.154751 --set FT_GAP_MS=41 --set FT_EDGE_FLIP=0.445928 --set FT_SD=1.80452 --set FT_SD_EDGE=0.110339
+S4e25: --set FT_EDGE=0.328941 --set FT_JUMP=3.0 --set FT_JUMP_MS=126 --set FT_JUMP_HOLD_MS=4895 --set FT_JUMP_EDGE=0.158722 --set FT_LGAP=3.935165 --set FT_LGAP_EDGE=0.155232 --set FT_GAP_MS=45 --set FT_EDGE_FLIP=0.395006 --set FT_SD=99.0 --set FT_SD_EDGE=0.073033
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:311:5
+    |
+310 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+311 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/round3/round3_public.csv
+bot           pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5        515,670    382,366   133,304        +0        +0       +0       0   53233
+S4e32     529,473    394,976   134,497   +13,803   +12,610   +1,193       0   52979  mean +1,150 t +0.83 won 4/12
+S4e25     523,260    386,648   136,612    +7,590    +4,282   +3,308       0   53348  mean +632 t +0.76 won 6/12
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/round2/round2_public.csv
+bot           pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5        330,980    260,348    70,632        +0        +0       +0       0   70770
+S4e32     347,992    262,814    85,178   +17,012    +2,466  +14,546       0   70989  mean +1,418 t +1.33 won 8/12
+S4e25     343,251    261,499    81,752   +12,271    +1,151  +11,120       0   71095  mean +1,023 t +1.18 won 9/12
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/gen/r3b/seed201.csv
+bot           pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5      1,005,066    742,167   262,899        +0        +0       +0       0   40150
+S4e32     991,752    732,769   258,983   -13,314    -9,398   -3,916       0   40518  mean -555 t -1.08 won 9/24
+S4e25     991,193    738,528   252,665   -13,873    -3,639  -10,234       0   40800  mean -578 t -1.49 won 9/24
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/gen/r3b/seed202.csv
+bot           pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5        993,650    820,202   173,448        +0        +0       +0       0   42286
+S4e32     968,632    804,305   164,327   -25,018   -15,897   -9,121       0   42589  mean -1,042 t -2.06 won 6/24
+S4e25     969,415    805,387   164,028   -24,235   -14,815   -9,420       0   42932  mean -1,010 t -2.00 won 10/24
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/gen/r3b/seed203.csv
+bot           pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5      1,013,425    786,971   226,454        +0        +0       +0       0   40486
+S4e32     970,314    763,821   206,493   -43,111   -23,150  -19,961       0   40709  mean -1,796 t -3.90 won 6/24
+S4e25     983,409    764,581   218,828   -30,016   -22,390   -7,626       0   40980  mean -1,251 t -3.56 won 5/24
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/gen/r3b/seed211.csv
+bot           pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5        986,391    745,334   241,057        +0        +0       +0       0   41415
+S4e32     964,786    736,819   227,967   -21,605    -8,515  -13,090       0   41870  mean -900 t -2.17 won 10/24
+S4e25     966,864    738,460   228,404   -19,527    -6,874  -12,653       0   42143  mean -814 t -1.96 won 8/24
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/gen/r3b/seed212.csv
+bot           pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5      1,274,816    998,613   276,203        +0        +0       +0       0   37319
+S4e32   1,261,005    994,270   266,735   -13,811    -4,343   -9,468       0   37693  mean -575 t -0.97 won 8/24
+S4e25   1,244,032    981,308   262,724   -30,784   -17,305  -13,479       0   37818  mean -1,283 t -4.03 won 6/24
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/gen/r3b/seed213.csv
+bot           pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5      1,000,439    739,372   261,067        +0        +0       +0       0   39062
+S4e32     994,701    740,559   254,142    -5,738    +1,187   -6,925       0   39882  mean -239 t -0.61 won 13/24
+S4e25     994,573    742,103   252,470    -5,866    +2,731   -8,597       0   39948  mean -244 t -0.54 won 14/24
+== /Users/jakubkucera/Documents/qminers_arena/data/arena/round1/round1.csv
+bot           pnl      first      last      diff   d first   d last  breach   fills  paired 500-s segments
+F5        196,324    148,132    48,192        +0        +0       +0       0  209424
+S4e32     147,726    114,204    33,522   -48,598   -33,928  -14,670       0  209932  mean -2,025 t -7.21 won 2/24
+S4e25     162,607    121,924    40,683   -33,717   -26,208   -7,509       0  210923  mean -1,405 t -5.30 won 5/24
+== the reference's pnl, then each bot's difference; bots by tapes
+bot    round3_publi round2_publi      seed201      seed202      seed203      seed211      seed212      seed213       round1
+F5          515,670      330,980    1,005,066      993,650    1,013,425      986,391    1,274,816    1,000,439      196,324
+S4e32       +13,803      +17,012      -13,314      -25,018      -43,111      -21,605      -13,811       -5,738      -48,598
+S4e25        +7,590      +12,271      -13,873      -24,235      -30,016      -19,527      -30,784       -5,866      -33,717

@@ -1,0 +1,53 @@
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:311:5
+    |
+310 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+311 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+base F5: round3_public_first75 382,385  seed204_first34 433,125  seed205_first34 327,781  seed206_first34 322,070
+start point (the base decoded): objective +0.000%  {"FT_EDGE": 0.25, "FT_JUMP": 3.0, "FT_JUMP_MS": 200, "FT_JUMP_HOLD_MS": 5000, "FT_JUMP_EDGE": 0.15, "FT_LGAP": 99.0, "FT_LGAP_EDGE": 0.15, "FT_GAP_MS": 50, "FT_EDGE_FLIP": -1.0, "FT_SD": 99.0, "FT_SD_EDGE": 0.15}
+gen  1 evals   12     92 s  best of gen +0.495%  mean -0.446%  overall +0.495%  sigma 0.140
+gen  2 evals   23    181 s  best of gen +1.003%  mean -0.369%  overall +1.003%  sigma 0.140
+gen  3 evals   34    284 s  best of gen +0.923%  mean +0.026%  overall +1.003%  sigma 0.139
+gen  4 evals   45    371 s  best of gen +0.557%  mean -0.157%  overall +1.003%  sigma 0.130
+gen  5 evals   56    458 s  best of gen +0.743%  mean +0.254%  overall +1.003%  sigma 0.127
+gen  6 evals   67    549 s  best of gen +0.710%  mean -0.580%  overall +1.003%  sigma 0.132
+gen  7 evals   78    643 s  best of gen +1.024%  mean -0.327%  overall +1.024%  sigma 0.127
+gen  8 evals   89    732 s  best of gen +0.761%  mean +0.061%  overall +1.024%  sigma 0.117
+gen  9 evals  100    817 s  best of gen +1.245%  mean +0.207%  overall +1.245%  sigma 0.107
+gen 10 evals  111    903 s  best of gen +1.016%  mean +0.424%  overall +1.245%  sigma 0.101
+gen 11 evals  122    991 s  best of gen +0.730%  mean +0.036%  overall +1.245%  sigma 0.099
+gen 12 evals  133   1076 s  best of gen +0.938%  mean +0.280%  overall +1.245%  sigma 0.091
+
+best objective +1.245% over the base (F5); its tapes: round3_public_first75 379,992 (-2,393)  seed204_first34 443,759 (+10,634)  seed205_first34 333,812 (+6,031)  seed206_first34 326,289 (+4,219)
+the search's final mean: objective +0.924%  {"FT_EDGE": 0.228173, "FT_JUMP": 4.5, "FT_JUMP_MS": 191, "FT_JUMP_HOLD_MS": 3266, "FT_JUMP_EDGE": 0.122598, "FT_LGAP": 4.89546, "FT_LGAP_EDGE": 0.110357, "FT_GAP_MS": 35, "FT_EDGE_FLIP": -1.0, "FT_SD": 1.364848, "FT_SD_EDGE": 0.178202}
+best: --set FT_EDGE=0.241285 --set FT_JUMP=4.0 --set FT_JUMP_MS=145 --set FT_JUMP_HOLD_MS=3238 --set FT_JUMP_EDGE=0.161742 --set FT_LGAP=4.679087 --set FT_LGAP_EDGE=0.119572 --set FT_GAP_MS=37 --set FT_EDGE_FLIP=-1.0 --set FT_SD=1.410934 --set FT_SD_EDGE=0.158725
+
+plateau: each knob of the best moved by +-0.1 of its range (training tapes)
+  FT_EDGE          -0.10 -> 0.211285   +1.216%  (-0.029)
+  FT_EDGE          +0.10 -> 0.271285   +0.613%  (-0.632)
+  FT_JUMP          -0.10 -> 3.5        +1.233%  (-0.012)
+  FT_JUMP          +0.10 -> 4.5        +0.894%  (-0.351)
+  FT_JUMP_MS       -0.10 -> 107        +0.910%  (-0.335)
+  FT_JUMP_MS       +0.10 -> 195        +1.203%  (-0.042)
+  FT_JUMP_HOLD_MS  -0.10 -> 2400       +1.245%  (+0.001)
+  FT_JUMP_HOLD_MS  +0.10 -> 4369       +1.497%  (+0.252)
+  FT_JUMP_EDGE     -0.10 -> 0.131742   +1.101%  (-0.144)
+  FT_JUMP_EDGE     +0.10 -> 0.191742   +0.768%  (-0.477)
+  FT_LGAP          -0.10 -> 4.179087   +1.245%  (+0.000)
+  FT_LGAP          +0.10 -> 99.0       +1.245%  (+0.000)
+  FT_LGAP_EDGE     -0.10 -> 0.089572   +1.245%  (+0.000)
+  FT_LGAP_EDGE     +0.10 -> 0.149572   +1.245%  (+0.000)
+  FT_GAP_MS        -0.10 -> 31         +1.236%  (-0.009)
+  FT_GAP_MS        +0.10 -> 43         +0.853%  (-0.392)
+  FT_EDGE_FLIP     -0.10 -> -1.0       +1.245%  (+0.000)
+  FT_SD            -0.10 -> 1.198434   +1.114%  (-0.130)
+  FT_SD            +0.10 -> 1.623434   +1.171%  (-0.074)
+  FT_SD_EDGE       -0.10 -> 0.128725   +1.213%  (-0.032)
+  FT_SD_EDGE       +0.10 -> 0.188725   +1.240%  (-0.004)
+
+held-out check: uv run python -m experiments.day.paired_rust --bot 'F5=:--set POSITION_LIMIT=1000 --set EXPOSURE=100 --set HEDGE=1 --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000 --set DEAD_ZONE=0.18 --set QUOTEFEAT=1 --set FLOWGRP=2 --set FLOWGRP_CAP=20 --set FLOWGRP_US=1000000 --set FT_EDGE=0.15 --set FT_SZ=200 --set FT_GAP_MS=50 --set QUOTE_SIZE=1 --set KEEP_LOTS=20 --set KEEP_TH=0.3 --set FT_MAXSPREAD=1 --set FT_ROOM_LIVE=1 --set LIQ=1 --set QUOTE_SIZE=0 --set POSITION_LIMIT=100 --set IMPACT_US=500000 --set HUBER=6.0 --set RIDGE_MIN=30 --set RIDGE_FRAC=0.003 --set QUOTE_SIZE=1 --set QS_RATE=2.5 --set FILTER=1 --set FT_EDGE=0.25 --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set FT_JUMP_EDGE=0.15' --bot 'BEST=:--set POSITION_LIMIT=1000 --set EXPOSURE=100 --set HEDGE=1 --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000 --set DEAD_ZONE=0.18 --set QUOTEFEAT=1 --set FLOWGRP=2 --set FLOWGRP_CAP=20 --set FLOWGRP_US=1000000 --set FT_EDGE=0.15 --set FT_SZ=200 --set FT_GAP_MS=50 --set QUOTE_SIZE=1 --set KEEP_LOTS=20 --set KEEP_TH=0.3 --set FT_MAXSPREAD=1 --set FT_ROOM_LIVE=1 --set LIQ=1 --set QUOTE_SIZE=0 --set POSITION_LIMIT=100 --set IMPACT_US=500000 --set HUBER=6.0 --set RIDGE_MIN=30 --set RIDGE_FRAC=0.003 --set QUOTE_SIZE=1 --set QS_RATE=2.5 --set FILTER=1 --set FT_EDGE=0.25 --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set FT_JUMP_EDGE=0.15 --set FT_EDGE=0.241285 --set FT_JUMP=4.0 --set FT_JUMP_MS=145 --set FT_JUMP_HOLD_MS=3238 --set FT_JUMP_EDGE=0.161742 --set FT_LGAP=4.679087 --set FT_LGAP_EDGE=0.119572 --set FT_GAP_MS=37 --set FT_EDGE_FLIP=-1.0 --set FT_SD=1.410934 --set FT_SD_EDGE=0.158725'

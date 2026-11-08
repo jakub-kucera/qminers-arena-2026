@@ -1,0 +1,10 @@
+base F5: round3_public_first75 382,385  seed204_first34 433,125  seed205_first34 327,781  seed206_first34 322,070
+start point (the base decoded): objective +0.000%  {"FT_EDGE": 0.25, "FT_JUMP": 3.0, "FT_JUMP_MS": 200, "FT_JUMP_HOLD_MS": 5000, "FT_JUMP_EDGE": 0.15, "FT_LGAP": 99.0, "FT_LGAP_EDGE": 0.15, "FT_FLIP_M": 99.0, "FT_GAP_MS": 50, "QS_RATE": 2.5, "QS_US": 5000000, "DEAD_ZONE": 0.18, "KEEP_TH": 0.3, "FT_EDGE_FLIP": -1.0, "FT_SD": 99.0, "FT_SD_EDGE": 0.15}
+gen  1 evals   13    153 s  best of gen -0.548%  mean -1.791%  overall +0.000%  sigma 0.139
+gen  2 evals   25    302 s  best of gen -0.087%  mean -2.461%  overall +0.000%  sigma 0.137
+gen  3 evals   37    452 s  best of gen +1.191%  mean -3.715%  overall +1.191%  sigma 0.133
+gen  4 evals   49    594 s  best of gen +0.513%  mean -1.930%  overall +1.191%  sigma 0.136
+gen  5 evals   61    732 s  best of gen +0.568%  mean -0.762%  overall +1.191%  sigma 0.138
+gen  6 evals   73    867 s  best of gen +0.079%  mean -1.677%  overall +1.191%  sigma 0.141
+gen  7 evals   85    998 s  best of gen +0.798%  mean -2.257%  overall +1.191%  sigma 0.142
+gen  8 evals   97   1124 s  best of gen -0.043%  mean -0.808%  overall +1.191%  sigma 0.141

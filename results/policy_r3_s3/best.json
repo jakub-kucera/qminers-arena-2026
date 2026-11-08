@@ -1,0 +1,30 @@
+{
+ "objective": 1.244820748741514,
+ "base": "F5",
+ "knobs": {
+  "FT_EDGE": 0.241285,
+  "FT_JUMP": 4.0,
+  "FT_JUMP_MS": 145,
+  "FT_JUMP_HOLD_MS": 3238,
+  "FT_JUMP_EDGE": 0.161742,
+  "FT_LGAP": 4.679087,
+  "FT_LGAP_EDGE": 0.119572,
+  "FT_GAP_MS": 37,
+  "FT_EDGE_FLIP": -1.0,
+  "FT_SD": 1.410934,
+  "FT_SD_EDGE": 0.158725
+ },
+ "mean_knobs": {
+  "FT_EDGE": 0.228173,
+  "FT_JUMP": 4.5,
+  "FT_JUMP_MS": 191,
+  "FT_JUMP_HOLD_MS": 3266,
+  "FT_JUMP_EDGE": 0.122598,
+  "FT_LGAP": 4.89546,
+  "FT_LGAP_EDGE": 0.110357,
+  "FT_GAP_MS": 35,
+  "FT_EDGE_FLIP": -1.0,
+  "FT_SD": 1.364848,
+  "FT_SD_EDGE": 0.178202
+ }
+}

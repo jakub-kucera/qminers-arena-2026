@@ -1,0 +1,16 @@
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:311:5
+    |
+310 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+311 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+base F5: round3_public_first75 382,385  round2_public_first75 260,348
+start point (the base decoded): objective +0.000%  {"FT_EDGE": 0.25, "FT_JUMP": 3.0, "FT_JUMP_MS": 200, "FT_JUMP_HOLD_MS": 5000, "FT_JUMP_EDGE": 0.15, "FT_LGAP": 99.0, "FT_LGAP_EDGE": 0.15, "FT_GAP_MS": 50, "FT_EDGE_FLIP": -1.0, "FT_SD": 99.0, "FT_SD_EDGE": 0.15}
+gen  1 evals   12     94 s  best of gen +0.288%  mean -1.413%  overall +0.288%  sigma 0.147
+gen  2 evals   23    226 s  best of gen +0.765%  mean -0.953%  overall +0.765%  sigma 0.142
+gen  3 evals   34    367 s  best of gen +2.122%  mean -0.088%  overall +2.122%  sigma 0.139
+gen  4 evals   45    476 s  best of gen +0.300%  mean -1.773%  overall +2.122%  sigma 0.138
