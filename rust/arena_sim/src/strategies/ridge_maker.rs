@@ -168,6 +168,15 @@
 //! back within EXPOSURE; `BURST_HOLD` (-99: off) ends it early once the signal its way falls below it. RIDGE_DEBUG
 //! adds the bursts and the lots their takes sent. Every trigger lost to L9 on round 2's and round 3's public tapes
 //! (IDEAS.md, "Burst sizing on R2-L9").
+//! Round 3's latent-price filter (R3-F1, `r3_F1_latent_filter.py`, 8 Nov), off by default: `FILTER` (0; 1 adds three
+//! features at the end of the base features, after TREND's: a hidden-Markov filter over the latent reference bid
+//! lb on FILTER_W (8) ticks either side of the bid. Each new market order within FILTER_DEPTH (6) of the previous
+//! valid book's touch multiplies it by its likelihood: a bid at lb - k, an ask at lb + 1 + k, k 0/1/2 with
+//! FILTER_PI0/1/2 (0.55/0.39/0.06), clamped one tick off the other touch, plus FILTER_EPS (0.01). lb random-walks at
+//! FILTER_RATE (2.0) steps a second each way. A market taker's filled lots move lb FILTER_IMPACT (3.0) x tape_gen's
+//! impact table, or FILTER_SQRT_C x sqrt(lots) when that is > 0. The features are gap = E[lb] + 0.5 - mid
+//! (clipped +-5), gap |gap| / 3 and min(3, the posterior sd). It needs QUOTEFEAT 1 for its new-order set.)
+//!   F1  (r3_F1_latent_filter.py, round3_public 480469.00, round2_public 303720.00): L9's and --set FILTER=1
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -526,6 +535,20 @@ pub struct RidgeMaker {
     /// RIDGE_DEBUG: bursts started, lots taken in bursts
     burst_n: i64,
     burst_lots: i64,
+    /// R3-F1's latent-price filter (FILTER, 0: off): a probability vector over lb = lf_base + i, i < lf_n
+    filter: i64,
+    lf_w: i64,
+    lf_n: usize,
+    lf_rate: f64,
+    lf_eps: f64,
+    lf_pi: [f64; 3],
+    lf_cum: [f64; 3],
+    lf_impact: f64,
+    lf_sqrt_c: f64,
+    lf_depth: i64,
+    lf_p: Vec<f64>,
+    lf_base: i64,
+    lf_t: Option<f64>,
 }
 
 impl RidgeMaker {
@@ -579,7 +602,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 140] = [
+pub const KEYS: [&str; 150] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -601,6 +624,8 @@ pub const KEYS: [&str; 140] = [
     "BURST_TH", "BURST_EXP", "BURST_SZ", "BURST_MS", "BURST_GAP_MS", "BURST_SPREAD", "BURST_SPEED", "BURST_SPEED_US",
     "BURST_THRU", "BURST_MAXSPREAD", "BURST_HOLD", "BURST_JUMP", "BURST_QUIET_MS", "BURST_AGREE",
     "BURST_JUMP_MS",
+    "FILTER", "FILTER_W", "FILTER_RATE", "FILTER_EPS", "FILTER_PI0", "FILTER_PI1", "FILTER_PI2", "FILTER_IMPACT",
+    "FILTER_SQRT_C", "FILTER_DEPTH",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -623,7 +648,11 @@ impl RidgeMaker {
                 + if params.int("BUCKET", 0)? > 0 { 17 } else { 0 }
                 + if params.int("LIQ", 0)? > 0 { 4 } else { 0 }
                 + if params.int("IMPACT_US", 0)? > 0 { 3 } else { 0 }
-                + if params.int("TREND", 0)? > 0 { 2 } else { 0 };
+                + if params.int("TREND", 0)? > 0 { 2 } else { 0 }
+                + if params.int("FILTER", 0)? > 0 { 3 } else { 0 };
+        if params.int("FILTER", 0)? > 0 && params.int("QUOTEFEAT", 0)? == 0 {
+            return Err("FILTER reads the new market orders QUOTEFEAT tracks: set QUOTEFEAT=1".to_string());
+        }
         let mh = params.int("MH", 0)?;
         let n = n_base + if mh > 0 { 2 } else { 0 };
         let horizon_us = params.int("HORIZON_US", 100_000)?;
@@ -644,6 +673,11 @@ impl RidgeMaker {
     }
 
     fn build(params: &Params, n_base: usize, n: usize) -> Result<RidgeMaker, String> {
+        // R3-F1's FILTER_PI, normalised as the Python's sum() and division
+        let lf_w = params.int("FILTER_W", 8)?;
+        let raw = [params.float("FILTER_PI0", 0.55)?, params.float("FILTER_PI1", 0.39)?, params.float("FILTER_PI2", 0.06)?];
+        let total = 0.0 + raw[0] + raw[1] + raw[2];
+        let lf_pi = [raw[0] / total, raw[1] / total, raw[2] / total];
         let position_limit = params.int("POSITION_LIMIT", 100)?;
         let exposure = params.int("EXPOSURE", 0)?;
         Ok(RidgeMaker {
@@ -893,6 +927,19 @@ impl RidgeMaker {
             burst_rate: 0.0,
             burst_n: 0,
             burst_lots: 0,
+            filter: params.int("FILTER", 0)?,
+            lf_w,
+            lf_n: (2 * lf_w + 1) as usize,
+            lf_rate: params.float("FILTER_RATE", 2.0)?,
+            lf_eps: params.float("FILTER_EPS", 0.01)?,
+            lf_pi,
+            lf_cum: [lf_pi[0], lf_pi[0] + lf_pi[1], 1.0],
+            lf_impact: params.float("FILTER_IMPACT", 3.0)?,
+            lf_sqrt_c: params.float("FILTER_SQRT_C", 0.0)?,
+            lf_depth: params.int("FILTER_DEPTH", 6)?,
+            lf_p: Vec::new(),
+            lf_base: 0,
+            lf_t: None,
         })
     }
 
@@ -1230,6 +1277,227 @@ impl RidgeMaker {
                 self.grp_price[2] += weight as f64 * own_value / own as f64;
             }
         }
+    }
+
+    /// R3-F1 (`r3_F1_latent_filter.py`'s `_lf_advance`): lb random-walks at FILTER_RATE steps a second each way.
+    fn lf_advance(&mut self, t: f64) {
+        let Some(last) = self.lf_t else {
+            self.lf_t = Some(t);
+            return;
+        };
+        let dt = t - last;
+        if dt <= 0.0 {
+            return;
+        }
+        self.lf_t = Some(t);
+        let mut a = self.lf_rate * dt;
+        if a < 1e-9 {
+            return;
+        }
+        if a > 0.3 {
+            a = 0.3;
+        }
+        let n = self.lf_n;
+        let p = &self.lf_p;
+        let keep = 1.0 - 2.0 * a;
+        let mut q = vec![0.0f64; n];
+        let mut prev = 0.0;
+        for i in 0..n {
+            let cur = p[i];
+            let next = if i + 1 < n { p[i + 1] } else { 0.0 };
+            q[i] = keep * cur + a * (prev + next);
+            prev = cur;
+        }
+        q[0] += a * p[0];
+        q[n - 1] += a * p[n - 1];
+        self.lf_p = q;
+    }
+
+    /// `_lf_recenter`: keep the grid on the bid, whole ticks, mass beyond an edge piled on it.
+    fn lf_recenter(&mut self, bid: i64) {
+        let n = self.lf_n;
+        let shift = bid - self.lf_w - self.lf_base;
+        if shift == 0 {
+            return;
+        }
+        if shift.abs() >= n as i64 {
+            self.lf_base = bid - self.lf_w;
+            self.lf_p = vec![0.0; n];
+            self.lf_p[self.lf_w as usize] = 1.0;
+            return;
+        }
+        let mut q = vec![0.0f64; n];
+        for i in 0..n {
+            let j = (i as i64 - shift).clamp(0, n as i64 - 1) as usize;
+            q[j] += self.lf_p[i];
+        }
+        self.lf_p = q;
+        self.lf_base += shift;
+    }
+
+    /// `_lf_trade`: a market taker's filled lots move lb FILTER_IMPACT x tape_gen's table (or FILTER_SQRT_C sqrt(lots)).
+    fn lf_trade(&mut self, direction: i64, lots: i64) {
+        const TABLE: [(i64, f64); 8] =
+            [(10, 0.097), (30, 0.111), (60, 0.161), (120, 0.254), (250, 0.349), (500, 0.468), (1000, 0.704), (1_000_000_000, 0.903)];
+        let m = if self.lf_sqrt_c > 0.0 {
+            self.lf_sqrt_c * (lots as f64).powf(0.5)
+        } else {
+            let mut m = self.lf_impact;
+            for (top, value) in TABLE {
+                if lots <= top {
+                    m *= value;
+                    break;
+                }
+            }
+            m
+        };
+        if m <= 0.0 {
+            return;
+        }
+        let whole = m as i64;
+        let frac = m - whole as f64;
+        let n = self.lf_n;
+        let top = n as i64 - 1;
+        let mut q = vec![0.0f64; n];
+        for i in 0..n {
+            let v = self.lf_p[i];
+            if v == 0.0 {
+                continue;
+            }
+            let j = i as i64 + direction * whole;
+            let k = j + direction;
+            q[j.clamp(0, top) as usize] += v * (1.0 - frac);
+            q[k.clamp(0, top) as usize] += v * frac;
+        }
+        self.lf_p = q;
+    }
+
+    /// `_lf_insert`: a new market order at `price` (the touch before it `bid`/`ask`) times its likelihood.
+    fn lf_insert(&mut self, buy: bool, price: i64, bid: i64, ask: i64) {
+        let n = self.lf_n;
+        let base = self.lf_base;
+        let eps = self.lf_eps;
+        let (pi, cum) = (self.lf_pi, self.lf_cum);
+        let p = &mut self.lf_p;
+        let mut total = 0.0;
+        if buy {
+            let clamp_at = ask - 1;
+            if price >= clamp_at {
+                for i in 0..n {
+                    let d = base + i as i64 - clamp_at;
+                    let like = if d >= 0 { eps + if d < 3 { cum[d as usize] } else { 1.0 } } else { eps };
+                    let v = p[i] * like;
+                    p[i] = v;
+                    total += v;
+                }
+            } else {
+                for i in 0..n {
+                    let k = base + i as i64 - price;
+                    let v = p[i] * if (0..3).contains(&k) { eps + pi[k as usize] } else { eps };
+                    p[i] = v;
+                    total += v;
+                }
+            }
+        } else {
+            let clamp_at = bid + 1;
+            if price <= clamp_at {
+                for i in 0..n {
+                    let d = clamp_at - 1 - base - i as i64;
+                    let like = if d >= 0 { eps + if d < 3 { cum[d as usize] } else { 1.0 } } else { eps };
+                    let v = p[i] * like;
+                    p[i] = v;
+                    total += v;
+                }
+            } else {
+                for i in 0..n {
+                    let k = price - 1 - base - i as i64;
+                    let v = p[i] * if (0..3).contains(&k) { eps + pi[k as usize] } else { eps };
+                    p[i] = v;
+                    total += v;
+                }
+            }
+        }
+        if total <= 0.0 || !total.is_finite() {
+            self.lf_p = vec![1.0 / n as f64; n];
+            return;
+        }
+        let inv = 1.0 / total;
+        for v in p.iter_mut() {
+            *v *= inv;
+        }
+    }
+
+    /// `_lf_observe`: the book's market taker fills, then its new market orders within FILTER_DEPTH of the previous
+    /// valid book's touch (the cached one), in the feed's order; before quote_centres moves `known_ids` on.
+    fn lf_observe(&mut self, snapshot: &Snapshot, trades: &[Trade], now: i64) {
+        let Some((bid, ask, _)) = self.cached else { return };
+        if bid >= ask {
+            return;
+        }
+        if self.lf_p.is_empty() {
+            self.lf_base = bid - self.lf_w;
+            self.lf_p = vec![0.0; self.lf_n];
+            self.lf_p[self.lf_w as usize] = 1.0;
+        }
+        let t = now as f64 * 1e-6;
+        let (mut changed, mut centred) = (false, false);
+        let mut lots: Vec<(u64, i64, i64)> = Vec::new();
+        for trade in trades {
+            if trade.taker_owner != Owner::Market {
+                continue;
+            }
+            let direction = if trade.book_side == Side::Sell { 1 } else { -1 };
+            match lots.iter_mut().find(|(id, _, _)| *id == trade.taker_order_id) {
+                Some(entry) => entry.2 += trade.quantity,
+                None => lots.push((trade.taker_order_id, direction, trade.quantity)),
+            }
+        }
+        if !lots.is_empty() {
+            self.lf_advance(t);
+            changed = true;
+            for (_, direction, quantity) in lots {
+                self.lf_trade(direction, quantity);
+            }
+        }
+        let mut seen: HashSet<u64> = HashSet::new();
+        for side in [Side::Buy, Side::Sell] {
+            for order in snapshot.side(side) {
+                if order.owner != Owner::Market || !seen.insert(order.order_id) || self.known_ids.contains(&order.order_id) {
+                    continue;
+                }
+                let buy = order.side == Side::Buy;
+                if (order.price - if buy { bid } else { ask }).abs() > self.lf_depth {
+                    continue;
+                }
+                if !centred {
+                    if !changed {
+                        self.lf_advance(t);
+                    }
+                    self.lf_recenter(bid);
+                    changed = true;
+                    centred = true;
+                }
+                self.lf_insert(buy, order.price, bid, ask);
+            }
+        }
+    }
+
+    /// `_lf_features`: gap = E[lb] + 0.5 - mid (clipped +-5), gap |gap| / 3 and min(3, the posterior sd).
+    fn lf_features(&self, mid: f64) -> [f64; 3] {
+        if self.lf_p.is_empty() {
+            return [0.0; 3];
+        }
+        let (mut m, mut s2) = (0.0f64, 0.0f64);
+        for (i, &v) in self.lf_p.iter().enumerate() {
+            let fi = i as f64;
+            m += v * fi;
+            s2 += v * fi * fi;
+        }
+        let mean = self.lf_base as f64 + m;
+        let var = s2 - m * m;
+        let sd = (if var > 0.0 { var } else { 0.0 }).powf(0.5);
+        let gap = clamp(mean + 0.5 - mid, -5.0, 5.0);
+        [gap, gap * gap.abs() / 3.0, if sd < 3.0 { sd } else { 3.0 }]
     }
 
     /// R1-C11's new market orders within 3 ticks of the touch (counts and price sums, bids / asks, all and those of
@@ -1652,6 +1920,9 @@ impl Strategy for RidgeMaker {
             }
         };
         self.invalid_since = None;
+        if self.filter > 0 {
+            self.lf_observe(snapshot, trades, now);
+        }
         if self.quotefeat > 0 {
             self.quote_centres(snapshot, trades, now, bid, ask);
         }
@@ -1940,8 +2211,9 @@ impl Strategy for RidgeMaker {
                 features[k + 16] = if s1 { imbalance } else { 0.0 };
             }
         }
-        // LIQ's four and IMPACT_US's three sit just before TREND's two, at the end of the base features
-        let trend_n = if self.trend > 0 { 2 } else { 0 };
+        // LIQ's four and IMPACT_US's three sit just before TREND's two, then FILTER's three end the base features
+        let filter_n = if self.filter > 0 { 3 } else { 0 };
+        let trend_n = filter_n + if self.trend > 0 { 2 } else { 0 };
         let tail = trend_n + if self.impact_us > 0 { 3 } else { 0 };
         if self.liq > 0 {
             self.liquidity(snapshot, now, bid, ask, mid);
@@ -1960,9 +2232,16 @@ impl Strategy for RidgeMaker {
             features[k + 2] = clamp(self.impact_net / (1 + far) as f64, -3.0, 3.0);
         }
         if self.trend > 0 {
-            let k = self.n_base - 2;
+            let k = self.n_base - filter_n - 2;
             features[k] = clamp(mid - self.trend_e[0], -20.0, 20.0);
             features[k + 1] = clamp(mid - self.trend_e[1], -20.0, 20.0);
+        }
+        if self.filter > 0 {
+            let k = self.n_base - 3;
+            let f = self.lf_features(mid);
+            features[k] = f[0];
+            features[k + 1] = f[1];
+            features[k + 2] = f[2];
         }
         let n = self.n_base;
         if self.std_on > 0 {

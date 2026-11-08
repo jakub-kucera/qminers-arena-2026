@@ -11,6 +11,8 @@ Our engine and tools were built before it on **IMC Prosperity data as a stand-in
 `KICKOFF_PROMPT.md` is what the user pastes to start a session; `ARCHITECTURE.md`'s "The Arena path" says how it fits.
 - Their `simulator/`, `explorer/`, `strategies/`, `data/sample.csv.gz` at the root, as they wrote them: the engine.
 - `python/bots/qminers/`: `template.py` (`ArenaBot`), `families/` (five strategies in their style), `candidates/`.
+- **Rust first** (`arena.qsim_rust`, `experiments.day.family_rust`; Python for the upload's last check). Judge on the
+  round's own tapes (public, mirror, `tape_character stitch`); earlier rounds only as extra regimes.
 
 ```sh
 uv run exchange-simulator --strategy BOT --backtest D/<file>.csv --log-dir logs/<run> [--no-logs]   # their simulator (unzip first)

@@ -171,7 +171,13 @@ T2="--set POSITION_LIMIT=1000 --set EXPOSURE=100 --set HEDGE=1 --set MODEL_MEMOR
 L1="$T2 --set LIQ=1";  L3="$L1 --set QUOTE_SIZE=0";  L8="$L1 --set QS_RATE=2.5"
 L9="$L3 --set POSITION_LIMIT=100 --set IMPACT_US=500000 --set HUBER=6.0 --set RIDGE_MIN=30 --set RIDGE_FRAC=0.003"
 uv run python -m arena.qsim_rust ridge_maker data/arena/round2/round2_public.csv ${=L9} --grid HUBER=4,6,9 --threads 4 --holdout 0.25
+F1="$L9 --set FILTER=1"   # R3-F1 (r3_F1_latent_filter.py): the latent-price filter's three features (FILTER_* knobs)
 ```
+
+R3-F1 as `ridge_maker` (8 Nov, the knob `FILTER` with `FILTER_W`, `FILTER_RATE`, `FILTER_EPS`, `FILTER_PI0`-`2`,
+`FILTER_IMPACT`, `FILTER_SQRT_C`, `FILTER_DEPTH`, off by default; what each does in the file's doc comment). It gives
+the Python file's numbers: round3_public 480469.00 (volume 571,820; FILTER 0 is L9's 424730.00), and round2_public
+303720.00 with pnl.csv and result.json byte for byte (`test_ridge_maker_round2_takers`). FILTER needs `QUOTEFEAT` 1.
 
 **Speed** (the sample, 53,758 rows, one core, measured 7 Nov): trend_follower 151 ms a run in Python, 1.7 ms in
 Rust (90x); F1 274 ms, 3.9 ms (70x); parsing the CSV once is 5 ms more. On 4 threads, F1's 16-cell grid
