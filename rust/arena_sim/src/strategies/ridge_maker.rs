@@ -255,6 +255,12 @@
 //! environment variable, a path) appends a line a run: takes, lots sent and filled, partial and zero fills, the next
 //! take the same way within 100 ms after an incomplete one (and at a worse price), retries, deepened takes. The depth's
 //! small r4 gain sits in the fastest tercile; the retry loses (IDEAS.md, "R4-T1").
+//! R4-A1 (8 Nov; Rust only, off by default: F5 1029443.00 on round4_public and 515670.00 on round3_public unchanged),
+//! the feature ablation: `FEAT_DROP` (0: off) is a bitmask over the base feature vector (bit i, the i-th entry as built
+//! above: F5's 39 are 0-14 the base, 15-20 QUOTEFEAT, 21-28 FLOWGRP, 29-32 LIQ, 33-35 IMPACT_US, 36-38 FILTER); each
+//! set entry is 0.0 before the ridge learns from it or predicts with it, so the vector keeps its length and the
+//! isotropic ridge keeps that weight at 0. No single drop, group or Newey-West cut beats F5 on r4 without losing r3, r2
+//! or the synthetic tapes (IDEAS.md, "R4-A1").
 //!
 //! The audit's quote knobs (8 Nov), off by default: `QS_PULL` (0) 1 withdraws both quotes, so the resting ones are
 //! cancelled, while QS_RATE's switch is off; `QUOTE_GAP` (99.0: off) withdraws the quote on the side the latent filter's
@@ -637,6 +643,9 @@ pub struct RidgeMaker {
     /// FT_RETRY_MS (0: the next book only): how long an armed retry waits for a book where it may go
     ft_retry_ms: i64,
     ft_retry_until: i64,
+    /// FEAT_DROP (R4-A1, 0 off): a bitmask over the ridge's base feature vector; each set bit's entry is 0.0 before
+    /// learning and predicting, so the vector keeps its length and that weight stays 0 under the ridge
+    feat_drop: u64,
     /// the take IOCs in flight: (id, sign, quantity sent, price)
     ft_takes: Vec<(u64, i64, i64, i64)>,
     ft_retry_sign: i64,
@@ -1068,6 +1077,9 @@ pub const X1_KEYS: [&str; 10] = [
 /// R4-T1's knobs (the take's signal-conditioned depth and the retry after an incomplete take), all off by default
 pub const T1_KEYS: [&str; 5] = ["FT_DEPTH_K", "FT_DEPTH_E", "FT_DEPTH_MODE", "FT_RETRY", "FT_RETRY_MS"];
 
+/// R4-A1's knob (the feature ablation: FEAT_DROP, a bitmask over the base features), off by default
+pub const A1_KEYS: [&str; 1] = ["FEAT_DROP"];
+
 fn side_index(sign: i64) -> usize {
     if sign > 0 {
         0
@@ -1078,7 +1090,7 @@ fn side_index(sign: i64) -> usize {
 
 impl RidgeMaker {
     pub fn new(params: &Params) -> Result<RidgeMaker, String> {
-        params.check_keys(&[&KEYS[..], &MOE_KEYS[..], &crate::strategies::profit_gate::KEYS[..], &crate::strategies::calib::KEYS[..], &X1_KEYS[..], &T1_KEYS[..]].concat())?;
+        params.check_keys(&[&KEYS[..], &MOE_KEYS[..], &crate::strategies::profit_gate::KEYS[..], &crate::strategies::calib::KEYS[..], &X1_KEYS[..], &T1_KEYS[..], &A1_KEYS[..]].concat())?;
         let n_base = N + if params.int("PLACE", 0)? > 0 { 2 } else { 0 }
                 + if params.int("DEPTH5", 0)? > 0 { 1 } else { 0 }
                 + if params.int("FLOW2", 0)? > 0 { 2 } else { 0 }
@@ -1414,6 +1426,7 @@ impl RidgeMaker {
             ft_retry: params.int("FT_RETRY", 0)?,
             ft_retry_ms: params.int("FT_RETRY_MS", 0)?,
             ft_retry_until: 0,
+            feat_drop: params.int("FEAT_DROP", 0)? as u64,
             ft_takes: Vec::new(),
             ft_retry_sign: 0,
             take_stats: std::env::var("TAKE_STATS").ok(),
@@ -3115,6 +3128,14 @@ impl Strategy for RidgeMaker {
             }
         }
         let n = self.n_base;
+        if self.feat_drop != 0 {
+            // FEAT_DROP (R4-A1): the masked entries 0.0, before the ridge learns from or predicts with this vector
+            for (i, x) in features[..n.min(64)].iter_mut().enumerate() {
+                if (self.feat_drop >> i) & 1 == 1 {
+                    *x = 0.0;
+                }
+            }
+        }
         if self.std_on > 0 {
             let d = ((-elapsed) as f64 / self.std_us as f64).exp();
             self.std_mass = self.std_mass * d + 1.0;
