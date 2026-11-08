@@ -10,6 +10,7 @@ from experiments.day.filter_process_probe import (anchor_truth, at_grid,
 from experiments.day.filter_process_probe import observable_fit
 from experiments.day.filter_process_probe import noise_diagnostics, prefix_events
 from experiments.day.filter_process_probe import cluster_ci
+from experiments.day.filter_process_probe import compare_impact_laws, fitted_prediction, size_basis
 
 
 def events(t=(.1, .1, .4), ordinary=(False, True, True)):
@@ -139,3 +140,38 @@ def test_parameter_uncertainty_suppressed_with_fewer_than_six_blocks():
     assert cluster_ci(x, y, beta, np.arange(100.)) == [None, None]
     assert cluster_ci(x, y, beta, np.linspace(0, 1499, 100)) == [None, None]
     assert all(interval is not None for interval in cluster_ci(x, y, beta, np.linspace(0, 1799, 100)))
+
+
+def test_fixed_table_thresholds_and_zero_fills():
+    actual = size_basis(np.asarray([0, 1, 10, 11, 1000, 1001, 10**10]), 'r1_table')
+    assert np.allclose(actual, [0, .097, .097, .111, .704, .903, .903])
+
+
+def test_noise_diagnostics_uses_selected_law_and_filled_quantity():
+    rng = np.random.default_rng(18)
+    t = np.arange(1, 1001) * .1
+    sign = rng.choice([-1., 1.], len(t))
+    filled = rng.integers(1, 30, len(t))
+    x = sign * filled
+    anchor = 100 + .05 * (np.cumsum(x) - x)
+    e = dict(t=t, sign=sign, qty=filled + 100, filled=filled, ordinary=np.ones(len(t), bool),
+             price=anchor + sign, duration=t[-1])
+    fit = dict(tau_s=1., coefficients=[.05, 0., 0., 0.], split_s=75., size='filled', impact_law='linear')
+    assert np.allclose(fitted_prediction(e, fit), np.diff(anchor))
+    noise = noise_diagnostics(e, fit)
+    assert noise['horizons']['1.0']['prefix']['total_variance_per_s'] < 1e-20
+
+
+def test_form_comparison_selects_sqrt_for_known_sqrt_process():
+    rng = np.random.default_rng(913)
+    t = np.cumsum(rng.exponential(.1, 2500))
+    sign = rng.choice([-1., 1.], len(t))
+    qty = np.rint(np.exp(rng.uniform(0, math.log(10000), len(t))))
+    x = sign * np.sqrt(qty)
+    anchor = np.rint(1000 + .05 * (np.cumsum(x) - x))
+    e = dict(t=t, sign=sign, qty=qty, price=anchor + sign, ordinary=np.ones(len(t), bool), duration=t[-1])
+    fitted = observable_fit(e)
+    report = compare_impact_laws(e, fitted)['sizes']['requested']
+    assert report['selected_by_training_huber'] == 'sqrt'
+    assert report['holdout_mse_winner'] == 'sqrt'
+    assert report['paired_holdout_vs_sqrt']['linear_minus_sqrt']['ci95'] is None
