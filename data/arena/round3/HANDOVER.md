@@ -4,6 +4,15 @@ The template (`docs/HANDOVER_TEMPLATE.md`): copy it to `data/arena/round<N>/HAND
 fill it in during the round and finish it by deadline − 0:10; the template itself stays as it is. Committed and pushed so the other laptop has it (ON_THE_DAY.md, "Handover note"); the private
 run's results and `leaderboard.json` go in this folder too.
 
+## Round 3 result (read 8 Nov 06:48 from the portal's leaderboard, Round 3, private backtest)
+- **17th of 53, +827,253 private** with R3-F3 (validation +883,559: private/validation 0.94). Winner Team 1 +1,458,005;
+  2nd Team 3 1,240,532; 3rd Team 2 1,198,048; 10th 929,224; median of the 52 positive teams ~745k.
+- **z3 = 0.467** (mean 694,136, sd 284,949 over the 52 positive teams). **Overall after three rounds (0.8 z1 + z2 + z3,
+  z1/z2 from the organisers' deck): 15th of 61, 1.835;** 1st Team 1 5.918, 5th Team 5 3.893 (gap 2.06).
+  Round 4 weighs 1.2: a top-3 round 4 (z4 ~1.8-2.7) is worth +2.2-3.2.
+- `leaderboard.json` here (the round-2 file's format; no PnL series). The teams above us made ~0.9-1.46M: the same gap
+  as round 2 (our family is the field's middle-upper band; the leaders take more from the jumps).
+
 ## Start here (8 Nov 02:55; round 3 closes 06:00, round 4 runs 07:00-12:00)
 
 **The best file, and the one to keep as final: R3-F3** (`python/bots/qminers/candidates/r3_F3_latent_filter_b1.py`): R3-B1
@@ -126,7 +135,8 @@ Nothing new this round.
 Round 2's L-family re-ranked on round 3's own tapes ("Round 3's first look"); L9's choice did not carry over (L8 base).
 
 ## Leaderboard
-Round 3's live percentiles from the organisers' dashboard (01:49): p25 176k, median 503k, p75 785k; overall 12th.
+Round 3's live percentiles from the organisers' dashboard (01:49): p25 176k, median 503k, p75 785k. Final: 17th of 53,
+z3 0.467, overall 15th of 61 (1.835); `leaderboard.json` here ("Round 3 result").
 At 02:38 (the dashboard's data, 40 teams, 84 submissions, 3 failed): the best validation PnL a team, p25 289k, median
 546k, p75 848k (868k at 02:33); the field is rising, F3's +883,559 is 35k over p75. At 03:26 (47 teams, 137
 submissions, 8 failed): p25 391k, median 606k, p75 876k, so F3 is 7k over p75. Our private results so far
