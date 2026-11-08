@@ -81,6 +81,9 @@ Trials so far: 0 experiments, 0 cells.
 - Six more r3b seeds (204-209): +3.2k / +0.6k / +8.8k / +5.8k / -3.5k / -0.2k; over nine seeds +33.2k, 7 of 9 positive, but only about +0.35% there against +2.1% on round3_public.
 - Side by side with F3 on round3_public (Python, same load): 174.9 s against 172.9 s (+1%), so about 600 s of the server's 900.
 - Upload as a paired test against F3 (+883,559): expected about +10k to +20k on the 12,000-s validation tape if it plays like round3_public; a calmer tape like round 1 would cost.
+### R3-S5 (8 Nov 04:40): F5 plus a passive pre-entry at the near touch (`python/bots/qminers/candidates/r3_S5_pre_entry.py`). Dropped, not for upload
+- One order at the bid (ask) while the forecast is between PRE_TH + half the spread and the take's bar, sized for the room, cancelled when the forecast fades or the take's bar is crossed. PRE = 0 is F5 to the byte. validate OK.
+- Every cell loses round3_public's first 75%; the closest, PRE_TH 0.2 PRE_SZ 50, 512,950 (-2.5k / -0.2k against F5's 382,385 / 133,285); PRE_SZ 100 506,780 (-10.1k / +1.2k), round2_public 328,714 (-2.3k). It fills 533 of 77,509 lots posted; the room it holds delays the takes. IDEAS.md "R3-S5".
 ## Uploads (validation tape, 12,000 s; results folders in data/arena/round3/<file>_res/)
 | # | time | file | validation pnl | fills / lots | sim time | local r3 public (6,000 s) | read |
 |---|---|---|---|---|---|---|---|
