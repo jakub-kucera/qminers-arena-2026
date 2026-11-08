@@ -224,3 +224,8 @@ new bid inserts plus that of the new ask inserts, halved, over 0.1 s; its noise 
 Commands (each tape about 10 s once its replay is cached):
 `uv run python -m experiments.day.gen_identify data/arena/round3/round3_public.csv --cache R3.npz --json R3.json`, then
 `uv run python -m experiments.day.gen_identify --compare R1.json R2.json R3.json`.
+
+## A dedicated session (8 Nov, 02:20)
+
+From round 3 on, the generator work moves to its own Claude session; its prompt is `docs/GENERATOR_SESSION_PROMPT.md`
+(the data inventory, what is known, the open discrepancies, the method, the deliverables and the round-4 playbook).
