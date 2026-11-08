@@ -56,6 +56,20 @@ def family_scores(path):
     return out
 
 
+def load_cases(specs, path=None, select=None):
+    cases = json.loads(Path(path).read_text())['cases'] if path else {}
+    for item in specs or []:
+        name, value = item.split('=', 1)
+        if name in cases:
+            raise ValueError(f'duplicate case: {name}')
+        cases[name] = json.loads(value)
+    if any(not name.replace('_', '').isalnum() or not isinstance(value, dict) for name, value in cases.items()):
+        raise ValueError('cases need simple names and JSON option objects')
+    if select:
+        cases = {name: cases[name] for name in select.split(',')}
+    return cases
+
+
 def flow_stats(data):
     f = np.flatnonzero(data['kind'] == 1)
     if len(f) < 20:
@@ -67,7 +81,7 @@ def flow_stats(data):
     out = dict(n=len(f), rate=len(f) / (float(data['end_us']) / 1e6), buy_share=buy,
                same_side=same, iid_same_side=buy * buy + (1 - buy) ** 2,
                excess_same_side=same - (buy * buy + (1 - buy) ** 2),
-               sign_corr1=float(np.corrcoef(s[1:], s[:-1])[0, 1]) if s.std() else None)
+               sign_corr1=float(np.corrcoef(s[1:], s[:-1])[0, 1]) if s[1:].std() and s[:-1].std() else None)
     gap = np.diff(t) / 1e6
     out['by_gap_s'] = {}
     for lo, hi in ((0, .02), (.02, .1), (.1, .5), (.5, 2)):
@@ -133,10 +147,19 @@ def bot_params():
     return out
 
 
-def score(tape, binary):
-    qsim_rust.BINARY = Path(binary).resolve()
+def score(tape, binary, expected_sha=None):
+    expected_sha = expected_sha or digest(binary)
+    if digest(binary) != expected_sha:
+        raise ValueError('simulator binary changed between runs')
     params = bot_params()
-    results = qsim_rust.run_batch('ridge_maker', list(params.values()), [Path(tape)], threads=1)
+    previous_binary = qsim_rust.BINARY
+    try:
+        qsim_rust.BINARY = Path(binary).resolve()
+        results = qsim_rust.run_batch('ridge_maker', list(params.values()), [Path(tape)], threads=1)
+    finally:
+        qsim_rust.BINARY = previous_binary
+    if digest(binary) != expected_sha:
+        raise ValueError('simulator binary changed during the run; do not publish these scores')
     scores = {}
     for name, row in zip(params, results):
         r = row[0]
@@ -144,6 +167,35 @@ def score(tape, binary):
             raise ValueError(f'{name}: invalid simulator result {r}')
         scores[name] = float(r['pnl'])
     return scores
+
+
+def summarize(rows, reference, target=None):
+    """Per-case seed variation; never treat six bots as six independent draws."""
+    out = {}
+    for name in sorted({r['case'] for r in rows}):
+        subset = [r for r in rows if r['case'] == name]
+        seeds = [r['seed'] for r in subset]
+        if len(set(seeds)) != len(seeds):
+            raise ValueError(f'{name}: duplicate seed in aggregation')
+        stats = {k: float(np.mean([r['measurement']['stats'][k] for r in subset])) for k in STAT_KEYS}
+        result = dict(seeds=seeds, mean_stats=stats,
+                      moment_log_rmse=float(np.sqrt(np.mean([np.log(max(stats[k] / reference['stats'][k], .001)) ** 2 for k in STAT_KEYS]))))
+        if all('synthetic_truth' in r for r in subset):
+            result['volatile_share_per_seed'] = [r['synthetic_truth']['on_share'] for r in subset]
+        if all('scores' in r for r in subset):
+            sim = {k: [r['scores'][k] for r in subset] for k in BOT_NAMES}
+            result['mean_scores'] = {k: float(np.mean(v)) for k, v in sim.items()}
+            if target:
+                result['score_comparison'] = gc.compare(sim, {k: v['pnl'] for k, v in target.items()})
+            result['contrasts'] = {}
+            for a, b in (('L8', 'L3'), ('B1', 'L9'), ('B1F', 'B1'), ('F5', 'B1F')):
+                differences = np.array(sim[a]) - np.array(sim[b])
+                result['contrasts'][a + '-' + b] = dict(per_seed=differences.tolist(),
+                    mean=float(differences.mean()),
+                    seed_se=float(differences.std(ddof=1) / np.sqrt(len(seeds))) if len(seeds) > 1 else None,
+                    target=target[a]['pnl'] - target[b]['pnl'] if target else None)
+        out[name] = result
+    return out
 
 
 def run(args):
@@ -157,11 +209,9 @@ def run(args):
         return 0
     params = json.loads(args.params.read_text())
     base = gc.parse_opts(args.opts)
-    cases = dict(item.split('=', 1) for item in args.case)
-    cases = {name: json.loads(value) for name, value in cases.items()}
-    if any(not name.replace('_', '').isalnum() for name in cases):
-        raise ValueError('case names may contain letters, numbers, underscores only')
+    cases = load_cases(args.case, args.cases, args.select)
     target = family_scores(args.family) if args.family else None
+    binary_sha = digest(args.binary) if args.score or args.check_real else None
     reference_file = args.dir / 'reference.json'
     source_id = dict(tape_sha256=digest(args.tape), measurement_sources={Path(p).name: digest(p)
         for p in (__file__, gc.__file__, filter_placement.__file__, tape_book.__file__)})
@@ -176,11 +226,11 @@ def run(args):
     if args.check_real:
         if not target:
             raise ValueError('--check-real requires --family')
-        actual = score(args.tape, args.binary)
+        actual = score(args.tape, args.binary, binary_sha)
         if any(abs(actual[k] - target[k]['pnl']) > 1 for k in BOT_NAMES):
             raise ValueError(f'Simulator/parameter parity failed: {actual}')
         (args.dir / 'real_score_check.json').write_text(json.dumps(dict(scores=actual,
-            binary_sha256=digest(args.binary), params=bot_params()), indent=2) + '\n')
+            binary_sha256=binary_sha, params=bot_params()), indent=2) + '\n')
     invocation = json.dumps(dict(cases=cases, seeds=args.seeds, seconds=args.seconds, score=args.score), sort_keys=True)
     report_file = args.out or args.dir / ('report_' + hashlib.sha256(invocation.encode()).hexdigest()[:12] + '.json')
     all_rows = []
@@ -194,13 +244,19 @@ def run(args):
         param_path.write_text(json.dumps(fitted) + '\n')
         for seed in gc.parse_seeds(args.seeds):
             tape = case_dir / f'seed{seed}.csv'
-            gc._gen((fitted, seed, args.seconds, str(tape)))
+            job = (fitted, seed, args.seconds, str(tape))
+            latent_path = gc._gen_latent(job) if args.latent else None
+            if not args.latent:
+                gc._gen(job)
             measured = measure(tape, case_dir / f'seed{seed}_events.npz')
             row = dict(case=name, seed=seed, options={**base, **overrides}, measurement=measured,
                        distance=distance(measured, reference))
+            if latent_path:
+                states = np.loadtxt(latent_path, delimiter=',', skiprows=1, usecols=(2,))
+                row['synthetic_truth'] = dict(on_share=float(np.mean(states == 1)), latent_sha256=digest(latent_path))
             if args.score:
-                row['scores'] = score(tape, args.binary)
-                row['binary_sha256'] = digest(args.binary)
+                row['scores'] = score(tape, args.binary, binary_sha)
+                row['binary_sha256'] = binary_sha
                 if target:
                     row['score_comparison'] = gc.compare({k: [v] for k, v in row['scores'].items()},
                                                         {k: v['pnl'] for k, v in target.items()})
@@ -209,6 +265,7 @@ def run(args):
             print(name, seed, json.dumps(row['distance']), row.get('scores', {}), flush=True)
             result = dict(source=str(args.tape), source_identity=source_id, seconds=args.seconds,
                           target_scores=target, rows=all_rows, elapsed_s=time.monotonic() - start,
+                          summary=summarize(all_rows, reference, target),
                           qualification='Full public-tape calibration. Fresh-seed stability and real holdout checks required before strategy selection.')
             report_file.write_text(json.dumps(result, indent=2, allow_nan=False) + '\n')
     print('report', report_file, flush=True)
@@ -222,11 +279,14 @@ def main(argv=None):
     p.add_argument('--opts', default='r3_public_after')
     p.add_argument('--dir', type=Path, required=True)
     p.add_argument('--case', action='append', help='NAME=JSON overrides of the latent preset')
+    p.add_argument('--cases', type=Path, help='JSON document with a cases object of named option dictionaries')
+    p.add_argument('--select', help='Comma-separated subset of names in --cases')
     p.add_argument('--seeds', default='501')
     p.add_argument('--seconds', type=float, default=6000.)
     p.add_argument('--family', type=Path)
     p.add_argument('--binary', type=Path, default=qsim_rust.BINARY)
     p.add_argument('--score', action='store_true')
+    p.add_argument('--latent', action='store_true', help='Also save the true latent path and record realized volatile-state occupancy')
     p.add_argument('--check-real', action='store_true', help='Require the executable/parameters to reproduce the family scoreboard')
     p.add_argument('--out', type=Path, help='Report path (default: distinct name per case/seed invocation)')
     p.add_argument('--flow-only', action='store_true', help='Measure observable F persistence and preceding-G alignment only')
@@ -234,8 +294,8 @@ def main(argv=None):
     args = p.parse_args(argv)
     if args.seconds <= 0:
         p.error('seconds must be positive')
-    if not args.flow_only and (not args.params or not args.case):
-        p.error('--params and --case are required unless --flow-only')
+    if not args.flow_only and (not args.params or not (args.case or args.cases)):
+        p.error('--params and --case/--cases are required unless --flow-only')
     return run(args)
 
 

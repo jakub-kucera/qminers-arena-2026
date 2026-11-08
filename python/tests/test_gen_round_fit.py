@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from experiments.day.gen_round_fit import BOT_NAMES, STAT_KEYS, distance, family_scores, flow_stats
+from experiments.day.gen_round_fit import BOT_NAMES, STAT_KEYS, distance, family_scores, flow_stats, load_cases, summarize
 
 
 def events():
@@ -42,6 +42,16 @@ def test_report_maps_f3_to_generator_filter_bot(tmp_path):
         family_scores(p)
 
 
+def test_case_archive_selects_exact_options_and_rejects_duplicates(tmp_path):
+    p = tmp_path / 'cases.json'
+    p.write_text('{"cases":{"base":{"informed":0},"flow":{"informed":0.25}}}')
+    assert load_cases([], p, 'flow') == {'flow': {'informed': .25}}
+    with pytest.raises(ValueError, match='duplicate'):
+        load_cases(['flow={}'], p)
+    with pytest.raises(ValueError, match='simple names'):
+        load_cases(['../escape={}'])
+
+
 def test_wrong_sign_impact_cannot_improve_distance_by_disappearing():
     f = flow_stats(events())
     ref = dict(stats={k: 1. for k in STAT_KEYS}, flow=f)
@@ -52,3 +62,52 @@ def test_wrong_sign_impact_cannot_improve_distance_by_disappearing():
     del obs['stats']['sd1']
     with pytest.raises(ValueError, match='sd1'):
         distance(obs, ref)
+
+
+def test_quote_contrasts_use_paired_seeds_and_reject_duplicates():
+    ref = dict(stats={k: 1. for k in STAT_KEYS})
+    rows = [dict(case='a', seed=i, measurement=ref, scores={k: 100. for k in BOT_NAMES}) for i in (1, 2, 3)]
+    for row, gain in zip(rows, (1, 2, 3)):
+        row['scores']['L8'] += gain
+    contrast = summarize(rows, ref)['a']['contrasts']['L8-L3']
+    assert contrast['per_seed'] == [1., 2., 3.]
+    assert contrast['mean'] == 2.
+    assert contrast['seed_se'] == pytest.approx(1 / np.sqrt(3))
+    with pytest.raises(ValueError, match='duplicate'):
+        summarize(rows + [rows[0]], ref)
+
+
+def test_drift_gate_suppresses_calm_motion_and_permits_active_motion(tmp_path):
+    from experiments.day.tape_gen import generate
+    from test_gen_inventory import params
+    p = params()
+    p['f_rate'] = 0.
+    p['latent'].update(drift_sd=3., drift_tau=1., jx_rate_off=1e-12, jx_rate_on=1e-12)
+    paths = []
+    for gate in (False, True):
+        p['latent']['drift_jx_only'] = gate
+        tape, latent = tmp_path / f'{gate}.csv', tmp_path / f'{gate}_latent.csv'
+        generate(p, 71, 10., tape, latent)
+        paths.append(np.loadtxt(latent, delimiter=',', skiprows=1)[:, 1])
+    assert np.ptp(paths[0]) > 1
+    assert np.ptp(paths[1]) == 0
+    p['latent'].update(jx_rate_on=2e-12, jx_dwell_off=1e-5, jx_dwell_on=100_000.)
+    latent = tmp_path / 'active_latent.csv'
+    generate(p, 71, 10., tmp_path / 'active.csv', latent)
+    active = np.loadtxt(latent, delimiter=',', skiprows=1)
+    assert np.mean(active[:, 2] == 1) > .99
+    assert np.ptp(active[:, 1]) > 1
+
+
+def test_score_rejects_binary_replaced_during_batch(tmp_path, monkeypatch):
+    from experiments.day import gen_round_fit as fit
+    binary = tmp_path / 'simulator'
+    binary.write_bytes(b'old executable')
+    def changed(*args, **kwargs):
+        binary.write_bytes(b'new executable')
+        return [[{'pnl': 100.}]] * len(BOT_NAMES)
+    monkeypatch.setattr(fit.qsim_rust, 'run_batch', changed)
+    previous_binary = fit.qsim_rust.BINARY
+    with pytest.raises(ValueError, match='changed during'):
+        fit.score(tmp_path / 'tape.csv', binary)
+    assert fit.qsim_rust.BINARY == previous_binary

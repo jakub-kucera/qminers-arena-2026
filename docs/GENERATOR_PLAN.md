@@ -871,3 +871,105 @@ within one unit before synthetic score comparisons. Cached generation binds sour
 seed, duration and file hash. Each case's seed summary is persistent; invocation reports use
 distinct names or explicit `--out`. This is public-tape calibration, not a validation-PnL gain.
 Further tuning and fresh-seed checks remain active; no R4 preset is promoted at this checkpoint.
+
+
+### R4 controlled-model checkpoint (07:41)
+
+The six real baseline scores were reproduced exactly with the main Rust executable
+(SHA256 e780ea927e5eb6c0c9ec05764d9bdcce63537e8ba232caa94ee2954dbceb1f5c).
+All-time drift3 is rejected: despite its improved moment distance, F3=1,813,282,
+76.8% above real. It also leaves L8−L3 negative. Fitting moments alone creates an
+artificially easy prediction problem.
+
+The optional `drift_jx_only` generator parameter gates the OU velocity contribution by
+whether the left-end jump-intensity state is volatile. The OU velocity continues to evolve
+in both states; it is not reset. With the gate false, arithmetic and random draw order are
+unchanged. The existing default/R3 golden hashes pass; a separate100s R4-marginals/R3-preset
+sample remains SHA256 cd1d5fc26975e5850b7d74fd312872d25131e101cf9f030836e7bb1a2fc650ef.
+This is a proposed mechanism for concentrated trends, not a recovered organiser rule.
+
+Calibration seed501, cases relative to r3_public_after on R4 empirical marginals:
+
+| Case | Moment log-RMSE | F3 PnL | L8−L3 | B1−L9 |
+|---|---:|---:|---:|---:|
+| base | .771 | 576080 | -4774 | -2637 |
+| informed50 | .430 | 1189821 | -2990 | -2400 |
+| drift3 | .310 | 1813282 | -2237 | 2840 |
+| gate8slow | .351 | 1399017 | 17928 | 3262 |
+| wide6 | .347 | 1017646 | 349 | -2935 |
+| Real R4 | 0 | 1025404 | 49764 | 14854 |
+
+`wide6` is frozen for a fresh-seed check (511-513), not promoted. Its fitted knobs are
+informed=.3, drift_sd=6, drift_tau=1.5, drift_jx_only=true, jx_dwell_on=600,
+jx_diff_sd=4, jx_rate_on=.1, jx_median=8, jx_on_k=1.2, jx_after_extra=8,
+impact_sqrt=.025 and stale_s=.3, with the remaining r3_public_after options retained.
+Its realized volatile occupancy on501 is .32705, despite a nominal.5; selecting a single
+seed by its score can therefore tune to a favorable regime realization. Fresh summaries
+report each seed and paired quote/filter gains, not an error bar treating bots as samples.
+
+The calibration's exact named cases are archived in `docs/GENERATOR_ROUND4.json`, with
+all seed501 statistics, selected six-bot scores and the tape hash. All cases are exploratory.
+Use a new output directory after a generator-source change; old draws retain their original
+provenance. The earlier r4_fit draws were produced before the drift-gate extension; off-state
+compatibility is demonstrated above, but their source-bound cache must still not be bypassed.
+
+```sh
+uv run python -m experiments.day.gen_round_fit data/arena/round4/round4_public.csv --params data/arena/gen/r4_params.json --dir data/arena/gen/r4_gated --cases docs/GENERATOR_ROUND4.json --select wide6 --seeds 511-513 --score --latent --family data/arena/round4/family_rust.txt --binary rust/target/release/arena-sim --out data/arena/gen/r4_gated/fresh_wide6.json
+```
+
+A positive informed-flow share is the strongest common-switch hypothesis. It alone fails:
+R4 also needs different persistence, volatility and spread dynamics in this model family.
+No new real-tape strategy or validation-PnL improvement has been demonstrated.
+
+
+### R4 fresh-seed result and handoff (07:48)
+
+The frozen wide6 case was checked on fresh seeds511-513, each6,000s, with all six bots and
+true latent logging. Total command time327.1s on the shared host (warm real-reference cache).
+The broad order improves, but the model is **experimental stress data, not a qualified
+calibration for selecting close bot changes**. No new global PRESETS entry is promoted.
+
+| Bot | Real R4 | Fresh511 | Fresh512 | Fresh513 | Fresh mean |
+|---|---:|---:|---:|---:|---:|
+| L3 | 851547 | 1053728 | 1432891 | 798784 | 1095134 |
+| L8 | 901311 | 1045206 | 1441072 | 805233 | 1097170 |
+| L9 | 892246 | 1076126 | 1456791 | 820296 | 1117738 |
+| B1 | 907100 | 1069681 | 1461379 | 827743 | 1119601 |
+| F3 | 1025404 | 1146908 | 1529046 | 881476 | 1185810 |
+| F5 | 1029443 | 1154681 | 1535001 | 888059 | 1192580 |
+
+Six-bot rank correlation of the mean is .94286, asinh error .19966. The refitted-old-model
+calibration seed501 had .65714 and .57921, respectively; this is an unpaired descriptive
+comparison, not a confidence interval for superiority. Fresh mean F3 is15.64% above real.
+The distinctions that matter still fail: L8−L3 is2036 (seed SE5303) versus49764 real;
+B1−L9 is1863 (SE4235) versus14854; filter gain is66209 (SE6821) versus118304.
+Both quote contrasts change sign across seeds. F5−F3 is6770 versus4039 real.
+A high overall rank correlation does not establish accurate marginal strategy benefits.
+
+Mean price moments improve from the old model's .771 seed501 log-RMSE to .31563 across
+fresh-seed mean moments. sd1/10/60=5.607/24.253/64.373 versus6.19/27.44/56.70;
+changes/s7.302 versus6.646; one-tick share .7703 versus .813. Large-F0.1s impact1.593
+versus1.47 is close, but small-F5s move1.12 versus2.43 is much too weak, large-F5s2.637
+versus3.71 is low, and fast3+tick moves151.8/ks versus100 are too frequent.
+Volatile occupancy is .3813/.5481/.3011 across the fresh seeds. Same-side F share is
+.5356/.5333/.5354 versus real.5394; prior-G alignment .6074/.6113/.6022 versus.5968.
+The model therefore gets the directional-flow relationship considerably closer while
+misrepresenting how that information turns into price persistence and profitable quotes.
+
+The 25 calibration cases, including unsuccessful alternatives, exact options, all real
+measurements and all fresh seed rows are committed in `docs/GENERATOR_ROUND4.json`.
+Two final sensitivity cases (no early stale cancels; more diffusion/less drift) worsened
+the calibration moment distance and were not used to reselect after the frozen seed check.
+Artifacts: `data/arena/gen/r4_gated/wide6/params.json`, `seed511.csv` through `seed513.csv`
+with matching `_latent.csv` and provenance, and `r4_gated/fresh_wide6.json`.
+For more stress draws, use the preceding named-case command with fresh seeds and a new output
+directory; omit --score when only tapes and diagnostics are needed. Preserve this qualification
+with the data. These synthetic draws should not replace R4 public/mirror/validation checks,
+and their quote/filter gains are unsuitable as pretraining or optimizer targets.
+
+The likely shared parameter is `informed`: near-zero directional relationship on R3 versus a
+positive share around .25-.30 in these R4 fits. That numerical value is model-dependent,
+not a recovered organiser constant, and changing it alone demonstrably fails. The mechanism
+still missing is the joint placement/cancellation/latent motion that generates profitable
+quotes and strong small-F markouts without making all price motion too easy to predict.
+No new bot, upload, or real validation-PnL gain is claimed by this generator pass.
