@@ -37,15 +37,18 @@ the latent c sqrt(q), round 2 0.0365, instead of the table), `f_limit_latent` (a
 ticks), scheduled jumps (`jx_rate_off` / `jx_rate_on` a second in a hidden two-state intensity chain with mean stays
 `jx_dwell_off` / `jx_dwell_on` s; lognormal sizes `jx_median`, `jx_logsd` clipped to `jx_min` / `jx_max`; inserts
 `jx_warn_k` ticks wider a side `jx_warn_s` s before each; stale orders cancelled within Exp(`jx_stale_s`) after it;
-`jx_lead_extra` informed IOC orders a second the jump's way in the `jx_lead_s` s before it, sizes at least
-`jx_lead_min`); and generic ones — `impact_scale`, `impact_delay` / `impact_tau` (a share of the impact released over
+`jx_lead_extra` informed IOC orders a second the jump's way in the `jx_lead_s` s before it, or `jx_after_extra` in the
+`jx_after_s` s after it (the real tape's: they follow the latent's jump), sizes at least `jx_lead_min`; the volatile
+state's texture: `jx_on_k` wider inserts in it, `jx_warn_sd` a lognormal warning lead, `jx_false_rate` widenings with
+no jump, `jx_diff_sd` diffusion); `--latent-out` writes the true latent every 10 ms; and generic ones — `impact_scale`, `impact_delay` / `impact_tau` (a share of the impact released over
 time), `jump_df` (Student-t sizes for the `jump_rate` jumps), `jump_stale_s`, `drift_sd` / `drift_tau` (an OU drift),
 `vol_states` / `vol_dwell_s` (a Markov volatility multiplier) and `vol_logsd` / `vol_logtau` (a log-OU one) on the
 jumps (and the impact with `vol_impact`), `k_vol` (wider inserts at a high multiplier), `place_noise` (inserts
 centred on a noisy latent). `--impact-cap` keeps a fitted size bin's impact above 1 tick.
 
     uv run python -m experiments.day.tape_gen --fit data/arena/round1/round1.csv --params-out P.json
-    uv run python -m experiments.day.tape_gen --params P.json --seed N --seconds 12000 --out tape.csv [--opts JSON]
+    uv run python -m experiments.day.tape_gen --params P.json --seed N --seconds 12000 --out tape.csv [--opts JSON] \
+        [--latent-out latent.csv]   # the true latent mid every 10 ms, the jump chain's state, the jumps since the last row
 """
 
 from __future__ import annotations
@@ -66,6 +69,7 @@ SPREADS = (1, 2, 3)  # 3 stands for 3+
 CLASSES = ("inside", "touch", "behind1", "deeper")
 DEEPEST = -30
 FIRST_ID = 1_000_001
+LATENT_STEP = 0.01  # --latent-out's grid (s)
 # the impact table's size bins (lots); fit() fills in each bin's mean mid move 5 s after (ticks, the trade's way)
 IMPACT = [[10, 0.097], [30, 0.111], [60, 0.161], [120, 0.254], [250, 0.349], [500, 0.468], [1000, 0.704], [10**9, 0.903]]
 
@@ -199,7 +203,7 @@ class Sampler:
 
 
 
-def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
+def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Path | None = None) -> dict:
     """The latent model: a reference bid `lb` (the latent mid is lb + 0.5) that jumps one tick at `jump_rate` a second
     either way and, after an aggressive order of q lots, one tick its way with probability impact(q); limit bids land
     at lb - k, asks at lb + 1 + k (k from `k_pmf`), never crossing the book (clamped one tick off the other touch)."""
@@ -277,6 +281,12 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
     # jump's way in the 0.1 s before the flagged bin and 110 / 9 in it, 43 / 30 from 0.5 to 0.2 s before: they follow
     # the latent's jump, they do not lead it)
     jx_after_s, jx_after_extra = latent.get("jx_after_s", 0.2), latent.get("jx_after_extra", 0.0)
+    # the volatile state's own texture (Phase 1: wider placement throughout it, a warning of varying lead, widenings
+    # with no jump after them): jx_on_k ticks a side wider inserts while in it; each warning lasts jx_warn_s x
+    # exp(jx_warn_sd N(0,1)); jx_false_rate widenings a second with no jump in it; jx_diff_sd ticks per sqrt(s) of
+    # Gaussian diffusion of the latent in it
+    jx_on_k, jx_warn_sd = latent.get("jx_on_k", 0.0), latent.get("jx_warn_sd", 0.0)
+    jx_false_rate, jx_diff_sd = latent.get("jx_false_rate", 0.0), latent.get("jx_diff_sd", 0.0)
     jx = jx_rates[0] > 0 or jx_rates[1] > 0
     timed = delay > 0 or drift_sd > 0 or len(vol_states) > 1 or vol_logsd > 0 or jx
     if (timed or impact_scale != 1.0 or jump_df or k_vol or place_noise or impact_c or f_lim) and not continuous:
@@ -291,6 +301,9 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
     jx_state = 0
     jx_switch = rng2.exponential(jx_dwell[0]) if jx and jx_rates[0] != jx_rates[1] else math.inf
     jx_next, jx_sign, lead = math.inf, 1, []
+    warn_len = jx_warn_s
+    false_until = -1.0
+    false_next = rng2.exponential(1.0 / jx_false_rate) if jx and jx_false_rate > 0 else math.inf
     after = []  # (time, side) of the informed orders after the last jumps, latest first
     warn = False
     f_sizes2 = Sampler([row for row in params["f_sizes"] if row[0] >= jx_lead_min] or params["f_sizes"], rng2)
@@ -298,10 +311,12 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
 
     def schedule(now: float) -> None:
         # the next jump at the current intensity, its sign, and the informed orders before it (times, latest first)
-        nonlocal jx_next, jx_sign, lead
+        nonlocal jx_next, jx_sign, lead, warn_len
         r = jx_rates[jx_state]
         jx_next = now + rng2.exponential(1.0 / r) if r > 0 else math.inf
         jx_sign = 1 if rng2.random() < 0.5 else -1
+        if jx_warn_sd:
+            warn_len = jx_warn_s * math.exp(jx_warn_sd * rng2.standard_normal())
         lead = []
         if jx_lead_extra and jx_next < math.inf:
             lo = max(now, jx_next - jx_lead_s)
@@ -359,6 +374,22 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
     gaps, us, life, jumps = [], [], [], []
     t = 0.0
     lines = []
+    # --latent-out: the true latent every LATENT_STEP s (the value in force at that time), the jump chain's state, and
+    # the latent's own jumps (signed ticks, summed) since the previous row; no random draws, so the tape is unchanged
+    lat_fh = Path(latent_out).open("w") if latent_out else None
+    lat_rows, lat_i, jump_acc = [], 0, 0.0
+    if lat_fh:
+        lat_fh.write("time,latent,state,jump\n")
+
+    def latent_rows(until: float) -> None:
+        nonlocal lat_i, jump_acc
+        while lat_i * LATENT_STEP < until:
+            lat_rows.append(f"{lat_i * LATENT_STEP:.2f},{level if continuous else lb + 0.5:.4f},{jx_state},{jump_acc:.4f}\n")
+            jump_acc = 0.0
+            lat_i += 1
+        if len(lat_rows) > 100_000:
+            lat_fh.writelines(lat_rows)
+            lat_rows.clear()
     with out.open("w") as fh:
         fh.write("Time,Operation,OrderId,Side,Volume,Price,Lifespan\n")
         while True:
@@ -387,6 +418,8 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
             if nxt >= seconds:
                 break
             t = nxt
+            if lat_fh:
+                latent_rows(t)
             if timed:  # the v2 processes in continuous time: the delayed impact, the drift, the volatility multiplier
                 dt = t - t_last
                 t_last = t
@@ -423,12 +456,19 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
                     if t >= jx_next:
                         size = min(jx_max, max(jx_min, jx_median * math.exp(jx_logsd * normal())))
                         shift(jx_sign * size, t, jx_stale)
+                        jump_acc += jx_sign * size
                         if jx_after_extra:
                             side_j = 0 if jx_sign > 0 else 1
                             new = rng2.uniform(t, t + jx_after_s, rng2.poisson(jx_after_extra * jx_after_s)).tolist()
                             after = sorted(after + [(x, side_j) for x in new], reverse=True)
                         schedule(t)
-                    warn = jx_next - t <= jx_warn_s
+                    if jx_diff_sd and jx_state == 1:
+                        shift(jx_diff_sd * math.sqrt(dt) * normal(), t)
+                    if t >= false_next:  # a widening with no jump after it (acted on only in the volatile state)
+                        if jx_state == 1:
+                            false_until = t + (jx_warn_s * math.exp(jx_warn_sd * normal()) if jx_warn_sd else jx_warn_s)
+                        false_next = t + rng2.exponential(1.0 / jx_false_rate)
+                    warn = jx_next - t <= warn_len or t < false_until
             u = us.pop()
             bb, ba = book.best
             if u < p_f:
@@ -460,7 +500,9 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
                 step = 1 if jumps.pop() < 0.5 else -1
                 if continuous:
                     size = latent.get("jump_size", 1.0) * mult
-                    shift(size * float(rng2.standard_t(jump_df)) if jump_df else step * size, t, jump_stale)
+                    delta = size * float(rng2.standard_t(jump_df)) if jump_df else step * size
+                    shift(delta, t, jump_stale)
+                    jump_acc += delta
                     continue
                 lb += step
                 if stale:
@@ -498,6 +540,9 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
                 if warn:  # a jump is coming: the inserts widen
                     w = int(jx_warn_k)
                     k += w + (1 if unif() < jx_warn_k - w else 0)
+                if jx_on_k and jx_state == 1:  # the volatile state's wider placement
+                    w = int(jx_on_k)
+                    k += w + (1 if unif() < jx_on_k - w else 0)
                 if side == 0:
                     price = lo_b - k
                     if ba is not None:
@@ -524,6 +569,10 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
                 lines = []
         rows += len(lines)
         fh.writelines(lines)
+    if lat_fh:
+        latent_rows(seconds)
+        lat_fh.writelines(lat_rows)
+        lat_fh.close()
     return {"rows": rows, "seed": seed, "seconds": seconds, "out": str(out)}
 
 
@@ -539,6 +588,7 @@ def main(argv=None) -> int:
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--seconds", type=float, help="the tape's length (default: the fitted tape's)")
     parser.add_argument("--out", type=Path)
+    parser.add_argument("--latent-out", type=Path, help="also write the true latent (time, latent, state, jump) every 10 ms")
     args = parser.parse_args(argv)
     if args.fit:
         if not args.params_out:
@@ -552,7 +602,7 @@ def main(argv=None) -> int:
         parser.error("give --fit DATA --params-out P.json, or --params P.json --out tape.csv")
     params = json.loads(args.params.read_text())
     params["latent"].update(json.loads(args.opts or "{}"))
-    result = generate(params, args.seed, args.seconds or params["duration_s"], args.out)
+    result = generate(params, args.seed, args.seconds or params["duration_s"], args.out, args.latent_out)
     print(json.dumps(result))
     return 0
 
