@@ -474,6 +474,8 @@ pub struct RidgeMaker {
     ft_last: i64,
     /// RIDGE_PRED_LOG (env var, a path): each book event's time, mid, prediction, skew, spread, inventory
     pred_log: Option<std::io::BufWriter<std::fs::File>>,
+    /// R4-M1's mixture of experts (MOE, 0: off; the section at the end of the file)
+    moe: Option<Box<Moe>>,
     /// round-2 learned-model knobs (all off by default)
     prior_mass: f64,
     dump_us: i64,
@@ -913,7 +915,7 @@ fn side_index(sign: i64) -> usize {
 
 impl RidgeMaker {
     pub fn new(params: &Params) -> Result<RidgeMaker, String> {
-        params.check_keys(&KEYS)?;
+        params.check_keys(&[&KEYS[..], &MOE_KEYS[..]].concat())?;
         let n_base = N + if params.int("PLACE", 0)? > 0 { 2 } else { 0 }
                 + if params.int("DEPTH5", 0)? > 0 { 1 } else { 0 }
                 + if params.int("FLOW2", 0)? > 0 { 2 } else { 0 }
@@ -1105,6 +1107,7 @@ impl RidgeMaker {
             pred_log: std::env::var("RIDGE_PRED_LOG")
                 .ok()
                 .map(|p| std::io::BufWriter::new(std::fs::File::create(p).expect("RIDGE_PRED_LOG"))),
+            moe: Moe::from_params(params)?,
             feat_log: std::env::var("RIDGE_FEAT_LOG")
                 .ok()
                 .map(|p| std::io::BufWriter::new(std::fs::File::create(p).expect("RIDGE_FEAT_LOG"))),
@@ -2764,6 +2767,19 @@ impl Strategy for RidgeMaker {
             self.learn(2, now, bid as f64);
             self.learn(3, now, ask as f64);
         }
+        // R4-M1 (MOE): the experts learn, and the active regime's gets this book's observation
+        let moe_base = if self.moe.is_some() { clamp(Moe::dot(&self.m1.weights, &features, n), -2.0, 2.0) } else { 0.0 };
+        let moe_sd = if self.moe.as_ref().is_some_and(|m| m.gate == 5) { self.lf_features(mid)[2] } else { 0.0 };
+        let moe_k = self
+            .moe
+            .as_ref()
+            .map(|m| m.regime(spread, self.qs_th > 0.0 && !(self.qs_rate < self.qs_th), moe_base, moe_sd));
+        if let (Some(moe), Some(k)) = (self.moe.as_mut(), moe_k) {
+            moe.learn(now, mid, n);
+            if now - self.last_observation_us >= self.observation_interval_us {
+                moe.observe(k, now, mid, &features, n, moe_base);
+            }
+        }
         if now - self.last_observation_us >= self.observation_interval_us {
             if self.label_mode == 0 && self.m1.observations.len() >= self.obs_cap {
                 self.m1.observations.pop_front();
@@ -2815,6 +2831,9 @@ impl Strategy for RidgeMaker {
                     clamp(py_sum(self.m2.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x)), -2.0, 2.0);
                 prediction = (1.0 - self.blend_w) * prediction + self.blend_w * p2;
             }
+        }
+        if let (Some(moe), Some(k)) = (self.moe.as_mut(), moe_k) {
+            prediction = moe.predict(k, &features, n, prediction);
         }
         // the second model's own forecast (LEAN_SRC 0, FT_SRC 1)
         let p2_only = if m2_on && self.m2.labels >= self.min_labels {
@@ -3455,6 +3474,226 @@ impl Strategy for RidgeMaker {
         }
         if was_hedge || matches!(event.status, Status::Filled | Status::PartiallyFilled) {
             self.hedge(event.timestamp_us, ctx);
+        }
+    }
+}
+
+// ===== R4-M1: a mixture of experts over the forecast (8 Nov, off by default: MOE 0) =====
+//
+// MOE picks the regime: 1 the spread (1 tick, MOE_SPREAD+), 2 the speed (QS_RATE's |mid change| rate below / at least
+// QS_RATE), 3 both (four experts), 4 the first model's forecast under / at least MOE_CONF (0.3) ticks either way, 5 the
+// latent filter's posterior sd under / at least MOE_SD (1.0; needs FILTER). Each expert is a ridge on the first model's features and labels (HORIZON_US ahead,
+// MODEL_MEMORY_US, FIT_US, HUBER), learning only from its own regime's observations. MOE_MODE 0 (hard): the active
+// regime's expert's forecast replaces the first model's once that expert has MOE_MIN labels (0: MIN_LABELS), or with
+// MOE_W under 1, the blend (1 - MOE_W) x the first model's + MOE_W x the expert's (a soft gate). MOE_MODE 1
+// (hierarchical): the expert learns the first model's residual (the label less the first model's forecast at the
+// observation) and the forecast is the first model's plus MOE_W times the active expert's. MOE_RIDGE_MIN / MOE_RIDGE_FRAC
+// (0: RIDGE_MIN's / RIDGE_FRAC's) set the experts' ridge, max(MOE_RIDGE_MIN, MOE_RIDGE_FRAC * mass). The forecast feeds
+// everything the first model's does (the take, fair). RIDGE_DEBUG prints each expert's labels and the books it served.
+
+pub const MOE_KEYS: [&str; 9] =
+    ["MOE", "MOE_MODE", "MOE_MIN", "MOE_RIDGE_MIN", "MOE_RIDGE_FRAC", "MOE_W", "MOE_SPREAD", "MOE_CONF", "MOE_SD"];
+
+struct MoeExpert {
+    /// (time, mid, features, the first model's forecast, this expert's forecast)
+    obs: VecDeque<(i64, f64, [f64; NM], f64, f64)>,
+    last_label_us: Option<i64>,
+    last_fit_us: Option<i64>,
+    labels: i64,
+    mass: f64,
+    xx: [[f64; NM]; NM],
+    xy: [f64; NM],
+    weights: [f64; NM],
+    served: i64,
+}
+
+pub struct Moe {
+    gate: i64,
+    mode: i64,
+    min_labels: i64,
+    ridge_min: f64,
+    ridge_frac: f64,
+    w: f64,
+    wide: i64,
+    conf: f64,
+    sd: f64,
+    horizon_us: i64,
+    memory_us: i64,
+    fit_us: i64,
+    huber: f64,
+    experts: Vec<MoeExpert>,
+}
+
+impl Moe {
+    fn from_params(params: &Params) -> Result<Option<Box<Moe>>, String> {
+        let gate = params.int("MOE", 0)?;
+        if gate <= 0 {
+            return Ok(None);
+        }
+        if gate > 5 {
+            return Err("MOE: 1 spread, 2 speed, 3 both, 4 the forecast's size, 5 the filter's sd".to_string());
+        }
+        if gate == 5 && params.int("FILTER", 0)? <= 0 {
+            return Err("MOE 5 reads the latent filter's sd: set FILTER=1".to_string());
+        }
+        if gate >= 2 && params.float("QS_RATE", 0.0)? <= 0.0 {
+            return Err("MOE 2 / 3 read QS_RATE's speed: set QS_RATE".to_string());
+        }
+        let min = params.int("MOE_MIN", 0)?;
+        let rmin = params.float("MOE_RIDGE_MIN", 0.0)?;
+        let rfrac = params.float("MOE_RIDGE_FRAC", 0.0)?;
+        let k = if gate == 3 { 4 } else { 2 };
+        let experts = (0..k)
+            .map(|_| MoeExpert {
+                obs: VecDeque::new(),
+                last_label_us: None,
+                last_fit_us: None,
+                labels: 0,
+                mass: 0.0,
+                xx: [[0.0; NM]; NM],
+                xy: [0.0; NM],
+                weights: [0.0; NM],
+                served: 0,
+            })
+            .collect();
+        Ok(Some(Box::new(Moe {
+            gate,
+            mode: params.int("MOE_MODE", 0)?,
+            min_labels: if min > 0 { min } else { params.int("MIN_LABELS", 200)? },
+            ridge_min: if rmin > 0.0 { rmin } else { params.float("RIDGE_MIN", 1.0)? },
+            ridge_frac: if rfrac > 0.0 { rfrac } else { params.float("RIDGE_FRAC", 0.001)? },
+            w: params.float("MOE_W", 1.0)?,
+            wide: params.int("MOE_SPREAD", 2)?,
+            conf: params.float("MOE_CONF", 0.3)?,
+            sd: params.float("MOE_SD", 1.0)?,
+            horizon_us: params.int("HORIZON_US", 100_000)?,
+            memory_us: params.int("MODEL_MEMORY_US", 300_000_000)?,
+            fit_us: params.int("FIT_US", 1_000_000)?,
+            huber: params.float("HUBER", 0.0)?,
+            experts,
+        })))
+    }
+
+    fn regime(&self, spread: i64, fast: bool, base: f64, sd: f64) -> usize {
+        let wide = (spread >= self.wide) as usize;
+        match self.gate {
+            1 => wide,
+            2 => fast as usize,
+            3 => wide + 2 * fast as usize,
+            // 4: the first model's own forecast at least MOE_CONF either way (where the take decides)
+            4 => (base.abs() >= self.conf) as usize,
+            // 5: the latent filter's posterior sd at least MOE_SD
+            _ => (sd >= self.sd) as usize,
+        }
+    }
+
+    fn dot(w: &[f64; NM], f: &[f64; NM], n: usize) -> f64 {
+        py_sum(w[..n].iter().zip(f[..n].iter()).map(|(w, x)| w * x))
+    }
+
+    /// matures every expert's labels at this book's mid and refits (each at most once per FIT_US)
+    fn learn(&mut self, now: i64, mid: f64, n: usize) {
+        let (horizon, memory, huber, mode) = (self.horizon_us, self.memory_us, self.huber, self.mode);
+        for e in self.experts.iter_mut() {
+            while let Some(&(t, old_mid, features, base, own)) = e.obs.front() {
+                if t + horizon > now {
+                    break;
+                }
+                e.obs.pop_front();
+                if now - t > horizon + 1_000_000 {
+                    continue;
+                }
+                let elapsed = e.last_label_us.map_or(0, |l| now - l);
+                let decay = ((-(elapsed.max(0))) as f64 / memory as f64).exp();
+                e.last_label_us = Some(now);
+                let response = clamp(mid - old_mid, -20.0, 20.0);
+                let target = if mode == 1 { response - base } else { response };
+                let weight = if huber > 0.0 { (huber / (target - own).abs().max(1e-12)).min(1.0) } else { 1.0 };
+                e.mass = e.mass * decay + weight;
+                for i in 0..n {
+                    e.xy[i] = e.xy[i] * decay + weight * features[i] * target;
+                    for j in 0..n {
+                        e.xx[i][j] = e.xx[i][j] * decay + weight * features[i] * features[j];
+                    }
+                }
+                e.labels += 1;
+            }
+            if e.labels < self.min_labels || e.last_fit_us.is_some_and(|t| now - t < self.fit_us) {
+                continue;
+            }
+            e.last_fit_us = Some(now);
+            let r = self.ridge_frac * e.mass;
+            let ridge = if r > self.ridge_min { r } else { self.ridge_min };
+            let mut matrix = [[0.0f64; NM + 1]; NM];
+            for i in 0..n {
+                matrix[i][..n].copy_from_slice(&e.xx[i][..n]);
+                matrix[i][n] = e.xy[i];
+                matrix[i][i] += ridge;
+            }
+            let mut ok = true;
+            for col in 0..n {
+                let pivot = matrix[col][col];
+                if !pivot.is_finite() || pivot <= 1e-12 {
+                    ok = false;
+                    break;
+                }
+                for j in col..=n {
+                    matrix[col][j] /= pivot;
+                }
+                for i in 0..n {
+                    if i == col {
+                        continue;
+                    }
+                    let factor = matrix[i][col];
+                    for j in col..=n {
+                        matrix[i][j] -= factor * matrix[col][j];
+                    }
+                }
+            }
+            if ok {
+                let mut weights = [0.0; NM];
+                for i in 0..n {
+                    weights[i] = matrix[i][n];
+                }
+                if weights.iter().all(|w| w.is_finite()) {
+                    e.weights = weights;
+                }
+            }
+        }
+    }
+
+    /// the active expert's own forecast (clamped), or None while it has fewer than MOE_MIN labels
+    fn own(&self, k: usize, features: &[f64; NM], n: usize) -> Option<f64> {
+        let e = &self.experts[k];
+        (e.labels >= self.min_labels).then(|| clamp(Moe::dot(&e.weights, features, n), -2.0, 2.0))
+    }
+
+    /// an observation for regime k's expert, with the first model's forecast (`base`) stored for the residual
+    fn observe(&mut self, k: usize, now: i64, mid: f64, features: &[f64; NM], n: usize, base: f64) {
+        let own = self.own(k, features, n).unwrap_or(0.0);
+        self.experts[k].obs.push_back((now, mid, *features, base, own));
+    }
+
+    /// the forecast: the first model's (`prediction`) replaced by (mode 0) or corrected by (mode 1) regime k's expert
+    fn predict(&mut self, k: usize, features: &[f64; NM], n: usize, prediction: f64) -> f64 {
+        let Some(own) = self.own(k, features, n) else { return prediction };
+        self.experts[k].served += 1;
+        if self.mode == 1 {
+            clamp(prediction + self.w * own, -2.0, 2.0)
+        } else if self.w != 1.0 {
+            // a soft gate: MOE_W of the expert, the rest the first model's
+            (1.0 - self.w) * prediction + self.w * own
+        } else {
+            own
+        }
+    }
+}
+
+impl Drop for Moe {
+    fn drop(&mut self) {
+        if std::env::var("RIDGE_DEBUG").is_ok() {
+            let s: Vec<String> = self.experts.iter().map(|e| format!("{}/{}", e.labels, e.served)).collect();
+            eprintln!("RIDGE_DEBUG moe gate={} mode={} labels/served={}", self.gate, self.mode, s.join(" "));
         }
     }
 }
