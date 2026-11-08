@@ -50,8 +50,12 @@ metadata.json):
   "Uploads").
 - Round 1 and round 2 private (12,000 s): data/arena/round*/leaderboard.json (every team's private PnL), our private
   results in the round folders and HANDOVER.md files.
-Our synthetic draws: data/arena/gen/r3/ (30 draws with r3_public_stats; seed101-103 also have *_latent.csv, the
-true latent path), data/arena/gen/r2_params.json and r3_params.json.
+Our synthetic draws: data/arena/gen/r3b/ (20 draws with r3_public_after, the better fit: Spearman 0.60 on the six
+r3 public scores, the filter's gain realistic, pure takers still ~7% too high; seed201-203 also have *_latent.csv,
+the true latent path), data/arena/gen/r3/ (30 older draws with r3_public_stats, Spearman 0.31),
+data/arena/gen/r2_params.json and r3_params.json. r3_public_after's structure: informed IOCs after each jump, jumps
+of median 3 plus 4 ticks/sqrt(s) diffusion in the volatile state; it still needs about 3-4 informed 500+ lot IOCs a
+jump against the tape's ~0.75, so its big-order move curve is 2x too strong.
 
 WHAT IS KNOWN (Phase 1 and 2; verify, don't trust)
 - A latent price; every aggressive (F) order moves it by c*sqrt(traded lots), deterministic and permanent; c 0.024
