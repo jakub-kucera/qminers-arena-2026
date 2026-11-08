@@ -2769,8 +2769,11 @@ impl Strategy for RidgeMaker {
         }
         // R4-M1 (MOE): the experts learn, and the active regime's gets this book's observation
         let moe_base = if self.moe.is_some() { clamp(Moe::dot(&self.m1.weights, &features, n), -2.0, 2.0) } else { 0.0 };
-        let moe_k =
-            self.moe.as_ref().map(|m| m.regime(spread, self.qs_th > 0.0 && !(self.qs_rate < self.qs_th), moe_base));
+        let moe_sd = if self.moe.as_ref().is_some_and(|m| m.gate == 5) { self.lf_features(mid)[2] } else { 0.0 };
+        let moe_k = self
+            .moe
+            .as_ref()
+            .map(|m| m.regime(spread, self.qs_th > 0.0 && !(self.qs_rate < self.qs_th), moe_base, moe_sd));
         if let (Some(moe), Some(k)) = (self.moe.as_mut(), moe_k) {
             moe.learn(now, mid, n);
             if now - self.last_observation_us >= self.observation_interval_us {
@@ -3478,7 +3481,8 @@ impl Strategy for RidgeMaker {
 // ===== R4-M1: a mixture of experts over the forecast (8 Nov, off by default: MOE 0) =====
 //
 // MOE picks the regime: 1 the spread (1 tick, MOE_SPREAD+), 2 the speed (QS_RATE's |mid change| rate below / at least
-// QS_RATE), 3 both (four experts), 4 the first model's forecast under / at least MOE_CONF (0.3) ticks either way. Each expert is a ridge on the first model's features and labels (HORIZON_US ahead,
+// QS_RATE), 3 both (four experts), 4 the first model's forecast under / at least MOE_CONF (0.3) ticks either way, 5 the
+// latent filter's posterior sd under / at least MOE_SD (1.0; needs FILTER). Each expert is a ridge on the first model's features and labels (HORIZON_US ahead,
 // MODEL_MEMORY_US, FIT_US, HUBER), learning only from its own regime's observations. MOE_MODE 0 (hard): the active
 // regime's expert's forecast replaces the first model's once that expert has MOE_MIN labels (0: MIN_LABELS), or with
 // MOE_W under 1, the blend (1 - MOE_W) x the first model's + MOE_W x the expert's (a soft gate). MOE_MODE 1
@@ -3487,8 +3491,8 @@ impl Strategy for RidgeMaker {
 // (0: RIDGE_MIN's / RIDGE_FRAC's) set the experts' ridge, max(MOE_RIDGE_MIN, MOE_RIDGE_FRAC * mass). The forecast feeds
 // everything the first model's does (the take, fair). RIDGE_DEBUG prints each expert's labels and the books it served.
 
-pub const MOE_KEYS: [&str; 8] =
-    ["MOE", "MOE_MODE", "MOE_MIN", "MOE_RIDGE_MIN", "MOE_RIDGE_FRAC", "MOE_W", "MOE_SPREAD", "MOE_CONF"];
+pub const MOE_KEYS: [&str; 9] =
+    ["MOE", "MOE_MODE", "MOE_MIN", "MOE_RIDGE_MIN", "MOE_RIDGE_FRAC", "MOE_W", "MOE_SPREAD", "MOE_CONF", "MOE_SD"];
 
 struct MoeExpert {
     /// (time, mid, features, the first model's forecast, this expert's forecast)
@@ -3512,6 +3516,7 @@ pub struct Moe {
     w: f64,
     wide: i64,
     conf: f64,
+    sd: f64,
     horizon_us: i64,
     memory_us: i64,
     fit_us: i64,
@@ -3525,8 +3530,11 @@ impl Moe {
         if gate <= 0 {
             return Ok(None);
         }
-        if gate > 4 {
-            return Err("MOE: 1 spread, 2 speed, 3 both, 4 the forecast's size".to_string());
+        if gate > 5 {
+            return Err("MOE: 1 spread, 2 speed, 3 both, 4 the forecast's size, 5 the filter's sd".to_string());
+        }
+        if gate == 5 && params.int("FILTER", 0)? <= 0 {
+            return Err("MOE 5 reads the latent filter's sd: set FILTER=1".to_string());
         }
         if gate >= 2 && params.float("QS_RATE", 0.0)? <= 0.0 {
             return Err("MOE 2 / 3 read QS_RATE's speed: set QS_RATE".to_string());
@@ -3557,6 +3565,7 @@ impl Moe {
             w: params.float("MOE_W", 1.0)?,
             wide: params.int("MOE_SPREAD", 2)?,
             conf: params.float("MOE_CONF", 0.3)?,
+            sd: params.float("MOE_SD", 1.0)?,
             horizon_us: params.int("HORIZON_US", 100_000)?,
             memory_us: params.int("MODEL_MEMORY_US", 300_000_000)?,
             fit_us: params.int("FIT_US", 1_000_000)?,
@@ -3565,14 +3574,16 @@ impl Moe {
         })))
     }
 
-    fn regime(&self, spread: i64, fast: bool, base: f64) -> usize {
+    fn regime(&self, spread: i64, fast: bool, base: f64, sd: f64) -> usize {
         let wide = (spread >= self.wide) as usize;
         match self.gate {
             1 => wide,
             2 => fast as usize,
             3 => wide + 2 * fast as usize,
             // 4: the first model's own forecast at least MOE_CONF either way (where the take decides)
-            _ => (base.abs() >= self.conf) as usize,
+            4 => (base.abs() >= self.conf) as usize,
+            // 5: the latent filter's posterior sd at least MOE_SD
+            _ => (sd >= self.sd) as usize,
         }
     }
 
