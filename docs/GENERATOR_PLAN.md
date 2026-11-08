@@ -308,3 +308,8 @@ What it gets wrong, so far:
 - the 2-tick spread share is a little low (0.08-0.11 against 0.11-0.14).
 A gain that rests on the generator's own latent (the FILTER features) is partly circular: compare its gain on the
 draws with its gain on the real public tape before reading it.
+
+## A dedicated session (8 Nov, 02:20)
+
+From round 3 on, the generator work moves to its own Claude session; its prompt is `docs/GENERATOR_SESSION_PROMPT.md`
+(the data inventory, what is known, the open discrepancies, the method, the deliverables and the round-4 playbook).

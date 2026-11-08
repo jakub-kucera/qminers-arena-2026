@@ -153,6 +153,25 @@
 //!       --set HUBER=6.0 --set RIDGE_MIN=30 --set RIDGE_FRAC=0.003 (its `_quote`'s `effective=reserved` is this
 //!       file's quote room at CANCEL_FREE 0 while no KEEP shrink is in flight: with quotes of at most KEEP_LOTS too,
 //!       so L9 with L8's switch is L9's and --set QUOTE_SIZE=1 --set QS_RATE=2.5)
+//! `RIDGE_FEAT_LOG` (an environment variable, a path; off by default, runs without it unchanged) writes each matured
+//! first-model label as little-endian f64s: the observation's time (s), its mid, the label, the stored forecast,
+//! inventory, the n features, then the 14 extras of `python/experiments/day/pretrain_dump_bot.py` (FeatExtras): the
+//! rows `experiments.day.pretrain_forecast rdump` trains on, the same bits as the Python dump (R3-F1's settings).
+//! Burst sizing over the 100-lot limit (R3-J1, 8 Nov; Rust only, off by default: L9's 317057.00 and its pnl.csv and
+//! result.json unchanged): the penalty is flat (10,000 a second while |position| > 100), so a burst is short and
+//! big. Its trigger: the forecast take's signal at least `BURST_TH` (0.0: off) ticks, while the spread is at least
+//! `BURST_SPREAD` (0) and the |mid change| rate over `BURST_SPEED_US` (5000000) is at least `BURST_SPEED` (0.0: off)
+//! ticks a second; or a jump, the mid at least `BURST_JUMP` (0.0: off) ticks from the oldest mid within
+//! `BURST_JUMP_MS` (0: the last valid book's); or `BURST_QUIET_MS` (0: off), the first market trade after that long
+//! without one while the spread before it was at least BURST_SPREAD, its aggressor's side; a jump burst only if the
+//! signal its way is at least `BURST_AGREE` (-99: any), and it sends at once an IOC `BURST_THRU` (0) ticks through the
+//! far touch for its room, whatever the forecast. At most one burst a `BURST_GAP_MS` (5000); for `BURST_MS` (500) the
+//! forecast take on the burst's side has BURST_EXP (100) as its exposure and limit, `BURST_SZ` (0: BURST_EXP) lots a
+//! take, BURST_THRU through, the spread cap `BURST_MAXSPREAD` (0: FT_MAXSPREAD), and fires on the burst's first book
+//! whatever FT_GAP_MS; the hedge holds off that side up to BURST_EXP until the burst ends, then brings the position
+//! back within EXPOSURE; `BURST_HOLD` (-99: off) ends it early once the signal its way falls below it. RIDGE_DEBUG
+//! adds the bursts and the lots their takes sent. Every trigger lost to L9 on round 2's and round 3's public tapes
+//! (IDEAS.md, "Burst sizing on R2-L9").
 //! Round 3's latent-price filter (R3-F1, `r3_F1_latent_filter.py`, 8 Nov), off by default: `FILTER` (0; 1 adds three
 //! features at the end of the base features, after TREND's: a hidden-Markov filter over the latent reference bid
 //! lb on FILTER_W (8) ticks either side of the bid. Each new market order within FILTER_DEPTH (6) of the previous
@@ -491,6 +510,35 @@ pub struct RidgeMaker {
     qs_us: i64,
     qs_last: Option<(i64, f64)>,
     qs_rate: f64,
+    /// round 3's burst sizing (R3-J1, 8 Nov, off by default): BURST_TH ... BURST_HOLD
+    burst_th: f64,
+    burst_exp: i64,
+    burst_sz: i64,
+    burst_ms: i64,
+    burst_gap_ms: i64,
+    burst_spread: i64,
+    burst_speed: f64,
+    burst_speed_us: i64,
+    burst_thru: i64,
+    burst_maxspread: i64,
+    burst_hold: f64,
+    burst_jump: f64,
+    burst_quiet_ms: i64,
+    burst_agree: f64,
+    burst_prev_mid: Option<f64>,
+    burst_prev_spread: i64,
+    burst_trade_last: i64,
+    burst_jump_ms: i64,
+    burst_mids: VecDeque<(i64, f64)>,
+    /// the burst's side, its end and its start; the speed gate's decayed |mid change| rate
+    burst_sign: i64,
+    burst_until: i64,
+    burst_last: i64,
+    burst_rate_last: Option<(i64, f64)>,
+    burst_rate: f64,
+    /// RIDGE_DEBUG: bursts started, lots taken in bursts
+    burst_n: i64,
+    burst_lots: i64,
     /// R3-F1's latent-price filter (FILTER, 0: off): a probability vector over lb = lf_base + i, i < lf_n
     filter: i64,
     lf_w: i64,
@@ -505,6 +553,127 @@ pub struct RidgeMaker {
     lf_p: Vec<f64>,
     lf_base: i64,
     lf_t: Option<f64>,
+    /// RIDGE_FEAT_LOG (env var, a path; experiments/day/pretrain_forecast.py): each matured first-model label as
+    /// little-endian f64s: t (s), the observation's mid, the label, the stored forecast, inventory, the n features,
+    /// then the 14 extras of pretrain_dump_bot.py's AExtras (fx) at the observation
+    feat_log: Option<std::io::BufWriter<std::fs::File>>,
+    feat_pending: VecDeque<(i64, f64, [f64; 14])>,
+    fx: FeatExtras,
+}
+
+/// pretrain_dump_bot.py's AExtras (R3-P1's PreExtras): the frozen forecast's extra inputs' running state
+#[derive(Default)]
+struct FeatExtras {
+    t: Option<i64>,
+    mid: Option<f64>,
+    v1: f64,
+    v10: f64,
+    t_wide: i64,
+    t_move: i64,
+    last_move: f64,
+    fsq: f64,
+    fbig: f64,
+}
+
+impl FeatExtras {
+    fn update(&mut self, now: i64, bid: i64, ask: i64, trades: &[Trade]) {
+        let mid = (bid + ask) as f64 * 0.5;
+        let dt = match self.t {
+            None => 0,
+            Some(t) => (now - t).max(0),
+        };
+        self.t = Some(now);
+        if dt != 0 {
+            let d1 = ((-dt) as f64 / 1e6).exp();
+            self.v1 *= d1;
+            self.v10 *= ((-dt) as f64 / 1e7).exp();
+            self.fsq *= d1;
+            self.fbig *= d1;
+        }
+        if let Some(m) = self.mid {
+            if mid != m {
+                let mv = mid - m;
+                self.v1 += mv.abs();
+                self.v10 += mv.abs();
+                self.t_move = now;
+                self.last_move = mv;
+            }
+        }
+        self.mid = Some(mid);
+        if ask - bid >= 2 {
+            self.t_wide = now;
+        }
+        let mut lots: Vec<(u64, i64, i64)> = Vec::new();
+        for trade in trades {
+            if trade.taker_owner != Owner::Market {
+                continue;
+            }
+            let direction = if trade.book_side == Side::Sell { 1 } else { -1 };
+            match lots.iter_mut().find(|(id, _, _)| *id == trade.taker_order_id) {
+                Some(entry) => entry.2 += trade.quantity,
+                None => lots.push((trade.taker_order_id, direction, trade.quantity)),
+            }
+        }
+        for (_, direction, q) in lots {
+            self.fsq += direction as f64 * (q as f64).powf(0.5);
+            if q as f64 > self.fbig.abs() {
+                self.fbig = (direction * q) as f64;
+            }
+        }
+    }
+
+    fn features(&self, now: i64, snapshot: &Snapshot, bid: i64, ask: i64, lf_p: &[f64], lf_base: i64) -> [f64; 14] {
+        let mid = (bid + ask) as f64 * 0.5;
+        let mut q = [[0i64; 2]; 2];
+        for (k, (side, touch, sgn)) in [(Side::Buy, bid, -1i64), (Side::Sell, ask, 1)].into_iter().enumerate() {
+            for order in snapshot.side(side) {
+                if order.owner != Owner::Market {
+                    continue;
+                }
+                let d = (order.price - touch) * sgn;
+                if d == 0 {
+                    q[k][0] += order.quantity;
+                } else if d == 1 {
+                    q[k][1] += order.quantity;
+                } else if d > 1 {
+                    break;
+                }
+            }
+        }
+        let (bq, b2, aq, a2) = (q[0][0] as f64, q[0][1] as f64, q[1][0] as f64, q[1][1] as f64);
+        let (mut up, mut dn, mut raw) = (0.0f64, 0.0f64, 0.0f64);
+        if !lf_p.is_empty() {
+            let mut m = 0.0f64;
+            for (i, &v) in lf_p.iter().enumerate() {
+                let g = (lf_base + i as i64) as f64 + 0.5 - mid;
+                m += v * g;
+                if g >= 0.5 {
+                    up += v;
+                } else if g <= -0.5 {
+                    dn += v;
+                }
+            }
+            raw = clamp(m, -10.0, 10.0);
+        }
+        let fb = self.fbig;
+        let sgn = if fb > 0.0 { 1.0 } else if fb < 0.0 { -1.0 } else { 0.0 };
+        [
+            (ask - bid).min(5) as f64,
+            bq.ln_1p() - aq.ln_1p(),
+            (bq.ln_1p() + aq.ln_1p()) / 5.0,
+            self.v1.min(20.0) / 5.0,
+            self.v10.min(200.0) / 50.0,
+            ((now - self.t_wide) as f64 / 1e6).min(10.0),
+            ((now - self.t_move) as f64 / 1e6).min(5.0),
+            clamp(self.last_move, -5.0, 5.0),
+            clamp(self.fsq, -50.0, 50.0) / 10.0,
+            sgn * fb.abs().ln_1p() / 5.0,
+            up,
+            dn,
+            raw,
+            b2.ln_1p() - a2.ln_1p(),
+        ]
+    }
 }
 
 impl RidgeMaker {
@@ -518,8 +687,9 @@ impl RidgeMaker {
             let st = self.dbg_steps;
             let mean = st[1] / st[0].max(1.0);
             eprintln!(
-                "RIDGE_DEBUG mean_abs_inv={:.1} step25_n={} step25_mean={:.1} step25_sd={:.1}",
-                self.dbg_inv[0] / self.dbg_inv[1].max(1.0), st[0], mean, (st[2] / st[0].max(1.0) - mean * mean).max(0.0).sqrt()
+                "RIDGE_DEBUG mean_abs_inv={:.1} step25_n={} step25_mean={:.1} step25_sd={:.1} bursts={} burst_lots={}",
+                self.dbg_inv[0] / self.dbg_inv[1].max(1.0), st[0], mean, (st[2] / st[0].max(1.0) - mean * mean).max(0.0).sqrt(),
+                self.burst_n, self.burst_lots
             );
         }
         let Ok(path) = std::env::var("RIDGE_DUMP") else { return };
@@ -557,7 +727,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 135] = [
+pub const KEYS: [&str; 150] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -576,6 +746,9 @@ pub const KEYS: [&str; 135] = [
     "KEEP_LOTS", "KEEP_TH", "FRONT_LOTS", "FRONT_TH", "FRONT_NONE", "SLICE_LOTS", "SLICE_US", "LADDER_LOTS", "KEEP_FREE", "KEEP_AHEAD", "KEEP_NOBACK",
     "L2_LOTS", "L2_ORDERS", "L2_FREE", "BURST",
     "FT_MAXSPREAD", "FT_ROOM_LIVE", "LIQ", "IMPACT_US", "HUBER", "QS_RATE", "QS_US",
+    "BURST_TH", "BURST_EXP", "BURST_SZ", "BURST_MS", "BURST_GAP_MS", "BURST_SPREAD", "BURST_SPEED", "BURST_SPEED_US",
+    "BURST_THRU", "BURST_MAXSPREAD", "BURST_HOLD", "BURST_JUMP", "BURST_QUIET_MS", "BURST_AGREE",
+    "BURST_JUMP_MS",
     "FILTER", "FILTER_W", "FILTER_RATE", "FILTER_EPS", "FILTER_PI0", "FILTER_PI1", "FILTER_PI2", "FILTER_IMPACT",
     "FILTER_SQRT_C", "FILTER_DEPTH",
 ];
@@ -773,6 +946,11 @@ impl RidgeMaker {
             pred_log: std::env::var("RIDGE_PRED_LOG")
                 .ok()
                 .map(|p| std::io::BufWriter::new(std::fs::File::create(p).expect("RIDGE_PRED_LOG"))),
+            feat_log: std::env::var("RIDGE_FEAT_LOG")
+                .ok()
+                .map(|p| std::io::BufWriter::new(std::fs::File::create(p).expect("RIDGE_FEAT_LOG"))),
+            feat_pending: VecDeque::new(),
+            fx: FeatExtras { t_wide: -1_000_000_000_000, t_move: -1_000_000_000_000, ..Default::default() },
             prior_mass: params.float("PRIOR_MASS", 0.0)?,
             dump_us: params.int("DUMP_US", 0)?,
             dump_snap: None,
@@ -853,6 +1031,32 @@ impl RidgeMaker {
             qs_us: params.int("QS_US", 5_000_000)?,
             qs_last: None,
             qs_rate: 0.0,
+            burst_th: params.float("BURST_TH", 0.0)?,
+            burst_exp: params.int("BURST_EXP", 100)?,
+            burst_sz: params.int("BURST_SZ", 0)?,
+            burst_ms: params.int("BURST_MS", 500)?,
+            burst_gap_ms: params.int("BURST_GAP_MS", 5000)?,
+            burst_spread: params.int("BURST_SPREAD", 0)?,
+            burst_speed: params.float("BURST_SPEED", 0.0)?,
+            burst_speed_us: params.int("BURST_SPEED_US", 5_000_000)?,
+            burst_thru: params.int("BURST_THRU", 0)?,
+            burst_maxspread: params.int("BURST_MAXSPREAD", 0)?,
+            burst_hold: params.float("BURST_HOLD", -99.0)?,
+            burst_jump: params.float("BURST_JUMP", 0.0)?,
+            burst_quiet_ms: params.int("BURST_QUIET_MS", 0)?,
+            burst_agree: params.float("BURST_AGREE", -99.0)?,
+            burst_prev_mid: None,
+            burst_prev_spread: 0,
+            burst_trade_last: i64::MIN / 2,
+            burst_jump_ms: params.int("BURST_JUMP_MS", 0)?,
+            burst_mids: VecDeque::new(),
+            burst_sign: 0,
+            burst_until: i64::MIN / 2,
+            burst_last: i64::MIN / 2,
+            burst_rate_last: None,
+            burst_rate: 0.0,
+            burst_n: 0,
+            burst_lots: 0,
             filter: params.int("FILTER", 0)?,
             lf_w,
             lf_n: (2 * lf_w + 1) as usize,
@@ -971,6 +1175,28 @@ impl RidgeMaker {
             let decay = ((-(elapsed.max(0))) as f64 / memory as f64).exp();
             m.last_label_us = Some(now);
             let mut response = clamp(mid - old_mid, -20.0, 20.0);
+            if which == 0 {
+                if let Some(w) = self.feat_log.as_mut() {
+                    while self.feat_pending.front().is_some_and(|e| e.0 < observed_us) {
+                        self.feat_pending.pop_front();
+                    }
+                    if let Some(&(t, inv, extra)) = self.feat_pending.front() {
+                        if t == observed_us {
+                            self.feat_pending.pop_front();
+                            use std::io::Write;
+                            let mut buf: Vec<u8> = Vec::with_capacity(8 * (5 + n + 14));
+                            for v in [observed_us as f64 * 1e-6, old_mid, response, stored, inv]
+                                .into_iter()
+                                .chain(features[..n].iter().copied())
+                                .chain(extra)
+                            {
+                                buf.extend_from_slice(&v.to_le_bytes());
+                            }
+                            let _ = w.write_all(&buf);
+                        }
+                    }
+                }
+            }
             if label_mode == 2 {
                 response = if response > 0.0 { 1.0 } else if response < 0.0 { -1.0 } else { 0.0 };
             }
@@ -1700,6 +1926,8 @@ impl RidgeMaker {
     fn hedge(&mut self, now: i64, ctx: &mut Ctx) {
         // VOL_NOHEDGE: the hedge keeps EXPOSURE's level when the scaled exposure is below it
         let exposure = if self.vol_nohedge && self.vol_exp != 0.0 { self.exposure.max(self.exposure_base) } else { self.exposure };
+        // BURST: the burst's side keeps up to BURST_EXP until the burst ends
+        let exposure = if now < self.burst_until && self.inventory * self.burst_sign > 0 { exposure.max(self.burst_exp) } else { exposure };
         if !self.hedge || self.inventory.abs() <= exposure || self.hedge_id.is_some() {
             return;
         }
@@ -1858,6 +2086,14 @@ impl Strategy for RidgeMaker {
                 self.qs_rate = self.qs_rate * k + (mid - m).abs() / (self.qs_us as f64 / 1e6);
             }
             self.qs_last = Some((now, mid));
+        }
+        if self.burst_speed > 0.0 {
+            // BURST_SPEED: the |mid change| ticks a second, decayed over BURST_SPEED_US, at every valid book (L8's rate)
+            if let Some((t, m)) = self.burst_rate_last {
+                let k = ((-((now - t).max(0))) as f64 / self.burst_speed_us as f64).exp();
+                self.burst_rate = self.burst_rate * k + (mid - m).abs() / (self.burst_speed_us as f64 / 1e6);
+            }
+            self.burst_rate_last = Some((now, mid));
         }
         let spread = ask - bid;
         let flow = self.net / (1.0 + self.volume);
@@ -2188,6 +2424,9 @@ impl Strategy for RidgeMaker {
             }
         }
         let n = self.n;
+        if self.feat_log.is_some() {
+            self.fx.update(now, bid, ask, trades);
+        }
         self.learn(0, now, mid);
         let m2_on = self.blend_w > 0.0 || (self.lean_k != 0.0 && self.lean_src == 0) || self.ft_src == 1;
         if m2_on {
@@ -2208,6 +2447,10 @@ impl Strategy for RidgeMaker {
                 0.0
             };
             self.m1.observations.push_back((now, mid, features, self.mid_changes, stored));
+            if self.feat_log.is_some() {
+                let extra = self.fx.features(now, snapshot, bid, ask, &self.lf_p, self.lf_base);
+                self.feat_pending.push_back((now, self.inventory as f64, extra));
+            }
             if m2_on {
                 if self.m2.observations.len() >= self.obs_cap {
                     self.m2.observations.pop_front();
@@ -2508,10 +2751,107 @@ impl Strategy for RidgeMaker {
                 let _ = writeln!(w, "{},{},{},{},{},{}", now, mid, prediction, skew, spread, self.inventory);
             }
         }
+        // BURST (R3-J1): a forecast of BURST_TH or more starts a burst of BURST_MS on its side, the take's room there
+        // BURST_EXP lots (over the 100-lot limit: the penalty), the hedge holding off that side until it ends
+        let mut burst_new = false;
+        // the jump triggers: BURST_JUMP, the mid's move since the last valid book; BURST_QUIET_MS, the first market
+        // trade after that long without one while the spread before it was at least BURST_SPREAD (its aggressor's side)
+        let jump_mode = self.burst_jump > 0.0 || self.burst_quiet_ms > 0;
+        let mut jump_sign = 0i64;
+        if jump_mode {
+            if self.burst_jump > 0.0 {
+                // BURST_JUMP_MS (0: since the last valid book): the move from the oldest mid within that window
+                let base = if self.burst_jump_ms > 0 {
+                    self.burst_mids.push_back((now, mid));
+                    while let Some(&(t, _)) = self.burst_mids.front() {
+                        if t < now - self.burst_jump_ms * 1000 {
+                            self.burst_mids.pop_front();
+                        } else {
+                            break;
+                        }
+                    }
+                    self.burst_mids.front().map(|&(_, m)| m)
+                } else {
+                    self.burst_prev_mid
+                };
+                if let Some(m) = base {
+                    if (mid - m).abs() >= self.burst_jump {
+                        jump_sign = if mid > m { 1 } else { -1 };
+                    }
+                }
+            }
+            if let Some(trade) = trades.iter().find(|t| t.taker_owner == Owner::Market) {
+                if self.burst_quiet_ms > 0 && now - self.burst_trade_last >= self.burst_quiet_ms * 1000 && self.burst_prev_spread >= self.burst_spread {
+                    jump_sign = if trade.book_side == Side::Sell { 1 } else { -1 };
+                }
+                self.burst_trade_last = now;
+            }
+            self.burst_prev_mid = Some(mid);
+            self.burst_prev_spread = spread;
+        }
+        if (self.burst_th > 0.0 || jump_mode) && self.ft_sz > 0 && self.m1.labels >= self.min_labels {
+            let source = if self.ft_src == 1 { p2_only } else { prediction };
+            let signal = if self.ft_net > 0 { source - skew } else { source };
+            if now < self.burst_until && self.burst_sign as f64 * signal < self.burst_hold {
+                // BURST_HOLD: the forecast its way fell below it, the burst ends (the hedge brings the position back)
+                self.burst_until = now;
+            }
+            if now >= self.burst_until && now - self.burst_last >= self.burst_gap_ms * 1000 {
+                let start = if jump_mode {
+                    // BURST_AGREE: the forecast the jump's way at least this (-99: any)
+                    if jump_sign != 0 && jump_sign as f64 * signal >= self.burst_agree && (self.burst_quiet_ms > 0 || spread >= self.burst_spread) {
+                        jump_sign
+                    } else {
+                        0
+                    }
+                } else if signal.abs() >= self.burst_th
+                    && spread >= self.burst_spread
+                    && (self.burst_speed <= 0.0 || self.burst_rate >= self.burst_speed)
+                {
+                    if signal > 0.0 { 1 } else { -1 }
+                } else {
+                    0
+                };
+                if start != 0 {
+                    self.burst_sign = start;
+                    self.burst_until = now + self.burst_ms * 1000;
+                    self.burst_last = now;
+                    self.burst_n += 1;
+                    burst_new = true;
+                    if jump_mode {
+                        // the jump's take: an IOC BURST_THRU through the far touch for the burst's room, whatever the forecast
+                        let pos = start * self.inventory;
+                        let reserved: i64 = self.orders.iter().filter(|r| r.sign == start).map(|r| r.quantity).sum();
+                        let size = if self.burst_sz > 0 { self.burst_sz } else { self.burst_exp };
+                        let quantity = size.min(self.burst_exp - pos - reserved);
+                        if quantity > 0 {
+                            self.burst_lots += quantity;
+                            let price = if start > 0 { ask + self.burst_thru } else { 1i64.max(bid - self.burst_thru) };
+                            let id = ctx.send_order(if start > 0 { Side::Buy } else { Side::Sell }, price, quantity, true);
+                            self.orders.push(Record {
+                                id,
+                                sign: start,
+                                price,
+                                quantity,
+                                accepted: false,
+                                cancelling: false,
+                                exempt_until: now + 1_000_000,
+                                target: 0,
+                                kept: false,
+                            });
+                            self.ft_last = now;
+                            burst_new = false;
+                        }
+                    }
+                }
+            }
+        }
+        let bursting = now < self.burst_until;
+        let ft_maxspread = if bursting && self.burst_maxspread > 0 { self.burst_maxspread } else { self.ft_maxspread };
         if self.ft_sz > 0
             && self.m1.labels >= self.min_labels
-            && now - self.ft_last >= self.ft_gap_ms * 1000
-            && (self.ft_maxspread <= 0 || spread <= self.ft_maxspread)
+            && (now - self.ft_last >= self.ft_gap_ms * 1000 || burst_new)
+            && (ft_maxspread <= 0 || spread <= ft_maxspread)
         {
             let source = if self.ft_src == 1 { p2_only } else { prediction };
             let signal = if self.ft_net > 0 { source - skew } else { source };
@@ -2525,6 +2865,9 @@ impl Strategy for RidgeMaker {
             };
             if sign != 0 {
                 let pos = sign * self.inventory;
+                // a burst on this side: BURST_EXP is the exposure and the limit, BURST_SZ (0: BURST_EXP) the take's lots
+                let big = bursting && sign == self.burst_sign;
+                let exposure = if big { self.burst_exp } else { self.exposure };
                 let room = match self.ft_mode {
                     1 => {
                         if pos < 0 && -pos >= self.ft_inv {
@@ -2535,19 +2878,27 @@ impl Strategy for RidgeMaker {
                     }
                     2 => {
                         if pos >= 0 {
-                            self.exposure - pos
+                            exposure - pos
                         } else {
                             0
                         }
                     }
-                    _ => self.exposure - pos,
+                    _ => exposure - pos,
                 };
                 let reserved: i64 = self.orders.iter().filter(|r| r.sign == sign).map(|r| r.quantity).sum();
                 // FT_ROOM_LIVE (T2): every live same-side order can fill first, so it comes off the room
                 let room = if self.ft_room_live { room - reserved } else { room };
-                let quantity = self.ft_sz.min(room).min(self.position_limit - pos - reserved);
+                let (size, limit, thru) = if big {
+                    (if self.burst_sz > 0 { self.burst_sz } else { self.burst_exp }, self.burst_exp.max(self.position_limit), self.burst_thru)
+                } else {
+                    (self.ft_sz, self.position_limit, self.ft_thru)
+                };
+                let quantity = size.min(room).min(limit - pos - reserved);
                 if quantity > 0 {
-                    let price = if sign > 0 { ask + self.ft_thru } else { 1i64.max(bid - self.ft_thru) };
+                    if big {
+                        self.burst_lots += quantity;
+                    }
+                    let price = if sign > 0 { ask + thru } else { 1i64.max(bid - thru) };
                     let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, true);
                     self.orders.push(Record {
                         id,
