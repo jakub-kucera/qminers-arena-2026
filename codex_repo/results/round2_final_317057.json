@@ -1,0 +1,145 @@
+{
+  "reviewed_at_utc": "2026-11-08T00:00:19.390271+00:00",
+  "status": "User-designated final submission; public PnL reproduced exactly by audited native run and independent unmodified organizer CLI.",
+  "source": "strategies/round2_final_317057.py",
+  "original_source": "/Users/jakubkucera/Documents/qminers_arena_scrap/round2_local_317057.py",
+  "source_sha256": "4df2b5c12142242fcff6be80e8765833f3d7c54d97893b5707589929e67aa622",
+  "original_bytes_preserved": true,
+  "original_crlf_lines": 583,
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "29e4442aa5ada17de2d754a64ddda3fd8c5c1f1068b5eec3b70f968b9debb179",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
+  },
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "evaluation": {
+    "result": {
+      "fills": 2803,
+      "traded_volume": 302909,
+      "inventory": -47,
+      "cash": 772487.0,
+      "mark_price": 9690.0,
+      "breach_penalty": 0.0,
+      "pnl": 317057.0,
+      "pnl_se": 28045.43398774306,
+      "abs_inventory_q50": 100,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 112.1048244999256,
+    "max_abs_inventory": 100,
+    "max_potential_inventory_at_submission": 100,
+    "max_drawdown_1s": 10880.0,
+    "submissions": 2853,
+    "order_status_counts": {
+      "accepted": 2853,
+      "filled": 1579,
+      "partially_filled": 4992,
+      "canceled": 1274
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 1000.0,
+        "pnl_increment": 25903.0
+      },
+      {
+        "start_s": 1000.0,
+        "end_s": 2000.0,
+        "pnl_increment": 22198.0
+      },
+      {
+        "start_s": 2000.0,
+        "end_s": 3000.0,
+        "pnl_increment": 74024.0
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 4000.0,
+        "pnl_increment": 96815.0
+      },
+      {
+        "start_s": 4000.0,
+        "end_s": 5000.0,
+        "pnl_increment": 48023.0
+      },
+      {
+        "start_s": 5000.0,
+        "end_s": 5999.995946,
+        "pnl_increment": 50094.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "boundary_pnl": {
+      "3599997635": 141286.0,
+      "4799996824": 253909.0
+    },
+    "source": "strategies/round2_final_317057.py",
+    "source_sha256": "4df2b5c12142242fcff6be80e8765833f3d7c54d97893b5707589929e67aa622",
+    "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+    "independent_private_ledger": true,
+    "risk_contract": "strict100"
+  },
+  "official_cli_match": true,
+  "public_periods": {
+    "first60": 141286.0,
+    "middle20": 112623.0,
+    "last20": 63148.0,
+    "later40": 175771.0
+  },
+  "comparison_source": "strategies/round2_taker_liquidity_pure_294098.py",
+  "comparison_periods": {
+    "first60": 117351.0,
+    "middle20": 106500.0,
+    "last20": 70247.0,
+    "later40": 176747.0
+  },
+  "comparison": {
+    "public_net_improvement": 22959.0,
+    "public_improvement_percent": 7.806581479642838,
+    "old_max_drawdown": 6222.0,
+    "new_max_drawdown": 10880.0
+  },
+  "code_changes": [
+    "Three signed flow magnitude/liquidity features,33 to36 inputs",
+    "Causal Huber-style weighting against saved forecasts,delta6",
+    "Ridge strength3x",
+    "Explicit internal100-lot limit and full reservations; quote size remains0"
+  ],
+  "review_findings": "No obvious correctness/look-ahead issue found. Native ledgers matched and actual/potential exposure<=100. Stronger full-public PnL, higher drawdown, and slightly lower later40% PnL. Effects of individual changes not isolated.",
+  "tests_passed": 116,
+  "server_validation_pnl": null,
+  "private_pnl": null,
+  "server_feedback_status": "Asked user for score and submission ID for this exact file; not yet supplied.",
+  "scope": "Public tape already reused for selection; period comparisons are diagnostics, not fresh holdouts. User designation of final source is not independently verified upload identity."
+}

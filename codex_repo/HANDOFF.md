@@ -1,5 +1,22 @@
 # Handoff for the next session
 
+Latest: **user's final round 2 submission reviewed on 8 November (CET)**.
+Original: `../round2_local_317057.py`; untouched byte-identical archive:
+`strategies/round2_final_317057.py`. Source SHA:
+`4df2b5c12142242fcff6be80e8765833f3d7c54d97893b5707589929e67aa622`.
+**317,057 public net, zero penalties**, all result fields independently matched
+original organizer CLI; actual/potential exposure100/100. Drawdown10,880
+versus6,222 for the earlier294,098 pure taker. Later40%175,771 versus176,747;
+the22,959 total gain is concentrated earlier. **116 tests pass.**
+Read [final review](docs/ROUND2_FINAL_REVIEW.md) and
+`results/round2_final_317057.json`. Three new flow-impact features, causal
+Huber-style weighting and3x ridge are the substantive changes. The user calls
+this the final submission; its server score/ID are pending, not inferred from
+the filename or public result. Review processes are finished. The mutable
+`round2_submission.py` remains the old181 K maker; use the named final archive.
+
+## Earlier structural-taker handoff
+
 Updated 7 November 2026 after structural taker followups.
 Read [further ideas and completed experiments](docs/ROUND2_NEXT_IDEAS.md),
 [taker research](docs/ROUND2_TAKER_RESEARCH.md), and the

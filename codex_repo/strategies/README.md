@@ -1,5 +1,7 @@
 # Strategy index
 
+User-selected final round2 source: [round2_final_317057.py](round2_final_317057.py), exact supplied bytes; verified public317,057, zero penalties. See [review](../docs/ROUND2_FINAL_REVIEW.md).
+
 Latest: [nine-model taker shortlist](../docs/ROUND2_TAKER_SHORTLIST.md), [research](../docs/ROUND2_TAKER_RESEARCH.md). Pure liquidity taker: CLI-verified public294,098; liquidity parent269,920 has lower drawdown. Both await server feedback. Imported T2: public194,391, supplied validation490,359. `round2_submission.py` / its manifest still identify the historical181 K maker below.
 
 ## Frozen round 1

@@ -1,0 +1,110 @@
+{
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "29e4442aa5ada17de2d754a64ddda3fd8c5c1f1068b5eec3b70f968b9debb179",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
+  },
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "runner_sha256": "18a534d6febd2129bc6643b865b07e781201b694147e4066af5c0858a347249b",
+  "scope": "Review of user-supplied final submission. Reused public reproduction, not a server or private score. Exact original bytes preserved.",
+  "results": {
+    "user_final317057": {
+      "result": {
+        "fills": 2803,
+        "traded_volume": 302909,
+        "inventory": -47,
+        "cash": 772487.0,
+        "mark_price": 9690.0,
+        "breach_penalty": 0.0,
+        "pnl": 317057.0,
+        "pnl_se": 28045.43398774306,
+        "abs_inventory_q50": 100,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 112.1048244999256,
+      "max_abs_inventory": 100,
+      "max_potential_inventory_at_submission": 100,
+      "max_drawdown_1s": 10880.0,
+      "submissions": 2853,
+      "order_status_counts": {
+        "accepted": 2853,
+        "filled": 1579,
+        "partially_filled": 4992,
+        "canceled": 1274
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 1000.0,
+          "pnl_increment": 25903.0
+        },
+        {
+          "start_s": 1000.0,
+          "end_s": 2000.0,
+          "pnl_increment": 22198.0
+        },
+        {
+          "start_s": 2000.0,
+          "end_s": 3000.0,
+          "pnl_increment": 74024.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 4000.0,
+          "pnl_increment": 96815.0
+        },
+        {
+          "start_s": 4000.0,
+          "end_s": 5000.0,
+          "pnl_increment": 48023.0
+        },
+        {
+          "start_s": 5000.0,
+          "end_s": 5999.995946,
+          "pnl_increment": 50094.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997635": 141286.0,
+        "4799996824": 253909.0
+      },
+      "source": "strategies/round2_final_317057.py",
+      "source_sha256": "4df2b5c12142242fcff6be80e8765833f3d7c54d97893b5707589929e67aa622",
+      "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+      "independent_private_ledger": true,
+      "risk_contract": "strict100"
+    }
+  }
+}

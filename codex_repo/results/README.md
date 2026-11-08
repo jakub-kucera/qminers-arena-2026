@@ -1,5 +1,7 @@
 # Result manifests
 
+`round2_final_317057.json` records the user-supplied final source, exact public317,057 CLI reproduction, strict100 audit and risk comparison. Its server score/ID are not yet supplied. See [review](../docs/ROUND2_FINAL_REVIEW.md).
+
 Latest: [nine-model taker shortlist](../docs/ROUND2_TAKER_SHORTLIST.md), [research](../docs/ROUND2_TAKER_RESEARCH.md). Pure liquidity taker: CLI-verified public294,098; liquidity parent269,920 has lower drawdown. Both await server feedback. Imported T2: public194,391, supplied validation490,359. `round2_submission.py` / its manifest still identify the historical181 K maker below.
 
 `round2_submission.json` identifies the current 180,895.19 checkpoint, with exact

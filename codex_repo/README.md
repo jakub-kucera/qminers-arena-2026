@@ -26,6 +26,8 @@ later tuning results are sample-tuned, not independent holdouts.
 
 ## Round-2 current checkpoint
 
+The user's final submission is now preserved as [round2_final_317057.py](strategies/round2_final_317057.py): **317,057 public**, zero penalties, independent organizer CLI match. See [final review](docs/ROUND2_FINAL_REVIEW.md) for code changes and the higher drawdown. Server score/ID are pending. Earlier research follows.
+
 Latest [taker shortlist](docs/ROUND2_TAKER_SHORTLIST.md) and [further ideas](docs/ROUND2_NEXT_IDEAS.md): **294,098 public**, zero penalties, for `strategies/round2_taker_liquidity_pure_294098.py`; every result field matches the original CLI. Its parent269,920 has lower drawdown. Both await source-specific server feedback. Imported T2 has supplied validation **490,359**. Use named files: the mutable submission pointer remains the older maker. The following distribution section is historical.
 
 [Distribution research and sixteen-model comparison](docs/ROUND2_DISTRIBUTION_RESEARCH.md)
