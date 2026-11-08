@@ -81,7 +81,8 @@ Check it is marked final on the portal before 06:00.
    server (F3 - B1), worth knowing for round 4.
 2. The untested direction the statistics agent left: more size or a lower take bar just after jumps or while inserts
    land wide (where takes earn most); burst sizing lost, so it is a weak lead.
-3. Round 4 at 07:00: copy `docs/HANDOVER_TEMPLATE.md` to `data/arena/round4/`; run `family_rust` with the FILTER bases on
+3. **Round 4's first idea: warm-start F3's ridge from the round's public tape** (our first 1,000 s made 37k against
+   53-136k for the 16 teams above us; `leaderboard_curves.md`). Round 4 at 07:00: copy `docs/HANDOVER_TEMPLATE.md` to `data/arena/round4/`; run `family_rust` with the FILTER bases on
    the new public tape (F3's base first); ask the generator session to run its playbook on it; upload F3 first as the
    paired base.
 
@@ -137,7 +138,8 @@ Round 2's L-family re-ranked on round 3's own tapes ("Round 3's first look"); L9
 
 ## Leaderboard
 Round 3's live percentiles from the organisers' dashboard (01:49): p25 176k, median 503k, p75 785k. Final: 17th of 53,
-z3 0.467, overall 15th of 61 (1.835); `leaderboard.json` here ("Round 3 result").
+z3 0.467, overall 15th of 61 (1.835); `leaderboard.json` here ("Round 3 result"). The teams' PnL curves per 1,000 s and what they show:
+`leaderboard_curves.md` here (our first 1,000 s is the weakest of the top 17: the ridge's warm-up).
 At 02:38 (the dashboard's data, 40 teams, 84 submissions, 3 failed): the best validation PnL a team, p25 289k, median
 546k, p75 848k (868k at 02:33); the field is rising, F3's +883,559 is 35k over p75. At 03:26 (47 teams, 137
 submissions, 8 failed): p25 391k, median 606k, p75 876k, so F3 is 7k over p75. Our private results so far
