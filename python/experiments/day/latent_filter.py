@@ -12,7 +12,11 @@ is a discrete hidden-Markov filter over integer `lb` (2W+1 states around the boo
   asks the mirror image; plus a floor `eps` for outliers;
 - **options, off by default:** `sqrt_c` (Phase 1's impact, sqrt_c x sqrt(lots), instead of the table); `jump` (lognormal
   jumps at that rate a second, `jump_med` / `jump_sd`, mixed in around the mode: Rust's FILTER_JUMP); `sweep` (a market
-  buy that filled up to P truncates lb < P - 1 - sweep, a sell lb > P + sweep, by `sweep_eps`).
+  buy that filled up to P truncates lb < P - 1 - sweep, a sell lb > P + sweep, by `sweep_eps`); `mix` (8 Nov, R3-F4
+  work: a calm/volatile mixture, `MixFilter`); `maxsz` (inserts of that many lots or more not observed); `cancel_h` /
+  `cancel_l0` (stale cancels and their survival term); `--extra K=V,...` runs another filter on the same events and
+  `ridge` (`ridge_check`) reports the 0.4-s / 1-s R² with its gap added. All lost on round3_public (IDEAS.md, "A better
+  state for R3-F3's latent-price filter").
 
 `--latent FILE` (tape_gen --latent-out's true latent of a generated tape) adds the oracle check: the tracking RMSE by
 regime, the lag after 3+ tick jumps, and the true gap's correlation with the mid's moves beside the filter's (the
@@ -43,6 +47,16 @@ from experiments.day.tape_book import Book
 IMPACT = ((10, 0.097), (30, 0.111), (60, 0.161), (120, 0.254), (250, 0.349), (500, 0.468), (1000, 0.704), (10**9, 0.903))
 DEFAULTS = {"W": 8, "rate": 2.0, "eps": 0.01, "pi0": 0.55, "pi1": 0.39, "pi2": 0.06, "pi3": 0.0, "impact_scale": 1.0, "depth": 99, "sqrt_c": 0.0, "use_size": 0,
             "jump": 0.0, "jump_med": 6.66, "jump_sd": 0.79, "sweep": -1, "sweep_eps": 0.01}
+MIX = {"mix": 0, "sw01": 0.2, "sw10": 0.2, "vrate": 2.0, "vimpact": 1.0, "vpi0": 0.35, "vpi1": 0.25, "vpi2": 0.15,
+       "vpi3": 0.1, "vpi4": 0.08, "vpi5": 0.07}
+MIX_KEYS = tuple(MIX)
+DEFAULTS.update(MIX)
+DEFAULTS["maxsz"] = 0  # > 0: inserts of at least this many lots are not observed (round 3's big resting G orders)
+# stale cancels (Phase 1: an order the latent has passed cancels at about 2x the hazard): cancel_h > 0 multiplies the
+# states where a cancelled order is stale by cancel_h (a bid above lb, an ask below lb + 1); cancel_l0 > 0 adds the
+# survival term, exp(-(cancel_h - 1) cancel_l0 N_stale(lb) dt) between events, N_stale the resting orders stale at lb
+DEFAULTS["cancel_h"] = 0.0
+DEFAULTS["cancel_l0"] = 0.0
 HORIZONS = (0.1, 0.4, 1.0, 5.0)
 STEP = 0.05
 
@@ -263,29 +277,269 @@ class LatentFilter:
         return self.base + i, p[i]
 
 
-def replay(path: Path, params: dict, offsets: bool = False):
+class MixFilter(LatentFilter):
+    """(c) A regime mixture (8 Nov, R3-F4 work): two copies of lb's vector, calm (index 0) and volatile (1), with
+    Markov switching between them at `sw01` / `sw10` a second; each regime its own walk rate (`rate` / `vrate`), its
+    own insert offsets (calm pi0-pi2; volatile `vpi0`-`vpi5`) and its own impact scale (`impact_scale` / x `vimpact`).
+    `pv()` is the posterior probability of the volatile regime."""
+
+    def __init__(self, mix=1, sw01=0.2, sw10=0.2, vrate=2.0, vimpact=1.0, vpi=(0.35, 0.25, 0.15, 0.1, 0.08, 0.07), **kw):
+        super().__init__(**kw)
+        s = sum(vpi)
+        self.vpi = tuple(x / s for x in vpi)
+        self.vcum = tuple(sum(self.vpi[: j + 1]) for j in range(len(self.vpi) - 1)) + (1.0,)
+        self.sw01, self.sw10, self.vrate, self.vimpact = sw01, sw10, vrate, vimpact
+        self.pp = None  # [calm vector, volatile vector]
+
+    @property
+    def p(self):
+        return None if self.pp is None else [a + b for a, b in zip(self.pp[0], self.pp[1])]
+
+    @p.setter
+    def p(self, value):
+        pass
+
+    def reset(self, bid):
+        self.base = bid - self.W
+        self.pp = [[0.0] * self.n, [0.0] * self.n]
+        self.pp[0][self.W] = 0.5
+        self.pp[1][self.W] = 0.5
+
+    def pv(self):
+        a, b = sum(self.pp[0]), sum(self.pp[1])
+        return b / (a + b)
+
+    def _walk(self, p, a):
+        n = self.n
+        keep = 1.0 - 2.0 * a
+        q = [0.0] * n
+        prev = 0.0
+        for i in range(n):
+            cur = p[i]
+            nxt = p[i + 1] if i + 1 < n else 0.0
+            q[i] = keep * cur + a * (prev + nxt)
+            prev = cur
+        q[0] += a * p[0]
+        q[-1] += a * p[-1]
+        return q
+
+    def advance(self, t):
+        if self.t is None:
+            self.t = t
+            return
+        dt = t - self.t
+        if dt <= 0:
+            return
+        self.t = t
+        c, v = self.pp
+        a01 = min(0.5, self.sw01 * dt)
+        a10 = min(0.5, self.sw10 * dt)
+        c2 = [(1 - a01) * x + a10 * y for x, y in zip(c, v)]
+        v2 = [a01 * x + (1 - a10) * y for x, y in zip(c, v)]
+        ac = min(0.3, self.rate * dt)
+        av = min(0.3, self.vrate * dt)
+        self.pp = [self._walk(c2, ac) if ac >= 1e-9 else c2, self._walk(v2, av) if av >= 1e-9 else v2]
+
+    def recenter(self, bid):
+        shift = bid - self.W - self.base
+        if shift == 0:
+            return
+        if abs(shift) >= self.n:
+            pv = self.pv()
+            self.reset(bid)
+            self.pp[0][self.W] = 1 - pv
+            self.pp[1][self.W] = pv
+            return
+        n = self.n
+        out = []
+        for p in self.pp:
+            q = [0.0] * n
+            for i in range(n):
+                j = min(n - 1, max(0, i - shift))
+                q[j] += p[i]
+            out.append(q)
+        self.pp = out
+        self.base += shift
+
+    def _shift(self, p, m, direction):
+        whole = int(m)
+        frac = m - whole
+        n = self.n
+        q = [0.0] * n
+        for i in range(n):
+            v = p[i]
+            if v == 0.0:
+                continue
+            j = min(n - 1, max(0, i + direction * whole))
+            k = min(n - 1, max(0, i + direction * whole + direction))
+            q[j] += v * (1.0 - frac)
+            q[k] += v * frac
+        return q
+
+    def trade(self, direction, lots):
+        if self.sqrt_c > 0:
+            m = self.sqrt_c * math.sqrt(lots)
+        else:
+            m = self.impact_scale
+            for top, value in IMPACT:
+                if lots <= top:
+                    m *= value
+                    break
+        if m <= 0:
+            return
+        self.pp = [self._shift(self.pp[0], m, direction), self._shift(self.pp[1], m * self.vimpact, direction)]
+
+    def bound(self, direction, deepest):
+        return
+
+    def insert(self, side, price, bid, ask):
+        n, base, eps = self.n, self.base, self.eps
+        total = 0.0
+        for r, (pi, cum) in enumerate(((self.pi, self.cum), (self.vpi, self.vcum))):
+            p = self.pp[r]
+            K = len(pi)
+            if side == 0:
+                clamp = ask - 1
+                for i in range(n):
+                    if price >= clamp:
+                        d = base + i - clamp
+                        like = eps + (cum[d] if d < K else 1.0) if d >= 0 else eps
+                    else:
+                        k = base + i - price
+                        like = eps + pi[k] if 0 <= k < K else eps
+                    p[i] *= like
+                    total += p[i]
+            else:
+                clamp = bid + 1
+                for i in range(n):
+                    if price <= clamp:
+                        d = clamp - 1 - (base + i)
+                        like = eps + (cum[d] if d < K else 1.0) if d >= 0 else eps
+                    else:
+                        k = price - 1 - (base + i)
+                        like = eps + pi[k] if 0 <= k < K else eps
+                    p[i] *= like
+                    total += p[i]
+        if total <= 0 or not math.isfinite(total):
+            self.reset(base + self.W)
+            return
+        self.loglik += math.log(total)
+        self.n_obs += 1
+        inv = 1.0 / total
+        for p in self.pp:
+            for i in range(n):
+                p[i] *= inv
+
+    def moments(self):
+        p = self.p
+        m = s2 = 0.0
+        for i, v in enumerate(p):
+            m += v * i
+            s2 += v * i * i
+        return self.base + m, math.sqrt(max(0.0, s2 - m * m))
+
+    def map(self):
+        p = self.p
+        i = max(range(self.n), key=p.__getitem__)
+        return self.base + i, p[i]
+
+
+def make_filter(params: dict):
+    params = dict(params)
+    maxsz = params.pop("maxsz", 0)
+    ch, cl = params.pop("cancel_h", 0.0), params.pop("cancel_l0", 0.0)
+    filt = _make_filter(params)
+    filt.maxsz = maxsz
+    filt.cancel_h, filt.cancel_l0 = ch, cl
+    return filt
+
+
+def cancel_update(filt, side, price):
+    """A cancelled resting order at `price`: the states where it is stale times cancel_h."""
+    h = filt.cancel_h
+    p, base, n = filt.p, filt.base, filt.n
+    total = 0.0
+    for i in range(n):
+        lb = base + i
+        stale = price > lb if side == 0 else price < lb + 1
+        if stale:
+            p[i] *= h
+        total += p[i]
+    inv = 1.0 / total
+    for i in range(n):
+        p[i] *= inv
+
+
+def survival_update(filt, book, bb, ba, dt):
+    """Between events: the stale orders that did not cancel (each state's count of resting orders stale at it)."""
+    rate = (filt.cancel_h - 1.0) * filt.cancel_l0 * dt
+    if rate <= 0:
+        return
+    p, base, n = filt.p, filt.base, filt.n
+    bids, asks = book.levels
+    total = 0.0
+    for i in range(n):
+        lb = base + i
+        ns = 0
+        if lb < bb:
+            for price in range(lb + 1, bb + 1):
+                q = bids.get(price)
+                if q:
+                    ns += len(q)
+        if lb >= ba:
+            for price in range(ba, lb + 1):
+                q = asks.get(price)
+                if q:
+                    ns += len(q)
+        if ns:
+            p[i] *= math.exp(-rate * ns)
+        total += p[i]
+    inv = 1.0 / total
+    for i in range(n):
+        p[i] *= inv
+
+
+def _make_filter(params: dict):
+    if params.pop("mix", 0):
+        vpi = tuple(params.pop(f"vpi{k}") for k in range(6))
+        return MixFilter(sw01=params.pop("sw01"), sw10=params.pop("sw10"), vrate=params.pop("vrate"),
+                         vimpact=params.pop("vimpact"), vpi=vpi, **params)
+    for key in MIX_KEYS:
+        params.pop(key, None)
+    return LatentFilter(**params)
+
+
+def replay(path: Path, params: dict, offsets: bool = False, extra: tuple = ()):
     """Replay the tape; return the 50-ms samples (t, mid, signal, sd, imbalance, spread) and, with offsets, the
     inserts' offsets k to a confident MAP (bid: lb - p, ask: p - 1 - lb) at a 1- and 2-tick spread."""
     book = Book()
-    filt = LatentFilter(**params)
+    filt = make_filter(params)
+    # extra filters (other settings) fed the same events; their gaps are appended to each row (ridge_check's "+x")
+    others = [make_filter({**params, **e}) for e in extra]
     rows = []
     next_t = STEP
     ks = {}
     fchk = []
     last_bb = last_ba = None
+    last_ev = 0.0
     with path.open() as fh:
         next(fh)
         for line in fh:
             t, op, oid, side, vol, price, life = line.rstrip("\n").split(",")
             t = float(t)
             bb, ba = book.best
+            if filt.cancel_l0 > 0 and filt.p is not None and bb is not None and ba is not None and bb < ba:
+                survival_update(filt, book, bb, ba, t - last_ev)
+            last_ev = t
             while t >= next_t:
                 if last_bb is not None and last_ba is not None and last_bb < last_ba:
                     mid = (last_bb + last_ba) / 2
                     e, sd = filt.moments()
                     bq = book.depth(0, last_bb)
                     aq = book.depth(1, last_ba)
-                    rows.append((next_t, mid, e + 0.5 - mid, sd, (bq - aq) / (bq + aq), last_ba - last_bb))
+                    rows.append((next_t, mid, e + 0.5 - mid, sd, (bq - aq) / (bq + aq), last_ba - last_bb,
+                                 filt.pv() if hasattr(filt, "pv") and filt.p is not None else 0.0)
+                                + tuple(o.moments()[0] + 0.5 - mid for o in others))
                 next_t += STEP
             if op == "Insert":
                 sd_ = 0 if side == "B" else 1
@@ -297,28 +551,42 @@ def replay(path: Path, params: dict, offsets: bool = False):
                     if filt.p is not None and bb is not None and ba is not None and bb < ba:
                         # Phase 1: an F's limit is the latent mid +-1, a direct check of the filter
                         e, _ = filt.moments()
-                        fchk.append(((p_ - 1 if sd_ == 0 else p_ + 1) - (bb + ba) / 2, e + 0.5 - (bb + ba) / 2))
+                        fchk.append(((p_ - 1 if sd_ == 0 else p_ + 1) - (bb + ba) / 2, e + 0.5 - (bb + ba) / 2, t))
                     if lots and filt.p is not None:
-                        filt.advance(t)
-                        if filt.sweep >= 0:
-                            filt.bound(1 if sd_ == 0 else -1, max(f[2] for f in fills) if sd_ == 0 else min(f[2] for f in fills))
-                        filt.trade(1 if sd_ == 0 else -1, q_ if filt.use_size else lots)
+                        for f_ in [filt] + others:
+                            f_.advance(t)
+                            if f_.sweep >= 0:
+                                f_.bound(1 if sd_ == 0 else -1, max(f[2] for f in fills) if sd_ == 0 else min(f[2] for f in fills))
+                            f_.trade(1 if sd_ == 0 else -1, q_ if f_.use_size else lots)
                 else:
                     if bb is not None and ba is not None and bb < ba:
                         if filt.p is None:
                             filt.reset(bb)
+                            for o in others:
+                                o.reset(bb)
                         filt.advance(t)
                         filt.recenter(bb)
+                        for o in others:
+                            o.advance(t)
+                            o.recenter(bb)
+                            if abs(p_ - (bb if sd_ == 0 else ba)) <= o.depth and not (0 < o.maxsz <= q_):
+                                o.insert(sd_, p_, bb, ba)
                         if offsets and abs(p_ - (bb if sd_ == 0 else ba)) <= 4:
                             lb, conf = filt.map()
                             if conf > 0.9:
                                 k = lb - p_ if sd_ == 0 else p_ - 1 - lb
                                 key = (min(ba - bb, 3), sd_ == 0 and p_ >= ba - 1 or sd_ == 1 and p_ <= bb + 1, k)
                                 ks[key] = ks.get(key, 0) + 1
-                        if abs(p_ - (bb if sd_ == 0 else ba)) <= filt.depth:
+                        if abs(p_ - (bb if sd_ == 0 else ba)) <= filt.depth and not (0 < filt.maxsz <= q_):
                             filt.insert(sd_, p_, bb, ba)
                     book.insert(oid, sd_, p_, q_, False)
             else:
+                if filt.cancel_h > 0 and filt.p is not None and bb is not None and ba is not None and bb < ba:
+                    o = book.orders.get(oid)
+                    if o is not None and abs(o[1] - (bb if o[0] == 0 else ba)) <= 6:
+                        filt.advance(t)
+                        filt.recenter(bb)
+                        cancel_update(filt, o[0], o[1])
                 book.cancel(oid)
             last_bb, last_ba = book.best
     replay.last_loglik = (filt.loglik, filt.n_obs)
@@ -349,9 +617,32 @@ def evaluate(rows: np.ndarray) -> dict:
             res[f"{h:g}s"] = {"r_sig": round(r_sig, 4), "r_imb": round(r_imb, 4), "r2_imb": round(float(r2_imb), 4),
                               "r2_both": round(float(r2_both), 4), "beta_sig": round(float(beta[2]), 3)}
         out[name] = res
+    out["ridge"] = ridge_check(rows)
     out["signal_sd"] = round(float(np.std(rows[:, 2])), 4)
     out["post_sd_mean"] = round(float(np.mean(rows[:, 3])), 4)
     out["big"] = big_moves(rows)
+    return out
+
+
+def ridge_check(rows: np.ndarray) -> dict:
+    """The bot's use, linearly: least squares of the mid's move 0.4 / 1 s ahead on [imbalance, gap, gap|gap|/3, sd]
+    (F3's three features) and with the volatile probability pv and gap*pv added, fit on the first 75%, R^2 on both parts."""
+    n = len(rows)
+    cut = int(n * 0.75)
+    mid, gap, sd, imb, pv = rows[:, 1], rows[:, 2], rows[:, 3], rows[:, 4], rows[:, 6]
+    out = {}
+    for h in (0.4, 1.0):
+        lag = int(round(h / STEP))
+        m = n - lag
+        fut = mid[lag:] - mid[:m]
+        base = [np.ones(m), imb[:m], gap[:m], gap[:m] * np.abs(gap[:m]) / 3, sd[:m]]
+        xs = [rows[:m, j] for j in range(7, rows.shape[1])]
+        xx = base + [c for g in xs for c in (g, g * np.abs(g) / 3)]
+        for name, cols in (("f3", base), ("f3+pv", base + [pv[:m], gap[:m] * pv[:m]]), ("f3+x", xx)):
+            x = np.column_stack(cols)
+            beta, *_ = np.linalg.lstsq(x[:cut], fut[:cut], rcond=None)
+            r = lambda a, b: 1 - np.var(fut[a:b] - x[a:b] @ beta) / np.var(fut[a:b])
+            out[f"{name}_{h:g}s"] = {"r2_in": round(float(r(0, cut)), 4), "r2_out": round(float(r(cut, m)), 4)}
     return out
 
 
@@ -442,6 +733,7 @@ def main(argv=None) -> int:
     ap.add_argument("--set", action="append", default=[], help="a filter parameter, NAME=VALUE (see DEFAULTS)")
     ap.add_argument("--offsets", action="store_true", help="also tabulate the inserts' offsets to a confident MAP")
     ap.add_argument("--out", type=Path, help="write the result as JSON")
+    ap.add_argument("--extra", action="append", default=[], help="an extra filter's settings, NAME=VALUE,NAME=VALUE (its gap joins ridge_check)")
     ap.add_argument("--latent", type=Path, help="a generated tape's true latent (tape_gen --latent-out): the oracle check")
     args = ap.parse_args(argv)
     params = dict(DEFAULTS)
@@ -450,7 +742,8 @@ def main(argv=None) -> int:
         if k not in params:
             ap.error(f"unknown parameter {k}")
         params[k] = float(v)
-    rows, ks, fchk = replay(args.tape, params, args.offsets)
+    extra = tuple({k: float(v) for k, v in (kv.split("=", 1) for kv in e.split(","))} for e in args.extra)
+    rows, ks, fchk = replay(args.tape, params, args.offsets, extra)
     ll, n_obs = replay.last_loglik
     result = {"tape": str(args.tape), "params": params, "samples": len(rows), "loglik_per_insert": round(ll / max(1, n_obs), 5),
               **evaluate(rows), "f_check": f_check(fchk)}

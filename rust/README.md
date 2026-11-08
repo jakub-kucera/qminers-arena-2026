@@ -180,7 +180,12 @@ the Python file's numbers: round3_public 480469.00 (volume 571,820; FILTER 0 is 
 303720.00 with pnl.csv and result.json byte for byte (`test_ridge_maker_round2_takers`); R3-F3 (B1's line and
 `--set FILTER=1`) 505212.00 on round3_public, byte for byte too. FILTER needs `QUOTEFEAT` 1. `FILTER_JUMP` (with
 `FILTER_JUMP_MED`, `FILTER_JUMP_SD`, off by default) is Rust only: it adds lognormal jumps to the latent's walk and
-loses on round3_public.
+loses on round3_public. R3-F4's bank (8 Nov, `r3_F4_filter_bank.py`, byte for byte on round3_public, 512175.00):
+`FILTER_IMP2` / `FILTER_IMP3` (0: off) run more copies of the filter at those impact scales and take the features from
+the copy whose inserts' log-likelihood (decayed over `FILTER_LL_N` inserts, 100000) is highest, ahead of F3's own by
+`FILTER_LL_MARGIN` nats (0). `FILTER_XGAP` 1 / 2 (0: off) adds the first copy's gap as features instead; `FILTER_CLIP`
+(5.0) is the gap's clip. All off by default (F3 505212.00 unchanged); none beat F3 on round 3 (IDEAS.md, "A better
+state for R3-F3's latent-price filter").
 
 R3-G1's early exit (8 Nov, Rust only, off by default: `FT_EXIT` 99.0, `FT_EXIT_SZ` 0, `FT_EXIT_WIDE` 0, `FT_EXIT_KEEP`
 99.0): a reduce-only IOC at the touch when the forecast is against the position by more than FT_EXIT plus half the
