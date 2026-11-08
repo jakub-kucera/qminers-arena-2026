@@ -7,7 +7,7 @@ run's results and `leaderboard.json` go in this folder too.
 ## Start here (written 8 Nov 04:50, before the tape)
 
 Round 3 ended on R3-F5 or R3-F3 (whichever was marked final; data/arena/round3/HANDOVER.md, "Uploads"). On round 3's
-validation tape: F5 +888,195, F3 +883,559, F1 +862,764, B1 +733,790. So the latent-price filter is worth +149,769 on
+validation tape: F5 +888,195, F3 +883,559, F1 +862,764, F4 +839,401, B1 +733,790. So the latent-price filter is worth +149,769 on
 the server (F3 - B1), and F5's higher take bar away from jumps only +4.6k (a tie). Every other round-3 idea lost or tied
 (round 3's "Dropped here").
 
@@ -44,7 +44,7 @@ the server (F3 - B1), and F5's higher take bar away from jumps only +4.6k (a tie
 |---|---|---|
 | Like round 3: volatile, ~30% of seconds at 5+ ticks/s, jumps, ladders | F5 | +888k on round 3's validation |
 | Calm like round 1: ~1.2 ticks/s, a one-tick spread 93% of the time | F3 (bar 0.15, no jump rule) | F5's bar loses 24.8k on round 1; the filter still adds +14.5k to B1 there |
-| Like round 2: volatile, no ladders | step 2's grid; F4 if the bank or x2 wins | impact x2 was +22k on round2_public |
+| Like round 2: volatile, no ladders | step 2's grid (FILTER_IMPACT by PnL on the first 75%) | impact x2 was +22k on round2_public; never F4: its likelihood-chosen impact lost 44,158 to F3 on round 3's validation |
 | The filter loses (F3 < B1 on both halves) | B1 | the filter's model does not fit the new settings |
 | Different rules (limit, latency, penalty) | recompute the breach arithmetic first | every taker sizes against EXPOSURE with its live orders |
 
