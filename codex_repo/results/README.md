@@ -1,5 +1,11 @@
 # Result manifests
 
+Round3: `round3_intake_manifest.json` freezes the dataset and seven prior-round
+sources; `round3_development_profiles.json` compares matched first-hour market
+statistics; `round3_initial_screen.json` and `round3_initial_investigation.json`
+record the completed first60% screen. Final317057 leads at256,652 net. Public
+middle20% and last20% are reserved. Python is paused at the user's request.
+
 `round2_final_317057.json` records the user-supplied final source, exact public317,057 CLI reproduction, strict100 audit and risk comparison. Its server score/ID are not yet supplied. See [review](../docs/ROUND2_FINAL_REVIEW.md).
 
 Latest: [nine-model taker shortlist](../docs/ROUND2_TAKER_SHORTLIST.md), [research](../docs/ROUND2_TAKER_RESEARCH.md). Pure liquidity taker: CLI-verified public294,098; liquidity parent269,920 has lower drawdown. Both await server feedback. Imported T2: public194,391, supplied validation490,359. `round2_submission.py` / its manifest still identify the historical181 K maker below.

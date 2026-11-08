@@ -1,0 +1,525 @@
+{
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "29e4442aa5ada17de2d754a64ddda3fd8c5c1f1068b5eec3b70f968b9debb179",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
+  },
+  "data_sha256": "792f2dbfaadc1cf05e97d3177f6fa69f7085fbc18ef170d5c91adfca31bd42f4",
+  "runner_sha256": "18a534d6febd2129bc6643b865b07e781201b694147e4066af5c0858a347249b",
+  "scope": "Seven frozen sources, round3 PUBLIC first60% only. Source selection predates observed round3 performance. Later40% remains unreplayed.",
+  "results": {
+    "round2_taker_liquidity_pure_294098": {
+      "result": {
+        "fills": 2231,
+        "traded_volume": 264860,
+        "inventory": 100,
+        "cash": -746046.0,
+        "mark_price": 9874.0,
+        "breach_penalty": 0.0,
+        "pnl": 241354.0,
+        "pnl_se": 22522.994009556773,
+        "abs_inventory_q50": 100,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 135.31847720802762,
+      "max_abs_inventory": 100,
+      "max_potential_inventory_at_submission": 100,
+      "max_drawdown_1s": 10548.0,
+      "submissions": 2272,
+      "order_status_counts": {
+        "accepted": 2272,
+        "filled": 1353,
+        "partially_filled": 4581,
+        "canceled": 919
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 1000.0,
+          "pnl_increment": 51681.0
+        },
+        {
+          "start_s": 1000.0,
+          "end_s": 2000.0,
+          "pnl_increment": 65530.0
+        },
+        {
+          "start_s": 2000.0,
+          "end_s": 3000.0,
+          "pnl_increment": 88893.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3599.993335,
+          "pnl_increment": 35250.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997038": 241354.0
+      },
+      "source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/round2_taker_liquidity_pure_294098.py",
+      "source_sha256": "4d46c848817325c0266377e36be4ecc6c96d5963ff4dcdda5cb0a33b73f68e22",
+      "data_sha256": "792f2dbfaadc1cf05e97d3177f6fa69f7085fbc18ef170d5c91adfca31bd42f4",
+      "independent_private_ledger": true,
+      "risk_contract": "strict100"
+    },
+    "round2_final_317057": {
+      "result": {
+        "fills": 2252,
+        "traded_volume": 265342,
+        "inventory": 100,
+        "cash": -730748.0,
+        "mark_price": 9874.0,
+        "breach_penalty": 0.0,
+        "pnl": 256652.0,
+        "pnl_se": 22372.77426687024,
+        "abs_inventory_q50": 100,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 142.16196262510493,
+      "max_abs_inventory": 100,
+      "max_potential_inventory_at_submission": 100,
+      "max_drawdown_1s": 10094.0,
+      "submissions": 2284,
+      "order_status_counts": {
+        "accepted": 2284,
+        "filled": 1340,
+        "partially_filled": 4546,
+        "canceled": 944
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 1000.0,
+          "pnl_increment": 57072.0
+        },
+        {
+          "start_s": 1000.0,
+          "end_s": 2000.0,
+          "pnl_increment": 68276.0
+        },
+        {
+          "start_s": 2000.0,
+          "end_s": 3000.0,
+          "pnl_increment": 89716.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3599.993335,
+          "pnl_increment": 41588.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997038": 256652.0
+      },
+      "source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/round2_final_317057.py",
+      "source_sha256": "4df2b5c12142242fcff6be80e8765833f3d7c54d97893b5707589929e67aa622",
+      "data_sha256": "792f2dbfaadc1cf05e97d3177f6fa69f7085fbc18ef170d5c91adfca31bd42f4",
+      "independent_private_ledger": true,
+      "risk_contract": "strict100"
+    },
+    "r2_M4_flow_window": {
+      "result": {
+        "fills": 1035,
+        "traded_volume": 162700,
+        "inventory": 100,
+        "cash": -816311.0,
+        "mark_price": 9874.0,
+        "breach_penalty": 0.0,
+        "pnl": 171089.0,
+        "pnl_se": 26493.831270435872,
+        "abs_inventory_q50": 100,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 9.52894804184325,
+      "max_abs_inventory": 100,
+      "max_potential_inventory_at_submission": 100,
+      "max_drawdown_1s": 16488.0,
+      "submissions": 1044,
+      "order_status_counts": {
+        "accepted": 1044,
+        "filled": 819,
+        "partially_filled": 2498,
+        "canceled": 225
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 1000.0,
+          "pnl_increment": 29877.0
+        },
+        {
+          "start_s": 1000.0,
+          "end_s": 2000.0,
+          "pnl_increment": 23697.0
+        },
+        {
+          "start_s": 2000.0,
+          "end_s": 3000.0,
+          "pnl_increment": 82452.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3599.993335,
+          "pnl_increment": 35063.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997038": 171089.0
+      },
+      "source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/r2_M4_flow_window.py",
+      "source_sha256": "59023a460c3511057364ef79926912e6201026ed0734c4cba3d063d0b23450ef",
+      "data_sha256": "792f2dbfaadc1cf05e97d3177f6fa69f7085fbc18ef170d5c91adfca31bd42f4",
+      "independent_private_ledger": true,
+      "risk_contract": "strict100"
+    },
+    "round2_taker_liquidity_269920": {
+      "result": {
+        "fills": 61628,
+        "traded_volume": 324535,
+        "inventory": 81,
+        "cash": -574467.0,
+        "mark_price": 9874.0,
+        "breach_penalty": 0.0,
+        "pnl": 225327.0,
+        "pnl_se": 19435.97852023176,
+        "abs_inventory_q50": 92,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 156.8539801251609,
+      "max_abs_inventory": 100,
+      "max_potential_inventory_at_submission": 100,
+      "max_drawdown_1s": 9578.0,
+      "submissions": 268170,
+      "order_status_counts": {
+        "accepted": 268170,
+        "filled": 60800,
+        "rejected": 1250,
+        "canceled": 207354,
+        "partially_filled": 4528
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 1000.0,
+          "pnl_increment": 52099.0
+        },
+        {
+          "start_s": 1000.0,
+          "end_s": 2000.0,
+          "pnl_increment": 55593.0
+        },
+        {
+          "start_s": 2000.0,
+          "end_s": 3000.0,
+          "pnl_increment": 83476.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3599.993335,
+          "pnl_increment": 34159.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997038": 225327.0
+      },
+      "source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/round2_taker_liquidity_269920.py",
+      "source_sha256": "154504db3b2b6919e485a406a3be52c8ecb056a7dd7d342e2b59d6487529b6a5",
+      "data_sha256": "792f2dbfaadc1cf05e97d3177f6fa69f7085fbc18ef170d5c91adfca31bd42f4",
+      "independent_private_ledger": true,
+      "risk_contract": "strict100"
+    },
+    "round2_distribution_ensemble_shock_180895": {
+      "result": {
+        "fills": 5456,
+        "traded_volume": 248427,
+        "inventory": -51,
+        "cash": 527866.0,
+        "mark_price": 9876.0,
+        "breach_penalty": 350.0,
+        "pnl": 23840.0,
+        "pnl_se": 12291.154302792427,
+        "abs_inventory_q50": 10,
+        "abs_inventory_q68": 40,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 168.27641608309932,
+      "max_abs_inventory": 186,
+      "max_potential_inventory_at_submission": 300,
+      "max_drawdown_1s": 6876.0,
+      "submissions": 29723,
+      "order_status_counts": {
+        "accepted": 29723,
+        "partially_filled": 2398,
+        "canceled": 25474,
+        "filled": 4248,
+        "modified": 751,
+        "rejected": 138
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 1000.0,
+          "pnl_increment": 6725.0
+        },
+        {
+          "start_s": 1000.0,
+          "end_s": 2000.0,
+          "pnl_increment": 6840.0
+        },
+        {
+          "start_s": 2000.0,
+          "end_s": 3000.0,
+          "pnl_increment": 5544.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3599.993335,
+          "pnl_increment": 4731.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997038": 23840.0
+      },
+      "source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/round2_distribution_ensemble_shock_180895.py",
+      "source_sha256": "c6f6a25629cb3ba94924305f17793c8c8426dbe14b418e6607a73b5f132a3d75",
+      "data_sha256": "792f2dbfaadc1cf05e97d3177f6fa69f7085fbc18ef170d5c91adfca31bd42f4",
+      "independent_private_ledger": true,
+      "risk_contract": "native"
+    },
+    "round2_flat": {
+      "result": {
+        "fills": 0,
+        "traded_volume": 0,
+        "inventory": 0,
+        "cash": 0.0,
+        "mark_price": 9875.0,
+        "breach_penalty": 0.0,
+        "pnl": 0.0,
+        "pnl_se": 0.0,
+        "abs_inventory_q50": 0,
+        "abs_inventory_q68": 0,
+        "abs_inventory_q95": 0,
+        "abs_inventory_q997": 0
+      },
+      "runtime_seconds": 6.861578790936619,
+      "max_abs_inventory": 0,
+      "max_potential_inventory_at_submission": 0,
+      "max_drawdown_1s": 0.0,
+      "submissions": 0,
+      "order_status_counts": {},
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 1000.0,
+          "pnl_increment": 0.0
+        },
+        {
+          "start_s": 1000.0,
+          "end_s": 2000.0,
+          "pnl_increment": 0.0
+        },
+        {
+          "start_s": 2000.0,
+          "end_s": 3000.0,
+          "pnl_increment": 0.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3599.993335,
+          "pnl_increment": 0.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997038": 0.0
+      },
+      "source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/round2_flat.py",
+      "source_sha256": "2e386e9f37b28e88f664fccd614f71b1f84bc11ea39be4dfe0f3a045ac00612d",
+      "data_sha256": "792f2dbfaadc1cf05e97d3177f6fa69f7085fbc18ef170d5c91adfca31bd42f4",
+      "independent_private_ledger": true,
+      "risk_contract": "strict100"
+    },
+    "round1_quote_flow_624076": {
+      "result": {
+        "fills": 7416,
+        "traded_volume": 699117,
+        "inventory": -51,
+        "cash": 269543.0,
+        "mark_price": 9876.0,
+        "breach_penalty": 3889.519999999999,
+        "pnl": -238022.52,
+        "pnl_se": 22929.70066589159,
+        "abs_inventory_q50": 100,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 75.66590908402577,
+      "max_abs_inventory": 300,
+      "max_potential_inventory_at_submission": 457,
+      "max_drawdown_1s": 246163.52,
+      "submissions": 47303,
+      "order_status_counts": {
+        "accepted": 47303,
+        "partially_filled": 6365,
+        "canceled": 43214,
+        "filled": 4087,
+        "rejected": 164
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 1000.0,
+          "pnl_increment": -59029.81
+        },
+        {
+          "start_s": 1000.0,
+          "end_s": 2000.0,
+          "pnl_increment": -52327.44
+        },
+        {
+          "start_s": 2000.0,
+          "end_s": 3000.0,
+          "pnl_increment": -83244.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3599.993335,
+          "pnl_increment": -43421.26999999999
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997038": -238022.52
+      },
+      "source": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/round1_quote_flow_624076.py",
+      "source_sha256": "0aaff6caee4c8708afb0f3bc54a8f1d3beaa5a641477db192be09cfeb6993b45",
+      "data_sha256": "792f2dbfaadc1cf05e97d3177f6fa69f7085fbc18ef170d5c91adfca31bd42f4",
+      "independent_private_ledger": true,
+      "risk_contract": "native"
+    }
+  },
+  "round3_manifest_sha256": "d437caf4f8d6fe98d23dcdba60a12b3a3969fe41edfbf338d2d563323c3801ba"
+}

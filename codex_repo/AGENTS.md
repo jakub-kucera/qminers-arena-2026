@@ -1,5 +1,13 @@
 # Repository orientation
 
+Round 3 is now active. Read [docs/ROUND3_PLAN.md](docs/ROUND3_PLAN.md) for the
+new intake and preserved public split. Use `logs/round3` and round-3 artifacts;
+do not overwrite round-2 experiments. Preserve the user-selected round-2 final
+`strategies/round2_final_317057.py` byte for byte. Earlier round-2 guidance below
+remains applicable to native accounting and evaluation provenance.
+The initial round-3 screen is complete. **Python work is paused at the user's
+explicit request until they resume it**, to let another session finish first.
+
 Read [HANDOFF.md](HANDOFF.md) first and [docs/ROUND2_PLAN.md](docs/ROUND2_PLAN.md)
 before evaluating new round data. The existing `.venv/bin/python` works.
 Round 2 has three organizer datasets: public training, server validation with

@@ -2,6 +2,10 @@
 
 Run modules from the repository root with `.venv/bin/python -m scripts.NAME`.
 
+Round3 intake/profiling/screening uses `round3_intake.py`; its initial runs are
+finished. **Do not run Python now: the user asked to pause until another session
+finishes and they resume this work.** See [the round-3 plan](../docs/ROUND3_PLAN.md).
+
 | Active tool | Purpose |
 | --- | --- |
 | `build_round2_candidates.py` | Build/check the six predeclared standalone sources and registry |

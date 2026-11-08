@@ -1,5 +1,34 @@
 # Handoff for the next session
 
+Latest: **round-3 intake completed; Python work is paused at the user's request**.
+Do not start further Python until the user resumes work: another session needs
+to finish first. All profiler and seven-model screening runs have finished.
+Read [round-3 initial findings](docs/ROUND3_INITIAL_FINDINGS.md) and
+[the evaluation plan](docs/ROUND3_PLAN.md).
+
+New data: `data/round3_public.csv`, moved from the workspace root with matching
+SHA-256 `1021586b92a3d9dfdb70096e6b0af34d460813b139f1f51f56b73871cb5a2d15`.
+2,412,805 events over about 6,000 seconds. Only the first 60% was profiled or
+replayed; middle20% and last20% remain reserved. Head/tail rows were viewed
+at intake. The user says the rules/setup should be the same as round2.
+
+First-hour reference net PnL: final317057 **256,652**; pure294098 **241,354**;
+liquidity269920 **225,327**; M4 **171,089**; maker180895 **23,840** (350 fee);
+flat0; round1 maker **−238,022.52** (3,889.52 fee). Takers have zero penalties
+and actual/potential inventory100/100. No source was changed or newly fitted
+offline for round3; online learning within the replay remains causal.
+All independent fill-ledger audits passed. No extra CLI replay was started
+after the user asked to pause Python. Results: `results/round3_initial_screen.json`
+and `results/round3_initial_investigation.json`; immutable preparation record:
+`results/round3_intake_manifest.json`.
+
+Matched first-hour diagnostics: 1s price SD4.11 vs round2's2.90; average touch
+quantity986 vs1,190; spread>1 tick17.48% vs12.24%. The forecast-taker family
+is the leading initial hypothesis. Do not extrapolate the scores to hidden
+tapes or consume the reserved public40% without deliberate frozen selection.
+
+## Round-2 final review
+
 Latest: **user's final round 2 submission reviewed on 8 November (CET)**.
 Original: `../round2_local_317057.py`; untouched byte-identical archive:
 `strategies/round2_final_317057.py`. Source SHA:

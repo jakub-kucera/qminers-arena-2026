@@ -4,6 +4,17 @@ Start with [HANDOFF.md](HANDOFF.md). The next-round workflow is in
 [docs/ROUND2_PLAN.md](docs/ROUND2_PLAN.md); the organizer's original documentation
 is preserved in [docs/ORGANIZER_GUIDE.md](docs/ORGANIZER_GUIDE.md).
 
+## Round 3
+
+[Initial findings](docs/ROUND3_INITIAL_FINDINGS.md): the new public tape is
+more volatile with less liquidity at the best prices in its first hour.
+Seven unchanged references were tested on the first60% only. The user's
+round-2 final leads at **256,652 net**, zero penalties, followed by the pure
+liquidity taker at241,354. The remaining public40% is reserved.
+**All runs finished; Python work is paused at the user's request.**
+See [the plan](docs/ROUND3_PLAN.md) and
+[recorded results](results/round3_initial_investigation.json).
+
 ## Frozen round-1 result
 
 The verified local best is **624,076.00 net PnL** on `data/round1.csv`, including
