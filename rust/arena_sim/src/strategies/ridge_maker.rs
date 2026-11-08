@@ -261,6 +261,12 @@
 //! set entry is 0.0 before the ridge learns from it or predicts with it, so the vector keeps its length and the
 //! isotropic ridge keeps that weight at 0. No single drop, group or Newey-West cut beats F5 on r4 without losing r3, r2
 //! or the synthetic tapes (IDEAS.md, "R4-A1").
+//! R4-RFF1 (8 Nov; Rust only, off by default: F5 1029443.00 on round4_public, 515670.00 on round3_public and 330980.00
+//! on round2_public unchanged): `RFF_D` (0: off, up to 64) random Fourier features of the 39 base features as more ridge
+//! features (after MH's two), sqrt(2 / D) cos(b + sum_i W_i x_i / s_i) with the sum from b in feature order, s the fixed
+//! scales RFF_SCALE; `RFF_ELL` (1.0) divides W ~ N(0, 1); `RFF_OFF` (0) is the first of the 64 drawn rows used (another
+//! draw for the same D). The constants are in `rff_consts.rs`; NM is 112 to hold them. The ridge penalty covers them as
+//! the rest. No cell clears r4 in both halves, and the draw alone moves r3 by 22k (IDEAS.md, "R4-RFF1").
 //!
 //! The audit's quote knobs (8 Nov), off by default: `QS_PULL` (0) 1 withdraws both quotes, so the resting ones are
 //! cancelled, while QS_RATE's switch is off; `QUOTE_GAP` (99.0: off) withdraws the quote on the side the latent filter's
@@ -275,7 +281,8 @@ use crate::strategies::calib::Calib;
 use crate::sim::{BookOrder, Ctx, Owner, PrivateEvent, Side, Snapshot, Status, Strategy, Trade};
 
 const N: usize = 15;
-const NM: usize = 64;
+/// the feature arrays' size: F5's 39, MH's 2 and RFF_D's up to 64 fit
+const NM: usize = 112;
 const OBS_MAXLEN: usize = 64;
 
 struct Record {
@@ -525,6 +532,11 @@ pub struct RidgeMaker {
     clear_th: f64,
     mh: i64,
     n_base: usize,
+    /// RFF_D (R4-RFF1): the number of random Fourier features after the base (and MH's) features; W's rows / RFF_ELL
+    rff_d: usize,
+    rff_amp: f64,
+    rff_w: Vec<[f64; 39]>,
+    rff_b: Vec<f64>,
     /// extra models: 0 the next bid move, 1 the next ask move (SIDE2), 2 / 3 the MH_US1 / MH_US2 mid models (MH)
     ex: Vec<Model>,
     last_mid_change_us: i64,
@@ -1079,6 +1091,8 @@ pub const T1_KEYS: [&str; 5] = ["FT_DEPTH_K", "FT_DEPTH_E", "FT_DEPTH_MODE", "FT
 
 /// R4-A1's knob (the feature ablation: FEAT_DROP, a bitmask over the base features), off by default
 pub const A1_KEYS: [&str; 1] = ["FEAT_DROP"];
+/// R4-RFF1's knobs (random Fourier features of the base features as extra ridge features), off by default
+pub const RFF_KEYS: [&str; 3] = ["RFF_D", "RFF_ELL", "RFF_OFF"];
 
 fn side_index(sign: i64) -> usize {
     if sign > 0 {
@@ -1090,7 +1104,7 @@ fn side_index(sign: i64) -> usize {
 
 impl RidgeMaker {
     pub fn new(params: &Params) -> Result<RidgeMaker, String> {
-        params.check_keys(&[&KEYS[..], &MOE_KEYS[..], &crate::strategies::profit_gate::KEYS[..], &crate::strategies::calib::KEYS[..], &X1_KEYS[..], &T1_KEYS[..], &A1_KEYS[..]].concat())?;
+        params.check_keys(&[&KEYS[..], &MOE_KEYS[..], &crate::strategies::profit_gate::KEYS[..], &crate::strategies::calib::KEYS[..], &X1_KEYS[..], &T1_KEYS[..], &A1_KEYS[..], &RFF_KEYS[..]].concat())?;
         let n_base = N + if params.int("PLACE", 0)? > 0 { 2 } else { 0 }
                 + if params.int("DEPTH5", 0)? > 0 { 1 } else { 0 }
                 + if params.int("FLOW2", 0)? > 0 { 2 } else { 0 }
@@ -1120,7 +1134,16 @@ impl RidgeMaker {
             return Err("FILTER reads the new market orders QUOTEFEAT tracks: set QUOTEFEAT=1".to_string());
         }
         let mh = params.int("MH", 0)?;
-        let n = n_base + if mh > 0 { 2 } else { 0 };
+        let rff_d = params.int("RFF_D", 0)?;
+        // RFF_OFF: the first of the 64 drawn rows used (another draw of W and b for the same D)
+        let rff_off = params.int("RFF_OFF", 0)?;
+        if !(0..=64).contains(&rff_d) || rff_off < 0 || rff_off + rff_d > 64 {
+            return Err("RFF_D is 0 (off) to 64, with RFF_OFF + RFF_D at most 64".to_string());
+        }
+        if rff_d > 0 && n_base != 39 {
+            return Err(format!("RFF_D's fixed scales are R3-F5's 39 base features, not {n_base}"));
+        }
+        let n = n_base + if mh > 0 { 2 } else { 0 } + rff_d as usize;
         let horizon_us = params.int("HORIZON_US", 100_000)?;
         let mut rm = RidgeMaker::build(params, n_base, n)?;
         rm.ex = vec![
@@ -1130,6 +1153,20 @@ impl RidgeMaker {
             Model::new(params.int("MH_US2", 1_000_000)?, n_base),
         ];
         rm.mh = mh;
+        rm.rff_d = rff_d as usize;
+        let ell = params.float("RFF_ELL", 1.0)?;
+        rm.rff_amp = (2.0 / rff_d.max(1) as f64).sqrt();
+        let off = rff_off as usize;
+        rm.rff_w = (off..off + rm.rff_d)
+            .map(|d| {
+                let mut w = [0.0f64; 39];
+                for i in 0..39 {
+                    w[i] = crate::strategies::rff_consts::RFF_W[d][i] / ell;
+                }
+                w
+            })
+            .collect();
+        rm.rff_b = crate::strategies::rff_consts::RFF_B[off..off + rm.rff_d].to_vec();
         if rm.ens > 0 {
             for (key, kind) in [("ENS_H1", 0u8), ("ENS_H2", 0), ("ENS_H3", 0), ("ENS_NOFILT", 1), ("ENS_FIMP", 2)] {
                 let h = params.int(key, 0)?;
@@ -1323,6 +1360,10 @@ impl RidgeMaker {
             clear_th: params.float("CLEAR_TH", 0.5)?,
             mh: 0,
             n_base,
+            rff_d: 0,
+            rff_amp: 0.0,
+            rff_w: Vec::new(),
+            rff_b: Vec::new(),
             ex: Vec::new(),
             last_mid_change_us: 0,
             obs_cap: match params.int("OBS_CAP", 0)? {
@@ -3161,6 +3202,23 @@ impl Strategy for RidgeMaker {
                 } else {
                     0.0
                 };
+            }
+        }
+        if self.rff_d > 0 {
+            // R4-RFF1: sqrt(2 / D) cos(b + sum_i W_i x_i / scale_i), the sum from b in feature order
+            use crate::strategies::rff_consts::RFF_SCALE;
+            let off = n + if self.mh > 0 { 2 } else { 0 };
+            let mut xs = [0.0f64; 39];
+            for i in 0..39 {
+                xs[i] = features[i] / RFF_SCALE[i];
+            }
+            for d in 0..self.rff_d {
+                let w = &self.rff_w[d];
+                let mut acc = self.rff_b[d];
+                for i in 0..39 {
+                    acc += w[i] * xs[i];
+                }
+                features[off + d] = self.rff_amp * acc.cos();
             }
         }
         let n = self.n;
