@@ -188,6 +188,11 @@ spread and the forecast take does not fire, or at a spread of FT_EXIT_WIDE+ unle
 FT_EXIT_KEEP. On R3-F3 (`$B1 --set FILTER=1`, 505212.00 on round3_public, unchanged with the knob off) every setting tied or
 lost, so no Python file was written (IDEAS.md, "R3-F3's loss anatomy").
 
+The round-3 audit's quote knobs (8 Nov, Rust only, off by default: `QS_PULL` 0, `QUOTE_GAP` 99.0) withdraw the
+quotes while QS_RATE's switch is off, or on the side the latent filter's gap is against; both lose on R3-F3 (IDEAS.md,
+"Round 3 audit"). `RIDGE_PRED_EXTRA` (an environment variable, with `RIDGE_PRED_LOG`) adds the filter's gap and
+QS_RATE's speed to the prediction log, for `experiments.day.quote_audit`.
+
 **Speed** (the sample, 53,758 rows, one core, measured 7 Nov): trend_follower 151 ms a run in Python, 1.7 ms in
 Rust (90x); F1 274 ms, 3.9 ms (70x); parsing the CSV once is 5 ms more. On 4 threads, F1's 16-cell grid
 (plus the baseline) takes 1.6 s in `arena.qgrid --jobs 4` and 0.2 s in `arena.qsim_rust`, the same table to the
