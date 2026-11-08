@@ -76,6 +76,24 @@ About 15 uploads a round (round 3 used 4 by 05:00). Each upload is a paired test
 validation tape. A single run's noise is ~45k; switch the final only for a gain that also holds locally on both halves
 of the public tape. Mark the final before 12:00.
 
+## Round 4's tape and the first hour (07:00-07:15)
+- **The tape** (`round4_public.csv`, 6,000 s, sha256 61c0b6d1...): the most volatile so far, 1-s mid sd 6.19 ticks (r3 4.49,
+  r2 3.79), 60-s sd 59.2, net -445.5 / range 834.5, variance ratio 1.52, one-tick spread 81%. **Strong 1-5 s momentum**:
+  after a trade the mid goes +1.42 / +2.41 ticks its way at 1 / 5 s (r3 +0.72 / +0.68); after a 1-tick mid move +2.81 / +6.16.
+- **Ranking (Rust `family_rust`, confirmed for F5 by the organisers' Python simulator to the unit, 193 s):** F5 1,029,443
+  (804,559 / 224,884), F4 1,026,780, F3 1,025,404, B1 907,100 (so the filter adds +118k, +13%), L8 901,311, L9 892,246,
+  L3 851,547, T2 839,650, L1 827,782. Python first look (`round_start/report.txt`): momentum template 646,188, M4 554,443,
+  M2 342,415, the taker -472,653, the runner -3.18M; every round-1 maker negative.
+- **The filter calibrator** (`filter_settings.json`) kept round 3's settings (impact 3, round 1's pi, rate 2).
+- **Nothing beats F5 on this tape** (all Rust, round4_public, against F5's 1,029,443):
+  - filter impact 2-3.5 x take bar 0.15-0.3 x jump rule on/off: best +6.8k (impact 2, bar 0.3, no jump rule), neighbours ~F5;
+  - horizons 0.7-2 s with bars up to 0.9: 1 s / 0.9 ties (-0.3k), the rest -15k to -87k;
+  - a long second ridge blended (1-2 s, 30-50%): -48k to -255k; trend features -7.7k;
+  - the jump rule (2/3/5 ticks, 5-30 s, edge 0.05/0.15, one-sided): best +14.2k (2 ticks), all of it in the first 75%;
+  - no trading until 1k / 3k / 30k labels: -0.8k / -23.0k / -136.2k (and worse on r3, r2 and the seeds);
+  - the warm start (R4-W1) with round 3's or round 4's own statistics: -1.7k to +0.3k.
+  **So F5 unchanged is round 4's base and likely final.**
+
 ## Uploaded
 <!-- each upload: file, time, why; local PnL; the validation PnL; the paired difference against the base per 1,000 s -->
 
