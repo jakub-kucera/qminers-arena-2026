@@ -159,7 +159,9 @@ new bid inserts plus that of the new ask inserts, halved, over 0.1 s; its noise 
    - Sizes are the same on every tape: median 59-61, p99 about 1,540, Hill tail α 1.7.
    - Arrivals are Poisson on r1 (CV 1.00, 10-s dispersion 1.04, no autocorrelation). On r2/r3 they are clustered:
      10-s dispersion 5.5-5.9, 1-s count autocorrelation 0.39 at lag 1 on r3.
-   - The clustering is the regime's rate (8 vs 10 a second), maybe self-excitation within it.
+   - Within the calm state the counts are Poisson: 10-s dispersion 1.0 on r1 and r2, 1.5 on r3. Within the volatile
+     state they burst (dispersion 7.7 / 6.3), so the volatile state's aggressive flow is self-exciting or tied to the
+     jumps, not just a higher rate.
    - **The limit price is set from the latent, not the touch:** a median 1.0-1.3 ticks beyond the latent centre. This is
      why only 34-55% of aggressive orders trade at a 4+ tick spread (95-97% at 1-2 ticks).
 
@@ -190,6 +192,21 @@ new bid inserts plus that of the new ask inserts, halved, over 0.1 s; its noise 
     344k (r3) ticks·lots in all; 38k / 17k capped at 100 lots.
   - So the value is in the big jumps and in briefly holding more than the 100-lot limit; this matches the round-2
     winner's +148k in one 25-s step.
+- **The race** (`stale_race`, jumps of 5+ ticks: 175 on r2, 202 on r3):
+  - The reveal is the first order priced half the jump beyond the old level (an aggressive limit or a new G order),
+    a median 0.01-0.07 s before the grid onset.
+  - The first trade the jump's way comes 0.065 s after it (median; q90 0.18-0.21 s), and is the reveal itself 13-15%
+    of the time.
+  - Lots resting on the stale side beyond the latent's new level (marked 0.5-1 s on), d ms after that trade:
+
+    | d (ms) | 0 | 5 | 10 | 20 | 50 | 100 |
+    |---|---|---|---|---|---|---|
+    | r2: lots (mean) / value in all, k ticks·lots / capped at 100 lots, k | 1,361 / 1,607 / 102 | 1,319 / 1,539 / 98 | 1,203 / 1,369 / 94 | 1,137 / 1,222 / 90 | 931 / 908 / 70 | 727 / 651 / 56 |
+    | r3 | 1,775 / 2,619 / 133 | 1,775 / 2,605 / 132 | 1,760 / 2,559 / 130 | 1,656 / 2,369 / 125 | 1,462 / 1,966 / 110 | 1,195 / 1,441 / 88 |
+
+  - The stale book drains slowly, not in 20 ms: a taker 5 ms late keeps about 96% of the value.
+  - The open question for a bot is the trigger. Its false positives (a trade at a wide spread is the jump's way only
+    64-69% of the time) are not costed here.
 
 **For Phase 2 (generator v2):**
 - The latent is a sum of √-impacts plus, in the volatile state, a compound-Poisson jump process.

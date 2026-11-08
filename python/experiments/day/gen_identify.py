@@ -329,7 +329,8 @@ def regime_stats(tp: Tape, labels60, span, c_all) -> list:
     cum = tp.impact_path(c_all, 0.5)
     P_g = cum[np.searchsorted(tp.tf, tp.grid, "right")]
     R = tp.C - P_g
-    dR = np.r_[np.nan, R[10:] - R[:-10]][:: 1]
+    c10 = np.histogram(tp.tf, bins=nb * 6, range=(lo, lo + nb * 60))[0].reshape(nb, 6)
+    c1 = np.histogram(tp.tf, bins=nb * 60, range=(lo, lo + nb * 60))[0].reshape(nb, 60)
     for s_ in sorted(set(lab.tolist())):
         blocks = np.flatnonzero(lab == s_)
         bset = np.zeros(nb + 2, bool)
@@ -346,7 +347,8 @@ def regime_stats(tp: Tape, labels60, span, c_all) -> list:
         out.append({"state": int(s_), "blocks": int(len(blocks)), "F_per_s": r(fin.sum() / secs, 3), "G_per_s": r(gin.sum() / secs, 2),
                     "F_lots_per_s": r(tp.trf[fin].sum() / secs, 1), "insert_width": r(np.nanmean(width[grid_in]), 3),
                     "one_tick_share": r(np.nanmean(tp.spread_g[grid_in] == 1), 3), "c_sqrt": r(X @ j[mm] / (X @ X), 5) if mm.sum() > 20 else None,
-                    "exo_var_per_s": r(np.nanvar(d1), 3)})
+                    "exo_var_per_s": r(np.nanvar(d1), 3),
+                    "F_dispersion_10s_1s": [r(c10[blocks].var() / c10[blocks].mean(), 3), r(c1[blocks].var() / c1[blocks].mean(), 3)]})
     return out
 
 
@@ -532,6 +534,76 @@ def first_wide_trades(tp: Tape) -> dict:
     return out
 
 
+def stale_race(tp: Tape, t0: np.ndarray, size: np.ndarray, min_size: float = 5.0) -> dict:
+    """For each jump of min_size+ ticks: the reveal, the first event from 0.1 s before the onset to 0.4 s after that
+    prices an order half the jump (3+ ticks) beyond the level before it (the insert centre over [t0-0.6, t0-0.1]) the
+    jump's way: an aggressive order's limit or a new G order. Then the first trade the jump's way at or after it (what a
+    bot sees). d ms after that trade: the lots resting on the other side beyond the latent's new level (the insert centre
+    0.5-1.0 s after the trade) and their value, i.e. what a taker reacting to that trade can still take."""
+    ev = tp.ev
+    big = np.abs(size) >= min_size
+    if not big.any():
+        return {"jumps": 0}
+    t, k, s, p, trd = ev["t"], ev["kind"], ev["side"], ev["price"], ev["traded"]
+    delays = (0.0, 0.005, 0.010, 0.020, 0.050, 0.100)
+    firsts, reveal_lag, trade_lag = [], [], []
+    for a, sz in zip(t0[big], size[big]):
+        want, sg = (0, 1) if sz > 0 else (1, -1)
+        pre = tp.centre(np.array([a - 0.6]), np.array([a - 0.1]))[0]
+        if np.isnan(pre):
+            continue
+        i, j = np.searchsorted(t, a - 0.1), np.searchsorted(t, a + 0.4)
+        kk, ss, pp = k[i:j], s[i:j], p[i:j]
+        far = (kk != C) & ((pp - pre) * sg >= max(3.0, abs(sz) / 2))
+        if not far.any():
+            continue
+        rv = i + int(np.flatnonzero(far)[0])
+        m = np.flatnonzero((k[rv:j + 2000] == F) & (s[rv:j + 2000] == want) & (trd[rv:j + 2000] > 0))
+        if not m.size:
+            continue
+        tt = t[rv + m[0]]
+        lvl = tp.centre(np.array([tt + 0.5]), np.array([tt + 1.0]))[0]
+        if np.isnan(lvl):
+            continue
+        firsts.append((tt, want, lvl, tt - a))
+        reveal_lag.append(t[rv] - a)
+        trade_lag.append(tt - t[rv])
+    targets = sorted((tt + d, n, k) for n, (tt, _, _, _) in enumerate(firsts) for k, d in enumerate(delays))
+    lots = np.zeros((len(firsts), len(delays)))
+    value = np.zeros((len(firsts), len(delays)))
+    book, ti = Book(), 0
+    with tp.csv.open() as fh:
+        next(fh)
+        for line in fh:
+            tt, op, oid, side, vol, price, life = line.rstrip("\n").split(",")
+            tt = float(tt)
+            while ti < len(targets) and tt > targets[ti][0]:
+                _, n, k = targets[ti]
+                _, want, lvl, _ = firsts[n]
+                if want == 0:
+                    got = [(lvl - pp, v) for pp, v in book.vol[1].items() if pp < lvl]
+                else:
+                    got = [(pp - lvl, v) for pp, v in book.vol[0].items() if pp > lvl]
+                lots[n, k] = sum(v for _, v in got)
+                value[n, k] = sum(d * v for d, v in got)
+                ti += 1
+            if op == "Insert":
+                book.insert(oid, 0 if side == "B" else 1, int(price), int(vol), life == "F")
+            else:
+                book.cancel(oid)
+    if not firsts:
+        return {"jumps": int(big.sum()), "with_a_first_trade": 0}
+    q3 = [0.1, 0.5, 0.9]
+    return {"jumps": int(big.sum()), "with_a_first_trade": len(firsts),
+            "reveal_minus_onset_q10_q50_q90": [r(v, 3) for v in np.quantile(reveal_lag, q3)],
+            "first_trade_after_reveal_q10_q50_q90": [r(v, 4) for v in np.quantile(trade_lag, q3)],
+            "first_trade_is_the_reveal": r(np.mean(np.array(trade_lag) == 0), 3),
+            "delays_ms": [int(d * 1000) for d in delays],
+            "stale_lots_mean": [r(v, 1) for v in lots.mean(0)], "stale_value_total": [r(v, 0) for v in value.sum(0)],
+            "stale_value_capped_100_total": [r(v, 0) for v in (value * np.minimum(1.0, 100 / np.maximum(lots, 1))).sum(0)],
+            "jumps_with_value": [int(v) for v in (value > 0).sum(0)]}
+
+
 def measure_placement(tp: Tape, rv_labels: np.ndarray, span) -> dict:
     ev = tp.ev
     out = {}
@@ -668,6 +740,7 @@ def identify(csv: Path, cache: Path | None, J: float) -> dict:
     out["regime_stats"] = regime_stats(tp, labels, span, c)
     jumps, t0, size = measure_jumps(tp, R, J)
     out["jumps"] = jumps
+    out["stale_race"] = stale_race(tp, t0, size) if len(t0) else {"jumps": 0}
     out["wide_trades"] = first_wide_trades(tp)
     out["placement"] = measure_placement(tp, labels, span)
     out["cancels"] = measure_cancels(tp, t0, size)
@@ -711,6 +784,14 @@ TABLE = [
     ("1-s residual kurtosis", lambda d: d["exogenous"]["resid_1s"]["kurtosis"]),
     ("var share of 2+ tick steps", lambda d: d["exogenous"]["resid_1s"]["var_share_steps_2plus"]),
     ("regimes (BIC best K)", lambda d: d["exogenous"]["regimes_best_K"]),
+    ("volatile share (2-state fit)", lambda d: d["exogenous"]["regimes"][1]["states"][1]["share"] if d["exogenous"]["regimes_best_K"] > 1 else 0),
+    ("c calm / volatile", lambda d: "/".join(str(s["c_sqrt"]) for s in d["regime_stats"])),
+    ("exo var/s calm / volatile", lambda d: "/".join(str(s["exo_var_per_s"]) for s in d["regime_stats"])),
+    ("F /s calm / volatile", lambda d: "/".join(str(s["F_per_s"]) for s in d["regime_stats"])),
+    ("F 10-s dispersion calm / volatile", lambda d: "/".join(str(s["F_dispersion_10s_1s"][0]) for s in d["regime_stats"])),
+    ("insert width calm / volatile", lambda d: "/".join(str(s["insert_width"]) for s in d["regime_stats"])),
+    ("stale value +5 ms all / capped 100", lambda d: f"{d['stale_race']['stale_value_total'][1]:.0f} / {d['stale_race']['stale_value_capped_100_total'][1]:.0f}" if d["stale_race"].get("with_a_first_trade") else "-"),
+    ("P(jump in 5 s | spread 3+)", lambda d: next((h["p_jump"] for h in d["jumps"]["hit_rates"] if h["within_s"] == 5.0 and h["feature"] == "spread" and h["threshold"] == 3.0), "-") if d["jumps"]["n"] else "-"),
     ("RV60 q50 / q95", lambda d: f"{d['exogenous']['rv60']['quantiles_5_25_50_75_95'][2]} / {d['exogenous']['rv60']['quantiles_5_25_50_75_95'][4]}"),
     ("jumps per 1000 s", lambda d: d["jumps"]["per_1000s"]),
     ("jump |size| median / q90", lambda d: f"{d['jumps']['abs_size_quantiles_10_25_50_75_90_99'][2]} / {d['jumps']['abs_size_quantiles_10_25_50_75_90_99'][4]}" if d["jumps"]["n"] else "-"),
