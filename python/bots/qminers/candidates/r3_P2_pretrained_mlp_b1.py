@@ -1,6 +1,9 @@
 """R3-P2 (8 Nov, round 3): R3-P1's stacking on R3-F3 (R3-B1 + FILTER: R3-F1 plus R2-L8's speed-switched one-lot quotes,
 QUOTE_SIZE 1 only while the 5-s |mid change| rate is below QS_RATE 2.5 ticks/s); the same 39 ridge features as R3-F1,
-so the same pretrained MLP. PRE = 0 with NUMPY_RIDGE = 0 is R3-F3 exactly. R3-P1's notes follow.
+so the same pretrained MLP. PRE = 0 with NUMPY_RIDGE = 0 is R3-F3 exactly; PRE = 0 alone is R3-F3 with the numpy ridge
+(505,212 on round3_public, F3's PnL to the unit, 146 s against 162 s). Result (IDEAS.md, "A pretrained forecaster of the
+400-ms move"): round3_public 541,087 against F3's 505,212, all of it in the first 75% the MLP trained on; the held-out
+last 25% 126,955 against 126,861: no gain. R3-P1's notes follow.
 
 R3-P1 (8 Nov, round 3): R3-F1 plus a PRETRAINED forecast of the 400-ms mid move, a small tanh MLP fitted offline on
 real and tape_gen v2 tapes (`python/experiments/day/pretrain_forecast.py`; its weights embedded below by `pretrain_forecast
@@ -49,7 +52,7 @@ PRE = 1  # R3-P1: 1 stacked (the frozen forecast as the ridge's 40th feature), 2
 PRE_BLEND = 0.5  # PRE = 3: the ridge's weight
 PRE_GATE = 0.3  # re-evaluate the frozen forecast at an event when the forecast is within this of the take threshold
 PRE_CLIP = 3.0  # the frozen forecast's clip (ticks)
-NUMPY_RIDGE = 1  # the online ridge's sums and solve in numpy (the same sums to the bit, LAPACK's solve; ~20% faster); 0: F1's pure-Python loops
+NUMPY_RIDGE = 1  # the online ridge's sums and solve in numpy (the same sums to the bit, LAPACK's solve; F3 146 s against 162 s on round3_public, the same PnL); 0: the pure-Python loops
 # BEGIN PRETRAINED WEIGHTS (written by `uv run python -m experiments.day.pretrain_forecast embed`)
 PRE_SHAPES = ((53,), (53,), (53, 32), (32,), (32, 16), (16,), (16, 1), (1,))
 PRE_BLOB = (
