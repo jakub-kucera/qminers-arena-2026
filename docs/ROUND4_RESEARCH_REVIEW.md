@@ -98,6 +98,15 @@ is useful headroom, learn where it is using current inventory, executable depth,
 forecast margin, time since a causally detected move, and recent filter evidence.
 Train where actions can differ; a global R-squared improvement is insufficient.
 
+**Result (R4-A1, 8 Nov 10:15, `experiments.day.action_oracle`):** no headroom in the restricted
+actions on round4_public. Exact Rust branches from F5's own decisions (WAIT, TAKE_NOW, REDUCE,
+flip stopped at flat, COMPLETE), valued at +300 s against F5's continuation: every action's mean
+is at or below zero, no state cell reaches t 2 and holds across the 1,000-s blocks, and 41-61% of
+skipped takes leave the PnL unchanged (F5 makes the same trade 50-150 ms later at the same price).
+The rule from WAIT (a take only if the signal persists to the next decision) loses 134k, as the
+oracle's mean predicted (-126k); the best cell as a rule (FT_FLIP_M) loses 7.9k-29.4k. IDEAS.md,
+"R4-A1".
+
 The 56k short-whipsaw loss motivates inspection, but uniform flip bars, post-jump flip
 bars and stopping at flat already failed. A live classifier must distinguish continuation
 from exhaustion before the event ends. The hindsight end of a jump is not a feature.

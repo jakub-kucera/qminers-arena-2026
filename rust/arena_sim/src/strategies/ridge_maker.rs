@@ -246,6 +246,15 @@
 //! for a position with the jump, -1 only against. `WS_STATS` (an environment variable, a path) appends a line a run:
 //! takes, take lots, reversal takes, raised-bar vetoes, wide takes, position flips and flips within 1 s of the
 //! position's start. All lose or rest on one episode (IDEAS.md, "R4-X1").
+//! R4-A1 (8 Nov; Rust only, off by default: F5 1029443.00 on round4_public unchanged, FA_LOG on or off): one forced
+//! action at the first decision at or after `FA_T` (us), then the policy unchanged, for
+//! `experiments.day.action_oracle`: `FA_ACT` 1 WAIT (the take skipped, its cooldown started), 2 TAKE_NOW (the
+//! forecast's way under the bar), 3 REDUCE (an IOC to flat in place of the decision), 4 COMPLETE (the first take
+//! cancelled partly filled at or after FA_T: its rest at the next book). `FA_LOG` (an environment variable, a path)
+//! writes the takes, the near-bar decisions and the partly filled takes. The WAIT rule `FT_CONFIRM` (0: off) defers a
+//! fresh take once and sends it within `FT_CONFIRM_MS` (200) only if the signal still clears the bar; `FT_CONFIRM_FLIP`
+//! (0) 1 only reversals, `FT_CONFIRM_QS_LO` / `_HI` a speed range, `FT_CONFIRM_MARGIN` (99.0) takes clearing the bar by
+//! less. FT_CONFIRM loses 134k on round4_public (IDEAS.md, "R4-A1").
 //!
 //! The audit's quote knobs (8 Nov), off by default: `QS_PULL` (0) 1 withdraws both quotes, so the resting ones are
 //! cancelled, while QS_RATE's switch is off; `QUOTE_GAP` (99.0: off) withdraws the quote on the side the latent filter's
@@ -613,6 +622,32 @@ pub struct RidgeMaker {
     /// position flips and those within 1 s of the position's start
     ws_stats: Option<String>,
     ws_count: [i64; 7],
+    /// R4-A1 (8 Nov, off by default): one forced action at the first decision at or after FA_T (us), then the policy
+    /// unchanged. FA_ACT 1 WAIT (the first take skipped, its cooldown started), 2 TAKE_NOW (the forecast's way though
+    /// under the bar), 3 REDUCE (an IOC to flat, never past, in place of that decision's take), 4 COMPLETE (the first
+    /// take IOC cancelled partly filled at or after FA_T: its rest at the next book, at the touch). FA_LOG (env var, a
+    /// path): takes, near-bar decisions (100 ms apart) and partly filled takes, to sample them
+    fa_t: i64,
+    fa_act: i64,
+    fa_done: bool,
+    fa_rest: Option<(i64, i64)>,
+    fa_takes: HashMap<u64, (i64, i64, i64)>,
+    fa_log: Option<std::io::BufWriter<std::fs::File>>,
+    fa_log_last: i64,
+    fa_pred_sign: i64,
+    fa_flip_t: i64,
+    /// R4-A1's rule (off by default): FT_CONFIRM 1 defers a take once (skipped, its cooldown started) and sends it at a
+    /// later decision within FT_CONFIRM_MS only if the signal still clears the bar that way; FT_CONFIRM_FLIP 1 only
+    /// takes that reverse a held position; FT_CONFIRM_QS_LO / _HI the speed (QS_RATE's rate) range it applies in;
+    /// FT_CONFIRM_MARGIN only takes whose signal clears the bar by less than it
+    ft_confirm: i64,
+    ft_confirm_ms: i64,
+    ft_confirm_flip: i64,
+    ft_confirm_qs_lo: f64,
+    ft_confirm_qs_hi: f64,
+    ft_confirm_margin: f64,
+    cf_sign: i64,
+    cf_t: i64,
     ws_inv_sign: i64,
     ws_inv_start: i64,
     ws_zero_t: i64,
@@ -1023,6 +1058,10 @@ pub const X1_KEYS: [&str; 10] = [
     "FT_WS_FLAT", "FT_WS_DIR",
 ];
 
+/// R4-A1's forced action (off by default)
+pub const FA_KEYS: [&str; 8] =
+    ["FA_T", "FA_ACT", "FT_CONFIRM", "FT_CONFIRM_MS", "FT_CONFIRM_FLIP", "FT_CONFIRM_QS_LO", "FT_CONFIRM_QS_HI", "FT_CONFIRM_MARGIN"];
+
 fn side_index(sign: i64) -> usize {
     if sign > 0 {
         0
@@ -1033,7 +1072,7 @@ fn side_index(sign: i64) -> usize {
 
 impl RidgeMaker {
     pub fn new(params: &Params) -> Result<RidgeMaker, String> {
-        params.check_keys(&[&KEYS[..], &MOE_KEYS[..], &crate::strategies::profit_gate::KEYS[..], &crate::strategies::calib::KEYS[..], &X1_KEYS[..]].concat())?;
+        params.check_keys(&[&KEYS[..], &MOE_KEYS[..], &crate::strategies::profit_gate::KEYS[..], &crate::strategies::calib::KEYS[..], &X1_KEYS[..], &FA_KEYS[..]].concat())?;
         let n_base = N + if params.int("PLACE", 0)? > 0 { 2 } else { 0 }
                 + if params.int("DEPTH5", 0)? > 0 { 1 } else { 0 }
                 + if params.int("FLOW2", 0)? > 0 { 2 } else { 0 }
@@ -1363,6 +1402,23 @@ impl RidgeMaker {
             ws_inv_start: 0,
             ws_zero_t: -(1i64 << 60),
             ws_flat: true,
+            fa_t: params.int("FA_T", 0)?,
+            fa_act: params.int("FA_ACT", 0)?,
+            fa_done: false,
+            fa_rest: None,
+            fa_takes: HashMap::new(),
+            fa_log: std::env::var("FA_LOG").ok().map(|p| std::io::BufWriter::new(std::fs::File::create(p).expect("FA_LOG"))),
+            fa_log_last: i64::MIN / 2,
+            fa_pred_sign: 0,
+            fa_flip_t: -(1i64 << 60),
+            ft_confirm: params.int("FT_CONFIRM", 0)?,
+            ft_confirm_ms: params.int("FT_CONFIRM_MS", 200)?,
+            ft_confirm_flip: params.int("FT_CONFIRM_FLIP", 0)?,
+            ft_confirm_qs_lo: params.float("FT_CONFIRM_QS_LO", 0.0)?,
+            ft_confirm_qs_hi: params.float("FT_CONFIRM_QS_HI", 1e9)?,
+            ft_confirm_margin: params.float("FT_CONFIRM_MARGIN", 99.0)?,
+            cf_sign: 0,
+            cf_t: i64::MIN / 2,
             liq: params.int("LIQ", 0)?,
             liq_time: None,
             liq_mid: 0.0,
@@ -2203,6 +2259,33 @@ impl RidgeMaker {
         f[k + 1] = gap * gap.abs() / 3.0;
         f[k + 2] = if sd < 3.0 { sd } else { 3.0 };
         f
+    }
+
+    /// R4-A1: FA_LOG's line for a decision (kind 0 near the bar, 1 a take, 2 a take signal with no room)
+    #[allow(clippy::too_many_arguments)]
+    fn fa_write(&mut self, kind: i64, now: i64, mid: f64, spread: i64, signal: f64, need_up: f64, need_dn: f64, sign: i64, quantity: i64) {
+        let res_b: i64 = self.orders.iter().filter(|r| r.sign > 0).map(|r| r.quantity).sum();
+        let res_s: i64 = self.orders.iter().filter(|r| r.sign < 0).map(|r| r.quantity).sum();
+        let jump = if self.ft_jump > 0.0 && now < self.ft_jump_until { self.ft_jump_sign } else { 0 };
+        let lf = if self.filter > 0 { self.lf_features(mid) } else { [0.0; 3] };
+        let (inv, qs, flip_age) = (self.inventory, self.qs_rate, now - self.fa_flip_t);
+        if let Some(w) = self.fa_log.as_mut() {
+            use std::io::Write;
+            let _ = writeln!(
+                w,
+                "{kind},{now},{mid},{spread},{signal:.5},{need_up:.4},{need_dn:.4},{sign},{quantity},{inv},{res_b},{res_s},{qs:.4},{jump},{flip_age},{:.4},{:.4}",
+                lf[0], lf[2]
+            );
+        }
+    }
+
+    /// R4-A1: an IOC of `quantity` at the touch `sign`'s way, as the take sends it
+    fn fa_send(&mut self, now: i64, sign: i64, quantity: i64, bid: i64, ask: i64, ctx: &mut Ctx) -> u64 {
+        let price = if sign > 0 { ask + self.ft_thru } else { 1i64.max(bid - self.ft_thru) };
+        let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, true);
+        self.orders.push(Record { id, sign, price, quantity, accepted: false, cancelling: false, exempt_until: now + 1_000_000, target: 0, kept: false });
+        self.ft_last = now;
+        id
     }
 
     /// ENS (R4-E1): the forecast take's two bars (up, down) as the take computes them, for a position `inventory`
@@ -3677,8 +3760,27 @@ impl Strategy for RidgeMaker {
                 self.ws_pred_sign = s;
             }
         }
+        // R4-A1: FA_LOG's forecast sign changes, at every book
+        if self.fa_log.is_some() {
+            let s = if prediction > 0.0 { 1 } else if prediction < 0.0 { -1 } else { 0 };
+            if s != 0 {
+                if self.fa_pred_sign != 0 && s != self.fa_pred_sign {
+                    self.fa_flip_t = now;
+                }
+                self.fa_pred_sign = s;
+            }
+        }
+        // R4-A1 COMPLETE: the armed take's unfilled rest at once, at the touch, within the take's room
+        if let Some((s, lots)) = self.fa_rest.take() {
+            let pos = s * self.inventory;
+            let reserved: i64 = self.orders.iter().filter(|r| r.sign == s).map(|r| r.quantity).sum();
+            let quantity = lots.min(self.exposure - pos - reserved).min(self.position_limit - pos - reserved);
+            if quantity > 0 {
+                self.fa_send(now, s, quantity, bid, ask, ctx);
+            }
+        }
         // FT_WIDE_SPREAD (R4-X1): takes also at spreads up to it, at the bar FT_WIDE_EDGE from 2 ticks
-        let wide = self.ft_wide_spread > 0 && spread >= 2 && spread <= self.ft_wide_spread;
+        let wide =self.ft_wide_spread > 0 && spread >= 2 && spread <= self.ft_wide_spread;
         if self.ft_sz > 0
             && self.m1.labels >= self.min_labels
             && (now - self.ft_last >= self.ft_gap_ms * 1000 || burst_new)
@@ -3814,6 +3916,39 @@ impl Strategy for RidgeMaker {
             } else {
                 sign
             };
+            // R4-A1 (FA_ACT 2 / 3): the forced action at the first decision at or after FA_T
+            let f5_sign = sign;
+            let sign = if (self.fa_act == 2 || self.fa_act == 3) && !self.fa_done && now >= self.fa_t {
+                self.fa_done = true;
+                if self.fa_act == 2 {
+                    if sign != 0 {
+                        sign
+                    } else if signal > 0.0 {
+                        1
+                    } else if signal < 0.0 {
+                        -1
+                    } else {
+                        0
+                    }
+                } else {
+                    if self.inventory != 0 {
+                        let s = -self.inventory.signum();
+                        let reserved: i64 = self.orders.iter().filter(|r| r.sign == s).map(|r| r.quantity).sum();
+                        let quantity = self.inventory.abs() - reserved;
+                        if quantity > 0 {
+                            self.fa_send(now, s, quantity, bid, ask, ctx);
+                        }
+                    }
+                    0
+                }
+            } else {
+                sign
+            };
+            let fa_logging = self.fa_log.is_some();
+            if fa_logging && sign == 0 && (signal > need_up - 0.3 || signal < 0.3 - need_dn) && now - self.fa_log_last >= 100_000 {
+                self.fa_log_last = now;
+                self.fa_write(0, now, mid, spread, signal, need_up, need_dn, f5_sign, 0);
+            }
             if sign != 0 {
                 let pos = sign * self.inventory;
                 // a burst on this side: BURST_EXP is the exposure and the limit, BURST_SZ (0: BURST_EXP) the take's lots
@@ -3853,6 +3988,37 @@ impl Strategy for RidgeMaker {
                 if ws_flat_only {
                     quantity = quantity.min(-pos - reserved);
                 }
+                if fa_logging {
+                    if quantity > 0 {
+                        self.fa_write(1, now, mid, spread, signal, need_up, need_dn, sign, quantity);
+                    } else if now - self.fa_log_last >= 100_000 {
+                        self.fa_log_last = now;
+                        self.fa_write(2, now, mid, spread, signal, need_up, need_dn, sign, quantity);
+                    }
+                }
+                // R4-A1's rule FT_CONFIRM: a fresh take in the rule's states deferred once, sent at a later decision
+                // within FT_CONFIRM_MS if the signal still clears the bar its way
+                if quantity > 0 && self.ft_confirm > 0 {
+                    let confirmed = self.cf_sign == sign && now - self.cf_t <= self.ft_confirm_ms * 1000;
+                    let applies = (self.ft_confirm_flip == 0 || pos < 0)
+                        && self.qs_rate >= self.ft_confirm_qs_lo
+                        && self.qs_rate < self.ft_confirm_qs_hi
+                        && signal * (sign as f64) - need < self.ft_confirm_margin;
+                    if !confirmed && applies {
+                        self.cf_sign = sign;
+                        self.cf_t = now;
+                        self.ft_last = now;
+                        quantity = 0;
+                    } else {
+                        self.cf_sign = 0;
+                    }
+                }
+                // R4-A1 WAIT (FA_ACT 1): the first take at or after FA_T skipped, its cooldown started
+                if quantity > 0 && self.fa_act == 1 && !self.fa_done && now >= self.fa_t {
+                    self.fa_done = true;
+                    self.ft_last = now;
+                    quantity = 0;
+                }
                 if quantity > 0 {
                     self.pg.takes += 1;
                     self.pg.lots += quantity;
@@ -3885,6 +4051,9 @@ impl Strategy for RidgeMaker {
                         kept: false,
                     });
                     self.ft_last = now;
+                    if fa_logging || (self.fa_act == 4 && !self.fa_done) {
+                        self.fa_takes.insert(id, (sign, quantity, 0));
+                    }
                 }
             } else if self.ft_exit < 99.0 && self.inventory != 0 {
                 // FT_EXIT (R3-G1): the signal against the position past FT_EXIT + half the spread, flatten (reduce only)
@@ -3959,6 +4128,35 @@ impl Strategy for RidgeMaker {
 
     fn on_private(&mut self, event: &PrivateEvent, ctx: &mut Ctx) {
         let Some(index) = self.orders.iter().position(|r| r.id == event.order_id) else { return };
+        // R4-A1: the takes' fills; a take cancelled partly filled is logged (FA_LOG) and arms COMPLETE (FA_ACT 4)
+        if !self.fa_takes.is_empty() {
+            match event.status {
+                Status::Filled => {
+                    self.fa_takes.remove(&event.order_id);
+                }
+                Status::PartiallyFilled => {
+                    if let Some(e) = self.fa_takes.get_mut(&event.order_id) {
+                        e.2 += event.filled_quantity;
+                    }
+                }
+                Status::Canceled | Status::Rejected => {
+                    if let Some((s, requested, filled)) = self.fa_takes.remove(&event.order_id) {
+                        let ts = event.timestamp_us;
+                        if filled > 0 && filled < requested {
+                            if let Some(w) = self.fa_log.as_mut() {
+                                use std::io::Write;
+                                let _ = writeln!(w, "3,{ts},{s},{requested},{filled},{}", self.inventory);
+                            }
+                            if self.fa_act == 4 && !self.fa_done && ts >= self.fa_t {
+                                self.fa_done = true;
+                                self.fa_rest = Some((s, requested - filled));
+                            }
+                        }
+                    }
+                }
+                _ => {}
+            }
+        }
         match event.status {
             Status::Accepted => self.orders[index].accepted = true,
             Status::Filled | Status::PartiallyFilled => {
