@@ -56,3 +56,12 @@ Trials so far: 0 experiments, 0 cells.
 - F1 / L9 (pnl; breach 0 everywhere): **round3_public 480,469 / 424,730** (+55.7k; 500-s segments won 7/11, t +1.57; first 75% +46.2k, last 25% +9.5k); round2_public 303,720 / 317,057 (-4.2%); round 2's hi_vol_fast1.25 1,012,787 / 1,020,848 (-0.8%); round1 152,188 / 134,626 (+13%).
 - Local run time on r3 205 s vs 187 s (+10%), about 360 s on the server. It trades more: 572k lots vs 460k on r3.
 - Next: round 3's stitched tapes (running), TAKE_EDGE 0.3 on F1 and L9 (running), the Rust port behind a FILTER knob, then the sqrt-impact variant.
+
+### R3-S1 / S2 / S3 / S4 (8 Nov 02:10): strategies other than the forecast taker (IDEAS.md rows "R3-S1" to "R3-S4"; the statistics: "Round 3's tape: where money can be made")
+- PnL on round3_public / pub+mirror / hi_vol / hi_vol_fast1.25 / round1 (R2-L8: 427,819 / 881,280 / 912,583 / 1,155,238 / 174,109); breach 0 on every run; each 33-106 s locally on the public tape.
+- **R3-S1**, `r3_S1_gap_maker.py`: a passive maker, the touch quoted only on the side the latent filter's gap favours, no takes. 48,688 / 98,265 / 81,352 / 43,510 / 144,427. Per-second correlation with R2-L8 -0.07 (public), -0.19 with R3-F1.
+- **R3-S2**, `r3_S2_quiet_maker.py`: a two-sided touch maker that quotes only in quiet markets, with no forecast. 31,843 / 66,602 / 56,730 / 31,740 / 117,538. Correlation with R2-L8 -0.12 to +0.17.
+- **R3-S3**, `r3_S3_jump_catch.py`: a jump-catch taker. After the mid's first 0.2-s move of 3+ ticks with the gap 1+ the same way, it takes 100 lots and flattens 3 s later. 76,797 / 153,702 / 231,212 / 190,800 / -290 (round2_public +1,803). Correlation 0.23 at 1 s, 0.50 at 60 s.
+- **R3-S4**, `r3_S4_taker_gap_quote.py`: R3-F1 plus S1's quote. Dropped: both sides 341,739 against F1's 480,469; as an exit only 474,024 (a tie in 500-s segments).
+- None of them beats the taker, and none adds to it on one inventory. S3 is the strongest standalone (17-25% of R2-L8 on round 3's tapes). S1 is the only one that never pays the spread.
+- Synthetic seed 101 / 102 (secondary; makers unvalidated there): S1 -117,637 / -17,770; S2 -5,496 / +4,292; S3 (GAP_MIN 2) 18,723 / 11,075; R2-L8 850,972 / 1,140,765.
