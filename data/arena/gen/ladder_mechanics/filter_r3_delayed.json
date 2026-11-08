@@ -1,0 +1,2770 @@
+{
+  "source": "data/arena/round3/round3_public.csv",
+  "source_sha256": "1021586b92a3d9dfdb70096e6b0af34d460813b139f1f51f56b73871cb5a2d15",
+  "duration_s": 5999.994333,
+  "g_orders": 1178322,
+  "recognized_g": {
+    "baseline": 0,
+    "clock_2ms": 44941,
+    "band_2_7": 284175,
+    "oracle_chain": 68527,
+    "clock_1ms": 19,
+    "delayed_baseline_2ms": 0,
+    "delayed_clock_2ms": 68527
+  },
+  "dropped_observations": {
+    "baseline": 0,
+    "clock_2ms": 39426,
+    "band_2_7": 268389,
+    "oracle_chain": 63004,
+    "clock_1ms": 18,
+    "delayed_baseline_2ms": 0,
+    "delayed_clock_2ms": 63004
+  },
+  "observed_g": {
+    "baseline": 1160323,
+    "clock_2ms": 1120897,
+    "band_2_7": 891934,
+    "oracle_chain": 1097319,
+    "clock_1ms": 1160305,
+    "delayed_baseline_2ms": 1160322,
+    "delayed_clock_2ms": 1097318
+  },
+  "arms": [
+    "baseline",
+    "clock_2ms",
+    "band_2_7",
+    "oracle_chain",
+    "clock_1ms",
+    "delayed_baseline_2ms",
+    "delayed_clock_2ms"
+  ],
+  "filter_params": {
+    "impact_scale": 3.0,
+    "depth": 6
+  },
+  "sampling_step_s": 0.05,
+  "oracle_noncausal": "oracle_chain",
+  "exploratory_after_primary_results": [
+    "delayed_baseline_2ms",
+    "delayed_clock_2ms"
+  ],
+  "caution": "Forecast ablation, not bot PnL or private-tape evidence. Coefficients use first-half training only; the fixed 2-ms detection rule was discovered previously using the full public tape.",
+  "evaluation": {
+    "split_s": 2999.997166,
+    "train_fraction": 0.5,
+    "horizons": {
+      "0.4": {
+        "train_n": 59756,
+        "test_n": 59958,
+        "arms": {
+          "baseline": {
+            "gap_corr_train": 0.3279383871463552,
+            "gap_corr_holdout": 0.3217143549803172,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.011024158521762199,
+                0.6195097802104651
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.200653584584683,
+                "rmse": 2.280494153595813,
+                "r2": 0.1075435857641528,
+                "corr": 0.3279383871463548,
+                "bias": -7.610070133316556e-18
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 7.48516645111305,
+                "rmse": 2.7359032240035557,
+                "r2": 0.10252090465183628,
+                "corr": 0.3217143549803171,
+                "bias": -0.014761814374647195
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 0.0,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": 0.0
+                  }
+                ],
+                "blocks_improved": 0,
+                "block_mean_se": 0.0,
+                "block_bootstrap_ci95": [
+                  0.0,
+                  0.0
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                -0.002151453513732016,
+                0.02998325104212577,
+                0.46113984718239276,
+                0.15358995164184155,
+                -0.02395445089428636
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.1895650726665385,
+                "rmse": 2.2780616920238437,
+                "r2": 0.10944642613310396,
+                "corr": 0.3308268824220675,
+                "bias": 9.893091173311523e-17
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 8.082174668673025,
+                "rmse": 2.8429165778603185,
+                "r2": 0.03093901017954004,
+                "corr": 0.29192145454879126,
+                "bias": -0.008436021535878791
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 0.0,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": 0.0
+                  }
+                ],
+                "blocks_improved": 0,
+                "block_mean_se": 0.0,
+                "block_bootstrap_ci95": [
+                  0.0,
+                  0.0
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          },
+          "clock_2ms": {
+            "gap_corr_train": 0.3293065980242155,
+            "gap_corr_holdout": 0.3227352927882778,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.011828961610379968,
+                0.6330824727446326
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.1954133439416195,
+                "rmse": 2.2793449374637484,
+                "r2": 0.10844283550228251,
+                "corr": 0.3293065980242158,
+                "bias": 1.1415105199974834e-17
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 7.479307219524541,
+                "rmse": 2.73483221048834,
+                "r2": 0.1032234324980551,
+                "corr": 0.32273529278827734,
+                "bias": -0.015886919018285994
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -0.005859231588508579,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": -0.0018612297814215655
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": -0.011119938378284079
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.029758925734721418
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -0.037425991542712346
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": -0.006385429882987623
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -0.005816364877734991
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.004986776352710557
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.009119006180857566
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.028269709730745423
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": -0.008606891433933337
+                  }
+                ],
+                "blocks_improved": 7,
+                "block_mean_se": 0.005893415583092332,
+                "block_bootstrap_ci95": [
+                  -0.01664391440226777,
+                  0.0051356583032455055
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                -0.006684689656023677,
+                0.022855235543776026,
+                0.4929633892460319,
+                0.13724039148574527,
+                -0.01384484534869835
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.186524221202067,
+                "rmse": 2.2773941734364005,
+                "r2": 0.10996825042885217,
+                "corr": 0.3316146113018126,
+                "bias": -5.707552599987417e-17
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 7.917618626562999,
+                "rmse": 2.813826331983372,
+                "r2": 0.05066944754142655,
+                "corr": 0.2986685402221734,
+                "bias": -0.010443245809193251
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -0.16455604211002514,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.000791726835036313
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": -0.008292969460514802
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.02781288295575108
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -1.6567774048858883
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.0029203518274103116
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -0.005412772037920369
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.0045633456242134916
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.01069402480180887
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.0417280809928364
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": -0.00792436152030048
+                  }
+                ],
+                "blocks_improved": 5,
+                "block_mean_se": 0.16589678245263953,
+                "block_bootstrap_ci95": [
+                  -0.5006134872992465,
+                  0.01000910454220749
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          },
+          "band_2_7": {
+            "gap_corr_train": 0.2744621935098534,
+            "gap_corr_holdout": 0.2867817501997987,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.01624941579421376,
+                0.7692319637728695
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.388376279463056,
+                "rmse": 2.3212876339357553,
+                "r2": 0.07532949566624014,
+                "corr": 0.2744621935098528,
+                "bias": 7.610070133316556e-18
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 7.672375490184178,
+                "rmse": 2.769905321519885,
+                "r2": 0.08007434983920791,
+                "corr": 0.2867817501997984,
+                "bias": -0.024320636519005415
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 0.18720903907112962,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.09648968407011552
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.21384759009025014
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.26852473635031726
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -0.12369000621360904
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.33433108852133847
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.0864191698959543
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.16069276932043156
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.13797688772284372
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.32550397736721554
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": 0.37220735983263253
+                  }
+                ],
+                "blocks_improved": 1,
+                "block_mean_se": 0.04719820492319855,
+                "block_bootstrap_ci95": [
+                  0.09439891702415543,
+                  0.27055990335683533
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                0.07535433243290247,
+                0.03943215862804707,
+                0.7742007618948381,
+                -0.029026517367482296,
+                -0.24505980755559895
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.384341894465037,
+                "rmse": 2.3204184739966704,
+                "r2": 0.07602181495081073,
+                "corr": 0.2757205377747751,
+                "bias": -6.468559613319073e-17
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 7.80210521717045,
+                "rmse": 2.793224877658519,
+                "r2": 0.06451962319741222,
+                "corr": 0.25632633056390564,
+                "bias": -0.02682134358404851
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -0.2800694515025759,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.11497500802238284
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.24923480124089295
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.3005920443378604
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -5.007404267519484
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.4088682723907864
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.08079492683093872
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.14650104029401897
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.14061173879048972
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.3737081960669537
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": 0.39174824352065984
+                  }
+                ],
+                "blocks_improved": 1,
+                "block_mean_se": 0.5266628998285016,
+                "block_bootstrap_ci95": [
+                  -1.3596632216412967,
+                  0.30275025975232894
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          },
+          "oracle_chain": {
+            "gap_corr_train": 0.33090448446978366,
+            "gap_corr_holdout": 0.3245216900014738,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.011404219198491519,
+                0.6338105102271471
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.189265828416853,
+                "rmse": 2.2779960115015245,
+                "r2": 0.10949777784221348,
+                "corr": 0.33090448446978377,
+                "bias": 1.5220140266633113e-17
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 7.46969380635055,
+                "rmse": 2.7330740579703563,
+                "r2": 0.10437609054713803,
+                "corr": 0.32452169000147285,
+                "bias": -0.015409510107633424
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -0.015472644762498796,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": -0.004334589192627905
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": -0.012709138014830033
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.03609545156953606
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -0.0709893131155589
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": -0.011555001794478891
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -0.008728477817215561
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.0022262284708788925
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.010736857354576837
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": -0.0015327084800771734
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": -0.02175435763483146
+                  }
+                ],
+                "blocks_improved": 8,
+                "block_mean_se": 0.0074041245542590525,
+                "block_bootstrap_ci95": [
+                  -0.030878688505900743,
+                  -0.003268388317118702
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                0.003740733227884772,
+                0.020012712731070033,
+                0.49511227276542774,
+                0.13455682714215586,
+                -0.043038963454801314
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.18038993291741,
+                "rmse": 2.2760469970801154,
+                "r2": 0.11102092291268018,
+                "corr": 0.33319802357258954,
+                "bias": -5.327049093321589e-17
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 7.882545440823788,
+                "rmse": 2.807587120789627,
+                "r2": 0.05487475830021726,
+                "corr": 0.3012720543335434,
+                "bias": -0.010367808286571219
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -0.19962922784923723,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": -0.0007863926394458947
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": -0.005263702014011376
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.031970811742582
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -1.9537995850844059
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": -0.00087776373020613
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -0.009340011738943596
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.003587288767814172
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.011365848725386467
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.012506907348849135
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": -0.021669528372551723
+                  }
+                ],
+                "blocks_improved": 7,
+                "block_mean_se": 0.19495694159821803,
+                "block_bootstrap_ci95": [
+                  -0.5932065628264951,
+                  0.0017738032954019323
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          },
+          "clock_1ms": {
+            "gap_corr_train": 0.3279388877154431,
+            "gap_corr_holdout": 0.3217121340781346,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.011024413861934158,
+                0.6195119068767105
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.200651671397241,
+                "rmse": 2.280493734128038,
+                "r2": 0.10754391407604214,
+                "corr": 0.3279388877154429,
+                "bias": -3.805035066658278e-18
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 7.485181639907514,
+                "rmse": 2.735905999830315,
+                "r2": 0.10251908349988126,
+                "corr": 0.3217121340781341,
+                "bias": -0.014764127301182841
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 1.5188794464784835e-05,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 4.743726892587564e-07
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 5.3552040873883134e-05
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.00020387549009082988
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -4.669474871585893e-06
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 1.2373964916659456e-07
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -1.3010695200863187e-07
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.00037458026284751156
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 1.671404084952215e-07
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": -7.669416342215864e-05
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": 8.995610358729012e-06
+                  }
+                ],
+                "blocks_improved": 4,
+                "block_mean_se": 4.57532099417596e-05,
+                "block_bootstrap_ci95": [
+                  -6.016191465654691e-05,
+                  0.00011227660426842467
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                -0.002159421495420559,
+                0.02997995230295816,
+                0.46114637201242353,
+                0.15358600515801488,
+                -0.023931277294819087
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.189563802744543,
+                "rmse": 2.2780614132952044,
+                "r2": 0.10944664405764204,
+                "corr": 0.3308272117853093,
+                "bias": -2.244970689328384e-16
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 8.082132409397733,
+                "rmse": 2.842909145470135,
+                "r2": 0.030944077109768875,
+                "corr": 0.2919202322337654,
+                "bias": -0.00844130167591633
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -4.225927529052988e-05,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": -1.0615722671036777e-07
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 7.094047207848513e-05
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.0002926274163194321
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -0.00043468558314089313
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 2.6759787533073465e-06
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 9.299917981045637e-07
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.00027271113537531217
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 7.272670680416814e-07
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": -7.163382616913768e-05
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": 2.8972801321500175e-05
+                  }
+                ],
+                "blocks_improved": 4,
+                "block_mean_se": 6.165758688148511e-05,
+                "block_bootstrap_ci95": [
+                  -0.00016744043942602585,
+                  6.495622368914709e-05
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          },
+          "delayed_baseline_2ms": {
+            "gap_corr_train": 0.3244493434565505,
+            "gap_corr_holdout": 0.31724625304172166,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.012189679905788531,
+                0.6150222658140175
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.2139178469500616,
+                "rmse": 2.283400500777308,
+                "r2": 0.10526737646938689,
+                "corr": 0.3244493434565497,
+                "bias": 0.0
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 7.507678271948323,
+                "rmse": 2.7400142831650207,
+                "r2": 0.09982171436263743,
+                "corr": 0.31724625304172266,
+                "bias": -0.01617005204022758
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 0.02251182083527289,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.01607611688359472
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.1071483543209628
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.013509868474997648
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": 0.008204078885310905
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.023700835603612424
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.0019011803724114384
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": -0.0017793717111646969
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.006551776002101726
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.023096562666639845
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": 0.026665840529734655
+                  }
+                ],
+                "blocks_improved": 1,
+                "block_mean_se": 0.009876516847027575,
+                "block_bootstrap_ci95": [
+                  0.008626201665454764,
+                  0.043340136681350505
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                0.0007869173439191494,
+                0.029653342367986894,
+                0.4553552808351511,
+                0.1551225916778365,
+                -0.035547311655462904
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.20261922677696,
+                "rmse": 2.2809250813599644,
+                "r2": 0.10720627239496583,
+                "corr": 0.3274236894223834,
+                "bias": -4.9465455866557613e-17
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 8.187677468090113,
+                "rmse": 2.8614117963149086,
+                "r2": 0.01828911687443291,
+                "corr": 0.28405050613847266,
+                "bias": -0.010476369990802085
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 0.10550279941708875,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.01565368255012859
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.7943060597007833
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.012884946432245893
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": 0.1509850915880069
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.02302148352478529
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.0023400597496088514
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": -0.0036774368010529814
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.007395367035208036
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.024488232149006254
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": 0.027327259190593024
+                  }
+                ],
+                "blocks_improved": 1,
+                "block_mean_se": 0.0778056965474782,
+                "block_bootstrap_ci95": [
+                  0.011466742776431029,
+                  0.26492722546238345
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          },
+          "delayed_clock_2ms": {
+            "gap_corr_train": 0.32722643903783033,
+            "gap_corr_holdout": 0.32024153506318054,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.012684712723536013,
+                0.6293331902989627
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.203371712088857,
+                "rmse": 2.281090027177546,
+                "r2": 0.10707714240537924,
+                "corr": 0.3272264390378313,
+                "bias": 4.1855385733241056e-17
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 7.491482273610461,
+                "rmse": 2.7370572287788324,
+                "r2": 0.10176363108973485,
+                "corr": 0.320241535063181,
+                "bias": -0.016746415631429954
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 0.006315822497413052,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.011151356746051723
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.10140108154669904
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.027424894758865857
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -0.07075938865060039
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.012887002414834139
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -0.006566089801015609
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.0005121650166081465
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.01617982423704072
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.025264481493319037
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": 0.0004535953202333672
+                  }
+                ],
+                "blocks_improved": 3,
+                "block_mean_se": 0.013693930176421846,
+                "block_bootstrap_ci95": [
+                  -0.019103117994234944,
+                  0.032020628437459224
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              },
+              "paired_vs_delayed_baseline": {
+                "delta_mse": -0.016195998337859837,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": -0.004924760137542995
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": -0.005747272774263715
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.04093476323386351
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -0.0789634675359113
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": -0.010813833188778278
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -0.008467270173427048
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.002291536727772837
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.009628048234938994
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.002167918826679196
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": -0.026212245209501273
+                  }
+                ],
+                "blocks_improved": 7,
+                "block_mean_se": 0.008381797910105468,
+                "block_bootstrap_ci95": [
+                  -0.03353354479865528,
+                  -0.0022286178197986994
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                0.003918925777924927,
+                0.019245410064020054,
+                0.4911989124852656,
+                0.13441465895951654,
+                -0.04693182202597933
+              ],
+              "train": {
+                "n": 59756,
+                "mse": 5.194562424621973,
+                "rmse": 2.279158271077718,
+                "r2": 0.10858885722675715,
+                "corr": 0.32952823433927003,
+                "bias": -1.1415105199974834e-17
+              },
+              "holdout": {
+                "n": 59958,
+                "mse": 7.9566347902324415,
+                "rmse": 2.820750749398543,
+                "r2": 0.04599136970538853,
+                "corr": 0.2941477446681962,
+                "bias": -0.012196085661958653
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -0.12553987844058256,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.014392723772382382
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.6706088369049877
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.023370696857323427
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -1.9943169970790335
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.02322207488197558
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -0.006269746016890543
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": -0.0001970184587215579
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.01827668187762394
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.03991321956646591
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": 0.0021291119861474033
+                  }
+                ],
+                "blocks_improved": 4,
+                "block_mean_se": 0.21788437259636798,
+                "block_bootstrap_ci95": [
+                  -0.594459579600342,
+                  0.1529734832261981
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              },
+              "paired_vs_delayed_baseline": {
+                "delta_mse": -0.23104267785767132,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": -0.0012609587777462075
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": -0.12369722279579563
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.03625564328956932
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -2.1453020886670404
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.00020059135719029618
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -0.008609805766499393
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.003480418342331421
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.010881314842415902
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.015424987417459637
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5990,
+                    "delta_mse": -0.02519814720444562
+                  }
+                ],
+                "blocks_improved": 6,
+                "block_mean_se": 0.21307928046999342,
+                "block_bootstrap_ci95": [
+                  -0.6677335495672428,
+                  -0.0010247872300288964
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          }
+        }
+      },
+      "1.0": {
+        "train_n": 59744,
+        "test_n": 59946,
+        "arms": {
+          "baseline": {
+            "gap_corr_train": 0.29685095522388855,
+            "gap_corr_holdout": 0.26899574330454823,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.04462251490835997,
+                0.9562060214976287
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.462276451497848,
+                "rmse": 3.9322101230094315,
+                "r2": 0.08812048961733498,
+                "corr": 0.29685095522388827,
+                "bias": -6.089278935276702e-17
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 21.194434998198407,
+                "rmse": 4.603741413046394,
+                "r2": 0.07219017213008394,
+                "corr": 0.2689957433045476,
+                "bias": -0.06109148330597645
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 0.0,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": 0.0
+                  }
+                ],
+                "blocks_improved": 0,
+                "block_mean_se": 0.0,
+                "block_bootstrap_ci95": [
+                  0.0,
+                  0.0
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                0.06868750434147004,
+                -0.0413518745628905,
+                0.5315695637665261,
+                0.4306025479538226,
+                -0.31570916006455874
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.366500370523397,
+                "rmse": 3.9200128023417724,
+                "r2": 0.09376883293206684,
+                "corr": 0.30621697035283174,
+                "bias": 3.044639467638351e-17
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 29.016754034622814,
+                "rmse": 5.3867201555884465,
+                "r2": -0.27024049324719157,
+                "corr": 0.19013201758814033,
+                "bias": -0.04498831449822592
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 0.0,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.0
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": 0.0
+                  }
+                ],
+                "blocks_improved": 0,
+                "block_mean_se": 0.0,
+                "block_bootstrap_ci95": [
+                  0.0,
+                  0.0
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          },
+          "clock_2ms": {
+            "gap_corr_train": 0.29780840851921425,
+            "gap_corr_holdout": 0.26967211370906435,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.0458912992816334,
+                0.9762069362147274
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.452622128235703,
+                "rmse": 3.9309823362914904,
+                "r2": 0.08868984818474757,
+                "corr": 0.2978084085192147,
+                "bias": -7.611598669095878e-18
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 21.186425104897932,
+                "rmse": 4.602871397823095,
+                "r2": 0.07254081406628088,
+                "corr": 0.26967211370906397,
+                "bias": -0.06289160778585019
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -0.008009893300476193,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.004472616530350776
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": -0.05201887735819228
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.11309816185635596
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -0.031741249450793554
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.0057158199677297935
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.002884219295349711
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.015960687869581856
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.024422629635864876
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.09445553038480893
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": -0.031234987770316195
+                  }
+                ],
+                "blocks_improved": 4,
+                "block_mean_se": 0.017214795561373196,
+                "block_bootstrap_ci95": [
+                  -0.04005612999908371,
+                  0.023976329307255982
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                0.07210166045378,
+                -0.051726426677211786,
+                0.5780502259055637,
+                0.4084605221451467,
+                -0.3336821850647284
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.364566862412932,
+                "rmse": 3.919766174456447,
+                "r2": 0.09388286054207773,
+                "corr": 0.30640310139108917,
+                "bias": 7.611598669095878e-17
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 28.233836995707442,
+                "rmse": 5.313552201278109,
+                "r2": -0.23596743415530064,
+                "corr": 0.1934263483294202,
+                "bias": -0.04860423230005575
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -0.7829170389153723,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.014557417410274926
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": -0.04217072616055902
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.1113330408260584
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -7.912337444802086
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.03294531430087507
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.004082860025152125
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.022810217248330954
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.02850144175465975
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.17378523908902407
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": -0.03833466810915305
+                  }
+                ],
+                "blocks_improved": 4,
+                "block_mean_se": 0.7925108443391432,
+                "block_bootstrap_ci95": [
+                  -2.386133922141061,
+                  0.0456595341215742
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          },
+          "band_2_7": {
+            "gap_corr_train": 0.2410444552508226,
+            "gap_corr_holdout": 0.22882702562838064,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.053236844810816454,
+                1.1518284850217853
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.971277410750199,
+                "rmse": 3.996408063592881,
+                "r2": 0.058102429407166034,
+                "corr": 0.24104445525082266,
+                "bias": -6.089278935276702e-17
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 21.655909737698092,
+                "rmse": 4.653591058279411,
+                "r2": 0.051988605131109256,
+                "corr": 0.22882702562838023,
+                "bias": -0.07650030882951375
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 0.4614747394996798,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.07983417747929575
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.4643208419902751
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.27748528077979
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": 0.5366445638192915
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.8624997839839312
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.15942318606991224
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.21736657087019653
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.42968338339235107
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.8744857518318778
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": 0.7135914357331182
+                  }
+                ],
+                "blocks_improved": 0,
+                "block_mean_se": 0.09018233678601793,
+                "block_bootstrap_ci95": [
+                  0.2996848215157963,
+                  0.6270905254973583
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                0.18694975666830613,
+                -0.04069503827800698,
+                1.1699455982318236,
+                -0.026872872470530447,
+                -0.634623325428024
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.948488351199211,
+                "rmse": 3.9935558530211157,
+                "r2": 0.059446402044741165,
+                "corr": 0.24381632850311968,
+                "bias": 3.044639467638351e-17
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 21.781575325540935,
+                "rmse": 4.667073529048041,
+                "r2": 0.04648745506810692,
+                "corr": 0.2164830802605837,
+                "bias": -0.08022844247041999
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -7.235178709081881,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.2091983321988054
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.6891129255074926
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.4076134997056883
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -77.67536885073413
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 1.254901066323058
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.18253165187169587
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.16495693182726462
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.4593815184761638
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 1.1461114918322983
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": 0.8283103371316144
+                  }
+                ],
+                "blocks_improved": 1,
+                "block_mean_se": 7.827858938322464,
+                "block_bootstrap_ci95": [
+                  -22.994337758879418,
+                  0.7805409615657954
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          },
+          "oracle_chain": {
+            "gap_corr_train": 0.29937323385842557,
+            "gap_corr_holdout": 0.27207586862991057,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.04521862513621006,
+                0.9777277141124626
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.436776542584145,
+                "rmse": 3.928966345310703,
+                "r2": 0.08962433315085161,
+                "corr": 0.2993732338584257,
+                "bias": -3.044639467638351e-17
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 21.15649406959145,
+                "rmse": 4.599618904821512,
+                "r2": 0.0738510782331736,
+                "corr": 0.2720758686299108,
+                "bias": -0.06210203854975547
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -0.03794092860695992,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": -0.004093411936894408
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": -0.06165785975215966
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.13532828578867237
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -0.10870782019805905
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": -0.030962974827016664
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -0.002562632117149847
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.007069915550510528
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.029856521498996258
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": -0.016608092524508258
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": -0.05647402816618167
+                  }
+                ],
+                "blocks_improved": 8,
+                "block_mean_se": 0.016640562506539145,
+                "block_bootstrap_ci95": [
+                  -0.07065140718466797,
+                  -0.00842093535214226
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                0.09054878879954478,
+                -0.05647280305361515,
+                0.5802821659247873,
+                0.4031690277037886,
+                -0.38719252570319396
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.34665929889654,
+                "rmse": 3.917481244230346,
+                "r2": 0.09493894955346593,
+                "corr": 0.3081216473301839,
+                "bias": 3.805799334547939e-17
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 28.001202631346114,
+                "rmse": 5.291616258889728,
+                "r2": -0.2257836076190869,
+                "corr": 0.19580899656008272,
+                "bias": -0.04870541917116141
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -1.015551403276703,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.00677393129610384
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": -0.03150261190224864
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.12466409181092429
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -10.009354418636724
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": -0.0009135966891350796
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -0.007074085704909227
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.016908047286435093
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.02817390451252367
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.03765132435458331
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": -0.06934421270868597
+                  }
+                ],
+                "blocks_improved": 6,
+                "block_mean_se": 0.9994557906458045,
+                "block_bootstrap_ci95": [
+                  -3.0276916997190306,
+                  0.006689843853737211
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          },
+          "clock_1ms": {
+            "gap_corr_train": 0.29685241855792543,
+            "gap_corr_holdout": 0.2689934520432987,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.04462281416437212,
+                0.9562125569165396
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.46226171993009,
+                "rmse": 3.9322082498171547,
+                "r2": 0.08812135840368973,
+                "corr": 0.2968524185579255,
+                "bias": -2.2834796007287633e-17
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 21.194463094941078,
+                "rmse": 4.603744464557202,
+                "r2": 0.07218894216410543,
+                "corr": 0.2689934520432997,
+                "bias": -0.061094928233714624
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 2.8096742667629637e-05,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 4.868838519334645e-06
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.00015945121939317712
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.00015379045467769372
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -9.047202706802251e-06
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 1.4012360793567967e-06
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 1.8823905952836168e-06
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.0003765621428194327
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 4.0161355028124884e-07
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": -0.0002590878460833343
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": -0.00014911154326419036
+                  }
+                ],
+                "blocks_improved": 3,
+                "block_mean_se": 5.501968093924516e-05,
+                "block_bootstrap_ci95": [
+                  -6.80939720383426e-05,
+                  0.00013368766294070776
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                0.06871183537040522,
+                -0.04135876124578432,
+                0.5315833124144965,
+                0.4305962614830845,
+                -0.31577577874418605
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.366486027849657,
+                "rmse": 3.9200109729246493,
+                "r2": 0.0937696787836042,
+                "corr": 0.3062183514807761,
+                "bias": -1.2178557870553404e-16
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 29.01655049914272,
+                "rmse": 5.386701263216916,
+                "r2": -0.27023158325649055,
+                "corr": 0.1901289765607733,
+                "bias": -0.04500180475768858
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -0.0002035354800911546,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 1.1766248699828527e-05
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.00025377883838210015
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.0001952502134010569
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -0.002291442396873708
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 1.8228559146717925e-06
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -3.9815085391107755e-06
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.00013605484503986708
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": -5.35409356402847e-06
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": -0.00023890711103086572
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": -9.393043947227714e-05
+                  }
+                ],
+                "blocks_improved": 5,
+                "block_mean_se": 0.00023626097217578832,
+                "block_bootstrap_ci95": [
+                  -0.0007011893540071521,
+                  9.127014093091979e-05
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          },
+          "delayed_baseline_2ms": {
+            "gap_corr_train": 0.2942760466256853,
+            "gap_corr_holdout": 0.26461282810527675,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.04637036270349923,
+                0.9511767955522544
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.48808589209778,
+                "rmse": 3.9354905529168507,
+                "r2": 0.0865983916176426,
+                "corr": 0.29427604662568524,
+                "bias": -2.2834796007287633e-17
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 21.248716687111894,
+                "rmse": 4.6096330317186744,
+                "r2": 0.06981393117572054,
+                "corr": 0.26461282810527675,
+                "bias": -0.06322466051747015
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 0.05428168891348473,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.027807120601623103
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.25690080600151294
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.021407715104317205
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": 0.03356631170981899
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.050021382461194995
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.006476110737223236
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": -0.008499670538443568
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.018153155915799166
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.05509113935602037
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": 0.08186075909586964
+                  }
+                ],
+                "blocks_improved": 1,
+                "block_mean_se": 0.023938993785111936,
+                "block_bootstrap_ci95": [
+                  0.01976997924733711,
+                  0.10528765393112823
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                0.05711988448386766,
+                -0.04430693371084953,
+                0.5306176657418719,
+                0.4279581828821831,
+                -0.28667606360586884
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.394186357842626,
+                "rmse": 3.9235425775493535,
+                "r2": 0.09213606659004003,
+                "corr": 0.3035392340209745,
+                "bias": -4.5669592014575265e-17
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 29.379972066887174,
+                "rmse": 5.4203295164489,
+                "r2": -0.2861407642392275,
+                "corr": 0.18493778453765045,
+                "bias": -0.04850233416635796
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 0.36321803226435856,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.017061705152674782
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 4.4438724711209385
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": 0.02226205555348825
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -1.064698797874473
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.0472798727541235
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.017917573584817496
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": -0.019024002377762635
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.022589099623764444
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.05564808073058919
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": 0.08712073021907021
+                  }
+                ],
+                "blocks_improved": 2,
+                "block_mean_se": 0.46641394593428886,
+                "block_bootstrap_ci95": [
+                  -0.2957258868670438,
+                  1.3515208602860964
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          },
+          "delayed_clock_2ms": {
+            "gap_corr_train": 0.2966126607319331,
+            "gap_corr_holdout": 0.26804195765232564,
+            "gap_only": {
+              "coefficients_train_only": [
+                -0.04714620144426145,
+                0.9726919344939559
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.464674423338112,
+                "rmse": 3.932515025189111,
+                "r2": 0.08797907050647702,
+                "corr": 0.29661266073193315,
+                "bias": 3.044639467638351e-17
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 21.207052548857124,
+                "rmse": 4.605111567471208,
+                "r2": 0.07163782489809589,
+                "corr": 0.2680419576523262,
+                "bias": -0.06413024361101555
+              },
+              "paired_vs_baseline": {
+                "delta_mse": 0.012617550658713356,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.026548989488262374
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 0.19216233438683492
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.12007514715598676
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -0.09785694201082379
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.028835194626511188
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -0.001767898324887713
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": -0.007424252065001515
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.04637998696600863
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.04432515594458427
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": 0.014924100490325054
+                  }
+                ],
+                "blocks_improved": 4,
+                "block_mean_se": 0.02692883623425143,
+                "block_bootstrap_ci95": [
+                  -0.03786892398485134,
+                  0.06199732539272227
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              },
+              "paired_vs_delayed_baseline": {
+                "delta_mse": -0.04166413825477137,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": -0.001258131113360724
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": -0.06473847161467804
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.141482862260304
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -0.13142325372064276
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": -0.02118618783468381
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -0.008244009062110945
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.001075418473442054
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.028226831050209466
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": -0.010765983411436121
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": -0.0669366586055446
+                  }
+                ],
+                "blocks_improved": 8,
+                "block_mean_se": 0.018265514241436888,
+                "block_bootstrap_ci95": [
+                  -0.07739588941980424,
+                  -0.009157640504960415
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            },
+            "f3_style": {
+              "coefficients_train_only": [
+                0.076157620758282,
+                -0.059554824464889966,
+                0.5794299623948199,
+                0.4009212602084779,
+                -0.34964672486153653
+              ],
+              "train": {
+                "n": 59744,
+                "mse": 15.376712097002073,
+                "rmse": 3.921315097897907,
+                "r2": 0.09316660180712566,
+                "corr": 0.3052320458391053,
+                "bias": 5.328119068367114e-17
+              },
+              "holdout": {
+                "n": 59946,
+                "mse": 28.342507663414843,
+                "rmse": 5.323768182726859,
+                "r2": -0.24072461279717916,
+                "corr": 0.19070800451517086,
+                "bias": -0.05175466850829954
+              },
+              "paired_vs_baseline": {
+                "delta_mse": -0.6742463712079662,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.02608929114048749
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": 4.010269293570494
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.11044612616810215
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -10.875037723127475
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.052344946442037264
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": 0.006607485951864268
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": -0.00723110487331521
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.05070460310445321
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.09066200785309692
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": 0.013755817112934554
+                  }
+                ],
+                "blocks_improved": 3,
+                "block_mean_se": 1.2010623261178268,
+                "block_bootstrap_ci95": [
+                  -3.2564178136334925,
+                  0.9174605548384824
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              },
+              "paired_vs_delayed_baseline": {
+                "delta_mse": -1.0374644034723244,
+                "blocks": [
+                  {
+                    "start_s": 3000,
+                    "n": 6000,
+                    "delta_mse": 0.009027585987812716
+                  },
+                  {
+                    "start_s": 3300,
+                    "n": 5998,
+                    "delta_mse": -0.43360317755044187
+                  },
+                  {
+                    "start_s": 3600,
+                    "n": 5996,
+                    "delta_mse": -0.13270818172159038
+                  },
+                  {
+                    "start_s": 3900,
+                    "n": 5996,
+                    "delta_mse": -9.810338925253001
+                  },
+                  {
+                    "start_s": 4200,
+                    "n": 5996,
+                    "delta_mse": 0.005065073687913757
+                  },
+                  {
+                    "start_s": 4500,
+                    "n": 5998,
+                    "delta_mse": -0.011310087632953226
+                  },
+                  {
+                    "start_s": 4800,
+                    "n": 5986,
+                    "delta_mse": 0.01179289750444742
+                  },
+                  {
+                    "start_s": 5100,
+                    "n": 6000,
+                    "delta_mse": 0.02811550348068876
+                  },
+                  {
+                    "start_s": 5400,
+                    "n": 5998,
+                    "delta_mse": 0.03501392712250773
+                  },
+                  {
+                    "start_s": 5700,
+                    "n": 5978,
+                    "delta_mse": -0.07336491310613566
+                  }
+                ],
+                "blocks_improved": 5,
+                "block_mean_se": 0.97580544466033,
+                "block_bootstrap_ci95": [
+                  -3.030524646912786,
+                  -0.0016762086639016444
+                ],
+                "caution": "Dependent 50-ms samples are grouped in 300-s blocks; few blocks limit interval precision."
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "elapsed_s": 28.54907862492837
+}

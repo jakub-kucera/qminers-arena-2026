@@ -1,0 +1,10 @@
+{
+  "FILTER_PI0": 0.55,
+  "FILTER_PI1": 0.39,
+  "FILTER_PI2": 0.06,
+  "FILTER_RATE": 2.0,
+  "FILTER_IMPACT": 3.0,
+  "FILTER_SQRT_C": 0.0,
+  "FILTER_DEPTH": 6,
+  "FILTER_EPS": 0.01
+}

@@ -1,0 +1,528 @@
+{
+  "source": "/Users/jakubkucera/Documents/qminers_arena/data/arena/round3/round3_public.csv",
+  "sha256": "1021586b92a3d9dfdb70096e6b0af34d460813b139f1f51f56b73871cb5a2d15",
+  "duration_s": 300.0,
+  "f_count": 2497,
+  "inferred_injected": 0,
+  "observable": {
+    "method": "observable Huber F-anchor increment fit; delta=1 tick; conditional 300s cluster CIs",
+    "size": "requested",
+    "split_s": 225.0,
+    "coefficients": [
+      -0.03959874418023366,
+      0.06464017541606068,
+      0.0,
+      -0.17233088112764278
+    ],
+    "impact_law": "sqrt",
+    "impact_coefficient_units": "ticks per sqrt(lot)",
+    "coefficient_names": [
+      "permanent_c",
+      "transient_b",
+      "injected_c",
+      "drift_ticks_per_s"
+    ],
+    "active_parameters": [
+      true,
+      true,
+      false,
+      true
+    ],
+    "conditional_ci95": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "conditional_ci_blocks_300s": 1,
+    "conditional_ci_qualification": "Conditions on selected tau; suppressed below6 training blocks. Synthetic202/203 permanent-c intervals miss truth; not calibrated joint uncertainty. Inactive columns are unidentified.",
+    "immediate_c": 0.02504143123582702,
+    "delay": 1.6323794290508549,
+    "tau_s": 23.72180715322852,
+    "tau_search_boundary": false,
+    "train_huber_loss": 0.44235621011175424,
+    "train": {
+      "n": 1823,
+      "mse": 2.9891989233397993,
+      "mae": 0.7101987686410973,
+      "bias": -0.015576574117613524,
+      "zero_forecast_mse": 2.992868897421832
+    },
+    "holdout": {
+      "n": 672,
+      "mse": 4.312853052357774,
+      "mae": 0.8029164572281999,
+      "bias": 0.022613669438378496,
+      "zero_forecast_mse": 4.383928571428571
+    },
+    "tau_profile": [
+      {
+        "tau_s": 0.1,
+        "train_loss": 0.4426059681859269,
+        "coefficients": [
+          0.026804828831862738,
+          -0.004259788371604573,
+          0.0,
+          0.053672012156754496
+        ]
+      },
+      {
+        "tau_s": 0.14677992676220694,
+        "train_loss": 0.44266743778901485,
+        "coefficients": [
+          0.02700128050095352,
+          -0.0038728224774443394,
+          0.0,
+          0.054714856275054645
+        ]
+      },
+      {
+        "tau_s": 0.21544346900318834,
+        "train_loss": 0.44274676012861675,
+        "coefficients": [
+          0.027058022077054298,
+          -0.0034071490552858735,
+          0.0,
+          0.055787543424966626
+        ]
+      },
+      {
+        "tau_s": 0.31622776601683794,
+        "train_loss": 0.44283155683772096,
+        "coefficients": [
+          0.02686137541928047,
+          -0.002749830586775535,
+          0.0,
+          0.05660262079919903
+        ]
+      },
+      {
+        "tau_s": 0.46415888336127786,
+        "train_loss": 0.44290095378334327,
+        "coefficients": [
+          0.02628667526895181,
+          -0.0017930647171798169,
+          0.0,
+          0.05665944106172183
+        ]
+      },
+      {
+        "tau_s": 0.6812920690579611,
+        "train_loss": 0.44293463162462376,
+        "coefficients": [
+          0.025285947101827917,
+          -0.0005138201778690696,
+          0.0,
+          0.055393814266337583
+        ]
+      },
+      {
+        "tau_s": 1.0,
+        "train_loss": 0.4429294523038461,
+        "coefficients": [
+          0.02385161421873892,
+          0.001095253359609108,
+          0.0,
+          0.05234196370995888
+        ]
+      },
+      {
+        "tau_s": 1.467799267622069,
+        "train_loss": 0.44289471806497066,
+        "coefficients": [
+          0.021922974670017123,
+          0.0031182963027282244,
+          0.0,
+          0.04701372425616172
+        ]
+      },
+      {
+        "tau_s": 2.1544346900318834,
+        "train_loss": 0.4428384669223061,
+        "coefficients": [
+          0.019315876602345072,
+          0.005769078390887548,
+          0.0,
+          0.03845694930960126
+        ]
+      },
+      {
+        "tau_s": 3.1622776601683795,
+        "train_loss": 0.4427600309890894,
+        "coefficients": [
+          0.015620161030687188,
+          0.00948321632138231,
+          0.0,
+          0.02490646730587585
+        ]
+      },
+      {
+        "tau_s": 4.6415888336127775,
+        "train_loss": 0.4426591168398134,
+        "coefficients": [
+          0.010336188454213137,
+          0.014772284192316052,
+          0.0,
+          0.004560011430924145
+        ]
+      },
+      {
+        "tau_s": 6.812920690579611,
+        "train_loss": 0.4425506765124535,
+        "coefficients": [
+          0.0031386005726587855,
+          0.02196275695283302,
+          0.0,
+          -0.023049990867750992
+        ]
+      },
+      {
+        "tau_s": 10.0,
+        "train_loss": 0.4424568114843842,
+        "coefficients": [
+          -0.006253200433905969,
+          0.031337075138718015,
+          0.0,
+          -0.05779576058106533
+        ]
+      },
+      {
+        "tau_s": 14.67799267622069,
+        "train_loss": 0.4423902593915971,
+        "coefficients": [
+          -0.018548798843686896,
+          0.04361170905451505,
+          0.0,
+          -0.1016254830764831
+        ]
+      },
+      {
+        "tau_s": 21.54434690031882,
+        "train_loss": 0.4423577543517583,
+        "coefficients": [
+          -0.034840206593757785,
+          0.05988529172551765,
+          0.0,
+          -0.1569252795329743
+        ]
+      },
+      {
+        "tau_s": 31.622776601683793,
+        "train_loss": 0.4423721242613883,
+        "coefficients": [
+          -0.05487031397002153,
+          0.07990192034563948,
+          0.0,
+          -0.21840032437512066
+        ]
+      },
+      {
+        "tau_s": 46.41588833612777,
+        "train_loss": 0.4424521599122735,
+        "coefficients": [
+          -0.07367938249112874,
+          0.09869474387163697,
+          0.0,
+          -0.26158559247036406
+        ]
+      },
+      {
+        "tau_s": 68.12920690579608,
+        "train_loss": 0.4425890540478266,
+        "coefficients": [
+          -0.08215104936512226,
+          0.10713883074028308,
+          0.0,
+          -0.25365537888222056
+        ]
+      },
+      {
+        "tau_s": 100.0,
+        "train_loss": 0.4427259211608742,
+        "coefficients": [
+          -0.0781256844413511,
+          0.10307876531994396,
+          0.0,
+          -0.1989362087632668
+        ]
+      },
+      {
+        "tau_s": 23.72180715322852,
+        "train_loss": 0.44235621011175424,
+        "coefficients": [
+          -0.03959874418023366,
+          0.06464017541606068,
+          0.0,
+          -0.17233088112764278
+        ]
+      }
+    ],
+    "condition_number": 154.6271442393263,
+    "design_rank": 3,
+    "profile_sensitivity": {
+      "relative_loss_tolerance": 0.001,
+      "permanent_c_range": [
+        -0.08215104936512226,
+        0.027058022077054298
+      ],
+      "tau_range_s": [
+        0.1,
+        100.0
+      ],
+      "qualification": "Descriptive grid profile within0.1% of minimum Huber loss; NOT a confidence interval."
+    },
+    "limitations": [
+      "F limit offset assumed 1; not established for real tapes.",
+      "Tau and permanent/transient split can be weakly identified; CIs condition on chosen tau.",
+      "Injected classification uses complete same-time group and generator structure.",
+      "Increment endpoint is next F anchor, not future mid or trading PnL."
+    ]
+  },
+  "minutes_requested": 5.0,
+  "observable_noise": {
+    "horizons": {
+      "0.1": {
+        "prefix": {
+          "n": 2999,
+          "exposure_s": 299.90000000000003,
+          "drift_ticks_per_s": -0.21391924362494155,
+          "total_variance_per_s": 19.04339257379901,
+          "rounding_corrected_variance_per_s": 18.109192284813794,
+          "tail3_per_s": 0.2900966988996332,
+          "tail5_per_s": 0.17005668556185394,
+          "abs_increment_quantiles": [
+            0.07951761242657085,
+            0.8172273451669755,
+            6.314169279985108,
+            11.86694311310995
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "train": {
+          "n": 2248,
+          "exposure_s": 224.8,
+          "drift_ticks_per_s": -0.2951729765679044,
+          "total_variance_per_s": 19.9901473383488,
+          "rounding_corrected_variance_per_s": 19.062656235145955,
+          "tail3_per_s": 0.29359430604982206,
+          "tail5_per_s": 0.16014234875444838,
+          "abs_increment_quantiles": [
+            0.07310701848655299,
+            0.8281051131514685,
+            6.397663404495619,
+            11.693288699412157
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "holdout": {
+          "n": 750,
+          "exposure_s": 75.0,
+          "drift_ticks_per_s": 0.02934005292459915,
+          "total_variance_per_s": 16.22314164940198,
+          "rounding_corrected_variance_per_s": 15.267586093846425,
+          "tail3_per_s": 0.28,
+          "tail5_per_s": 0.2,
+          "abs_increment_quantiles": [
+            0.0918730291441534,
+            0.7987362389018018,
+            5.607180751929767,
+            10.881083788174584
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "anchor_age_quantiles_s": [
+          0.08363450000001649,
+          0.29263370000000744,
+          0.5911858100000006
+        ]
+      },
+      "0.5": {
+        "prefix": {
+          "n": 599,
+          "exposure_s": 299.5,
+          "drift_ticks_per_s": -0.216057062587482,
+          "total_variance_per_s": 10.849173474019112,
+          "rounding_corrected_variance_per_s": 10.523074420040258,
+          "tail3_per_s": 0.11352253756260434,
+          "tail5_per_s": 0.09015025041736227,
+          "abs_increment_quantiles": [
+            0.4505199283667025,
+            1.538761710203835,
+            8.587152358110323,
+            25.100271332473103
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "train": {
+          "n": 448,
+          "exposure_s": 224.0,
+          "drift_ticks_per_s": -0.2995687134881564,
+          "total_variance_per_s": 10.337199510804437,
+          "rounding_corrected_variance_per_s": 10.012050701280627,
+          "tail3_per_s": 0.09375,
+          "tail5_per_s": 0.06696428571428571,
+          "abs_increment_quantiles": [
+            0.4377444586243655,
+            1.282404719768056,
+            8.621494638165675,
+            25.141332268598703
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "holdout": {
+          "n": 150,
+          "exposure_s": 75.0,
+          "drift_ticks_per_s": 0.02934005292459915,
+          "total_variance_per_s": 12.408857542477083,
+          "rounding_corrected_variance_per_s": 12.079968653588194,
+          "tail3_per_s": 0.17333333333333334,
+          "tail5_per_s": 0.16,
+          "abs_increment_quantiles": [
+            0.527432081698862,
+            1.6671417602683505,
+            6.302618294651456,
+            19.400823965317812
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "anchor_age_quantiles_s": [
+          0.07425149999999836,
+          0.30184689999999975,
+          0.5800435199999878
+        ]
+      },
+      "1.0": {
+        "prefix": {
+          "n": 299,
+          "exposure_s": 299.0,
+          "drift_ticks_per_s": -0.21753314881248434,
+          "total_variance_per_s": 7.993378856961168,
+          "rounding_corrected_variance_per_s": 7.826712190294501,
+          "tail3_per_s": 0.043478260869565216,
+          "tail5_per_s": 0.023411371237458192,
+          "abs_increment_quantiles": [
+            0.535299533570651,
+            1.8012495372760895,
+            14.267944660622065,
+            25.24051352431765
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "train": {
+          "n": 223,
+          "exposure_s": 223.0,
+          "drift_ticks_per_s": -0.2985951940045197,
+          "total_variance_per_s": 8.004313773419117,
+          "rounding_corrected_variance_per_s": 7.83764710675245,
+          "tail3_per_s": 0.03587443946188341,
+          "tail5_per_s": 0.026905829596412557,
+          "abs_increment_quantiles": [
+            0.5251683833030256,
+            1.763062805858863,
+            12.902470820870047,
+            25.29134683261232
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "holdout": {
+          "n": 75,
+          "exposure_s": 75.0,
+          "drift_ticks_per_s": 0.02934005292459915,
+          "total_variance_per_s": 7.984394209972334,
+          "rounding_corrected_variance_per_s": 7.817727543305667,
+          "tail3_per_s": 0.06666666666666667,
+          "tail5_per_s": 0.013333333333333334,
+          "abs_increment_quantiles": [
+            0.5570841842818481,
+            1.814182420677753,
+            9.221495542017959,
+            20.181948701468315
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "anchor_age_quantiles_s": [
+          0.07288050000000368,
+          0.28590260000000284,
+          0.5701933599999948
+        ]
+      },
+      "5.0": {
+        "prefix": {
+          "n": 59,
+          "exposure_s": 295.0,
+          "drift_ticks_per_s": -0.21604517317772645,
+          "total_variance_per_s": 3.7243287775241605,
+          "rounding_corrected_variance_per_s": 3.6909954441908273,
+          "tail3_per_s": 0.023728813559322035,
+          "tail5_per_s": 0.010169491525423728,
+          "abs_increment_quantiles": [
+            1.5018185307599197,
+            3.291182512000524,
+            21.32648743660317,
+            22.762836798842542
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "train": {
+          "n": 43,
+          "exposure_s": 215.0,
+          "drift_ticks_per_s": -0.3082629742132815,
+          "total_variance_per_s": 2.9006997150386766,
+          "rounding_corrected_variance_per_s": 2.8673663817053434,
+          "tail3_per_s": 0.027906976744186046,
+          "tail5_per_s": 0.009302325581395349,
+          "abs_increment_quantiles": [
+            1.5280029797049792,
+            3.3825697862415844,
+            16.39213440462384,
+            22.269401495644587
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "holdout": {
+          "n": 15,
+          "exposure_s": 75.0,
+          "drift_ticks_per_s": 0.02934005292459915,
+          "total_variance_per_s": 5.8837287717615006,
+          "rounding_corrected_variance_per_s": 5.850395438428167,
+          "tail3_per_s": 0.013333333333333334,
+          "tail5_per_s": 0.013333333333333334,
+          "abs_increment_quantiles": [
+            1.5018185307599197,
+            2.6395188659298583,
+            17.75001327693407,
+            19.928724965221548
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "anchor_age_quantiles_s": [
+          0.09117450000000815,
+          0.2775189000000019,
+          0.4907513199999979
+        ]
+      }
+    },
+    "impact_law": "sqrt",
+    "size": "requested",
+    "qualifications": [
+      "Previous-F anchor is causal and may be stale; no future anchor interpolation.",
+      "Effective variance includes diffusion, jumps, anchor error and impact-model misspecification.",
+      "1/6 rounding variance per changed anchor pair assumes independent uniform errors; heuristic only.",
+      "Tail exceedances are observable rates, NOT jump intensities or inferred regime labels.",
+      "300s block bootstrap is descriptive; fewer than6 blocks gives no interval."
+    ]
+  },
+  "elapsed_s": 0.1048422500025481
+}

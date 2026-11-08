@@ -1,0 +1,4188 @@
+{
+  "public_checks": [
+    {
+      "run": "logs/r3_F1_full",
+      "tape": "/Users/jakubkucera/Documents/qminers_arena/data/arena/round3/round3_public.csv",
+      "accounting_max_error": 0.0,
+      "pnl": 480469.0,
+      "end_mid": 9872.5,
+      "result_mark_price": 9872.0,
+      "large_start_position_share": 0.88,
+      "naive_signed_dpnl_over_100": {
+        "n": 5994,
+        "correlation": -0.17117213228341924,
+        "rmse": 6.540498907521705,
+        "bias": 0.8161261261261262,
+        "estimate_sd": 3.9949014176896784,
+        "truth_sd": 4.475683291110526
+      },
+      "absolute_dpnl_over_100": {
+        "n": 5994,
+        "correlation": 0.924767727909598,
+        "rmse": 1.5411260719258402,
+        "bias": -0.20556222889556225,
+        "estimate_sd": 3.664873983228728,
+        "truth_sd": 4.0119724575421944
+      },
+      "oracle_signed_inventory": {
+        "n": 5276,
+        "correlation": 0.7899475784567825,
+        "rmse": 2.853260603421562,
+        "bias": 0.046126071555991015,
+        "estimate_sd": 4.199366447034846,
+        "truth_sd": 4.545543262822315
+      },
+      "oracle_no_fills": {
+        "n": 2856,
+        "correlation": 0.994968059642575,
+        "rmse": 0.4795933370133107,
+        "bias": 0.015724789915966386,
+        "estimate_sd": 4.733213814183793,
+        "truth_sd": 4.779149639850238
+      },
+      "variance_proxy_by_block": [
+        {
+          "block_s": 60,
+          "n": 100,
+          "correlation": 0.95653833881895,
+          "rmse": 12.394583422063477,
+          "bias": -3.434827299025912,
+          "estimate_sd": 32.425536337375334,
+          "truth_sd": 38.25651552874975
+        },
+        {
+          "block_s": 300,
+          "n": 20,
+          "correlation": 0.9513252055700724,
+          "rmse": 6.11156408037917,
+          "bias": -3.4377074529393274,
+          "estimate_sd": 13.208229301015018,
+          "truth_sd": 15.559209391450894
+        },
+        {
+          "block_s": 1000,
+          "n": 6,
+          "correlation": 0.9863929817750822,
+          "rmse": 4.373789348952551,
+          "bias": -3.4368948153627557,
+          "estimate_sd": 5.646425802891352,
+          "truth_sd": 8.110470422227369
+        }
+      ],
+      "pnl_only_proxy": {
+        "source": "logs/r3_F1_full/pnl.csv",
+        "exposure_assumption": 100.0,
+        "seconds": 5999.993238,
+        "complete_1s_intervals": 5999,
+        "pnl": 480469.0,
+        "rms_dpnl_over_exposure": 4.082499730639931,
+        "abs_dpnl_over_exposure_p99": 12.760999999999976,
+        "abs_proxy_5plus_per_1000s": 87.6812802133689,
+        "abs_proxy_20plus_per_1000s": 2.5004167361226872,
+        "blocks_60s": [
+          {
+            "start_s": 0,
+            "mean_squared_dpnl_over_exposure": 2.5330933333333334,
+            "pnl_gain": 2592.0
+          },
+          {
+            "start_s": 60,
+            "mean_squared_dpnl_over_exposure": 1.1229733333333334,
+            "pnl_gain": -516.0
+          },
+          {
+            "start_s": 120,
+            "mean_squared_dpnl_over_exposure": 1.308475,
+            "pnl_gain": 2219.0
+          },
+          {
+            "start_s": 180,
+            "mean_squared_dpnl_over_exposure": 1.3563733333333334,
+            "pnl_gain": 1258.0
+          },
+          {
+            "start_s": 240,
+            "mean_squared_dpnl_over_exposure": 3.3655750000000006,
+            "pnl_gain": 2159.0
+          },
+          {
+            "start_s": 300,
+            "mean_squared_dpnl_over_exposure": 1.1965366666666666,
+            "pnl_gain": 1100.0000000000005
+          },
+          {
+            "start_s": 360,
+            "mean_squared_dpnl_over_exposure": 1.384865,
+            "pnl_gain": 1698.9999999999998
+          },
+          {
+            "start_s": 420,
+            "mean_squared_dpnl_over_exposure": 71.38298499999998,
+            "pnl_gain": -5759.0
+          },
+          {
+            "start_s": 480,
+            "mean_squared_dpnl_over_exposure": 2.0242366666666665,
+            "pnl_gain": 1970.0
+          },
+          {
+            "start_s": 540,
+            "mean_squared_dpnl_over_exposure": 1.455293333333333,
+            "pnl_gain": 2408.0
+          },
+          {
+            "start_s": 600,
+            "mean_squared_dpnl_over_exposure": 10.833658333333334,
+            "pnl_gain": 8243.0
+          },
+          {
+            "start_s": 660,
+            "mean_squared_dpnl_over_exposure": 65.00209166666667,
+            "pnl_gain": 16570.999999999996
+          },
+          {
+            "start_s": 720,
+            "mean_squared_dpnl_over_exposure": 21.772133333333336,
+            "pnl_gain": 14406.0
+          },
+          {
+            "start_s": 780,
+            "mean_squared_dpnl_over_exposure": 31.785183333333332,
+            "pnl_gain": 17852.000000000004
+          },
+          {
+            "start_s": 840,
+            "mean_squared_dpnl_over_exposure": 1.6019733333333335,
+            "pnl_gain": 1418.0
+          },
+          {
+            "start_s": 900,
+            "mean_squared_dpnl_over_exposure": 28.149676666666664,
+            "pnl_gain": -4026.0
+          },
+          {
+            "start_s": 960,
+            "mean_squared_dpnl_over_exposure": 1.6677983333333335,
+            "pnl_gain": 785.0
+          },
+          {
+            "start_s": 1020,
+            "mean_squared_dpnl_over_exposure": 9.385608333333334,
+            "pnl_gain": 6154.999999999999
+          },
+          {
+            "start_s": 1080,
+            "mean_squared_dpnl_over_exposure": 1.0741766666666666,
+            "pnl_gain": 816.0
+          },
+          {
+            "start_s": 1140,
+            "mean_squared_dpnl_over_exposure": 26.131700000000002,
+            "pnl_gain": 14190.0
+          },
+          {
+            "start_s": 1200,
+            "mean_squared_dpnl_over_exposure": 24.522175,
+            "pnl_gain": 11899.0
+          },
+          {
+            "start_s": 1260,
+            "mean_squared_dpnl_over_exposure": 1.1161183333333333,
+            "pnl_gain": 2073.0
+          },
+          {
+            "start_s": 1320,
+            "mean_squared_dpnl_over_exposure": 75.02110333333333,
+            "pnl_gain": -4952.0
+          },
+          {
+            "start_s": 1380,
+            "mean_squared_dpnl_over_exposure": 1.3556266666666665,
+            "pnl_gain": 682.0
+          },
+          {
+            "start_s": 1440,
+            "mean_squared_dpnl_over_exposure": 0.81152,
+            "pnl_gain": 1694.0000000000002
+          },
+          {
+            "start_s": 1500,
+            "mean_squared_dpnl_over_exposure": 1.6908500000000002,
+            "pnl_gain": 1194.0000000000002
+          },
+          {
+            "start_s": 1560,
+            "mean_squared_dpnl_over_exposure": 12.357535000000002,
+            "pnl_gain": 7065.000000000001
+          },
+          {
+            "start_s": 1620,
+            "mean_squared_dpnl_over_exposure": 1.543325,
+            "pnl_gain": 1785.0000000000002
+          },
+          {
+            "start_s": 1680,
+            "mean_squared_dpnl_over_exposure": 1.205223333333333,
+            "pnl_gain": 1342.0000000000002
+          },
+          {
+            "start_s": 1740,
+            "mean_squared_dpnl_over_exposure": 3.932245000000001,
+            "pnl_gain": 2893.0
+          },
+          {
+            "start_s": 1800,
+            "mean_squared_dpnl_over_exposure": 1.2235266666666667,
+            "pnl_gain": 2136.0000000000005
+          },
+          {
+            "start_s": 1860,
+            "mean_squared_dpnl_over_exposure": 18.227888333333336,
+            "pnl_gain": 11499.0
+          },
+          {
+            "start_s": 1920,
+            "mean_squared_dpnl_over_exposure": 3.51486,
+            "pnl_gain": 3286.0
+          },
+          {
+            "start_s": 1980,
+            "mean_squared_dpnl_over_exposure": 22.75242166666666,
+            "pnl_gain": 13175.0
+          },
+          {
+            "start_s": 2040,
+            "mean_squared_dpnl_over_exposure": 2.825485,
+            "pnl_gain": 1417.0
+          },
+          {
+            "start_s": 2100,
+            "mean_squared_dpnl_over_exposure": 5.632966666666667,
+            "pnl_gain": 3015.9999999999995
+          },
+          {
+            "start_s": 2160,
+            "mean_squared_dpnl_over_exposure": 1.8873616666666668,
+            "pnl_gain": 911.0
+          },
+          {
+            "start_s": 2220,
+            "mean_squared_dpnl_over_exposure": 4.321726666666667,
+            "pnl_gain": 4900.0
+          },
+          {
+            "start_s": 2280,
+            "mean_squared_dpnl_over_exposure": 24.87253333333333,
+            "pnl_gain": 15945.999999999998
+          },
+          {
+            "start_s": 2340,
+            "mean_squared_dpnl_over_exposure": 41.68157166666667,
+            "pnl_gain": 20382.999999999996
+          },
+          {
+            "start_s": 2400,
+            "mean_squared_dpnl_over_exposure": 21.124305,
+            "pnl_gain": 18019.0
+          },
+          {
+            "start_s": 2460,
+            "mean_squared_dpnl_over_exposure": 24.021351666666664,
+            "pnl_gain": 18731.0
+          },
+          {
+            "start_s": 2520,
+            "mean_squared_dpnl_over_exposure": 2.0528600000000004,
+            "pnl_gain": 412.00000000000017
+          },
+          {
+            "start_s": 2580,
+            "mean_squared_dpnl_over_exposure": 145.175985,
+            "pnl_gain": -9133.0
+          },
+          {
+            "start_s": 2640,
+            "mean_squared_dpnl_over_exposure": 0.92617,
+            "pnl_gain": 586.0
+          },
+          {
+            "start_s": 2700,
+            "mean_squared_dpnl_over_exposure": 1.5483983333333335,
+            "pnl_gain": 1443.0
+          },
+          {
+            "start_s": 2760,
+            "mean_squared_dpnl_over_exposure": 1.5918483333333333,
+            "pnl_gain": 421.0000000000001
+          },
+          {
+            "start_s": 2820,
+            "mean_squared_dpnl_over_exposure": 12.439181666666666,
+            "pnl_gain": 8025.0
+          },
+          {
+            "start_s": 2880,
+            "mean_squared_dpnl_over_exposure": 21.857961666666665,
+            "pnl_gain": 11673.0
+          },
+          {
+            "start_s": 2940,
+            "mean_squared_dpnl_over_exposure": 1.054045,
+            "pnl_gain": 705.0
+          },
+          {
+            "start_s": 3000,
+            "mean_squared_dpnl_over_exposure": 1.8681616666666665,
+            "pnl_gain": 3597.0000000000005
+          },
+          {
+            "start_s": 3060,
+            "mean_squared_dpnl_over_exposure": 1.0894416666666664,
+            "pnl_gain": 285.00000000000006
+          },
+          {
+            "start_s": 3120,
+            "mean_squared_dpnl_over_exposure": 1.4010783333333334,
+            "pnl_gain": 1015.0000000000002
+          },
+          {
+            "start_s": 3180,
+            "mean_squared_dpnl_over_exposure": 41.477199999999996,
+            "pnl_gain": -3070.0000000000005
+          },
+          {
+            "start_s": 3240,
+            "mean_squared_dpnl_over_exposure": 13.541541666666669,
+            "pnl_gain": 8898.999999999998
+          },
+          {
+            "start_s": 3300,
+            "mean_squared_dpnl_over_exposure": 7.146576666666667,
+            "pnl_gain": 4730.0
+          },
+          {
+            "start_s": 3360,
+            "mean_squared_dpnl_over_exposure": 26.43707,
+            "pnl_gain": -4868.0
+          },
+          {
+            "start_s": 3420,
+            "mean_squared_dpnl_over_exposure": 12.82081,
+            "pnl_gain": 11038.0
+          },
+          {
+            "start_s": 3480,
+            "mean_squared_dpnl_over_exposure": 19.102048333333332,
+            "pnl_gain": 12691.0
+          },
+          {
+            "start_s": 3540,
+            "mean_squared_dpnl_over_exposure": 3.283901666666667,
+            "pnl_gain": 3613.0000000000005
+          },
+          {
+            "start_s": 3600,
+            "mean_squared_dpnl_over_exposure": 2.0531733333333335,
+            "pnl_gain": 1100.0
+          },
+          {
+            "start_s": 3660,
+            "mean_squared_dpnl_over_exposure": 24.345473333333338,
+            "pnl_gain": 7536.000000000002
+          },
+          {
+            "start_s": 3720,
+            "mean_squared_dpnl_over_exposure": 9.738529999999997,
+            "pnl_gain": 5936.0
+          },
+          {
+            "start_s": 3780,
+            "mean_squared_dpnl_over_exposure": 25.23949666666666,
+            "pnl_gain": 9552.000000000002
+          },
+          {
+            "start_s": 3840,
+            "mean_squared_dpnl_over_exposure": 22.008660000000003,
+            "pnl_gain": 8466.0
+          },
+          {
+            "start_s": 3900,
+            "mean_squared_dpnl_over_exposure": 13.372256666666663,
+            "pnl_gain": 6505.999999999999
+          },
+          {
+            "start_s": 3960,
+            "mean_squared_dpnl_over_exposure": 26.540174999999998,
+            "pnl_gain": 15238.999999999998
+          },
+          {
+            "start_s": 4020,
+            "mean_squared_dpnl_over_exposure": 6.530245,
+            "pnl_gain": 3540.9999999999995
+          },
+          {
+            "start_s": 4080,
+            "mean_squared_dpnl_over_exposure": 257.67132166666664,
+            "pnl_gain": -9755.000000000002
+          },
+          {
+            "start_s": 4140,
+            "mean_squared_dpnl_over_exposure": 1.5201400000000003,
+            "pnl_gain": 2162.0000000000005
+          },
+          {
+            "start_s": 4200,
+            "mean_squared_dpnl_over_exposure": 1.0677683333333334,
+            "pnl_gain": 807.0
+          },
+          {
+            "start_s": 4260,
+            "mean_squared_dpnl_over_exposure": 98.04209,
+            "pnl_gain": 10736.0
+          },
+          {
+            "start_s": 4320,
+            "mean_squared_dpnl_over_exposure": 29.262575000000002,
+            "pnl_gain": 18937.0
+          },
+          {
+            "start_s": 4380,
+            "mean_squared_dpnl_over_exposure": 1.3848033333333334,
+            "pnl_gain": 384.0
+          },
+          {
+            "start_s": 4440,
+            "mean_squared_dpnl_over_exposure": 1.1292033333333333,
+            "pnl_gain": 1998.0000000000005
+          },
+          {
+            "start_s": 4500,
+            "mean_squared_dpnl_over_exposure": 1.4728883333333336,
+            "pnl_gain": 1535.0
+          },
+          {
+            "start_s": 4560,
+            "mean_squared_dpnl_over_exposure": 15.041528333333332,
+            "pnl_gain": 4106.999999999999
+          },
+          {
+            "start_s": 4620,
+            "mean_squared_dpnl_over_exposure": 3.1460300000000005,
+            "pnl_gain": 3506.0
+          },
+          {
+            "start_s": 4680,
+            "mean_squared_dpnl_over_exposure": 8.877216666666667,
+            "pnl_gain": 7006.0
+          },
+          {
+            "start_s": 4740,
+            "mean_squared_dpnl_over_exposure": 3.1483266666666667,
+            "pnl_gain": 3556.0
+          },
+          {
+            "start_s": 4800,
+            "mean_squared_dpnl_over_exposure": 23.794736666666665,
+            "pnl_gain": 11160.0
+          },
+          {
+            "start_s": 4860,
+            "mean_squared_dpnl_over_exposure": 1.6734616666666668,
+            "pnl_gain": 2081.0
+          },
+          {
+            "start_s": 4920,
+            "mean_squared_dpnl_over_exposure": 1.7450566666666667,
+            "pnl_gain": 1182.0
+          },
+          {
+            "start_s": 4980,
+            "mean_squared_dpnl_over_exposure": 2.865466666666667,
+            "pnl_gain": 483.9999999999999
+          },
+          {
+            "start_s": 5040,
+            "mean_squared_dpnl_over_exposure": 1.2094733333333332,
+            "pnl_gain": 927.9999999999999
+          },
+          {
+            "start_s": 5100,
+            "mean_squared_dpnl_over_exposure": 1.181955,
+            "pnl_gain": -116.99999999999994
+          },
+          {
+            "start_s": 5160,
+            "mean_squared_dpnl_over_exposure": 1.819405,
+            "pnl_gain": 2988.9999999999995
+          },
+          {
+            "start_s": 5220,
+            "mean_squared_dpnl_over_exposure": 33.73316500000001,
+            "pnl_gain": -2329.0000000000005
+          },
+          {
+            "start_s": 5280,
+            "mean_squared_dpnl_over_exposure": 1.1359533333333336,
+            "pnl_gain": 404.0
+          },
+          {
+            "start_s": 5340,
+            "mean_squared_dpnl_over_exposure": 5.093125000000001,
+            "pnl_gain": 4619.0
+          },
+          {
+            "start_s": 5400,
+            "mean_squared_dpnl_over_exposure": 3.256678333333333,
+            "pnl_gain": 2913.0
+          },
+          {
+            "start_s": 5460,
+            "mean_squared_dpnl_over_exposure": 6.5506383333333345,
+            "pnl_gain": 1735.000000000001
+          },
+          {
+            "start_s": 5520,
+            "mean_squared_dpnl_over_exposure": 27.665643333333332,
+            "pnl_gain": 14801.999999999998
+          },
+          {
+            "start_s": 5580,
+            "mean_squared_dpnl_over_exposure": 25.08256166666667,
+            "pnl_gain": 13671.0
+          },
+          {
+            "start_s": 5640,
+            "mean_squared_dpnl_over_exposure": 10.040443333333334,
+            "pnl_gain": 7696.000000000001
+          },
+          {
+            "start_s": 5700,
+            "mean_squared_dpnl_over_exposure": 1.5400049999999998,
+            "pnl_gain": 158.99999999999994
+          },
+          {
+            "start_s": 5760,
+            "mean_squared_dpnl_over_exposure": 19.503913333333337,
+            "pnl_gain": 10897.999999999998
+          },
+          {
+            "start_s": 5820,
+            "mean_squared_dpnl_over_exposure": 26.149729999999995,
+            "pnl_gain": 14800.000000000004
+          },
+          {
+            "start_s": 5880,
+            "mean_squared_dpnl_over_exposure": 20.188356666666664,
+            "pnl_gain": 11958.0
+          }
+        ]
+      },
+      "interpretation": "PnL/100 is a testable volatility proxy, not an identified signed mid path. Oracle inventory is unavailable from hidden PnL-only logs; intrasecond fills and liquidation marking remain nuisance terms."
+    },
+    {
+      "run": "logs/r2_L3_full",
+      "tape": "/Users/jakubkucera/Documents/qminers_arena/data/arena/round2/round2_public.csv",
+      "accounting_max_error": 0.0,
+      "pnl": 294098.0,
+      "end_mid": 9689.5,
+      "result_mark_price": 9690.0,
+      "large_start_position_share": 0.816,
+      "naive_signed_dpnl_over_100": {
+        "n": 5986,
+        "correlation": 0.049518912563677735,
+        "rmse": 5.0091144374407355,
+        "bias": 0.5322736384898096,
+        "estimate_sd": 3.4271785717190615,
+        "truth_sd": 3.7878810745713944
+      },
+      "absolute_dpnl_over_100": {
+        "n": 5986,
+        "correlation": 0.863749253199346,
+        "rmse": 1.77927555487256,
+        "bias": -0.18635315736719016,
+        "estimate_sd": 3.2126300031577038,
+        "truth_sd": 3.4891966398902086
+      },
+      "oracle_signed_inventory": {
+        "n": 4884,
+        "correlation": 0.7594213406799775,
+        "rmse": 2.639699021644488,
+        "bias": 0.009273318014075861,
+        "estimate_sd": 3.6717646892734566,
+        "truth_sd": 3.911508341741612
+      },
+      "oracle_no_fills": {
+        "n": 3554,
+        "correlation": 0.9332891112000639,
+        "rmse": 0.9514230612604946,
+        "bias": -0.008760915170795388,
+        "estimate_sd": 2.484326451756899,
+        "truth_sd": 2.6489478744205393
+      },
+      "variance_proxy_by_block": [
+        {
+          "block_s": 60,
+          "n": 100,
+          "correlation": 0.8020244668859333,
+          "rmse": 19.357319117425607,
+          "bias": -2.4274645274400934,
+          "estimate_sd": 27.88207382483797,
+          "truth_sd": 31.925940206820645
+        },
+        {
+          "block_s": 300,
+          "n": 20,
+          "correlation": 0.8540574428182951,
+          "rmse": 7.977255763839279,
+          "bias": -2.374111388753339,
+          "estimate_sd": 13.02165275405803,
+          "truth_sd": 14.60243625031437
+        },
+        {
+          "block_s": 1000,
+          "n": 6,
+          "correlation": 0.9882072415934422,
+          "rmse": 3.1220127175440164,
+          "bias": -2.370250850959246,
+          "estimate_sd": 7.111883872223598,
+          "truth_sd": 8.743526427156134
+        }
+      ],
+      "pnl_only_proxy": {
+        "source": "logs/r2_L3_full/pnl.csv",
+        "exposure_assumption": 100.0,
+        "seconds": 5999.995946,
+        "complete_1s_intervals": 5999,
+        "pnl": 294098.0,
+        "rms_dpnl_over_exposure": 3.4705850650068943,
+        "abs_dpnl_over_exposure_p99": 10.970599999999987,
+        "abs_proxy_5plus_per_1000s": 50.008334722453746,
+        "abs_proxy_20plus_per_1000s": 2.667111185197533,
+        "blocks_60s": [
+          {
+            "start_s": 0,
+            "mean_squared_dpnl_over_exposure": 6.6387816666666675,
+            "pnl_gain": 1857.0
+          },
+          {
+            "start_s": 60,
+            "mean_squared_dpnl_over_exposure": 1.2881883333333335,
+            "pnl_gain": 641.0
+          },
+          {
+            "start_s": 120,
+            "mean_squared_dpnl_over_exposure": 1.24379,
+            "pnl_gain": 1543.9999999999998
+          },
+          {
+            "start_s": 180,
+            "mean_squared_dpnl_over_exposure": 1.2647633333333332,
+            "pnl_gain": 894.0
+          },
+          {
+            "start_s": 240,
+            "mean_squared_dpnl_over_exposure": 1.8560216666666665,
+            "pnl_gain": 983.0
+          },
+          {
+            "start_s": 300,
+            "mean_squared_dpnl_over_exposure": 7.778613333333334,
+            "pnl_gain": 3162.0
+          },
+          {
+            "start_s": 360,
+            "mean_squared_dpnl_over_exposure": 2.9394849999999995,
+            "pnl_gain": 887.0000000000002
+          },
+          {
+            "start_s": 420,
+            "mean_squared_dpnl_over_exposure": 2.0625033333333334,
+            "pnl_gain": 2093.9999999999995
+          },
+          {
+            "start_s": 480,
+            "mean_squared_dpnl_over_exposure": 22.79077,
+            "pnl_gain": 6272.000000000001
+          },
+          {
+            "start_s": 540,
+            "mean_squared_dpnl_over_exposure": 1.2603566666666668,
+            "pnl_gain": -364.00000000000006
+          },
+          {
+            "start_s": 600,
+            "mean_squared_dpnl_over_exposure": 0.8001366666666667,
+            "pnl_gain": -125.99999999999997
+          },
+          {
+            "start_s": 660,
+            "mean_squared_dpnl_over_exposure": 1.34957,
+            "pnl_gain": 966.0
+          },
+          {
+            "start_s": 720,
+            "mean_squared_dpnl_over_exposure": 1.0595966666666667,
+            "pnl_gain": 654.0000000000001
+          },
+          {
+            "start_s": 780,
+            "mean_squared_dpnl_over_exposure": 0.924925,
+            "pnl_gain": -178.99999999999983
+          },
+          {
+            "start_s": 840,
+            "mean_squared_dpnl_over_exposure": 1.428965,
+            "pnl_gain": 701.0
+          },
+          {
+            "start_s": 900,
+            "mean_squared_dpnl_over_exposure": 1.41172,
+            "pnl_gain": 2138.0
+          },
+          {
+            "start_s": 960,
+            "mean_squared_dpnl_over_exposure": 1.1096933333333332,
+            "pnl_gain": 1206.0000000000002
+          },
+          {
+            "start_s": 1020,
+            "mean_squared_dpnl_over_exposure": 3.1621733333333335,
+            "pnl_gain": 1592.0000000000002
+          },
+          {
+            "start_s": 1080,
+            "mean_squared_dpnl_over_exposure": 1.112005,
+            "pnl_gain": 1908.9999999999995
+          },
+          {
+            "start_s": 1140,
+            "mean_squared_dpnl_over_exposure": 1.0672783333333333,
+            "pnl_gain": 407.0
+          },
+          {
+            "start_s": 1200,
+            "mean_squared_dpnl_over_exposure": 0.9880150000000001,
+            "pnl_gain": 846.9999999999999
+          },
+          {
+            "start_s": 1260,
+            "mean_squared_dpnl_over_exposure": 1.4965066666666667,
+            "pnl_gain": 670.0
+          },
+          {
+            "start_s": 1320,
+            "mean_squared_dpnl_over_exposure": 1.1279499999999998,
+            "pnl_gain": -512.0000000000001
+          },
+          {
+            "start_s": 1380,
+            "mean_squared_dpnl_over_exposure": 1.0225633333333333,
+            "pnl_gain": 388.0000000000001
+          },
+          {
+            "start_s": 1440,
+            "mean_squared_dpnl_over_exposure": 0.8467766666666667,
+            "pnl_gain": -548.0000000000001
+          },
+          {
+            "start_s": 1500,
+            "mean_squared_dpnl_over_exposure": 54.53328833333333,
+            "pnl_gain": 8525.0
+          },
+          {
+            "start_s": 1560,
+            "mean_squared_dpnl_over_exposure": 1.5935583333333334,
+            "pnl_gain": 659.0
+          },
+          {
+            "start_s": 1620,
+            "mean_squared_dpnl_over_exposure": 3.290566666666666,
+            "pnl_gain": 2750.0
+          },
+          {
+            "start_s": 1680,
+            "mean_squared_dpnl_over_exposure": 0.8338350000000001,
+            "pnl_gain": 924.9999999999998
+          },
+          {
+            "start_s": 1740,
+            "mean_squared_dpnl_over_exposure": 6.6999699999999995,
+            "pnl_gain": -2440.0
+          },
+          {
+            "start_s": 1800,
+            "mean_squared_dpnl_over_exposure": 1.25316,
+            "pnl_gain": 1382.0
+          },
+          {
+            "start_s": 1860,
+            "mean_squared_dpnl_over_exposure": 0.7466716666666666,
+            "pnl_gain": 733.0000000000002
+          },
+          {
+            "start_s": 1920,
+            "mean_squared_dpnl_over_exposure": 1.6307816666666668,
+            "pnl_gain": 2229.0
+          },
+          {
+            "start_s": 1980,
+            "mean_squared_dpnl_over_exposure": 11.598143333333335,
+            "pnl_gain": 4522.0
+          },
+          {
+            "start_s": 2040,
+            "mean_squared_dpnl_over_exposure": 38.913431666666675,
+            "pnl_gain": 15259.0
+          },
+          {
+            "start_s": 2100,
+            "mean_squared_dpnl_over_exposure": 26.985861666666665,
+            "pnl_gain": 13681.0
+          },
+          {
+            "start_s": 2160,
+            "mean_squared_dpnl_over_exposure": 0.7678250000000001,
+            "pnl_gain": -419.00000000000006
+          },
+          {
+            "start_s": 2220,
+            "mean_squared_dpnl_over_exposure": 3.7615950000000002,
+            "pnl_gain": 1529.0
+          },
+          {
+            "start_s": 2280,
+            "mean_squared_dpnl_over_exposure": 0.8170433333333331,
+            "pnl_gain": 792.0
+          },
+          {
+            "start_s": 2340,
+            "mean_squared_dpnl_over_exposure": 0.5884,
+            "pnl_gain": 381.99999999999994
+          },
+          {
+            "start_s": 2400,
+            "mean_squared_dpnl_over_exposure": 0.8892783333333333,
+            "pnl_gain": 1911.0000000000002
+          },
+          {
+            "start_s": 2460,
+            "mean_squared_dpnl_over_exposure": 34.23385,
+            "pnl_gain": 7608.0
+          },
+          {
+            "start_s": 2520,
+            "mean_squared_dpnl_over_exposure": 1.072525,
+            "pnl_gain": 265.00000000000006
+          },
+          {
+            "start_s": 2580,
+            "mean_squared_dpnl_over_exposure": 9.498863333333334,
+            "pnl_gain": 5813.999999999999
+          },
+          {
+            "start_s": 2640,
+            "mean_squared_dpnl_over_exposure": 15.896588333333337,
+            "pnl_gain": 10482.999999999998
+          },
+          {
+            "start_s": 2700,
+            "mean_squared_dpnl_over_exposure": 1.0659566666666669,
+            "pnl_gain": 684.0000000000001
+          },
+          {
+            "start_s": 2760,
+            "mean_squared_dpnl_over_exposure": 46.35186833333333,
+            "pnl_gain": -5613.0
+          },
+          {
+            "start_s": 2820,
+            "mean_squared_dpnl_over_exposure": 0.6557350000000001,
+            "pnl_gain": 599.0000000000001
+          },
+          {
+            "start_s": 2880,
+            "mean_squared_dpnl_over_exposure": 0.8205666666666667,
+            "pnl_gain": 629.9999999999999
+          },
+          {
+            "start_s": 2940,
+            "mean_squared_dpnl_over_exposure": 0.948575,
+            "pnl_gain": 362.99999999999994
+          },
+          {
+            "start_s": 3000,
+            "mean_squared_dpnl_over_exposure": 14.18158,
+            "pnl_gain": 92.00000000000017
+          },
+          {
+            "start_s": 3060,
+            "mean_squared_dpnl_over_exposure": 0.9671016666666666,
+            "pnl_gain": 1841.0
+          },
+          {
+            "start_s": 3120,
+            "mean_squared_dpnl_over_exposure": 1.1960983333333333,
+            "pnl_gain": -349.0
+          },
+          {
+            "start_s": 3180,
+            "mean_squared_dpnl_over_exposure": 16.823978333333336,
+            "pnl_gain": 3851.0
+          },
+          {
+            "start_s": 3240,
+            "mean_squared_dpnl_over_exposure": 1.5621533333333333,
+            "pnl_gain": 1392.0000000000002
+          },
+          {
+            "start_s": 3300,
+            "mean_squared_dpnl_over_exposure": 0.8187433333333333,
+            "pnl_gain": 341.9999999999999
+          },
+          {
+            "start_s": 3360,
+            "mean_squared_dpnl_over_exposure": 0.9268816666666667,
+            "pnl_gain": 405.0
+          },
+          {
+            "start_s": 3420,
+            "mean_squared_dpnl_over_exposure": 55.40838833333331,
+            "pnl_gain": 6617.000000000002
+          },
+          {
+            "start_s": 3480,
+            "mean_squared_dpnl_over_exposure": 0.96828,
+            "pnl_gain": 189.99999999999994
+          },
+          {
+            "start_s": 3540,
+            "mean_squared_dpnl_over_exposure": 0.9099299999999999,
+            "pnl_gain": 1634.0
+          },
+          {
+            "start_s": 3600,
+            "mean_squared_dpnl_over_exposure": 16.615785000000002,
+            "pnl_gain": 5308.999999999999
+          },
+          {
+            "start_s": 3660,
+            "mean_squared_dpnl_over_exposure": 28.728531666666658,
+            "pnl_gain": 13148.999999999998
+          },
+          {
+            "start_s": 3720,
+            "mean_squared_dpnl_over_exposure": 6.880053333333333,
+            "pnl_gain": 4582.0
+          },
+          {
+            "start_s": 3780,
+            "mean_squared_dpnl_over_exposure": 12.462373333333336,
+            "pnl_gain": 5996.0
+          },
+          {
+            "start_s": 3840,
+            "mean_squared_dpnl_over_exposure": 182.25812000000002,
+            "pnl_gain": 27657.999999999993
+          },
+          {
+            "start_s": 3900,
+            "mean_squared_dpnl_over_exposure": 22.52469166666667,
+            "pnl_gain": 7798.999999999999
+          },
+          {
+            "start_s": 3960,
+            "mean_squared_dpnl_over_exposure": 31.632265000000004,
+            "pnl_gain": 13273.000000000002
+          },
+          {
+            "start_s": 4020,
+            "mean_squared_dpnl_over_exposure": 14.855303333333335,
+            "pnl_gain": 3915.9999999999995
+          },
+          {
+            "start_s": 4080,
+            "mean_squared_dpnl_over_exposure": 1.2222800000000003,
+            "pnl_gain": -1186.0
+          },
+          {
+            "start_s": 4140,
+            "mean_squared_dpnl_over_exposure": 1.1274483333333334,
+            "pnl_gain": 1349.0
+          },
+          {
+            "start_s": 4200,
+            "mean_squared_dpnl_over_exposure": 3.9906200000000003,
+            "pnl_gain": -363.99999999999994
+          },
+          {
+            "start_s": 4260,
+            "mean_squared_dpnl_over_exposure": 63.763191666666685,
+            "pnl_gain": 13855.000000000004
+          },
+          {
+            "start_s": 4320,
+            "mean_squared_dpnl_over_exposure": 3.397985,
+            "pnl_gain": 1259.0
+          },
+          {
+            "start_s": 4380,
+            "mean_squared_dpnl_over_exposure": 11.30866,
+            "pnl_gain": 3756.000000000001
+          },
+          {
+            "start_s": 4440,
+            "mean_squared_dpnl_over_exposure": 1.19174,
+            "pnl_gain": 2240.0
+          },
+          {
+            "start_s": 4500,
+            "mean_squared_dpnl_over_exposure": 1.1961616666666666,
+            "pnl_gain": 777.0
+          },
+          {
+            "start_s": 4560,
+            "mean_squared_dpnl_over_exposure": 1.6008633333333333,
+            "pnl_gain": 67.99999999999979
+          },
+          {
+            "start_s": 4620,
+            "mean_squared_dpnl_over_exposure": 0.8314316666666668,
+            "pnl_gain": 791.0
+          },
+          {
+            "start_s": 4680,
+            "mean_squared_dpnl_over_exposure": 0.843665,
+            "pnl_gain": 1914.9999999999998
+          },
+          {
+            "start_s": 4740,
+            "mean_squared_dpnl_over_exposure": 0.8522233333333333,
+            "pnl_gain": 358.0
+          },
+          {
+            "start_s": 4800,
+            "mean_squared_dpnl_over_exposure": 39.674215000000004,
+            "pnl_gain": 7520.999999999999
+          },
+          {
+            "start_s": 4860,
+            "mean_squared_dpnl_over_exposure": 1.19987,
+            "pnl_gain": -794.0
+          },
+          {
+            "start_s": 4920,
+            "mean_squared_dpnl_over_exposure": 9.18267166666667,
+            "pnl_gain": 4442.999999999999
+          },
+          {
+            "start_s": 4980,
+            "mean_squared_dpnl_over_exposure": 1.6739549999999999,
+            "pnl_gain": 1119.0
+          },
+          {
+            "start_s": 5040,
+            "mean_squared_dpnl_over_exposure": 1.1141183333333333,
+            "pnl_gain": 1555.0
+          },
+          {
+            "start_s": 5100,
+            "mean_squared_dpnl_over_exposure": 1.205765,
+            "pnl_gain": 2023.0
+          },
+          {
+            "start_s": 5160,
+            "mean_squared_dpnl_over_exposure": 0.9847300000000001,
+            "pnl_gain": 494.0000000000001
+          },
+          {
+            "start_s": 5220,
+            "mean_squared_dpnl_over_exposure": 0.7773800000000001,
+            "pnl_gain": 319.99999999999994
+          },
+          {
+            "start_s": 5280,
+            "mean_squared_dpnl_over_exposure": 1.3289783333333334,
+            "pnl_gain": 412.9999999999999
+          },
+          {
+            "start_s": 5340,
+            "mean_squared_dpnl_over_exposure": 55.701406666666664,
+            "pnl_gain": 3533.9999999999995
+          },
+          {
+            "start_s": 5400,
+            "mean_squared_dpnl_over_exposure": 13.480573333333332,
+            "pnl_gain": 6520.0
+          },
+          {
+            "start_s": 5460,
+            "mean_squared_dpnl_over_exposure": 10.711401666666667,
+            "pnl_gain": 5947.000000000001
+          },
+          {
+            "start_s": 5520,
+            "mean_squared_dpnl_over_exposure": 180.35101,
+            "pnl_gain": 12220.0
+          },
+          {
+            "start_s": 5580,
+            "mean_squared_dpnl_over_exposure": 8.125531666666667,
+            "pnl_gain": 2164.9999999999995
+          },
+          {
+            "start_s": 5640,
+            "mean_squared_dpnl_over_exposure": 23.200883333333334,
+            "pnl_gain": 11483.999999999998
+          },
+          {
+            "start_s": 5700,
+            "mean_squared_dpnl_over_exposure": 11.711899999999998,
+            "pnl_gain": 5458.0
+          },
+          {
+            "start_s": 5760,
+            "mean_squared_dpnl_over_exposure": 0.7326133333333333,
+            "pnl_gain": 518.0
+          },
+          {
+            "start_s": 5820,
+            "mean_squared_dpnl_over_exposure": 4.973033333333333,
+            "pnl_gain": 2452.0000000000005
+          },
+          {
+            "start_s": 5880,
+            "mean_squared_dpnl_over_exposure": 2.8252633333333335,
+            "pnl_gain": 2732.0
+          }
+        ]
+      },
+      "interpretation": "PnL/100 is a testable volatility proxy, not an identified signed mid path. Oracle inventory is unavailable from hidden PnL-only logs; intrasecond fills and liquidation marking remain nuisance terms."
+    }
+  ],
+  "pnl_only_proxies": [
+    {
+      "source": "data/arena/round3/r3_F1_latent_filter_res/pnl.csv",
+      "exposure_assumption": 100.0,
+      "seconds": 11999.993567,
+      "complete_1s_intervals": 11999,
+      "pnl": 862764.0,
+      "rms_dpnl_over_exposure": 4.280404282510608,
+      "abs_dpnl_over_exposure_p99": 11.980400000000008,
+      "abs_proxy_5plus_per_1000s": 66.08884073672806,
+      "abs_proxy_20plus_per_1000s": 3.166930577548129,
+      "blocks_60s": [
+        {
+          "start_s": 0,
+          "mean_squared_dpnl_over_exposure": 1.7225216666666665,
+          "pnl_gain": 1863.0
+        },
+        {
+          "start_s": 60,
+          "mean_squared_dpnl_over_exposure": 11.514188333333333,
+          "pnl_gain": 6093.0
+        },
+        {
+          "start_s": 120,
+          "mean_squared_dpnl_over_exposure": 41.54075,
+          "pnl_gain": 21232.000000000004
+        },
+        {
+          "start_s": 180,
+          "mean_squared_dpnl_over_exposure": 6.7600983333333335,
+          "pnl_gain": 4209.0
+        },
+        {
+          "start_s": 240,
+          "mean_squared_dpnl_over_exposure": 1.1235966666666666,
+          "pnl_gain": 182.0
+        },
+        {
+          "start_s": 300,
+          "mean_squared_dpnl_over_exposure": 2.1548266666666667,
+          "pnl_gain": 3576.0
+        },
+        {
+          "start_s": 360,
+          "mean_squared_dpnl_over_exposure": 9.201360000000001,
+          "pnl_gain": -1404.0000000000002
+        },
+        {
+          "start_s": 420,
+          "mean_squared_dpnl_over_exposure": 11.669766666666668,
+          "pnl_gain": 6616.0
+        },
+        {
+          "start_s": 480,
+          "mean_squared_dpnl_over_exposure": 16.61948,
+          "pnl_gain": 13968.0
+        },
+        {
+          "start_s": 540,
+          "mean_squared_dpnl_over_exposure": 2.5652883333333336,
+          "pnl_gain": 1848.9999999999998
+        },
+        {
+          "start_s": 600,
+          "mean_squared_dpnl_over_exposure": 1.4681150000000003,
+          "pnl_gain": 1616.9999999999998
+        },
+        {
+          "start_s": 660,
+          "mean_squared_dpnl_over_exposure": 158.01720500000002,
+          "pnl_gain": 10621.0
+        },
+        {
+          "start_s": 720,
+          "mean_squared_dpnl_over_exposure": 1.41995,
+          "pnl_gain": -358.00000000000006
+        },
+        {
+          "start_s": 780,
+          "mean_squared_dpnl_over_exposure": 1.8914333333333337,
+          "pnl_gain": 1274.0
+        },
+        {
+          "start_s": 840,
+          "mean_squared_dpnl_over_exposure": 1.4201833333333334,
+          "pnl_gain": 1494.0
+        },
+        {
+          "start_s": 900,
+          "mean_squared_dpnl_over_exposure": 19.862301666666667,
+          "pnl_gain": 4062.9999999999995
+        },
+        {
+          "start_s": 960,
+          "mean_squared_dpnl_over_exposure": 1.0056200000000002,
+          "pnl_gain": 1625.9999999999998
+        },
+        {
+          "start_s": 1020,
+          "mean_squared_dpnl_over_exposure": 0.9416050000000001,
+          "pnl_gain": 2245.0
+        },
+        {
+          "start_s": 1080,
+          "mean_squared_dpnl_over_exposure": 12.713943333333333,
+          "pnl_gain": 7663.999999999998
+        },
+        {
+          "start_s": 1140,
+          "mean_squared_dpnl_over_exposure": 1.2495233333333333,
+          "pnl_gain": 1496.0
+        },
+        {
+          "start_s": 1200,
+          "mean_squared_dpnl_over_exposure": 146.21983333333336,
+          "pnl_gain": 10102.0
+        },
+        {
+          "start_s": 1260,
+          "mean_squared_dpnl_over_exposure": 9.559605,
+          "pnl_gain": 5467.0
+        },
+        {
+          "start_s": 1320,
+          "mean_squared_dpnl_over_exposure": 1.4243483333333335,
+          "pnl_gain": 1107.0
+        },
+        {
+          "start_s": 1380,
+          "mean_squared_dpnl_over_exposure": 3.2433800000000006,
+          "pnl_gain": 3010.0
+        },
+        {
+          "start_s": 1440,
+          "mean_squared_dpnl_over_exposure": 1.028075,
+          "pnl_gain": 1155.0
+        },
+        {
+          "start_s": 1500,
+          "mean_squared_dpnl_over_exposure": 10.8858,
+          "pnl_gain": 4524.0
+        },
+        {
+          "start_s": 1560,
+          "mean_squared_dpnl_over_exposure": 1.2963449999999999,
+          "pnl_gain": -902.9999999999999
+        },
+        {
+          "start_s": 1620,
+          "mean_squared_dpnl_over_exposure": 70.44888333333331,
+          "pnl_gain": -3386.0
+        },
+        {
+          "start_s": 1680,
+          "mean_squared_dpnl_over_exposure": 1.0432433333333333,
+          "pnl_gain": 1214.0
+        },
+        {
+          "start_s": 1740,
+          "mean_squared_dpnl_over_exposure": 1.2165916666666667,
+          "pnl_gain": 875.0
+        },
+        {
+          "start_s": 1800,
+          "mean_squared_dpnl_over_exposure": 3.586241666666667,
+          "pnl_gain": -547.0000000000002
+        },
+        {
+          "start_s": 1860,
+          "mean_squared_dpnl_over_exposure": 0.7617866666666667,
+          "pnl_gain": 648.0
+        },
+        {
+          "start_s": 1920,
+          "mean_squared_dpnl_over_exposure": 9.841018333333333,
+          "pnl_gain": 7319.0
+        },
+        {
+          "start_s": 1980,
+          "mean_squared_dpnl_over_exposure": 40.79562833333334,
+          "pnl_gain": 7659.0
+        },
+        {
+          "start_s": 2040,
+          "mean_squared_dpnl_over_exposure": 34.802038333333336,
+          "pnl_gain": 19407.0
+        },
+        {
+          "start_s": 2100,
+          "mean_squared_dpnl_over_exposure": 24.26176,
+          "pnl_gain": 15624.0
+        },
+        {
+          "start_s": 2160,
+          "mean_squared_dpnl_over_exposure": 102.17983833333334,
+          "pnl_gain": 5356.999999999998
+        },
+        {
+          "start_s": 2220,
+          "mean_squared_dpnl_over_exposure": 9.46594,
+          "pnl_gain": 6374.000000000001
+        },
+        {
+          "start_s": 2280,
+          "mean_squared_dpnl_over_exposure": 11.632018333333331,
+          "pnl_gain": 6983.000000000001
+        },
+        {
+          "start_s": 2340,
+          "mean_squared_dpnl_over_exposure": 29.22826,
+          "pnl_gain": 17634.0
+        },
+        {
+          "start_s": 2400,
+          "mean_squared_dpnl_over_exposure": 13.870078333333334,
+          "pnl_gain": 10197.000000000002
+        },
+        {
+          "start_s": 2460,
+          "mean_squared_dpnl_over_exposure": 25.748889999999996,
+          "pnl_gain": -2211.9999999999995
+        },
+        {
+          "start_s": 2520,
+          "mean_squared_dpnl_over_exposure": 6.9685716666666675,
+          "pnl_gain": 2631.0
+        },
+        {
+          "start_s": 2580,
+          "mean_squared_dpnl_over_exposure": 18.128308333333333,
+          "pnl_gain": 8831.0
+        },
+        {
+          "start_s": 2640,
+          "mean_squared_dpnl_over_exposure": 0.9686066666666666,
+          "pnl_gain": -158.0
+        },
+        {
+          "start_s": 2700,
+          "mean_squared_dpnl_over_exposure": 2.0497183333333333,
+          "pnl_gain": 3003.0
+        },
+        {
+          "start_s": 2760,
+          "mean_squared_dpnl_over_exposure": 7.5192049999999995,
+          "pnl_gain": 4973.0
+        },
+        {
+          "start_s": 2820,
+          "mean_squared_dpnl_over_exposure": 3.2556733333333336,
+          "pnl_gain": 3458.0000000000005
+        },
+        {
+          "start_s": 2880,
+          "mean_squared_dpnl_over_exposure": 3.6121566666666665,
+          "pnl_gain": 3636.0
+        },
+        {
+          "start_s": 2940,
+          "mean_squared_dpnl_over_exposure": 20.491258333333334,
+          "pnl_gain": -1179.0
+        },
+        {
+          "start_s": 3000,
+          "mean_squared_dpnl_over_exposure": 1.2094683333333334,
+          "pnl_gain": 1433.0000000000002
+        },
+        {
+          "start_s": 3060,
+          "mean_squared_dpnl_over_exposure": 5.79585,
+          "pnl_gain": 3292.0
+        },
+        {
+          "start_s": 3120,
+          "mean_squared_dpnl_over_exposure": 55.58302,
+          "pnl_gain": -4361.999999999999
+        },
+        {
+          "start_s": 3180,
+          "mean_squared_dpnl_over_exposure": 1.0265833333333334,
+          "pnl_gain": -160.00000000000014
+        },
+        {
+          "start_s": 3240,
+          "mean_squared_dpnl_over_exposure": 0.9496166666666667,
+          "pnl_gain": 619.9999999999999
+        },
+        {
+          "start_s": 3300,
+          "mean_squared_dpnl_over_exposure": 9.013148333333332,
+          "pnl_gain": -1163.0
+        },
+        {
+          "start_s": 3360,
+          "mean_squared_dpnl_over_exposure": 2.7849033333333333,
+          "pnl_gain": 2542.0
+        },
+        {
+          "start_s": 3420,
+          "mean_squared_dpnl_over_exposure": 1.41833,
+          "pnl_gain": 2290.0
+        },
+        {
+          "start_s": 3480,
+          "mean_squared_dpnl_over_exposure": 1.2334999999999998,
+          "pnl_gain": 1882.0
+        },
+        {
+          "start_s": 3540,
+          "mean_squared_dpnl_over_exposure": 18.09011333333333,
+          "pnl_gain": 4740.000000000001
+        },
+        {
+          "start_s": 3600,
+          "mean_squared_dpnl_over_exposure": 1.4205466666666668,
+          "pnl_gain": 1991.9999999999998
+        },
+        {
+          "start_s": 3660,
+          "mean_squared_dpnl_over_exposure": 9.410601666666667,
+          "pnl_gain": 4044.999999999999
+        },
+        {
+          "start_s": 3720,
+          "mean_squared_dpnl_over_exposure": 38.76593499999999,
+          "pnl_gain": -2784.9999999999995
+        },
+        {
+          "start_s": 3780,
+          "mean_squared_dpnl_over_exposure": 1.4602416666666664,
+          "pnl_gain": -301.0
+        },
+        {
+          "start_s": 3840,
+          "mean_squared_dpnl_over_exposure": 1.5645066666666667,
+          "pnl_gain": 1068.0
+        },
+        {
+          "start_s": 3900,
+          "mean_squared_dpnl_over_exposure": 1.3243566666666666,
+          "pnl_gain": 1258.0000000000002
+        },
+        {
+          "start_s": 3960,
+          "mean_squared_dpnl_over_exposure": 1.6112183333333334,
+          "pnl_gain": 3470.9999999999995
+        },
+        {
+          "start_s": 4020,
+          "mean_squared_dpnl_over_exposure": 144.6080983333333,
+          "pnl_gain": 15521.0
+        },
+        {
+          "start_s": 4080,
+          "mean_squared_dpnl_over_exposure": 1.2054333333333331,
+          "pnl_gain": 1586.0000000000002
+        },
+        {
+          "start_s": 4140,
+          "mean_squared_dpnl_over_exposure": 1.0873833333333331,
+          "pnl_gain": 1840.0000000000002
+        },
+        {
+          "start_s": 4200,
+          "mean_squared_dpnl_over_exposure": 13.181201666666665,
+          "pnl_gain": 8729.0
+        },
+        {
+          "start_s": 4260,
+          "mean_squared_dpnl_over_exposure": 283.72187166666663,
+          "pnl_gain": 23389.0
+        },
+        {
+          "start_s": 4320,
+          "mean_squared_dpnl_over_exposure": 10.210495,
+          "pnl_gain": 7997.0
+        },
+        {
+          "start_s": 4380,
+          "mean_squared_dpnl_over_exposure": 1.14486,
+          "pnl_gain": -150.0
+        },
+        {
+          "start_s": 4440,
+          "mean_squared_dpnl_over_exposure": 9.69967,
+          "pnl_gain": 7481.999999999999
+        },
+        {
+          "start_s": 4500,
+          "mean_squared_dpnl_over_exposure": 10.339068333333332,
+          "pnl_gain": 8703.0
+        },
+        {
+          "start_s": 4560,
+          "mean_squared_dpnl_over_exposure": 1.8573716666666666,
+          "pnl_gain": 2309.0
+        },
+        {
+          "start_s": 4620,
+          "mean_squared_dpnl_over_exposure": 1.116315,
+          "pnl_gain": 996.9999999999999
+        },
+        {
+          "start_s": 4680,
+          "mean_squared_dpnl_over_exposure": 2.357935,
+          "pnl_gain": 3011.0
+        },
+        {
+          "start_s": 4740,
+          "mean_squared_dpnl_over_exposure": 2.6326450000000006,
+          "pnl_gain": 1463.0
+        },
+        {
+          "start_s": 4800,
+          "mean_squared_dpnl_over_exposure": 1.2275600000000002,
+          "pnl_gain": 960.0000000000001
+        },
+        {
+          "start_s": 4860,
+          "mean_squared_dpnl_over_exposure": 1.6712933333333335,
+          "pnl_gain": 2818.0
+        },
+        {
+          "start_s": 4920,
+          "mean_squared_dpnl_over_exposure": 76.04819833333333,
+          "pnl_gain": 8525.000000000002
+        },
+        {
+          "start_s": 4980,
+          "mean_squared_dpnl_over_exposure": 0.84745,
+          "pnl_gain": 1160.0
+        },
+        {
+          "start_s": 5040,
+          "mean_squared_dpnl_over_exposure": 1.4875233333333333,
+          "pnl_gain": 2592.0
+        },
+        {
+          "start_s": 5100,
+          "mean_squared_dpnl_over_exposure": 0.9146300000000002,
+          "pnl_gain": 1768.0
+        },
+        {
+          "start_s": 5160,
+          "mean_squared_dpnl_over_exposure": 1.362655,
+          "pnl_gain": 1691.0
+        },
+        {
+          "start_s": 5220,
+          "mean_squared_dpnl_over_exposure": 14.253351666666665,
+          "pnl_gain": 7069.0
+        },
+        {
+          "start_s": 5280,
+          "mean_squared_dpnl_over_exposure": 10.095609999999999,
+          "pnl_gain": 9490.0
+        },
+        {
+          "start_s": 5340,
+          "mean_squared_dpnl_over_exposure": 1.023325,
+          "pnl_gain": 2151.0
+        },
+        {
+          "start_s": 5400,
+          "mean_squared_dpnl_over_exposure": 35.64228666666668,
+          "pnl_gain": 4942.000000000001
+        },
+        {
+          "start_s": 5460,
+          "mean_squared_dpnl_over_exposure": 1.089105,
+          "pnl_gain": 1109.0
+        },
+        {
+          "start_s": 5520,
+          "mean_squared_dpnl_over_exposure": 1.583315,
+          "pnl_gain": 2.999999999999936
+        },
+        {
+          "start_s": 5580,
+          "mean_squared_dpnl_over_exposure": 0.9502783333333333,
+          "pnl_gain": 556.9999999999999
+        },
+        {
+          "start_s": 5640,
+          "mean_squared_dpnl_over_exposure": 1.1742516666666667,
+          "pnl_gain": -35.00000000000006
+        },
+        {
+          "start_s": 5700,
+          "mean_squared_dpnl_over_exposure": 1.220751666666667,
+          "pnl_gain": 1027.0000000000002
+        },
+        {
+          "start_s": 5760,
+          "mean_squared_dpnl_over_exposure": 2.0614266666666667,
+          "pnl_gain": 1188.0
+        },
+        {
+          "start_s": 5820,
+          "mean_squared_dpnl_over_exposure": 33.350030000000004,
+          "pnl_gain": 17634.0
+        },
+        {
+          "start_s": 5880,
+          "mean_squared_dpnl_over_exposure": 79.71658000000001,
+          "pnl_gain": 13668.0
+        },
+        {
+          "start_s": 5940,
+          "mean_squared_dpnl_over_exposure": 3.480101666666667,
+          "pnl_gain": 2711.0
+        },
+        {
+          "start_s": 6000,
+          "mean_squared_dpnl_over_exposure": 1.6535049999999998,
+          "pnl_gain": 2007.0
+        },
+        {
+          "start_s": 6060,
+          "mean_squared_dpnl_over_exposure": 2.0317983333333336,
+          "pnl_gain": 1448.9999999999998
+        },
+        {
+          "start_s": 6120,
+          "mean_squared_dpnl_over_exposure": 10.919698333333335,
+          "pnl_gain": 4848.999999999999
+        },
+        {
+          "start_s": 6180,
+          "mean_squared_dpnl_over_exposure": 1.4807683333333332,
+          "pnl_gain": 1113.0
+        },
+        {
+          "start_s": 6240,
+          "mean_squared_dpnl_over_exposure": 9.085704999999999,
+          "pnl_gain": 9.000000000000163
+        },
+        {
+          "start_s": 6300,
+          "mean_squared_dpnl_over_exposure": 1.1938199999999999,
+          "pnl_gain": 1902.0
+        },
+        {
+          "start_s": 6360,
+          "mean_squared_dpnl_over_exposure": 1.7128049999999997,
+          "pnl_gain": 1414.9999999999998
+        },
+        {
+          "start_s": 6420,
+          "mean_squared_dpnl_over_exposure": 30.670614999999998,
+          "pnl_gain": 20029.000000000004
+        },
+        {
+          "start_s": 6480,
+          "mean_squared_dpnl_over_exposure": 10.900328333333333,
+          "pnl_gain": 4076.9999999999995
+        },
+        {
+          "start_s": 6540,
+          "mean_squared_dpnl_over_exposure": 5.004191666666666,
+          "pnl_gain": 4539.0
+        },
+        {
+          "start_s": 6600,
+          "mean_squared_dpnl_over_exposure": 6.953006666666667,
+          "pnl_gain": 4232.0
+        },
+        {
+          "start_s": 6660,
+          "mean_squared_dpnl_over_exposure": 13.870656666666667,
+          "pnl_gain": 6992.0
+        },
+        {
+          "start_s": 6720,
+          "mean_squared_dpnl_over_exposure": 44.087120000000006,
+          "pnl_gain": 8524.0
+        },
+        {
+          "start_s": 6780,
+          "mean_squared_dpnl_over_exposure": 16.991835,
+          "pnl_gain": 9211.000000000002
+        },
+        {
+          "start_s": 6840,
+          "mean_squared_dpnl_over_exposure": 23.45294166666667,
+          "pnl_gain": 16779.0
+        },
+        {
+          "start_s": 6900,
+          "mean_squared_dpnl_over_exposure": 12.390933333333333,
+          "pnl_gain": 6731.999999999999
+        },
+        {
+          "start_s": 6960,
+          "mean_squared_dpnl_over_exposure": 1.3893700000000002,
+          "pnl_gain": 1926.0000000000002
+        },
+        {
+          "start_s": 7020,
+          "mean_squared_dpnl_over_exposure": 0.9744616666666667,
+          "pnl_gain": 493.0
+        },
+        {
+          "start_s": 7080,
+          "mean_squared_dpnl_over_exposure": 1.903125,
+          "pnl_gain": 3763.0000000000005
+        },
+        {
+          "start_s": 7140,
+          "mean_squared_dpnl_over_exposure": 8.535486666666667,
+          "pnl_gain": 5912.0
+        },
+        {
+          "start_s": 7200,
+          "mean_squared_dpnl_over_exposure": 9.630101666666665,
+          "pnl_gain": 6739.0
+        },
+        {
+          "start_s": 7260,
+          "mean_squared_dpnl_over_exposure": 1.8024383333333334,
+          "pnl_gain": 1271.0
+        },
+        {
+          "start_s": 7320,
+          "mean_squared_dpnl_over_exposure": 5.629791666666667,
+          "pnl_gain": 3721.0
+        },
+        {
+          "start_s": 7380,
+          "mean_squared_dpnl_over_exposure": 0.8210350000000001,
+          "pnl_gain": 261.00000000000006
+        },
+        {
+          "start_s": 7440,
+          "mean_squared_dpnl_over_exposure": 0.8649666666666666,
+          "pnl_gain": 1876.0000000000002
+        },
+        {
+          "start_s": 7500,
+          "mean_squared_dpnl_over_exposure": 1.6074133333333331,
+          "pnl_gain": 1950.0
+        },
+        {
+          "start_s": 7560,
+          "mean_squared_dpnl_over_exposure": 1.0477816666666666,
+          "pnl_gain": 1903.0
+        },
+        {
+          "start_s": 7620,
+          "mean_squared_dpnl_over_exposure": 1.7083633333333335,
+          "pnl_gain": 1862.0
+        },
+        {
+          "start_s": 7680,
+          "mean_squared_dpnl_over_exposure": 0.9460149999999999,
+          "pnl_gain": -223.00000000000006
+        },
+        {
+          "start_s": 7740,
+          "mean_squared_dpnl_over_exposure": 1.1817166666666667,
+          "pnl_gain": 977.9999999999999
+        },
+        {
+          "start_s": 7800,
+          "mean_squared_dpnl_over_exposure": 4.586233333333333,
+          "pnl_gain": 1993.9999999999998
+        },
+        {
+          "start_s": 7860,
+          "mean_squared_dpnl_over_exposure": 16.94587166666667,
+          "pnl_gain": 9141.000000000002
+        },
+        {
+          "start_s": 7920,
+          "mean_squared_dpnl_over_exposure": 15.845351666666666,
+          "pnl_gain": 11425.0
+        },
+        {
+          "start_s": 7980,
+          "mean_squared_dpnl_over_exposure": 2.0485366666666667,
+          "pnl_gain": 3728.0
+        },
+        {
+          "start_s": 8040,
+          "mean_squared_dpnl_over_exposure": 1.6835866666666666,
+          "pnl_gain": 1320.0
+        },
+        {
+          "start_s": 8100,
+          "mean_squared_dpnl_over_exposure": 12.825046666666667,
+          "pnl_gain": 9634.0
+        },
+        {
+          "start_s": 8160,
+          "mean_squared_dpnl_over_exposure": 1.3198533333333335,
+          "pnl_gain": 811.9999999999999
+        },
+        {
+          "start_s": 8220,
+          "mean_squared_dpnl_over_exposure": 1.1334666666666666,
+          "pnl_gain": 1358.0
+        },
+        {
+          "start_s": 8280,
+          "mean_squared_dpnl_over_exposure": 20.408516666666667,
+          "pnl_gain": 10152.000000000002
+        },
+        {
+          "start_s": 8340,
+          "mean_squared_dpnl_over_exposure": 21.755121666666664,
+          "pnl_gain": 13623.000000000002
+        },
+        {
+          "start_s": 8400,
+          "mean_squared_dpnl_over_exposure": 20.24535166666667,
+          "pnl_gain": 13033.000000000002
+        },
+        {
+          "start_s": 8460,
+          "mean_squared_dpnl_over_exposure": 17.407856666666664,
+          "pnl_gain": 8624.0
+        },
+        {
+          "start_s": 8520,
+          "mean_squared_dpnl_over_exposure": 75.26344333333333,
+          "pnl_gain": 16974.0
+        },
+        {
+          "start_s": 8580,
+          "mean_squared_dpnl_over_exposure": 1.4633216666666666,
+          "pnl_gain": 2279.0
+        },
+        {
+          "start_s": 8640,
+          "mean_squared_dpnl_over_exposure": 12.194045,
+          "pnl_gain": 3719.0
+        },
+        {
+          "start_s": 8700,
+          "mean_squared_dpnl_over_exposure": 1.1590950000000002,
+          "pnl_gain": 1011.0
+        },
+        {
+          "start_s": 8760,
+          "mean_squared_dpnl_over_exposure": 0.76958,
+          "pnl_gain": 1236.0
+        },
+        {
+          "start_s": 8820,
+          "mean_squared_dpnl_over_exposure": 0.9706366666666668,
+          "pnl_gain": 1413.9999999999998
+        },
+        {
+          "start_s": 8880,
+          "mean_squared_dpnl_over_exposure": 26.801425,
+          "pnl_gain": 17675.0
+        },
+        {
+          "start_s": 8940,
+          "mean_squared_dpnl_over_exposure": 107.74421500000001,
+          "pnl_gain": 15611.000000000002
+        },
+        {
+          "start_s": 9000,
+          "mean_squared_dpnl_over_exposure": 0.96579,
+          "pnl_gain": 424.0
+        },
+        {
+          "start_s": 9060,
+          "mean_squared_dpnl_over_exposure": 8.690955,
+          "pnl_gain": 8223.0
+        },
+        {
+          "start_s": 9120,
+          "mean_squared_dpnl_over_exposure": 20.854206666666666,
+          "pnl_gain": 10644.0
+        },
+        {
+          "start_s": 9180,
+          "mean_squared_dpnl_over_exposure": 1.3800766666666668,
+          "pnl_gain": 1142.0000000000002
+        },
+        {
+          "start_s": 9240,
+          "mean_squared_dpnl_over_exposure": 94.24672166666664,
+          "pnl_gain": 14811.000000000002
+        },
+        {
+          "start_s": 9300,
+          "mean_squared_dpnl_over_exposure": 4.279183333333333,
+          "pnl_gain": 4744.0
+        },
+        {
+          "start_s": 9360,
+          "mean_squared_dpnl_over_exposure": 1.7910966666666668,
+          "pnl_gain": 2198.0
+        },
+        {
+          "start_s": 9420,
+          "mean_squared_dpnl_over_exposure": 1.1474183333333334,
+          "pnl_gain": 1147.0
+        },
+        {
+          "start_s": 9480,
+          "mean_squared_dpnl_over_exposure": 1.2835783333333335,
+          "pnl_gain": 891.0
+        },
+        {
+          "start_s": 9540,
+          "mean_squared_dpnl_over_exposure": 21.71459833333334,
+          "pnl_gain": -522.9999999999997
+        },
+        {
+          "start_s": 9600,
+          "mean_squared_dpnl_over_exposure": 1.1958216666666668,
+          "pnl_gain": 1087.0
+        },
+        {
+          "start_s": 9660,
+          "mean_squared_dpnl_over_exposure": 1.0571383333333335,
+          "pnl_gain": 798.9999999999999
+        },
+        {
+          "start_s": 9720,
+          "mean_squared_dpnl_over_exposure": 102.10174000000004,
+          "pnl_gain": -5328.000000000001
+        },
+        {
+          "start_s": 9780,
+          "mean_squared_dpnl_over_exposure": 5.375848333333334,
+          "pnl_gain": 5659.0
+        },
+        {
+          "start_s": 9840,
+          "mean_squared_dpnl_over_exposure": 20.46670333333333,
+          "pnl_gain": -1618.0000000000002
+        },
+        {
+          "start_s": 9900,
+          "mean_squared_dpnl_over_exposure": 0.9062433333333335,
+          "pnl_gain": 600.0
+        },
+        {
+          "start_s": 9960,
+          "mean_squared_dpnl_over_exposure": 1.1321616666666665,
+          "pnl_gain": 644.9999999999999
+        },
+        {
+          "start_s": 10020,
+          "mean_squared_dpnl_over_exposure": 5.058588333333334,
+          "pnl_gain": 622.9999999999999
+        },
+        {
+          "start_s": 10080,
+          "mean_squared_dpnl_over_exposure": 1.1054450000000002,
+          "pnl_gain": 451.0
+        },
+        {
+          "start_s": 10140,
+          "mean_squared_dpnl_over_exposure": 1.1849,
+          "pnl_gain": 921.9999999999999
+        },
+        {
+          "start_s": 10200,
+          "mean_squared_dpnl_over_exposure": 19.793531666666663,
+          "pnl_gain": -3063.0000000000005
+        },
+        {
+          "start_s": 10260,
+          "mean_squared_dpnl_over_exposure": 1.0056433333333332,
+          "pnl_gain": 178.00000000000003
+        },
+        {
+          "start_s": 10320,
+          "mean_squared_dpnl_over_exposure": 14.060241666666668,
+          "pnl_gain": 2723.0000000000005
+        },
+        {
+          "start_s": 10380,
+          "mean_squared_dpnl_over_exposure": 1.1245483333333333,
+          "pnl_gain": 1764.9999999999998
+        },
+        {
+          "start_s": 10440,
+          "mean_squared_dpnl_over_exposure": 1.2121650000000002,
+          "pnl_gain": 1109.0000000000002
+        },
+        {
+          "start_s": 10500,
+          "mean_squared_dpnl_over_exposure": 0.7400033333333333,
+          "pnl_gain": 1554.0
+        },
+        {
+          "start_s": 10560,
+          "mean_squared_dpnl_over_exposure": 2.3467416666666665,
+          "pnl_gain": 647.0
+        },
+        {
+          "start_s": 10620,
+          "mean_squared_dpnl_over_exposure": 1.1765933333333336,
+          "pnl_gain": 881.9999999999999
+        },
+        {
+          "start_s": 10680,
+          "mean_squared_dpnl_over_exposure": 16.844388333333335,
+          "pnl_gain": 13553.0
+        },
+        {
+          "start_s": 10740,
+          "mean_squared_dpnl_over_exposure": 29.56944666666667,
+          "pnl_gain": 18116.000000000004
+        },
+        {
+          "start_s": 10800,
+          "mean_squared_dpnl_over_exposure": 42.01964166666666,
+          "pnl_gain": 19035.0
+        },
+        {
+          "start_s": 10860,
+          "mean_squared_dpnl_over_exposure": 19.16025833333333,
+          "pnl_gain": 12395.0
+        },
+        {
+          "start_s": 10920,
+          "mean_squared_dpnl_over_exposure": 1.5701333333333334,
+          "pnl_gain": 1018.0
+        },
+        {
+          "start_s": 10980,
+          "mean_squared_dpnl_over_exposure": 357.1176383333333,
+          "pnl_gain": -13622.999999999998
+        },
+        {
+          "start_s": 11040,
+          "mean_squared_dpnl_over_exposure": 0.9491416666666667,
+          "pnl_gain": 1593.0000000000002
+        },
+        {
+          "start_s": 11100,
+          "mean_squared_dpnl_over_exposure": 1.25143,
+          "pnl_gain": 1706.0000000000002
+        },
+        {
+          "start_s": 11160,
+          "mean_squared_dpnl_over_exposure": 225.717885,
+          "pnl_gain": -10642.999999999998
+        },
+        {
+          "start_s": 11220,
+          "mean_squared_dpnl_over_exposure": 16.703185,
+          "pnl_gain": 9380.999999999998
+        },
+        {
+          "start_s": 11280,
+          "mean_squared_dpnl_over_exposure": 15.270036666666666,
+          "pnl_gain": 5846.0
+        },
+        {
+          "start_s": 11340,
+          "mean_squared_dpnl_over_exposure": 23.358673333333336,
+          "pnl_gain": 13584.0
+        },
+        {
+          "start_s": 11400,
+          "mean_squared_dpnl_over_exposure": 0.9343149999999999,
+          "pnl_gain": 1121.0
+        },
+        {
+          "start_s": 11460,
+          "mean_squared_dpnl_over_exposure": 13.415135,
+          "pnl_gain": 5073.0
+        },
+        {
+          "start_s": 11520,
+          "mean_squared_dpnl_over_exposure": 44.625035000000004,
+          "pnl_gain": 8080.999999999999
+        },
+        {
+          "start_s": 11580,
+          "mean_squared_dpnl_over_exposure": 6.684926666666667,
+          "pnl_gain": 1570.0000000000002
+        },
+        {
+          "start_s": 11640,
+          "mean_squared_dpnl_over_exposure": 59.51063166666666,
+          "pnl_gain": 12905.000000000002
+        },
+        {
+          "start_s": 11700,
+          "mean_squared_dpnl_over_exposure": 1.1191300000000004,
+          "pnl_gain": 876.0
+        },
+        {
+          "start_s": 11760,
+          "mean_squared_dpnl_over_exposure": 3.6241566666666665,
+          "pnl_gain": 1969.9999999999995
+        },
+        {
+          "start_s": 11820,
+          "mean_squared_dpnl_over_exposure": 10.163124999999999,
+          "pnl_gain": 6209.0
+        },
+        {
+          "start_s": 11880,
+          "mean_squared_dpnl_over_exposure": 9.027838333333335,
+          "pnl_gain": 4321.0
+        }
+      ]
+    },
+    {
+      "source": "data/arena/round3/r3_F3_latent_filter_b1_res/pnl.csv",
+      "exposure_assumption": 100.0,
+      "seconds": 11999.993567,
+      "complete_1s_intervals": 11999,
+      "pnl": 883559.0,
+      "rms_dpnl_over_exposure": 4.156438512327458,
+      "abs_dpnl_over_exposure_p99": 11.882000000000044,
+      "abs_proxy_5plus_per_1000s": 65.25543795316277,
+      "abs_proxy_20plus_per_1000s": 3.083590299191599,
+      "blocks_60s": [
+        {
+          "start_s": 0,
+          "mean_squared_dpnl_over_exposure": 1.5130666666666668,
+          "pnl_gain": 2440.0
+        },
+        {
+          "start_s": 60,
+          "mean_squared_dpnl_over_exposure": 10.042309999999999,
+          "pnl_gain": 5254.000000000001
+        },
+        {
+          "start_s": 120,
+          "mean_squared_dpnl_over_exposure": 43.86466833333334,
+          "pnl_gain": 22563.0
+        },
+        {
+          "start_s": 180,
+          "mean_squared_dpnl_over_exposure": 6.688560000000001,
+          "pnl_gain": 4349.999999999999
+        },
+        {
+          "start_s": 240,
+          "mean_squared_dpnl_over_exposure": 1.0067249999999999,
+          "pnl_gain": 323.0000000000001
+        },
+        {
+          "start_s": 300,
+          "mean_squared_dpnl_over_exposure": 1.8276583333333332,
+          "pnl_gain": 3469.0
+        },
+        {
+          "start_s": 360,
+          "mean_squared_dpnl_over_exposure": 9.166425000000002,
+          "pnl_gain": -1291.0
+        },
+        {
+          "start_s": 420,
+          "mean_squared_dpnl_over_exposure": 11.026131666666664,
+          "pnl_gain": 6651.000000000001
+        },
+        {
+          "start_s": 480,
+          "mean_squared_dpnl_over_exposure": 16.628413333333334,
+          "pnl_gain": 13947.999999999998
+        },
+        {
+          "start_s": 540,
+          "mean_squared_dpnl_over_exposure": 2.5076283333333333,
+          "pnl_gain": 2077.0000000000005
+        },
+        {
+          "start_s": 600,
+          "mean_squared_dpnl_over_exposure": 1.1861783333333333,
+          "pnl_gain": 1926.9999999999995
+        },
+        {
+          "start_s": 660,
+          "mean_squared_dpnl_over_exposure": 59.436841666666666,
+          "pnl_gain": 7339.0
+        },
+        {
+          "start_s": 720,
+          "mean_squared_dpnl_over_exposure": 1.7569516666666665,
+          "pnl_gain": -484.99999999999994
+        },
+        {
+          "start_s": 780,
+          "mean_squared_dpnl_over_exposure": 1.4787100000000002,
+          "pnl_gain": 1816.0
+        },
+        {
+          "start_s": 840,
+          "mean_squared_dpnl_over_exposure": 1.3145999999999998,
+          "pnl_gain": 2116.0
+        },
+        {
+          "start_s": 900,
+          "mean_squared_dpnl_over_exposure": 10.83530333333333,
+          "pnl_gain": 3553.999999999999
+        },
+        {
+          "start_s": 960,
+          "mean_squared_dpnl_over_exposure": 0.9496566666666666,
+          "pnl_gain": 1826.0000000000002
+        },
+        {
+          "start_s": 1020,
+          "mean_squared_dpnl_over_exposure": 0.7711950000000001,
+          "pnl_gain": 2610.9999999999995
+        },
+        {
+          "start_s": 1080,
+          "mean_squared_dpnl_over_exposure": 12.41447,
+          "pnl_gain": 7940.000000000001
+        },
+        {
+          "start_s": 1140,
+          "mean_squared_dpnl_over_exposure": 1.153471666666667,
+          "pnl_gain": 2018.9999999999998
+        },
+        {
+          "start_s": 1200,
+          "mean_squared_dpnl_over_exposure": 124.94968166666666,
+          "pnl_gain": 9252.999999999998
+        },
+        {
+          "start_s": 1260,
+          "mean_squared_dpnl_over_exposure": 9.723518333333333,
+          "pnl_gain": 5681.0
+        },
+        {
+          "start_s": 1320,
+          "mean_squared_dpnl_over_exposure": 1.2944749999999998,
+          "pnl_gain": 1295.0
+        },
+        {
+          "start_s": 1380,
+          "mean_squared_dpnl_over_exposure": 3.2261900000000003,
+          "pnl_gain": 2490.0
+        },
+        {
+          "start_s": 1440,
+          "mean_squared_dpnl_over_exposure": 0.8635733333333333,
+          "pnl_gain": 1238.0
+        },
+        {
+          "start_s": 1500,
+          "mean_squared_dpnl_over_exposure": 10.595933333333335,
+          "pnl_gain": 4650.0
+        },
+        {
+          "start_s": 1560,
+          "mean_squared_dpnl_over_exposure": 1.0680733333333334,
+          "pnl_gain": -403.9999999999999
+        },
+        {
+          "start_s": 1620,
+          "mean_squared_dpnl_over_exposure": 69.57556833333334,
+          "pnl_gain": -3345.000000000001
+        },
+        {
+          "start_s": 1680,
+          "mean_squared_dpnl_over_exposure": 0.9726283333333333,
+          "pnl_gain": 1399.0
+        },
+        {
+          "start_s": 1740,
+          "mean_squared_dpnl_over_exposure": 1.0742883333333337,
+          "pnl_gain": 993.0000000000001
+        },
+        {
+          "start_s": 1800,
+          "mean_squared_dpnl_over_exposure": 2.262491666666667,
+          "pnl_gain": -44.99999999999993
+        },
+        {
+          "start_s": 1860,
+          "mean_squared_dpnl_over_exposure": 0.741685,
+          "pnl_gain": 893.0
+        },
+        {
+          "start_s": 1920,
+          "mean_squared_dpnl_over_exposure": 9.992388333333334,
+          "pnl_gain": 7455.0
+        },
+        {
+          "start_s": 1980,
+          "mean_squared_dpnl_over_exposure": 40.472226666666664,
+          "pnl_gain": 7780.0
+        },
+        {
+          "start_s": 2040,
+          "mean_squared_dpnl_over_exposure": 35.99074333333333,
+          "pnl_gain": 19722.0
+        },
+        {
+          "start_s": 2100,
+          "mean_squared_dpnl_over_exposure": 23.95152666666667,
+          "pnl_gain": 15578.0
+        },
+        {
+          "start_s": 2160,
+          "mean_squared_dpnl_over_exposure": 102.12077000000001,
+          "pnl_gain": 6502.0
+        },
+        {
+          "start_s": 2220,
+          "mean_squared_dpnl_over_exposure": 9.399021666666668,
+          "pnl_gain": 6515.000000000001
+        },
+        {
+          "start_s": 2280,
+          "mean_squared_dpnl_over_exposure": 11.55202,
+          "pnl_gain": 7327.999999999999
+        },
+        {
+          "start_s": 2340,
+          "mean_squared_dpnl_over_exposure": 29.105930000000004,
+          "pnl_gain": 17748.0
+        },
+        {
+          "start_s": 2400,
+          "mean_squared_dpnl_over_exposure": 13.837558333333334,
+          "pnl_gain": 10127.000000000002
+        },
+        {
+          "start_s": 2460,
+          "mean_squared_dpnl_over_exposure": 22.19986333333333,
+          "pnl_gain": -2196.000000000001
+        },
+        {
+          "start_s": 2520,
+          "mean_squared_dpnl_over_exposure": 6.878133333333333,
+          "pnl_gain": 2254.0
+        },
+        {
+          "start_s": 2580,
+          "mean_squared_dpnl_over_exposure": 17.891943333333337,
+          "pnl_gain": 8508.000000000002
+        },
+        {
+          "start_s": 2640,
+          "mean_squared_dpnl_over_exposure": 0.9151733333333334,
+          "pnl_gain": 378.0
+        },
+        {
+          "start_s": 2700,
+          "mean_squared_dpnl_over_exposure": 1.3536766666666666,
+          "pnl_gain": 1260.0
+        },
+        {
+          "start_s": 2760,
+          "mean_squared_dpnl_over_exposure": 7.179525000000001,
+          "pnl_gain": 5109.0
+        },
+        {
+          "start_s": 2820,
+          "mean_squared_dpnl_over_exposure": 3.30023,
+          "pnl_gain": 3227.9999999999995
+        },
+        {
+          "start_s": 2880,
+          "mean_squared_dpnl_over_exposure": 4.161314999999999,
+          "pnl_gain": 4161.0
+        },
+        {
+          "start_s": 2940,
+          "mean_squared_dpnl_over_exposure": 20.631898333333332,
+          "pnl_gain": -827.0
+        },
+        {
+          "start_s": 3000,
+          "mean_squared_dpnl_over_exposure": 1.043975,
+          "pnl_gain": 1441.0000000000002
+        },
+        {
+          "start_s": 3060,
+          "mean_squared_dpnl_over_exposure": 5.838191666666665,
+          "pnl_gain": 3409.0000000000005
+        },
+        {
+          "start_s": 3120,
+          "mean_squared_dpnl_over_exposure": 56.15900833333333,
+          "pnl_gain": -3943.0
+        },
+        {
+          "start_s": 3180,
+          "mean_squared_dpnl_over_exposure": 0.9479916666666667,
+          "pnl_gain": 371.0
+        },
+        {
+          "start_s": 3240,
+          "mean_squared_dpnl_over_exposure": 0.865455,
+          "pnl_gain": 953.0000000000001
+        },
+        {
+          "start_s": 3300,
+          "mean_squared_dpnl_over_exposure": 4.0285,
+          "pnl_gain": -60.000000000000206
+        },
+        {
+          "start_s": 3360,
+          "mean_squared_dpnl_over_exposure": 2.4453033333333334,
+          "pnl_gain": 2491.9999999999995
+        },
+        {
+          "start_s": 3420,
+          "mean_squared_dpnl_over_exposure": 1.2179866666666668,
+          "pnl_gain": 2364.0
+        },
+        {
+          "start_s": 3480,
+          "mean_squared_dpnl_over_exposure": 1.1297383333333335,
+          "pnl_gain": 1941.0
+        },
+        {
+          "start_s": 3540,
+          "mean_squared_dpnl_over_exposure": 5.972693333333334,
+          "pnl_gain": 3740.0
+        },
+        {
+          "start_s": 3600,
+          "mean_squared_dpnl_over_exposure": 1.3267899999999997,
+          "pnl_gain": 1985.9999999999995
+        },
+        {
+          "start_s": 3660,
+          "mean_squared_dpnl_over_exposure": 10.135278333333334,
+          "pnl_gain": 4684.999999999999
+        },
+        {
+          "start_s": 3720,
+          "mean_squared_dpnl_over_exposure": 62.540836666666664,
+          "pnl_gain": -3978.000000000001
+        },
+        {
+          "start_s": 3780,
+          "mean_squared_dpnl_over_exposure": 1.1412916666666666,
+          "pnl_gain": 273.0
+        },
+        {
+          "start_s": 3840,
+          "mean_squared_dpnl_over_exposure": 1.3625666666666665,
+          "pnl_gain": 1088.0
+        },
+        {
+          "start_s": 3900,
+          "mean_squared_dpnl_over_exposure": 1.2214500000000001,
+          "pnl_gain": 1546.0000000000002
+        },
+        {
+          "start_s": 3960,
+          "mean_squared_dpnl_over_exposure": 1.4115849999999999,
+          "pnl_gain": 3207.0
+        },
+        {
+          "start_s": 4020,
+          "mean_squared_dpnl_over_exposure": 145.0128183333333,
+          "pnl_gain": 16181.000000000004
+        },
+        {
+          "start_s": 4080,
+          "mean_squared_dpnl_over_exposure": 1.1029550000000001,
+          "pnl_gain": 1797.0
+        },
+        {
+          "start_s": 4140,
+          "mean_squared_dpnl_over_exposure": 0.9165099999999999,
+          "pnl_gain": 1839.9999999999998
+        },
+        {
+          "start_s": 4200,
+          "mean_squared_dpnl_over_exposure": 13.026883333333332,
+          "pnl_gain": 8955.999999999998
+        },
+        {
+          "start_s": 4260,
+          "mean_squared_dpnl_over_exposure": 283.73144500000006,
+          "pnl_gain": 23236.999999999996
+        },
+        {
+          "start_s": 4320,
+          "mean_squared_dpnl_over_exposure": 10.050786666666669,
+          "pnl_gain": 7998.0
+        },
+        {
+          "start_s": 4380,
+          "mean_squared_dpnl_over_exposure": 0.9340833333333334,
+          "pnl_gain": 634.0000000000001
+        },
+        {
+          "start_s": 4440,
+          "mean_squared_dpnl_over_exposure": 9.632298333333335,
+          "pnl_gain": 7694.999999999999
+        },
+        {
+          "start_s": 4500,
+          "mean_squared_dpnl_over_exposure": 10.315441666666665,
+          "pnl_gain": 8671.0
+        },
+        {
+          "start_s": 4560,
+          "mean_squared_dpnl_over_exposure": 1.6513950000000002,
+          "pnl_gain": 2309.0000000000005
+        },
+        {
+          "start_s": 4620,
+          "mean_squared_dpnl_over_exposure": 1.0683966666666664,
+          "pnl_gain": 1218.0000000000002
+        },
+        {
+          "start_s": 4680,
+          "mean_squared_dpnl_over_exposure": 2.2422799999999996,
+          "pnl_gain": 3084.0000000000005
+        },
+        {
+          "start_s": 4740,
+          "mean_squared_dpnl_over_exposure": 2.2996400000000006,
+          "pnl_gain": 1238.0
+        },
+        {
+          "start_s": 4800,
+          "mean_squared_dpnl_over_exposure": 1.113015,
+          "pnl_gain": 1103.0
+        },
+        {
+          "start_s": 4860,
+          "mean_squared_dpnl_over_exposure": 1.472845,
+          "pnl_gain": 2851.0
+        },
+        {
+          "start_s": 4920,
+          "mean_squared_dpnl_over_exposure": 65.32326166666667,
+          "pnl_gain": 7936.999999999999
+        },
+        {
+          "start_s": 4980,
+          "mean_squared_dpnl_over_exposure": 0.7538483333333333,
+          "pnl_gain": 1508.9999999999998
+        },
+        {
+          "start_s": 5040,
+          "mean_squared_dpnl_over_exposure": 1.2776100000000001,
+          "pnl_gain": 2482.0
+        },
+        {
+          "start_s": 5100,
+          "mean_squared_dpnl_over_exposure": 0.8507266666666666,
+          "pnl_gain": 1998.0
+        },
+        {
+          "start_s": 5160,
+          "mean_squared_dpnl_over_exposure": 1.200516666666667,
+          "pnl_gain": 1780.0
+        },
+        {
+          "start_s": 5220,
+          "mean_squared_dpnl_over_exposure": 13.878916666666665,
+          "pnl_gain": 6941.999999999999
+        },
+        {
+          "start_s": 5280,
+          "mean_squared_dpnl_over_exposure": 10.205491666666665,
+          "pnl_gain": 9849.0
+        },
+        {
+          "start_s": 5340,
+          "mean_squared_dpnl_over_exposure": 0.9591916666666668,
+          "pnl_gain": 2351.0
+        },
+        {
+          "start_s": 5400,
+          "mean_squared_dpnl_over_exposure": 34.27760166666667,
+          "pnl_gain": 4670.999999999999
+        },
+        {
+          "start_s": 5460,
+          "mean_squared_dpnl_over_exposure": 0.9710016666666667,
+          "pnl_gain": 1361.0
+        },
+        {
+          "start_s": 5520,
+          "mean_squared_dpnl_over_exposure": 1.3747766666666668,
+          "pnl_gain": 374.00000000000017
+        },
+        {
+          "start_s": 5580,
+          "mean_squared_dpnl_over_exposure": 0.87321,
+          "pnl_gain": 766.0000000000002
+        },
+        {
+          "start_s": 5640,
+          "mean_squared_dpnl_over_exposure": 0.9783033333333332,
+          "pnl_gain": 294.0000000000001
+        },
+        {
+          "start_s": 5700,
+          "mean_squared_dpnl_over_exposure": 1.0940883333333333,
+          "pnl_gain": 1255.0
+        },
+        {
+          "start_s": 5760,
+          "mean_squared_dpnl_over_exposure": 2.143358333333333,
+          "pnl_gain": 1105.0
+        },
+        {
+          "start_s": 5820,
+          "mean_squared_dpnl_over_exposure": 34.397776666666665,
+          "pnl_gain": 17694.000000000004
+        },
+        {
+          "start_s": 5880,
+          "mean_squared_dpnl_over_exposure": 50.264664999999994,
+          "pnl_gain": 11457.0
+        },
+        {
+          "start_s": 5940,
+          "mean_squared_dpnl_over_exposure": 3.2795700000000005,
+          "pnl_gain": 2816.0
+        },
+        {
+          "start_s": 6000,
+          "mean_squared_dpnl_over_exposure": 1.431248333333333,
+          "pnl_gain": 2135.0
+        },
+        {
+          "start_s": 6060,
+          "mean_squared_dpnl_over_exposure": 1.8275116666666669,
+          "pnl_gain": 1480.9999999999998
+        },
+        {
+          "start_s": 6120,
+          "mean_squared_dpnl_over_exposure": 6.342753333333335,
+          "pnl_gain": 4256.0
+        },
+        {
+          "start_s": 6180,
+          "mean_squared_dpnl_over_exposure": 1.3186566666666668,
+          "pnl_gain": 1344.0000000000002
+        },
+        {
+          "start_s": 6240,
+          "mean_squared_dpnl_over_exposure": 10.290696666666665,
+          "pnl_gain": -69.99999999999979
+        },
+        {
+          "start_s": 6300,
+          "mean_squared_dpnl_over_exposure": 1.1039516666666667,
+          "pnl_gain": 1890.9999999999995
+        },
+        {
+          "start_s": 6360,
+          "mean_squared_dpnl_over_exposure": 1.5823666666666667,
+          "pnl_gain": 1513.9999999999998
+        },
+        {
+          "start_s": 6420,
+          "mean_squared_dpnl_over_exposure": 30.923875000000002,
+          "pnl_gain": 19983.0
+        },
+        {
+          "start_s": 6480,
+          "mean_squared_dpnl_over_exposure": 10.945185,
+          "pnl_gain": 4083.0000000000005
+        },
+        {
+          "start_s": 6540,
+          "mean_squared_dpnl_over_exposure": 4.445568333333333,
+          "pnl_gain": 5143.000000000001
+        },
+        {
+          "start_s": 6600,
+          "mean_squared_dpnl_over_exposure": 6.844696666666667,
+          "pnl_gain": 4128.0
+        },
+        {
+          "start_s": 6660,
+          "mean_squared_dpnl_over_exposure": 13.77368,
+          "pnl_gain": 7102.0
+        },
+        {
+          "start_s": 6720,
+          "mean_squared_dpnl_over_exposure": 37.942829999999994,
+          "pnl_gain": 8435.999999999998
+        },
+        {
+          "start_s": 6780,
+          "mean_squared_dpnl_over_exposure": 16.928763333333332,
+          "pnl_gain": 9172.000000000002
+        },
+        {
+          "start_s": 6840,
+          "mean_squared_dpnl_over_exposure": 23.437655000000003,
+          "pnl_gain": 16620.999999999996
+        },
+        {
+          "start_s": 6900,
+          "mean_squared_dpnl_over_exposure": 9.688064999999998,
+          "pnl_gain": 6051.000000000001
+        },
+        {
+          "start_s": 6960,
+          "mean_squared_dpnl_over_exposure": 1.2435366666666667,
+          "pnl_gain": 1854.0000000000002
+        },
+        {
+          "start_s": 7020,
+          "mean_squared_dpnl_over_exposure": 0.8771000000000002,
+          "pnl_gain": 974.0
+        },
+        {
+          "start_s": 7080,
+          "mean_squared_dpnl_over_exposure": 1.73342,
+          "pnl_gain": 3666.0000000000005
+        },
+        {
+          "start_s": 7140,
+          "mean_squared_dpnl_over_exposure": 7.996378333333334,
+          "pnl_gain": 5695.0
+        },
+        {
+          "start_s": 7200,
+          "mean_squared_dpnl_over_exposure": 9.927578333333333,
+          "pnl_gain": 6927.0
+        },
+        {
+          "start_s": 7260,
+          "mean_squared_dpnl_over_exposure": 1.5789533333333337,
+          "pnl_gain": 1414.0
+        },
+        {
+          "start_s": 7320,
+          "mean_squared_dpnl_over_exposure": 4.925978333333333,
+          "pnl_gain": 3404.9999999999995
+        },
+        {
+          "start_s": 7380,
+          "mean_squared_dpnl_over_exposure": 0.7358316666666668,
+          "pnl_gain": 741.0000000000001
+        },
+        {
+          "start_s": 7440,
+          "mean_squared_dpnl_over_exposure": 0.8010800000000001,
+          "pnl_gain": 1804.0
+        },
+        {
+          "start_s": 7500,
+          "mean_squared_dpnl_over_exposure": 1.3751466666666665,
+          "pnl_gain": 2270.0
+        },
+        {
+          "start_s": 7560,
+          "mean_squared_dpnl_over_exposure": 1.2421849999999999,
+          "pnl_gain": 1217.0000000000002
+        },
+        {
+          "start_s": 7620,
+          "mean_squared_dpnl_over_exposure": 1.5661233333333333,
+          "pnl_gain": 1970.0
+        },
+        {
+          "start_s": 7680,
+          "mean_squared_dpnl_over_exposure": 0.8840716666666668,
+          "pnl_gain": -125.00000000000004
+        },
+        {
+          "start_s": 7740,
+          "mean_squared_dpnl_over_exposure": 1.0366650000000002,
+          "pnl_gain": 1153.0
+        },
+        {
+          "start_s": 7800,
+          "mean_squared_dpnl_over_exposure": 2.666986666666667,
+          "pnl_gain": 1827.9999999999998
+        },
+        {
+          "start_s": 7860,
+          "mean_squared_dpnl_over_exposure": 17.427956666666667,
+          "pnl_gain": 9168.0
+        },
+        {
+          "start_s": 7920,
+          "mean_squared_dpnl_over_exposure": 15.697378333333335,
+          "pnl_gain": 11429.0
+        },
+        {
+          "start_s": 7980,
+          "mean_squared_dpnl_over_exposure": 1.861125,
+          "pnl_gain": 3767.0
+        },
+        {
+          "start_s": 8040,
+          "mean_squared_dpnl_over_exposure": 1.3482683333333334,
+          "pnl_gain": 1339.0
+        },
+        {
+          "start_s": 8100,
+          "mean_squared_dpnl_over_exposure": 14.186546666666667,
+          "pnl_gain": 9818.0
+        },
+        {
+          "start_s": 8160,
+          "mean_squared_dpnl_over_exposure": 1.1658866666666667,
+          "pnl_gain": 988.0000000000001
+        },
+        {
+          "start_s": 8220,
+          "mean_squared_dpnl_over_exposure": 1.0490033333333333,
+          "pnl_gain": 1600.0
+        },
+        {
+          "start_s": 8280,
+          "mean_squared_dpnl_over_exposure": 19.809371666666664,
+          "pnl_gain": 10283.000000000002
+        },
+        {
+          "start_s": 8340,
+          "mean_squared_dpnl_over_exposure": 21.755121666666664,
+          "pnl_gain": 13623.000000000002
+        },
+        {
+          "start_s": 8400,
+          "mean_squared_dpnl_over_exposure": 20.724991666666664,
+          "pnl_gain": 12905.000000000002
+        },
+        {
+          "start_s": 8460,
+          "mean_squared_dpnl_over_exposure": 17.283608333333333,
+          "pnl_gain": 8891.000000000002
+        },
+        {
+          "start_s": 8520,
+          "mean_squared_dpnl_over_exposure": 75.18971166666667,
+          "pnl_gain": 16959.0
+        },
+        {
+          "start_s": 8580,
+          "mean_squared_dpnl_over_exposure": 1.3242716666666665,
+          "pnl_gain": 2146.9999999999995
+        },
+        {
+          "start_s": 8640,
+          "mean_squared_dpnl_over_exposure": 8.78294,
+          "pnl_gain": 3444.0000000000014
+        },
+        {
+          "start_s": 8700,
+          "mean_squared_dpnl_over_exposure": 0.9714516666666666,
+          "pnl_gain": 1210.9999999999998
+        },
+        {
+          "start_s": 8760,
+          "mean_squared_dpnl_over_exposure": 0.7546866666666666,
+          "pnl_gain": 1120.0
+        },
+        {
+          "start_s": 8820,
+          "mean_squared_dpnl_over_exposure": 0.8764199999999999,
+          "pnl_gain": 1662.0
+        },
+        {
+          "start_s": 8880,
+          "mean_squared_dpnl_over_exposure": 27.616403333333334,
+          "pnl_gain": 18156.0
+        },
+        {
+          "start_s": 8940,
+          "mean_squared_dpnl_over_exposure": 89.81806999999999,
+          "pnl_gain": 14104.000000000002
+        },
+        {
+          "start_s": 9000,
+          "mean_squared_dpnl_over_exposure": 0.9034583333333334,
+          "pnl_gain": 843.0
+        },
+        {
+          "start_s": 9060,
+          "mean_squared_dpnl_over_exposure": 8.588371666666667,
+          "pnl_gain": 8312.999999999998
+        },
+        {
+          "start_s": 9120,
+          "mean_squared_dpnl_over_exposure": 20.81105,
+          "pnl_gain": 10638.0
+        },
+        {
+          "start_s": 9180,
+          "mean_squared_dpnl_over_exposure": 1.26466,
+          "pnl_gain": 672.0000000000001
+        },
+        {
+          "start_s": 9240,
+          "mean_squared_dpnl_over_exposure": 94.17473333333332,
+          "pnl_gain": 14863.999999999998
+        },
+        {
+          "start_s": 9300,
+          "mean_squared_dpnl_over_exposure": 4.307220000000001,
+          "pnl_gain": 4356.0
+        },
+        {
+          "start_s": 9360,
+          "mean_squared_dpnl_over_exposure": 1.793575,
+          "pnl_gain": 2185.0
+        },
+        {
+          "start_s": 9420,
+          "mean_squared_dpnl_over_exposure": 0.9215966666666666,
+          "pnl_gain": 1109.9999999999998
+        },
+        {
+          "start_s": 9480,
+          "mean_squared_dpnl_over_exposure": 1.0808233333333335,
+          "pnl_gain": 1386.0
+        },
+        {
+          "start_s": 9540,
+          "mean_squared_dpnl_over_exposure": 32.945541666666664,
+          "pnl_gain": 6322.999999999999
+        },
+        {
+          "start_s": 9600,
+          "mean_squared_dpnl_over_exposure": 1.0566916666666666,
+          "pnl_gain": 1267.0000000000002
+        },
+        {
+          "start_s": 9660,
+          "mean_squared_dpnl_over_exposure": 0.93894,
+          "pnl_gain": 877.9999999999999
+        },
+        {
+          "start_s": 9720,
+          "mean_squared_dpnl_over_exposure": 101.96632000000002,
+          "pnl_gain": -5324.000000000001
+        },
+        {
+          "start_s": 9780,
+          "mean_squared_dpnl_over_exposure": 5.3025899999999995,
+          "pnl_gain": 5702.0
+        },
+        {
+          "start_s": 9840,
+          "mean_squared_dpnl_over_exposure": 20.69397,
+          "pnl_gain": -1445.9999999999998
+        },
+        {
+          "start_s": 9900,
+          "mean_squared_dpnl_over_exposure": 0.8173683333333331,
+          "pnl_gain": 769.0
+        },
+        {
+          "start_s": 9960,
+          "mean_squared_dpnl_over_exposure": 1.0747666666666666,
+          "pnl_gain": 852.0
+        },
+        {
+          "start_s": 10020,
+          "mean_squared_dpnl_over_exposure": 4.908270000000001,
+          "pnl_gain": 518.0000000000001
+        },
+        {
+          "start_s": 10080,
+          "mean_squared_dpnl_over_exposure": 1.0464733333333331,
+          "pnl_gain": 842.0
+        },
+        {
+          "start_s": 10140,
+          "mean_squared_dpnl_over_exposure": 1.0254266666666667,
+          "pnl_gain": 1034.0
+        },
+        {
+          "start_s": 10200,
+          "mean_squared_dpnl_over_exposure": 11.868711666666666,
+          "pnl_gain": -2004.9999999999998
+        },
+        {
+          "start_s": 10260,
+          "mean_squared_dpnl_over_exposure": 0.8392933333333334,
+          "pnl_gain": 616.0000000000001
+        },
+        {
+          "start_s": 10320,
+          "mean_squared_dpnl_over_exposure": 10.79406666666666,
+          "pnl_gain": 2660.0
+        },
+        {
+          "start_s": 10380,
+          "mean_squared_dpnl_over_exposure": 1.0846266666666664,
+          "pnl_gain": 1793.9999999999993
+        },
+        {
+          "start_s": 10440,
+          "mean_squared_dpnl_over_exposure": 1.075435,
+          "pnl_gain": 1223.0
+        },
+        {
+          "start_s": 10500,
+          "mean_squared_dpnl_over_exposure": 0.6500816666666667,
+          "pnl_gain": 1397.0
+        },
+        {
+          "start_s": 10560,
+          "mean_squared_dpnl_over_exposure": 1.948486666666667,
+          "pnl_gain": 837.9999999999999
+        },
+        {
+          "start_s": 10620,
+          "mean_squared_dpnl_over_exposure": 1.0230283333333332,
+          "pnl_gain": 1153.0
+        },
+        {
+          "start_s": 10680,
+          "mean_squared_dpnl_over_exposure": 16.73494833333333,
+          "pnl_gain": 13369.0
+        },
+        {
+          "start_s": 10740,
+          "mean_squared_dpnl_over_exposure": 29.49889333333334,
+          "pnl_gain": 18034.000000000004
+        },
+        {
+          "start_s": 10800,
+          "mean_squared_dpnl_over_exposure": 42.718549999999986,
+          "pnl_gain": 19699.999999999996
+        },
+        {
+          "start_s": 10860,
+          "mean_squared_dpnl_over_exposure": 18.83130166666667,
+          "pnl_gain": 13057.0
+        },
+        {
+          "start_s": 10920,
+          "mean_squared_dpnl_over_exposure": 1.2868950000000003,
+          "pnl_gain": 1231.0
+        },
+        {
+          "start_s": 10980,
+          "mean_squared_dpnl_over_exposure": 357.0274949999999,
+          "pnl_gain": -13624.999999999996
+        },
+        {
+          "start_s": 11040,
+          "mean_squared_dpnl_over_exposure": 0.867385,
+          "pnl_gain": 1734.9999999999998
+        },
+        {
+          "start_s": 11100,
+          "mean_squared_dpnl_over_exposure": 1.1702350000000001,
+          "pnl_gain": 1895.0
+        },
+        {
+          "start_s": 11160,
+          "mean_squared_dpnl_over_exposure": 225.27767666666665,
+          "pnl_gain": -10555.999999999998
+        },
+        {
+          "start_s": 11220,
+          "mean_squared_dpnl_over_exposure": 16.647678333333335,
+          "pnl_gain": 9396.999999999998
+        },
+        {
+          "start_s": 11280,
+          "mean_squared_dpnl_over_exposure": 15.384009999999998,
+          "pnl_gain": 5934.0
+        },
+        {
+          "start_s": 11340,
+          "mean_squared_dpnl_over_exposure": 29.912353333333332,
+          "pnl_gain": 14558.000000000002
+        },
+        {
+          "start_s": 11400,
+          "mean_squared_dpnl_over_exposure": 0.8444416666666666,
+          "pnl_gain": 1289.0
+        },
+        {
+          "start_s": 11460,
+          "mean_squared_dpnl_over_exposure": 12.906561666666668,
+          "pnl_gain": 5577.0
+        },
+        {
+          "start_s": 11520,
+          "mean_squared_dpnl_over_exposure": 44.71619499999999,
+          "pnl_gain": 8086.999999999999
+        },
+        {
+          "start_s": 11580,
+          "mean_squared_dpnl_over_exposure": 7.407373333333334,
+          "pnl_gain": 1992.0000000000002
+        },
+        {
+          "start_s": 11640,
+          "mean_squared_dpnl_over_exposure": 59.34723000000001,
+          "pnl_gain": 12866.0
+        },
+        {
+          "start_s": 11700,
+          "mean_squared_dpnl_over_exposure": 1.0202933333333335,
+          "pnl_gain": 852.0000000000001
+        },
+        {
+          "start_s": 11760,
+          "mean_squared_dpnl_over_exposure": 3.981591666666667,
+          "pnl_gain": 2733.0
+        },
+        {
+          "start_s": 11820,
+          "mean_squared_dpnl_over_exposure": 10.540993333333335,
+          "pnl_gain": 6638.0
+        },
+        {
+          "start_s": 11880,
+          "mean_squared_dpnl_over_exposure": 8.940291666666669,
+          "pnl_gain": 4641.0
+        }
+      ]
+    },
+    {
+      "source": "data/arena/round2/r2_L3_taker_pure_res/pnl.csv",
+      "exposure_assumption": 100.0,
+      "seconds": 11999.979714,
+      "complete_1s_intervals": 11999,
+      "pnl": 804018.0,
+      "rms_dpnl_over_exposure": 4.788998739375885,
+      "abs_dpnl_over_exposure_p99": 12.821000000000023,
+      "abs_proxy_5plus_per_1000s": 99.591632636053,
+      "abs_proxy_20plus_per_1000s": 3.8336528044003666,
+      "blocks_60s": [
+        {
+          "start_s": 0,
+          "mean_squared_dpnl_over_exposure": 9.659944999999999,
+          "pnl_gain": 5993.000000000001
+        },
+        {
+          "start_s": 60,
+          "mean_squared_dpnl_over_exposure": 20.746058333333334,
+          "pnl_gain": 12827.000000000002
+        },
+        {
+          "start_s": 120,
+          "mean_squared_dpnl_over_exposure": 16.827323333333332,
+          "pnl_gain": 9497.999999999998
+        },
+        {
+          "start_s": 180,
+          "mean_squared_dpnl_over_exposure": 31.87431333333333,
+          "pnl_gain": 3316.0000000000005
+        },
+        {
+          "start_s": 240,
+          "mean_squared_dpnl_over_exposure": 21.186075000000002,
+          "pnl_gain": 6473.0
+        },
+        {
+          "start_s": 300,
+          "mean_squared_dpnl_over_exposure": 37.91059833333333,
+          "pnl_gain": 11563.0
+        },
+        {
+          "start_s": 360,
+          "mean_squared_dpnl_over_exposure": 19.728311666666666,
+          "pnl_gain": 6092.999999999999
+        },
+        {
+          "start_s": 420,
+          "mean_squared_dpnl_over_exposure": 2.061578333333333,
+          "pnl_gain": -236.9999999999999
+        },
+        {
+          "start_s": 480,
+          "mean_squared_dpnl_over_exposure": 11.981869999999999,
+          "pnl_gain": 2301.9999999999995
+        },
+        {
+          "start_s": 540,
+          "mean_squared_dpnl_over_exposure": 1.9367899999999998,
+          "pnl_gain": -26.000000000000046
+        },
+        {
+          "start_s": 600,
+          "mean_squared_dpnl_over_exposure": 1.4692783333333332,
+          "pnl_gain": -157.00000000000003
+        },
+        {
+          "start_s": 660,
+          "mean_squared_dpnl_over_exposure": 24.1775,
+          "pnl_gain": -2630.0000000000005
+        },
+        {
+          "start_s": 720,
+          "mean_squared_dpnl_over_exposure": 1.0971516666666665,
+          "pnl_gain": -313.00000000000006
+        },
+        {
+          "start_s": 780,
+          "mean_squared_dpnl_over_exposure": 1.040745,
+          "pnl_gain": 719.0000000000001
+        },
+        {
+          "start_s": 840,
+          "mean_squared_dpnl_over_exposure": 90.21273166666666,
+          "pnl_gain": 6039.0
+        },
+        {
+          "start_s": 900,
+          "mean_squared_dpnl_over_exposure": 5.277885,
+          "pnl_gain": 2556.9999999999995
+        },
+        {
+          "start_s": 960,
+          "mean_squared_dpnl_over_exposure": 12.357615,
+          "pnl_gain": 9447.0
+        },
+        {
+          "start_s": 1020,
+          "mean_squared_dpnl_over_exposure": 0.6525066666666668,
+          "pnl_gain": 566.0
+        },
+        {
+          "start_s": 1080,
+          "mean_squared_dpnl_over_exposure": 24.30374,
+          "pnl_gain": 11898.0
+        },
+        {
+          "start_s": 1140,
+          "mean_squared_dpnl_over_exposure": 6.96482,
+          "pnl_gain": 2647.9999999999995
+        },
+        {
+          "start_s": 1200,
+          "mean_squared_dpnl_over_exposure": 23.220850000000002,
+          "pnl_gain": 7328.0
+        },
+        {
+          "start_s": 1260,
+          "mean_squared_dpnl_over_exposure": 185.38333,
+          "pnl_gain": -9384.0
+        },
+        {
+          "start_s": 1320,
+          "mean_squared_dpnl_over_exposure": 1.983635,
+          "pnl_gain": 1489.0
+        },
+        {
+          "start_s": 1380,
+          "mean_squared_dpnl_over_exposure": 1.5198566666666666,
+          "pnl_gain": 1452.0
+        },
+        {
+          "start_s": 1440,
+          "mean_squared_dpnl_over_exposure": 9.838881666666667,
+          "pnl_gain": 5428.999999999999
+        },
+        {
+          "start_s": 1500,
+          "mean_squared_dpnl_over_exposure": 42.07948499999999,
+          "pnl_gain": 7227.000000000001
+        },
+        {
+          "start_s": 1560,
+          "mean_squared_dpnl_over_exposure": 25.556596666666668,
+          "pnl_gain": 11502.0
+        },
+        {
+          "start_s": 1620,
+          "mean_squared_dpnl_over_exposure": 29.309434999999997,
+          "pnl_gain": 17329.000000000004
+        },
+        {
+          "start_s": 1680,
+          "mean_squared_dpnl_over_exposure": 37.23392833333334,
+          "pnl_gain": 17921.0
+        },
+        {
+          "start_s": 1740,
+          "mean_squared_dpnl_over_exposure": 5.400415,
+          "pnl_gain": 3989.0
+        },
+        {
+          "start_s": 1800,
+          "mean_squared_dpnl_over_exposure": 15.796886666666666,
+          "pnl_gain": 5752.000000000001
+        },
+        {
+          "start_s": 1860,
+          "mean_squared_dpnl_over_exposure": 11.579153333333334,
+          "pnl_gain": 8101.999999999998
+        },
+        {
+          "start_s": 1920,
+          "mean_squared_dpnl_over_exposure": 1.7027533333333333,
+          "pnl_gain": 708.0000000000001
+        },
+        {
+          "start_s": 1980,
+          "mean_squared_dpnl_over_exposure": 1.3673833333333334,
+          "pnl_gain": -88.00000000000009
+        },
+        {
+          "start_s": 2040,
+          "mean_squared_dpnl_over_exposure": 58.21950166666667,
+          "pnl_gain": -5406.999999999998
+        },
+        {
+          "start_s": 2100,
+          "mean_squared_dpnl_over_exposure": 2.1042666666666667,
+          "pnl_gain": 2326.0
+        },
+        {
+          "start_s": 2160,
+          "mean_squared_dpnl_over_exposure": 1.1105633333333336,
+          "pnl_gain": -546.0000000000001
+        },
+        {
+          "start_s": 2220,
+          "mean_squared_dpnl_over_exposure": 69.79674166666665,
+          "pnl_gain": 2951.0000000000005
+        },
+        {
+          "start_s": 2280,
+          "mean_squared_dpnl_over_exposure": 1.312893333333333,
+          "pnl_gain": 59.999999999999964
+        },
+        {
+          "start_s": 2340,
+          "mean_squared_dpnl_over_exposure": 1.0960016666666668,
+          "pnl_gain": 2559.0
+        },
+        {
+          "start_s": 2400,
+          "mean_squared_dpnl_over_exposure": 415.80568666666676,
+          "pnl_gain": -18758.0
+        },
+        {
+          "start_s": 2460,
+          "mean_squared_dpnl_over_exposure": 1.3629216666666666,
+          "pnl_gain": 639.0
+        },
+        {
+          "start_s": 2520,
+          "mean_squared_dpnl_over_exposure": 0.6603049999999999,
+          "pnl_gain": 625.0
+        },
+        {
+          "start_s": 2580,
+          "mean_squared_dpnl_over_exposure": 1.1275583333333334,
+          "pnl_gain": -36.999999999999986
+        },
+        {
+          "start_s": 2640,
+          "mean_squared_dpnl_over_exposure": 9.776258333333333,
+          "pnl_gain": 7741.000000000001
+        },
+        {
+          "start_s": 2700,
+          "mean_squared_dpnl_over_exposure": 47.18086666666667,
+          "pnl_gain": 11188.0
+        },
+        {
+          "start_s": 2760,
+          "mean_squared_dpnl_over_exposure": 4.377013333333333,
+          "pnl_gain": 2924.0
+        },
+        {
+          "start_s": 2820,
+          "mean_squared_dpnl_over_exposure": 20.519603333333333,
+          "pnl_gain": 10838.0
+        },
+        {
+          "start_s": 2880,
+          "mean_squared_dpnl_over_exposure": 97.639115,
+          "pnl_gain": -6821.000000000001
+        },
+        {
+          "start_s": 2940,
+          "mean_squared_dpnl_over_exposure": 1.2646266666666668,
+          "pnl_gain": 1094.0
+        },
+        {
+          "start_s": 3000,
+          "mean_squared_dpnl_over_exposure": 9.01579,
+          "pnl_gain": 4652.0
+        },
+        {
+          "start_s": 3060,
+          "mean_squared_dpnl_over_exposure": 19.527005,
+          "pnl_gain": -2701.0000000000005
+        },
+        {
+          "start_s": 3120,
+          "mean_squared_dpnl_over_exposure": 1.19453,
+          "pnl_gain": 474.0
+        },
+        {
+          "start_s": 3180,
+          "mean_squared_dpnl_over_exposure": 11.956681666666666,
+          "pnl_gain": 7419.0
+        },
+        {
+          "start_s": 3240,
+          "mean_squared_dpnl_over_exposure": 1.1172083333333334,
+          "pnl_gain": 73.0
+        },
+        {
+          "start_s": 3300,
+          "mean_squared_dpnl_over_exposure": 4.148508333333333,
+          "pnl_gain": 2924.999999999999
+        },
+        {
+          "start_s": 3360,
+          "mean_squared_dpnl_over_exposure": 1.1227650000000002,
+          "pnl_gain": 1141.0
+        },
+        {
+          "start_s": 3420,
+          "mean_squared_dpnl_over_exposure": 0.9266433333333334,
+          "pnl_gain": 610.0
+        },
+        {
+          "start_s": 3480,
+          "mean_squared_dpnl_over_exposure": 68.97625500000001,
+          "pnl_gain": 14210.999999999998
+        },
+        {
+          "start_s": 3540,
+          "mean_squared_dpnl_over_exposure": 31.267636666666665,
+          "pnl_gain": 11978.0
+        },
+        {
+          "start_s": 3600,
+          "mean_squared_dpnl_over_exposure": 19.245738333333335,
+          "pnl_gain": 12680.999999999998
+        },
+        {
+          "start_s": 3660,
+          "mean_squared_dpnl_over_exposure": 15.873993333333333,
+          "pnl_gain": 6868.000000000002
+        },
+        {
+          "start_s": 3720,
+          "mean_squared_dpnl_over_exposure": 1.2252250000000002,
+          "pnl_gain": -561.0000000000001
+        },
+        {
+          "start_s": 3780,
+          "mean_squared_dpnl_over_exposure": 1.1679883333333334,
+          "pnl_gain": 1062.9999999999998
+        },
+        {
+          "start_s": 3840,
+          "mean_squared_dpnl_over_exposure": 6.362153333333334,
+          "pnl_gain": -1839.9999999999998
+        },
+        {
+          "start_s": 3900,
+          "mean_squared_dpnl_over_exposure": 3.913943333333333,
+          "pnl_gain": 762.0000000000001
+        },
+        {
+          "start_s": 3960,
+          "mean_squared_dpnl_over_exposure": 1.357298333333333,
+          "pnl_gain": 747.0
+        },
+        {
+          "start_s": 4020,
+          "mean_squared_dpnl_over_exposure": 13.626534999999999,
+          "pnl_gain": -1257.0
+        },
+        {
+          "start_s": 4080,
+          "mean_squared_dpnl_over_exposure": 1.2063383333333335,
+          "pnl_gain": 2121.0
+        },
+        {
+          "start_s": 4140,
+          "mean_squared_dpnl_over_exposure": 4.556258333333334,
+          "pnl_gain": 3537.0000000000005
+        },
+        {
+          "start_s": 4200,
+          "mean_squared_dpnl_over_exposure": 2.32565,
+          "pnl_gain": -622.0000000000001
+        },
+        {
+          "start_s": 4260,
+          "mean_squared_dpnl_over_exposure": 25.692138333333336,
+          "pnl_gain": 5265.0
+        },
+        {
+          "start_s": 4320,
+          "mean_squared_dpnl_over_exposure": 13.147175,
+          "pnl_gain": 7425.0
+        },
+        {
+          "start_s": 4380,
+          "mean_squared_dpnl_over_exposure": 7.890060000000001,
+          "pnl_gain": 6966.0
+        },
+        {
+          "start_s": 4440,
+          "mean_squared_dpnl_over_exposure": 0.9189799999999999,
+          "pnl_gain": 334.00000000000006
+        },
+        {
+          "start_s": 4500,
+          "mean_squared_dpnl_over_exposure": 5.721128333333334,
+          "pnl_gain": 1993.0
+        },
+        {
+          "start_s": 4560,
+          "mean_squared_dpnl_over_exposure": 24.675925000000003,
+          "pnl_gain": 14599.0
+        },
+        {
+          "start_s": 4620,
+          "mean_squared_dpnl_over_exposure": 17.470869999999998,
+          "pnl_gain": 9380.0
+        },
+        {
+          "start_s": 4680,
+          "mean_squared_dpnl_over_exposure": 117.20640333333337,
+          "pnl_gain": 16924.000000000004
+        },
+        {
+          "start_s": 4740,
+          "mean_squared_dpnl_over_exposure": 27.688933333333335,
+          "pnl_gain": 14386.000000000004
+        },
+        {
+          "start_s": 4800,
+          "mean_squared_dpnl_over_exposure": 6.605740000000001,
+          "pnl_gain": 4010.000000000001
+        },
+        {
+          "start_s": 4860,
+          "mean_squared_dpnl_over_exposure": 5.507191666666667,
+          "pnl_gain": 2309.0
+        },
+        {
+          "start_s": 4920,
+          "mean_squared_dpnl_over_exposure": 1.4740666666666666,
+          "pnl_gain": 1861.9999999999998
+        },
+        {
+          "start_s": 4980,
+          "mean_squared_dpnl_over_exposure": 35.96788333333333,
+          "pnl_gain": 13782.0
+        },
+        {
+          "start_s": 5040,
+          "mean_squared_dpnl_over_exposure": 13.287918333333334,
+          "pnl_gain": 3279.0000000000005
+        },
+        {
+          "start_s": 5100,
+          "mean_squared_dpnl_over_exposure": 20.133803333333333,
+          "pnl_gain": 9302.000000000002
+        },
+        {
+          "start_s": 5160,
+          "mean_squared_dpnl_over_exposure": 16.804883333333333,
+          "pnl_gain": 5670.0
+        },
+        {
+          "start_s": 5220,
+          "mean_squared_dpnl_over_exposure": 18.990441666666666,
+          "pnl_gain": -3047.0
+        },
+        {
+          "start_s": 5280,
+          "mean_squared_dpnl_over_exposure": 1.0922483333333333,
+          "pnl_gain": 71.0
+        },
+        {
+          "start_s": 5340,
+          "mean_squared_dpnl_over_exposure": 1.6697349999999997,
+          "pnl_gain": 2637.0
+        },
+        {
+          "start_s": 5400,
+          "mean_squared_dpnl_over_exposure": 14.868161666666667,
+          "pnl_gain": 8072.999999999999
+        },
+        {
+          "start_s": 5460,
+          "mean_squared_dpnl_over_exposure": 16.976721666666666,
+          "pnl_gain": 3893.0
+        },
+        {
+          "start_s": 5520,
+          "mean_squared_dpnl_over_exposure": 17.611403333333335,
+          "pnl_gain": 10833.999999999998
+        },
+        {
+          "start_s": 5580,
+          "mean_squared_dpnl_over_exposure": 4.663425,
+          "pnl_gain": 1706.9999999999998
+        },
+        {
+          "start_s": 5640,
+          "mean_squared_dpnl_over_exposure": 2.5553216666666665,
+          "pnl_gain": -977.0000000000001
+        },
+        {
+          "start_s": 5700,
+          "mean_squared_dpnl_over_exposure": 1.603343333333333,
+          "pnl_gain": 550.0000000000001
+        },
+        {
+          "start_s": 5760,
+          "mean_squared_dpnl_over_exposure": 0.7205083333333332,
+          "pnl_gain": 1011.0000000000001
+        },
+        {
+          "start_s": 5820,
+          "mean_squared_dpnl_over_exposure": 1.0020266666666666,
+          "pnl_gain": 1196.0
+        },
+        {
+          "start_s": 5880,
+          "mean_squared_dpnl_over_exposure": 11.474953333333334,
+          "pnl_gain": 5320.0
+        },
+        {
+          "start_s": 5940,
+          "mean_squared_dpnl_over_exposure": 19.17466333333333,
+          "pnl_gain": 676.0
+        },
+        {
+          "start_s": 6000,
+          "mean_squared_dpnl_over_exposure": 0.8686033333333334,
+          "pnl_gain": 1664.0
+        },
+        {
+          "start_s": 6060,
+          "mean_squared_dpnl_over_exposure": 30.187941666666664,
+          "pnl_gain": 6528.999999999999
+        },
+        {
+          "start_s": 6120,
+          "mean_squared_dpnl_over_exposure": 16.750438333333335,
+          "pnl_gain": 4369.000000000001
+        },
+        {
+          "start_s": 6180,
+          "mean_squared_dpnl_over_exposure": 1.0887933333333335,
+          "pnl_gain": 640.0
+        },
+        {
+          "start_s": 6240,
+          "mean_squared_dpnl_over_exposure": 0.9139599999999999,
+          "pnl_gain": 144.0
+        },
+        {
+          "start_s": 6300,
+          "mean_squared_dpnl_over_exposure": 3.9689083333333333,
+          "pnl_gain": -912.9999999999999
+        },
+        {
+          "start_s": 6360,
+          "mean_squared_dpnl_over_exposure": 91.90800333333337,
+          "pnl_gain": -2383.9999999999995
+        },
+        {
+          "start_s": 6420,
+          "mean_squared_dpnl_over_exposure": 0.936005,
+          "pnl_gain": -675.0
+        },
+        {
+          "start_s": 6480,
+          "mean_squared_dpnl_over_exposure": 1.5917199999999998,
+          "pnl_gain": 3300.0
+        },
+        {
+          "start_s": 6540,
+          "mean_squared_dpnl_over_exposure": 0.9812266666666666,
+          "pnl_gain": 1866.0
+        },
+        {
+          "start_s": 6600,
+          "mean_squared_dpnl_over_exposure": 113.52808,
+          "pnl_gain": 17414.0
+        },
+        {
+          "start_s": 6660,
+          "mean_squared_dpnl_over_exposure": 31.77192833333333,
+          "pnl_gain": 15541.000000000002
+        },
+        {
+          "start_s": 6720,
+          "mean_squared_dpnl_over_exposure": 163.20519000000002,
+          "pnl_gain": 21608.0
+        },
+        {
+          "start_s": 6780,
+          "mean_squared_dpnl_over_exposure": 25.876068333333333,
+          "pnl_gain": 8549.0
+        },
+        {
+          "start_s": 6840,
+          "mean_squared_dpnl_over_exposure": 2.939381666666667,
+          "pnl_gain": 2917.0
+        },
+        {
+          "start_s": 6900,
+          "mean_squared_dpnl_over_exposure": 2.51611,
+          "pnl_gain": 1244.0000000000002
+        },
+        {
+          "start_s": 6960,
+          "mean_squared_dpnl_over_exposure": 1.0763099999999999,
+          "pnl_gain": 1610.0000000000002
+        },
+        {
+          "start_s": 7020,
+          "mean_squared_dpnl_over_exposure": 25.160626666666666,
+          "pnl_gain": 12866.000000000002
+        },
+        {
+          "start_s": 7080,
+          "mean_squared_dpnl_over_exposure": 1.3224383333333334,
+          "pnl_gain": 158.9999999999999
+        },
+        {
+          "start_s": 7140,
+          "mean_squared_dpnl_over_exposure": 90.25950000000002,
+          "pnl_gain": -4506.0
+        },
+        {
+          "start_s": 7200,
+          "mean_squared_dpnl_over_exposure": 1.6711783333333334,
+          "pnl_gain": 734.9999999999998
+        },
+        {
+          "start_s": 7260,
+          "mean_squared_dpnl_over_exposure": 1.0476816666666666,
+          "pnl_gain": -226.99999999999994
+        },
+        {
+          "start_s": 7320,
+          "mean_squared_dpnl_over_exposure": 4.43793,
+          "pnl_gain": 2050.0
+        },
+        {
+          "start_s": 7380,
+          "mean_squared_dpnl_over_exposure": 36.21500666666667,
+          "pnl_gain": -4864.0
+        },
+        {
+          "start_s": 7440,
+          "mean_squared_dpnl_over_exposure": 2.24716,
+          "pnl_gain": 1338.0
+        },
+        {
+          "start_s": 7500,
+          "mean_squared_dpnl_over_exposure": 12.845749999999999,
+          "pnl_gain": 7397.999999999999
+        },
+        {
+          "start_s": 7560,
+          "mean_squared_dpnl_over_exposure": 7.247268333333334,
+          "pnl_gain": 5963.0
+        },
+        {
+          "start_s": 7620,
+          "mean_squared_dpnl_over_exposure": 56.793483333333334,
+          "pnl_gain": 11148.0
+        },
+        {
+          "start_s": 7680,
+          "mean_squared_dpnl_over_exposure": 0.8489983333333335,
+          "pnl_gain": 1069.0
+        },
+        {
+          "start_s": 7740,
+          "mean_squared_dpnl_over_exposure": 1.1622266666666665,
+          "pnl_gain": 1032.0
+        },
+        {
+          "start_s": 7800,
+          "mean_squared_dpnl_over_exposure": 2.8845483333333335,
+          "pnl_gain": -283.0
+        },
+        {
+          "start_s": 7860,
+          "mean_squared_dpnl_over_exposure": 12.536501666666668,
+          "pnl_gain": 7769.0
+        },
+        {
+          "start_s": 7920,
+          "mean_squared_dpnl_over_exposure": 23.56599333333333,
+          "pnl_gain": 12249.999999999998
+        },
+        {
+          "start_s": 7980,
+          "mean_squared_dpnl_over_exposure": 18.147155,
+          "pnl_gain": 12219.000000000002
+        },
+        {
+          "start_s": 8040,
+          "mean_squared_dpnl_over_exposure": 23.301746666666666,
+          "pnl_gain": 6906.000000000002
+        },
+        {
+          "start_s": 8100,
+          "mean_squared_dpnl_over_exposure": 31.68630666666667,
+          "pnl_gain": 14602.000000000002
+        },
+        {
+          "start_s": 8160,
+          "mean_squared_dpnl_over_exposure": 29.071328333333334,
+          "pnl_gain": 13872.999999999998
+        },
+        {
+          "start_s": 8220,
+          "mean_squared_dpnl_over_exposure": 25.117296666666668,
+          "pnl_gain": 10094.0
+        },
+        {
+          "start_s": 8280,
+          "mean_squared_dpnl_over_exposure": 11.060518333333334,
+          "pnl_gain": 6897.0
+        },
+        {
+          "start_s": 8340,
+          "mean_squared_dpnl_over_exposure": 3.8204949999999998,
+          "pnl_gain": -3647.0
+        },
+        {
+          "start_s": 8400,
+          "mean_squared_dpnl_over_exposure": 1.3040066666666665,
+          "pnl_gain": -416.0
+        },
+        {
+          "start_s": 8460,
+          "mean_squared_dpnl_over_exposure": 18.76644666666667,
+          "pnl_gain": 2294.0
+        },
+        {
+          "start_s": 8520,
+          "mean_squared_dpnl_over_exposure": 28.714393333333327,
+          "pnl_gain": 16412.0
+        },
+        {
+          "start_s": 8580,
+          "mean_squared_dpnl_over_exposure": 18.084225,
+          "pnl_gain": 5083.0
+        },
+        {
+          "start_s": 8640,
+          "mean_squared_dpnl_over_exposure": 16.40014833333333,
+          "pnl_gain": 6584.999999999999
+        },
+        {
+          "start_s": 8700,
+          "mean_squared_dpnl_over_exposure": 0.9920333333333334,
+          "pnl_gain": 436.00000000000006
+        },
+        {
+          "start_s": 8760,
+          "mean_squared_dpnl_over_exposure": 46.65636833333333,
+          "pnl_gain": 21285.000000000004
+        },
+        {
+          "start_s": 8820,
+          "mean_squared_dpnl_over_exposure": 23.647039999999997,
+          "pnl_gain": 8974.0
+        },
+        {
+          "start_s": 8880,
+          "mean_squared_dpnl_over_exposure": 1.3234116666666664,
+          "pnl_gain": -83.0
+        },
+        {
+          "start_s": 8940,
+          "mean_squared_dpnl_over_exposure": 0.8275,
+          "pnl_gain": 418.0
+        },
+        {
+          "start_s": 9000,
+          "mean_squared_dpnl_over_exposure": 5.283826666666667,
+          "pnl_gain": 2900.0000000000005
+        },
+        {
+          "start_s": 9060,
+          "mean_squared_dpnl_over_exposure": 1.2785216666666666,
+          "pnl_gain": 1837.0
+        },
+        {
+          "start_s": 9120,
+          "mean_squared_dpnl_over_exposure": 1.4033349999999998,
+          "pnl_gain": 582.9999999999999
+        },
+        {
+          "start_s": 9180,
+          "mean_squared_dpnl_over_exposure": 0.8057366666666667,
+          "pnl_gain": -892.0
+        },
+        {
+          "start_s": 9240,
+          "mean_squared_dpnl_over_exposure": 122.38648666666664,
+          "pnl_gain": -7292.0
+        },
+        {
+          "start_s": 9300,
+          "mean_squared_dpnl_over_exposure": 0.8131883333333333,
+          "pnl_gain": -684.9999999999999
+        },
+        {
+          "start_s": 9360,
+          "mean_squared_dpnl_over_exposure": 10.551508333333333,
+          "pnl_gain": 4133.0
+        },
+        {
+          "start_s": 9420,
+          "mean_squared_dpnl_over_exposure": 8.347081666666666,
+          "pnl_gain": 4673.0
+        },
+        {
+          "start_s": 9480,
+          "mean_squared_dpnl_over_exposure": 75.97306833333333,
+          "pnl_gain": -6524.999999999998
+        },
+        {
+          "start_s": 9540,
+          "mean_squared_dpnl_over_exposure": 0.7743733333333335,
+          "pnl_gain": -178.00000000000003
+        },
+        {
+          "start_s": 9600,
+          "mean_squared_dpnl_over_exposure": 1.343515,
+          "pnl_gain": 723.0
+        },
+        {
+          "start_s": 9660,
+          "mean_squared_dpnl_over_exposure": 6.969438333333333,
+          "pnl_gain": 5475.0
+        },
+        {
+          "start_s": 9720,
+          "mean_squared_dpnl_over_exposure": 92.29769333333334,
+          "pnl_gain": -3546.0
+        },
+        {
+          "start_s": 9780,
+          "mean_squared_dpnl_over_exposure": 0.9535716666666668,
+          "pnl_gain": 327.00000000000006
+        },
+        {
+          "start_s": 9840,
+          "mean_squared_dpnl_over_exposure": 8.226405000000002,
+          "pnl_gain": 3201.0000000000005
+        },
+        {
+          "start_s": 9900,
+          "mean_squared_dpnl_over_exposure": 64.28745833333333,
+          "pnl_gain": -4011.0
+        },
+        {
+          "start_s": 9960,
+          "mean_squared_dpnl_over_exposure": 14.000448333333333,
+          "pnl_gain": 9251.0
+        },
+        {
+          "start_s": 10020,
+          "mean_squared_dpnl_over_exposure": 9.479066666666665,
+          "pnl_gain": 7969.999999999999
+        },
+        {
+          "start_s": 10080,
+          "mean_squared_dpnl_over_exposure": 225.55364,
+          "pnl_gain": -9156.0
+        },
+        {
+          "start_s": 10140,
+          "mean_squared_dpnl_over_exposure": 1.2023816666666667,
+          "pnl_gain": 209.0
+        },
+        {
+          "start_s": 10200,
+          "mean_squared_dpnl_over_exposure": 1.0516566666666667,
+          "pnl_gain": 134.00000000000003
+        },
+        {
+          "start_s": 10260,
+          "mean_squared_dpnl_over_exposure": 0.8796533333333333,
+          "pnl_gain": 2510.0
+        },
+        {
+          "start_s": 10320,
+          "mean_squared_dpnl_over_exposure": 301.5029733333333,
+          "pnl_gain": 18592.0
+        },
+        {
+          "start_s": 10380,
+          "mean_squared_dpnl_over_exposure": 20.17253166666666,
+          "pnl_gain": 11553.000000000002
+        },
+        {
+          "start_s": 10440,
+          "mean_squared_dpnl_over_exposure": 4.028113333333334,
+          "pnl_gain": 1725.9999999999998
+        },
+        {
+          "start_s": 10500,
+          "mean_squared_dpnl_over_exposure": 2.2860850000000004,
+          "pnl_gain": 836.9999999999999
+        },
+        {
+          "start_s": 10560,
+          "mean_squared_dpnl_over_exposure": 18.174946666666663,
+          "pnl_gain": 8298.0
+        },
+        {
+          "start_s": 10620,
+          "mean_squared_dpnl_over_exposure": 35.664215000000006,
+          "pnl_gain": 16623.0
+        },
+        {
+          "start_s": 10680,
+          "mean_squared_dpnl_over_exposure": 2.535653333333333,
+          "pnl_gain": 3790.0000000000005
+        },
+        {
+          "start_s": 10740,
+          "mean_squared_dpnl_over_exposure": 1.79273,
+          "pnl_gain": -1116.0
+        },
+        {
+          "start_s": 10800,
+          "mean_squared_dpnl_over_exposure": 117.24507833333331,
+          "pnl_gain": 16855.0
+        },
+        {
+          "start_s": 10860,
+          "mean_squared_dpnl_over_exposure": 17.043688333333332,
+          "pnl_gain": 7003.0
+        },
+        {
+          "start_s": 10920,
+          "mean_squared_dpnl_over_exposure": 22.928215000000005,
+          "pnl_gain": 6839.0
+        },
+        {
+          "start_s": 10980,
+          "mean_squared_dpnl_over_exposure": 22.088581666666666,
+          "pnl_gain": 9423.0
+        },
+        {
+          "start_s": 11040,
+          "mean_squared_dpnl_over_exposure": 39.25867166666667,
+          "pnl_gain": 10065.0
+        },
+        {
+          "start_s": 11100,
+          "mean_squared_dpnl_over_exposure": 1.1761133333333333,
+          "pnl_gain": 1304.0
+        },
+        {
+          "start_s": 11160,
+          "mean_squared_dpnl_over_exposure": 1.4634399999999999,
+          "pnl_gain": -418.0
+        },
+        {
+          "start_s": 11220,
+          "mean_squared_dpnl_over_exposure": 3.2114066666666665,
+          "pnl_gain": -181.99999999999994
+        },
+        {
+          "start_s": 11280,
+          "mean_squared_dpnl_over_exposure": 20.537551666666666,
+          "pnl_gain": 8661.0
+        },
+        {
+          "start_s": 11340,
+          "mean_squared_dpnl_over_exposure": 10.366991666666667,
+          "pnl_gain": 7779.000000000001
+        },
+        {
+          "start_s": 11400,
+          "mean_squared_dpnl_over_exposure": 1.6740816666666665,
+          "pnl_gain": 1013.0000000000001
+        },
+        {
+          "start_s": 11460,
+          "mean_squared_dpnl_over_exposure": 10.831953333333335,
+          "pnl_gain": 7417.999999999999
+        },
+        {
+          "start_s": 11520,
+          "mean_squared_dpnl_over_exposure": 9.061006666666666,
+          "pnl_gain": 3900.0
+        },
+        {
+          "start_s": 11580,
+          "mean_squared_dpnl_over_exposure": 1.1493516666666668,
+          "pnl_gain": -142.99999999999997
+        },
+        {
+          "start_s": 11640,
+          "mean_squared_dpnl_over_exposure": 47.70348333333333,
+          "pnl_gain": -4550.000000000001
+        },
+        {
+          "start_s": 11700,
+          "mean_squared_dpnl_over_exposure": 1.4450566666666667,
+          "pnl_gain": -270.0
+        },
+        {
+          "start_s": 11760,
+          "mean_squared_dpnl_over_exposure": 0.7872883333333334,
+          "pnl_gain": 131.0
+        },
+        {
+          "start_s": 11820,
+          "mean_squared_dpnl_over_exposure": 1.28452,
+          "pnl_gain": 1428.0
+        },
+        {
+          "start_s": 11880,
+          "mean_squared_dpnl_over_exposure": 5.33918,
+          "pnl_gain": 2710.0
+        }
+      ]
+    }
+  ]
+}

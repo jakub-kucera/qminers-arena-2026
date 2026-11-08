@@ -1,0 +1,1014 @@
+{
+  "source": "/Users/jakubkucera/Documents/qminers_arena/data/arena/gen/r3b/seed203.csv",
+  "sha256": "cbf59215893e07bc64be9e631404a960e492d62653e319a79a1c222df08b110c",
+  "duration_s": 600.0,
+  "f_count": 5573,
+  "inferred_injected": 10,
+  "observable": {
+    "method": "observable Huber F-anchor increment fit; delta=1 tick; conditional 300s cluster CIs",
+    "size": "requested",
+    "split_s": 450.0,
+    "coefficients": [
+      0.05177428570827217,
+      0.009286184416376738,
+      0.045483320139215876,
+      0.07152005935524694
+    ],
+    "impact_law": "sqrt",
+    "impact_coefficient_units": "ticks per sqrt(lot)",
+    "coefficient_names": [
+      "permanent_c",
+      "transient_b",
+      "injected_c",
+      "drift_ticks_per_s"
+    ],
+    "active_parameters": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "conditional_ci95": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "conditional_ci_blocks_300s": 2,
+    "conditional_ci_qualification": "Conditions on selected tau; suppressed below6 training blocks. Synthetic202/203 permanent-c intervals miss truth; not calibrated joint uncertainty. Inactive columns are unidentified.",
+    "immediate_c": 0.06106047012464891,
+    "delay": -0.17935900591078652,
+    "tau_s": 5.451619112028814,
+    "tau_search_boundary": false,
+    "train_huber_loss": 0.09610888487719564,
+    "train": {
+      "n": 4142,
+      "mse": 0.21108565787785508,
+      "mae": 0.37967902143636706,
+      "bias": -0.0034084767974918743,
+      "zero_forecast_mse": 0.7957508450024143
+    },
+    "holdout": {
+      "n": 1429,
+      "mse": 0.198436675019648,
+      "mae": 0.3725752368263117,
+      "bias": -0.004664953502362621,
+      "zero_forecast_mse": 0.7074877536738978
+    },
+    "tau_profile": [
+      {
+        "tau_s": 0.1,
+        "train_loss": 0.09619944670802849,
+        "coefficients": [
+          0.06060039562124087,
+          0.0006188192971340426,
+          0.04525698036887972,
+          0.10477989699781046
+        ]
+      },
+      {
+        "tau_s": 0.14677992676220694,
+        "train_loss": 0.09619911028976956,
+        "coefficients": [
+          0.06052974620880154,
+          0.0006353148440636623,
+          0.04526032247581505,
+          0.10448506447846734
+        ]
+      },
+      {
+        "tau_s": 0.21544346900318834,
+        "train_loss": 0.096195025404328,
+        "coefficients": [
+          0.06034502650264354,
+          0.0008247058784686567,
+          0.04527557671459662,
+          0.10373299250514208
+        ]
+      },
+      {
+        "tau_s": 0.31622776601683794,
+        "train_loss": 0.0961864431528307,
+        "coefficients": [
+          0.060009006314888896,
+          0.0011841936699357831,
+          0.045305324798161906,
+          0.10246423073699931
+        ]
+      },
+      {
+        "tau_s": 0.46415888336127786,
+        "train_loss": 0.09617420239605463,
+        "coefficients": [
+          0.05951340508574361,
+          0.0016933315529467944,
+          0.04534971396344359,
+          0.10074325113343037
+        ]
+      },
+      {
+        "tau_s": 0.6812920690579611,
+        "train_loss": 0.09615976440988704,
+        "coefficients": [
+          0.05884990033679216,
+          0.0023540610974335046,
+          0.045407688144170504,
+          0.09852770064701834
+        ]
+      },
+      {
+        "tau_s": 1.0,
+        "train_loss": 0.09614470138337529,
+        "coefficients": [
+          0.058011875331721675,
+          0.0031755172465040295,
+          0.04547109991118739,
+          0.09565137766469209
+        ]
+      },
+      {
+        "tau_s": 1.467799267622069,
+        "train_loss": 0.09613134816906523,
+        "coefficients": [
+          0.05700233273153426,
+          0.0041584193843732355,
+          0.04552135766567612,
+          0.09194648497740868
+        ]
+      },
+      {
+        "tau_s": 2.1544346900318834,
+        "train_loss": 0.09612097773928191,
+        "coefficients": [
+          0.055787590235939516,
+          0.0053423987920881415,
+          0.04554319822161585,
+          0.08721666746854576
+        ]
+      },
+      {
+        "tau_s": 3.1622776601683795,
+        "train_loss": 0.09611335406043171,
+        "coefficients": [
+          0.05430168010019474,
+          0.006798422650789967,
+          0.04553496359628502,
+          0.08130504795687626
+        ]
+      },
+      {
+        "tau_s": 4.6415888336127775,
+        "train_loss": 0.09610926775555953,
+        "coefficients": [
+          0.05255777146727041,
+          0.0085141380759997,
+          0.04550227111690617,
+          0.07448351975659208
+        ]
+      },
+      {
+        "tau_s": 6.812920690579611,
+        "train_loss": 0.09610951459234506,
+        "coefficients": [
+          0.05065272688715662,
+          0.010392413798609295,
+          0.045454014943186655,
+          0.06744180357186752
+        ]
+      },
+      {
+        "tau_s": 10.0,
+        "train_loss": 0.09611247321985918,
+        "coefficients": [
+          0.04860528105272172,
+          0.012415873231127722,
+          0.04540061010019827,
+          0.060632123086640885
+        ]
+      },
+      {
+        "tau_s": 14.67799267622069,
+        "train_loss": 0.09611580365935643,
+        "coefficients": [
+          0.046254003333461045,
+          0.01474758820773079,
+          0.04534987195337918,
+          0.05380555184153617
+        ]
+      },
+      {
+        "tau_s": 21.54434690031882,
+        "train_loss": 0.09611827062487598,
+        "coefficients": [
+          0.043224684568019034,
+          0.017762261691645527,
+          0.04530626938937394,
+          0.045830323265334406
+        ]
+      },
+      {
+        "tau_s": 31.622776601683793,
+        "train_loss": 0.09612076733497274,
+        "coefficients": [
+          0.03907072108658014,
+          0.02190524995028063,
+          0.04527174925120936,
+          0.035251443856552274
+        ]
+      },
+      {
+        "tau_s": 46.41588833612777,
+        "train_loss": 0.09612671651634858,
+        "coefficients": [
+          0.033686443740692636,
+          0.02727950316478197,
+          0.04524667069057996,
+          0.021858211049881355
+        ]
+      },
+      {
+        "tau_s": 68.12920690579608,
+        "train_loss": 0.09613863754673092,
+        "coefficients": [
+          0.027496900223027237,
+          0.03345741327997791,
+          0.04522840897607239,
+          0.007610667805179757
+        ]
+      },
+      {
+        "tau_s": 100.0,
+        "train_loss": 0.0961549064104939,
+        "coefficients": [
+          0.02137536789634658,
+          0.03956477722276603,
+          0.04521235644822028,
+          -0.0032595085649643144
+        ]
+      },
+      {
+        "tau_s": 5.451619112028814,
+        "train_loss": 0.09610888487719564,
+        "coefficients": [
+          0.05177428570827217,
+          0.009286184416376738,
+          0.045483320139215876,
+          0.07152005935524694
+        ]
+      }
+    ],
+    "condition_number": 122.95873484751516,
+    "design_rank": 4,
+    "profile_sensitivity": {
+      "relative_loss_tolerance": 0.001,
+      "permanent_c_range": [
+        0.02137536789634658,
+        0.06060039562124087
+      ],
+      "tau_range_s": [
+        0.1,
+        100.0
+      ],
+      "qualification": "Descriptive grid profile within0.1% of minimum Huber loss; NOT a confidence interval."
+    },
+    "limitations": [
+      "F limit offset assumed 1; not established for real tapes.",
+      "Tau and permanent/transient split can be weakly identified; CIs condition on chosen tau.",
+      "Injected classification uses complete same-time group and generator structure.",
+      "Increment endpoint is next F anchor, not future mid or trading PnL."
+    ]
+  },
+  "minutes_requested": 10.0,
+  "observable_noise": {
+    "horizons": {
+      "0.1": {
+        "prefix": {
+          "n": 5998,
+          "exposure_s": 599.8000000000001,
+          "drift_ticks_per_s": 0.03798016105245915,
+          "total_variance_per_s": 1.2942317496326228,
+          "rounding_corrected_variance_per_s": 0.27833756268141685,
+          "tail3_per_s": 0.0033344448149383124,
+          "tail5_per_s": 0.0033344448149383124,
+          "abs_increment_quantiles": [
+            0.1333423163077896,
+            0.6135307664697394,
+            0.8490127343088527,
+            0.9537139061297657
+          ],
+          "blocks_300s": 2,
+          "block_ci95": null
+        },
+        "train": {
+          "n": 4497,
+          "exposure_s": 449.70000000000005,
+          "drift_ticks_per_s": 0.04013591410821799,
+          "total_variance_per_s": 1.2945307712074419,
+          "rounding_corrected_variance_per_s": 0.2805214316477356,
+          "tail3_per_s": 0.0022237046920169,
+          "tail5_per_s": 0.0022237046920169,
+          "abs_increment_quantiles": [
+            0.1323814885054162,
+            0.6142423905454052,
+            0.8402791465295013,
+            0.9374596117406029
+          ],
+          "blocks_300s": 2,
+          "block_ci95": null
+        },
+        "holdout": {
+          "n": 1500,
+          "exposure_s": 150.0,
+          "drift_ticks_per_s": 0.03154253349866243,
+          "total_variance_per_s": 1.2941924703947931,
+          "rounding_corrected_variance_per_s": 0.271970248172571,
+          "tail3_per_s": 0.006666666666666667,
+          "tail5_per_s": 0.006666666666666667,
+          "abs_increment_quantiles": [
+            0.139393422289686,
+            0.6093958047278648,
+            0.8777447582929744,
+            0.9732280153272322
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "anchor_age_quantiles_s": [
+          0.0741379999999996,
+          0.24662340000000996,
+          0.48034511999999197
+        ]
+      },
+      "0.5": {
+        "prefix": {
+          "n": 1199,
+          "exposure_s": 599.5,
+          "drift_ticks_per_s": 0.03704559057739188,
+          "total_variance_per_s": 0.5091674233182185,
+          "rounding_corrected_variance_per_s": 0.17944821286506313,
+          "tail3_per_s": 0.003336113427856547,
+          "tail5_per_s": 0.003336113427856547,
+          "abs_increment_quantiles": [
+            0.2943910799203877,
+            0.6932987095111459,
+            0.9198122581050119,
+            4.30098552817956
+          ],
+          "blocks_300s": 2,
+          "block_ci95": null
+        },
+        "train": {
+          "n": 898,
+          "exposure_s": 449.0,
+          "drift_ticks_per_s": 0.03831426911286312,
+          "total_variance_per_s": 0.5037524306510464,
+          "rounding_corrected_variance_per_s": 0.1737598545560204,
+          "tail3_per_s": 0.0022271714922048997,
+          "tail5_per_s": 0.0022271714922048997,
+          "abs_increment_quantiles": [
+            0.2936412447897965,
+            0.6887099304325602,
+            0.9155717430649017,
+            1.810328657620126
+          ],
+          "blocks_300s": 2,
+          "block_ci95": null
+        },
+        "holdout": {
+          "n": 300,
+          "exposure_s": 150.0,
+          "drift_ticks_per_s": 0.03154253349866243,
+          "total_variance_per_s": 0.5266196763803616,
+          "rounding_corrected_variance_per_s": 0.19773078749147266,
+          "tail3_per_s": 0.006666666666666667,
+          "tail5_per_s": 0.006666666666666667,
+          "abs_increment_quantiles": [
+            0.30235988001095393,
+            0.714240185766721,
+            0.9200058337550215,
+            3.8794033747154035
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "anchor_age_quantiles_s": [
+          0.07679000000000258,
+          0.244456900000003,
+          0.5010297399999615
+        ]
+      },
+      "1.0": {
+        "prefix": {
+          "n": 599,
+          "exposure_s": 599.0,
+          "drift_ticks_per_s": 0.03675993015791218,
+          "total_variance_per_s": 0.34742886301559817,
+          "rounding_corrected_variance_per_s": 0.1807621963489315,
+          "tail3_per_s": 0.00333889816360601,
+          "tail5_per_s": 0.001669449081803005,
+          "abs_increment_quantiles": [
+            0.31098809609466116,
+            0.6870426274617787,
+            0.9557435317011549,
+            6.510729641165794
+          ],
+          "blocks_300s": 2,
+          "block_ci95": null
+        },
+        "train": {
+          "n": 448,
+          "exposure_s": 448.0,
+          "drift_ticks_per_s": 0.038113593859037564,
+          "total_variance_per_s": 0.35457898846807606,
+          "rounding_corrected_variance_per_s": 0.1879123218014094,
+          "tail3_per_s": 0.002232142857142857,
+          "tail5_per_s": 0.002232142857142857,
+          "abs_increment_quantiles": [
+            0.31225258501490316,
+            0.6834804490823444,
+            0.9382604356409863,
+            5.456253834920119
+          ],
+          "blocks_300s": 2,
+          "block_ci95": null
+        },
+        "holdout": {
+          "n": 150,
+          "exposure_s": 150.0,
+          "drift_ticks_per_s": 0.03154253349866243,
+          "total_variance_per_s": 0.3281504185997347,
+          "rounding_corrected_variance_per_s": 0.16148375193306805,
+          "tail3_per_s": 0.006666666666666667,
+          "tail5_per_s": 0.0,
+          "abs_increment_quantiles": [
+            0.30983136037684744,
+            0.6950231504853945,
+            1.002687557915323,
+            4.251867861639341
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "anchor_age_quantiles_s": [
+          0.07647900000000618,
+          0.24210769999999973,
+          0.5805152199999859
+        ]
+      },
+      "5.0": {
+        "prefix": {
+          "n": 119,
+          "exposure_s": 595.0,
+          "drift_ticks_per_s": 0.037505382582427395,
+          "total_variance_per_s": 0.2413811498964136,
+          "rounding_corrected_variance_per_s": 0.20804781656308027,
+          "tail3_per_s": 0.0033613445378151263,
+          "tail5_per_s": 0.0033613445378151263,
+          "abs_increment_quantiles": [
+            0.35258378465550777,
+            0.8568932625632443,
+            4.7393109230098425,
+            8.94245805319227
+          ],
+          "blocks_300s": 2,
+          "block_ci95": null
+        },
+        "train": {
+          "n": 88,
+          "exposure_s": 440.0,
+          "drift_ticks_per_s": 0.03923472056567748,
+          "total_variance_per_s": 0.240381962672975,
+          "rounding_corrected_variance_per_s": 0.2070486293396417,
+          "tail3_per_s": 0.0022727272727272726,
+          "tail5_per_s": 0.0022727272727272726,
+          "abs_increment_quantiles": [
+            0.36953334987538256,
+            0.7868155170555837,
+            2.3544598902594585,
+            8.698876128388314
+          ],
+          "blocks_300s": 2,
+          "block_ci95": null
+        },
+        "holdout": {
+          "n": 30,
+          "exposure_s": 150.0,
+          "drift_ticks_per_s": 0.03154253349866243,
+          "total_variance_per_s": 0.2520176490919146,
+          "rounding_corrected_variance_per_s": 0.21868431575858127,
+          "tail3_per_s": 0.006666666666666667,
+          "tail5_per_s": 0.006666666666666667,
+          "abs_increment_quantiles": [
+            0.3495667102142761,
+            0.9581073526660476,
+            4.219111797235804,
+            5.366545628498139
+          ],
+          "blocks_300s": 1,
+          "block_ci95": null
+        },
+        "anchor_age_quantiles_s": [
+          0.07518500000000472,
+          0.2151653000000238,
+          0.40346611000000515
+        ]
+      }
+    },
+    "impact_law": "sqrt",
+    "size": "requested",
+    "qualifications": [
+      "Previous-F anchor is causal and may be stale; no future anchor interpolation.",
+      "Effective variance includes diffusion, jumps, anchor error and impact-model misspecification.",
+      "1/6 rounding variance per changed anchor pair assumes independent uniform errors; heuristic only.",
+      "Tail exceedances are observable rates, NOT jump intensities or inferred regime labels.",
+      "300s block bootstrap is descriptive; fewer than6 blocks gives no interval."
+    ]
+  },
+  "truth_audit": {
+    "method": "ORACLE state-labelled latent differences minus logged jumps; calm first75 fit",
+    "expected": {
+      "c": 0.047,
+      "b": 0.0123281,
+      "delay": -0.2623,
+      "tau_s": 6.8,
+      "injected_c": 0.047,
+      "diffusion_sd_on": 4.0
+    },
+    "coefficients": [
+      0.046996386110692276,
+      0.012332032181134805,
+      0.047010563172256395,
+      -4.166648942725791e-05
+    ],
+    "conditional_ci95": [
+      null,
+      null,
+      null,
+      null
+    ],
+    "tau_s": 6.80178551051133,
+    "delay": -0.2624038399907756,
+    "train_mse": 3.177721086417083e-08,
+    "holdout": {
+      "n": 14998,
+      "mse": 1.4387367425263704e-09,
+      "mae": 2.8860299432156423e-05,
+      "bias": 4.1821264863298265e-07,
+      "zero_forecast_mse": 0.04937917253233556
+    },
+    "tau_profile": [
+      {
+        "tau_s": 0.1,
+        "train_loss": 1.6700124768351906e-06,
+        "coefficients": [
+          0.05900777385123734,
+          0.0003257696620029058,
+          0.047054113641549024,
+          0.04660536582493438
+        ]
+      },
+      {
+        "tau_s": 0.14677992676220694,
+        "train_loss": 1.625143581637271e-06,
+        "coefficients": [
+          0.05886185417929833,
+          0.00047149519446815853,
+          0.04705260278522439,
+          0.04597934180103994
+        ]
+      },
+      {
+        "tau_s": 0.21544346900318834,
+        "train_loss": 1.5613541272030797e-06,
+        "coefficients": [
+          0.05864852168207931,
+          0.0006845280310908802,
+          0.04704963826158408,
+          0.0450765305908944
+        ]
+      },
+      {
+        "tau_s": 0.31622776601683794,
+        "train_loss": 1.4723086898939526e-06,
+        "coefficients": [
+          0.05833821542948491,
+          0.0009944110622757752,
+          0.04704462914857153,
+          0.043778926899144324
+        ]
+      },
+      {
+        "tau_s": 0.46415888336127786,
+        "train_loss": 1.3508892708552431e-06,
+        "coefficients": [
+          0.05789167168393225,
+          0.0014404349712407684,
+          0.04703707719305817,
+          0.04193849444560131
+        ]
+      },
+      {
+        "tau_s": 0.6812920690579611,
+        "train_loss": 1.1902152275696086e-06,
+        "coefficients": [
+          0.057260444528151724,
+          0.0020711171215068505,
+          0.047026660246685954,
+          0.03937681803405169
+        ]
+      },
+      {
+        "tau_s": 1.0,
+        "train_loss": 9.870722713829774e-07,
+        "coefficients": [
+          0.0563888772209943,
+          0.0029421633293348014,
+          0.047014327304996564,
+          0.035883048716515195
+        ]
+      },
+      {
+        "tau_s": 1.467799267622069,
+        "train_loss": 7.479369872828962e-07,
+        "coefficients": [
+          0.055213844128262635,
+          0.004116662679452094,
+          0.047003009037690745,
+          0.031215759009144715
+        ]
+      },
+      {
+        "tau_s": 2.1544346900318834,
+        "train_loss": 4.938594045239094e-07,
+        "coefficients": [
+          0.05367089749640678,
+          0.005659008834098527,
+          0.04699620075473156,
+          0.025147117023554606
+        ]
+      },
+      {
+        "tau_s": 3.1622776601683795,
+        "train_loss": 2.605158215350685e-07,
+        "coefficients": [
+          0.051729392966705444,
+          0.0075998939186275975,
+          0.04699574006739443,
+          0.01761380550565778
+        ]
+      },
+      {
+        "tau_s": 4.6415888336127775,
+        "train_loss": 9.286952133411721e-08,
+        "coefficients": [
+          0.04944648129791902,
+          0.009882287746040457,
+          0.047001157256897845,
+          0.008934021763546775
+        ]
+      },
+      {
+        "tau_s": 6.812920690579611,
+        "train_loss": 3.177842703008043e-08,
+        "coefficients": [
+          0.046985824427214884,
+          0.012342592686564844,
+          0.04701060898416995,
+          -7.92293485860417e-05
+        ]
+      },
+      {
+        "tau_s": 10.0,
+        "train_loss": 9.32242779171947e-08,
+        "coefficients": [
+          0.044553671329111144,
+          0.014774515482781053,
+          0.0470219749316794,
+          -0.008327197856312031
+        ]
+      },
+      {
+        "tau_s": 14.67799267622069,
+        "train_loss": 2.5645629251018e-07,
+        "coefficients": [
+          0.042247680792144776,
+          0.017080291910588116,
+          0.047033307782341015,
+          -0.01509017319426036
+        ]
+      },
+      {
+        "tau_s": 21.54434690031882,
+        "train_loss": 4.775655556076732e-07,
+        "coefficients": [
+          0.0399268088045447,
+          0.019400875185093407,
+          0.047043051707998856,
+          -0.020708366678483404
+        ]
+      },
+      {
+        "tau_s": 31.622776601683793,
+        "train_loss": 7.160463968726019e-07,
+        "coefficients": [
+          0.03728265001517639,
+          0.022044655684970296,
+          0.04705031568894167,
+          -0.026371908167439173
+        ]
+      },
+      {
+        "tau_s": 46.41588833612777,
+        "train_loss": 9.456648202734701e-07,
+        "coefficients": [
+          0.03404379512700006,
+          0.025283105063575194,
+          0.04705499650761988,
+          -0.033089287861734616
+        ]
+      },
+      {
+        "tau_s": 68.12920690579608,
+        "train_loss": 1.1505051943197232e-06,
+        "coefficients": [
+          0.030060505319337648,
+          0.029266038423606942,
+          0.04705794374601916,
+          -0.04088696365275599
+        ]
+      },
+      {
+        "tau_s": 100.0,
+        "train_loss": 1.323316827344004e-06,
+        "coefficients": [
+          0.02546192449608468,
+          0.033864364981889654,
+          0.047060314061161714,
+          -0.047951524027630525
+        ]
+      },
+      {
+        "tau_s": 6.80178551051133,
+        "train_loss": 3.177721086417083e-08,
+        "coefficients": [
+          0.046996386110692276,
+          0.012332032181134805,
+          0.047010563172256395,
+          -4.166648942725791e-05
+        ]
+      }
+    ],
+    "diffusion": {
+      "0": {
+        "n": 52384,
+        "exposure_s": 599.749276,
+        "residual_drift": 3.496852634667462e-05,
+        "diffusion_sd": 0.0015553627238347892,
+        "nearest_neighbor_filter_rate": 1.2095766013473874e-06,
+        "effective_df": 42582.341978908946,
+        "diffusion_sd_ci95": [
+          0.001544986927978456,
+          0.001565879803060836
+        ],
+        "qualification": "Moment-matched Gaussian conditional CI accounts for unequal dt; state boundary bins removed."
+      },
+      "1": {
+        "n": 0,
+        "exposure_s": 0.0,
+        "status": "state absent from prefix"
+      }
+    },
+    "regimes": {
+      "0": {
+        "jump_intervals": 3,
+        "exposure_s": 600.0,
+        "rate": 0.005,
+        "rate_ci95": [
+          0.001031120204826002,
+          0.014612121782903872
+        ],
+        "exits": 0,
+        "dwell_mean_s": null,
+        "dwell_ci95_s": [
+          162.65101840909009,
+          null
+        ],
+        "state_exposure_s": 600.0
+      },
+      "1": {
+        "jump_intervals": 0,
+        "exposure_s": 0.0,
+        "status": "state absent from prefix"
+      }
+    },
+    "jump_law": {
+      "n": 3,
+      "status": "too few jumps"
+    },
+    "anchors": {
+      "ordinary": {
+        "n": 5561,
+        "rmse": 0.28805159480838033,
+        "bias": -0.0033777716718813265,
+        "interval_coverage": 1.0,
+        "abs_error_quantiles": [
+          0.2515665387491026,
+          0.47290202957447036,
+          0.4951502563992108,
+          0.5
+        ],
+        "previous_grid_age_s": [
+          0.0050160000000119,
+          0.009896000000009054
+        ]
+      },
+      "injected": {
+        "n": 10,
+        "rmse": 0.30038607329900174,
+        "bias": 0.09541128084456432,
+        "interval_coverage": 1.0,
+        "abs_error_quantiles": [
+          0.26333779882224917,
+          0.44933390225805847,
+          0.4738472308611927,
+          0.4799755630119762
+        ],
+        "previous_grid_age_s": [
+          0.004923999999988382,
+          0.009476349999985131
+        ]
+      },
+      "qualification": "Uses configured impact for calm/no-jump pre-event reconstruction only; no exact on-state pre-F truth is logged."
+    },
+    "dropped_boundary_intervals": 22,
+    "qualifications": [
+      "10ms logger reflects last base tick; decay stops at that tick.",
+      "Diffusion/jump/dwell estimates use all truth within the selected prefix for audit, not a public estimator.",
+      "Missing un-emitted base events and rounded timestamp ties can affect alignment."
+    ],
+    "observable_noise_validation": {
+      "horizons": {
+        "0.1": {
+          "truth_total": {
+            "n": 6000,
+            "exposure_s": 600.0,
+            "drift_ticks_per_s": 0.023984801880051237,
+            "total_variance_per_s": 0.272312385736182,
+            "rounding_corrected_variance_per_s": 0.272312385736182,
+            "tail3_per_s": 0.0033333333333333335,
+            "tail5_per_s": 0.0016666666666666668,
+            "abs_increment_quantiles": [
+              3.0139295631670393e-05,
+              7.195132220658708e-05,
+              0.00024728871616389454,
+              0.0006794899163796852
+            ],
+            "blocks_300s": 2,
+            "block_ci95": null
+          },
+          "truth_without_logged_jumps": {
+            "n": 6000,
+            "exposure_s": 600.0,
+            "drift_ticks_per_s": -3.145328264508862e-08,
+            "total_variance_per_s": 2.2968254375839365e-06,
+            "rounding_corrected_variance_per_s": 2.2968254375839365e-06,
+            "tail3_per_s": 0.0,
+            "tail5_per_s": 0.0,
+            "abs_increment_quantiles": [
+              3.0126609090075362e-05,
+              7.173584926931658e-05,
+              0.0002402973629796184,
+              0.0004976231175442189
+            ],
+            "blocks_300s": 2,
+            "block_ci95": null
+          },
+          "observed_corrected_variance_ratio": 1.0221259746557105,
+          "observed_drift_error": 0.01399535917240791
+        },
+        "0.5": {
+          "truth_total": {
+            "n": 1200,
+            "exposure_s": 600.0,
+            "drift_ticks_per_s": 0.023984801880051237,
+            "total_variance_per_s": 0.19383435738299318,
+            "rounding_corrected_variance_per_s": 0.19383435738299318,
+            "tail3_per_s": 0.0033333333333333335,
+            "tail5_per_s": 0.0016666666666666668,
+            "abs_increment_quantiles": [
+              2.9927674404461868e-05,
+              7.437541080435046e-05,
+              0.0013263278828526378,
+              3.7345939899207687
+            ],
+            "blocks_300s": 2,
+            "block_ci95": null
+          },
+          "truth_without_logged_jumps": {
+            "n": 1200,
+            "exposure_s": 600.0,
+            "drift_ticks_per_s": -3.145328264508862e-08,
+            "total_variance_per_s": 2.2142072239873393e-06,
+            "rounding_corrected_variance_per_s": 2.2142072239873393e-06,
+            "tail3_per_s": 0.0,
+            "tail5_per_s": 0.0,
+            "abs_increment_quantiles": [
+              2.9712611649301834e-05,
+              7.432202964992029e-05,
+              0.001135645781814673,
+              0.0024537956473140955
+            ],
+            "blocks_300s": 2,
+            "block_ci95": null
+          },
+          "observed_corrected_variance_ratio": 0.9257812458422695,
+          "observed_drift_error": 0.013060788697340644
+        },
+        "1.0": {
+          "truth_total": {
+            "n": 600,
+            "exposure_s": 600.0,
+            "drift_ticks_per_s": 0.023984801880051237,
+            "total_variance_per_s": 0.19354632190592333,
+            "rounding_corrected_variance_per_s": 0.19354632190592333,
+            "tail3_per_s": 0.0033333333333333335,
+            "tail5_per_s": 0.0016666666666666668,
+            "abs_increment_quantiles": [
+              3.0674771551275626e-05,
+              7.546031392848818e-05,
+              0.003219761505952188,
+              6.692172326982542
+            ],
+            "blocks_300s": 2,
+            "block_ci95": null
+          },
+          "truth_without_logged_jumps": {
+            "n": 600,
+            "exposure_s": 600.0,
+            "drift_ticks_per_s": -3.145328264508862e-08,
+            "total_variance_per_s": 2.292744062689985e-06,
+            "rounding_corrected_variance_per_s": 2.292744062689985e-06,
+            "tail3_per_s": 0.0,
+            "tail5_per_s": 0.0,
+            "abs_increment_quantiles": [
+              3.0674771551275626e-05,
+              7.524478496634401e-05,
+              0.002362240523161742,
+              0.0172184636654096
+            ],
+            "blocks_300s": 2,
+            "block_ci95": null
+          },
+          "observed_corrected_variance_ratio": 0.9339479798370657,
+          "observed_drift_error": 0.012775128277860943
+        },
+        "5.0": {
+          "truth_total": {
+            "n": 120,
+            "exposure_s": 600.0,
+            "drift_ticks_per_s": 0.023984801880051237,
+            "total_variance_per_s": 0.19124521336707667,
+            "rounding_corrected_variance_per_s": 0.19124521336707667,
+            "tail3_per_s": 0.0033333333333333335,
+            "tail5_per_s": 0.0016666666666666668,
+            "abs_increment_quantiles": [
+              3.5319481867190916e-05,
+              8.772600958764091e-05,
+              3.776194737740199,
+              9.132356074077531
+            ],
+            "blocks_300s": 2,
+            "block_ci95": null
+          },
+          "truth_without_logged_jumps": {
+            "n": 120,
+            "exposure_s": 600.0,
+            "drift_ticks_per_s": -3.145328264508862e-08,
+            "total_variance_per_s": 2.8857233932379343e-06,
+            "rounding_corrected_variance_per_s": 2.8857233932379343e-06,
+            "tail3_per_s": 0.0,
+            "tail5_per_s": 0.0,
+            "abs_increment_quantiles": [
+              3.5319481867190916e-05,
+              8.28172995170462e-05,
+              0.01679488162550117,
+              0.033737083212809015
+            ],
+            "blocks_300s": 2,
+            "block_ci95": null
+          },
+          "observed_corrected_variance_ratio": 1.087858947683844,
+          "observed_drift_error": 0.013520580702376158
+        }
+      },
+      "logged_nonzero_jump_intervals": 3,
+      "logged_jump_interval_rate": 0.005,
+      "logged_on_state_share": 0.0,
+      "qualifications": [
+        "Truth sampled at regular grids; anchor uses last F before each grid, so endpoints differ.",
+        "Logged jumps aggregate10ms intervals; realized diffusion variance includes alignment residual."
+      ]
+    }
+  },
+  "elapsed_s": 0.6023348749149591
+}
