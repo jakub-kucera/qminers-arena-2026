@@ -339,6 +339,12 @@ TAKERS = [
     # R3-F1 (8 Nov): L9 plus the latent-price filter's three features
     ("r3_F1_latent_filter.py", {**L3, "POSITION_LIMIT": 100, "IMPACT_US": 500000, "HUBER": 6.0, "RIDGE_MIN": 30,
                                 "RIDGE_FRAC": 0.003, "FILTER": 1}, "303720.00", 3795),
+    # R3-F3 (B1 plus the filter) and R3-F5 (F3 with a 0.25 take bar except 5 s after a 3-tick 200-ms jump), 8 Nov
+    ("r3_F3_latent_filter_b1.py", {**L3, "POSITION_LIMIT": 100, "IMPACT_US": 500000, "HUBER": 6.0, "RIDGE_MIN": 30,
+                                   "RIDGE_FRAC": 0.003, "QUOTE_SIZE": 1, "QS_RATE": 2.5, "FILTER": 1}, "315397.00", 70417),
+    ("r3_F5_jump_bar.py", {**L3, "POSITION_LIMIT": 100, "IMPACT_US": 500000, "HUBER": 6.0, "RIDGE_MIN": 30,
+                           "RIDGE_FRAC": 0.003, "QUOTE_SIZE": 1, "QS_RATE": 2.5, "FILTER": 1, "FT_EDGE": 0.25, "FT_JUMP": 3.0,
+                           "FT_JUMP_HOLD_MS": 5000, "FT_JUMP_EDGE": 0.15}, "330980.00", 70770),
 ]
 
 
