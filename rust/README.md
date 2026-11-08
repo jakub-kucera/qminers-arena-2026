@@ -185,7 +185,8 @@ loses on round3_public. R3-F4's bank (8 Nov, `r3_F4_filter_bank.py`, byte for by
 the copy whose inserts' log-likelihood (decayed over `FILTER_LL_N` inserts, 100000) is highest, ahead of F3's own by
 `FILTER_LL_MARGIN` nats (0). `FILTER_XGAP` 1 / 2 (0: off) adds the first copy's gap as features instead; `FILTER_CLIP`
 (5.0) is the gap's clip. `FILTER_VRATE` / `FILTER_VIMPACT` (0: off) are the walk's rate and the impact scale while
-FILTER_VQS's speed switch is on. All off by default (F3 505212.00 unchanged); none beat F3 on round 3 (IDEAS.md, "A better
+FILTER_VQS's speed switch is on. `FILTER_LADDER` (0: off) leaves out of the filter's update a new market order 2-7 ticks behind its
+touch that comes 2 ms after a same-side one 2-7 ticks behind (round 3's ladders, `experiments.day.gen_ladders`). All off by default (F3 505212.00 unchanged); none beat F3 on round 3 (IDEAS.md, "A better
 state for R3-F3's latent-price filter").
 
 R3-G1's early exit (8 Nov, Rust only, off by default: `FT_EXIT` 99.0, `FT_EXIT_SZ` 0, `FT_EXIT_WIDE` 0, `FT_EXIT_KEEP`
