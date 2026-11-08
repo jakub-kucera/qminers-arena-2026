@@ -33,6 +33,7 @@ Check it is marked final on the portal before 06:00.
 |---|---|---|---|---|---|
 | 1 | 01:24 | `r3_F1_latent_filter.py` (L9 + filter) | +862,764 | 480,469 | 563 s server time |
 | 2 | 01:46 | `r3_F3_latent_filter_b1.py` (B1 + filter) | **+883,559** | 505,212 | +20.8k over F1, all in the calmer segments where the quotes switch on |
+| 3 | 02:57 | `r3_B1_huber_quote_switch.py` (F3 without the filter) | +733,790 | 433,922 | the filter on the server: F3 - B1 = **+149,769 (+20.4%)**, against ~+124k expected from the local +71,290 (+16.4%); round 4 starts from the filter bots |
 
 ### What round 3 established (details and commands in the IDEAS.md rows named)
 - **The tape:** round 2's generator again, a bit more volatile (68% of 60-s blocks volatile; 389 jumps of 3+ ticks in
@@ -60,7 +61,7 @@ Check it is marked final on the portal before 06:00.
   F3 10% faster with identical PnL (R3-P2's file with `PRE = 0`); `experiments.day.family_rust`.
 
 ### Next (in order)
-1. Keep F3 final. A spare upload: plain R3-B1 (`r3_B1_huber_quote_switch.py`) measures the filter's real gain on the
+1. Keep F3 final. (Done 02:57: plain R3-B1 made +733,790, so the filter earns +149,769 on validation.) Plain R3-B1 (`r3_B1_huber_quote_switch.py`) measures the filter's real gain on the
    server (F3 - B1), worth knowing for round 4.
 2. The untested direction the statistics agent left: more size or a lower take bar just after jumps or while inserts
    land wide (where takes earn most); burst sizing lost, so it is a weak lead.
