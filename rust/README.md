@@ -177,7 +177,10 @@ F1="$L9 --set FILTER=1"   # R3-F1 (r3_F1_latent_filter.py): the latent-price fil
 R3-F1 as `ridge_maker` (8 Nov, the knob `FILTER` with `FILTER_W`, `FILTER_RATE`, `FILTER_EPS`, `FILTER_PI0`-`2`,
 `FILTER_IMPACT`, `FILTER_SQRT_C`, `FILTER_DEPTH`, off by default; what each does in the file's doc comment). It gives
 the Python file's numbers: round3_public 480469.00 (volume 571,820; FILTER 0 is L9's 424730.00), and round2_public
-303720.00 with pnl.csv and result.json byte for byte (`test_ridge_maker_round2_takers`). FILTER needs `QUOTEFEAT` 1.
+303720.00 with pnl.csv and result.json byte for byte (`test_ridge_maker_round2_takers`); R3-F3 (B1's line and
+`--set FILTER=1`) 505212.00 on round3_public, byte for byte too. FILTER needs `QUOTEFEAT` 1. `FILTER_JUMP` (with
+`FILTER_JUMP_MED`, `FILTER_JUMP_SD`, off by default) is Rust only: it adds lognormal jumps to the latent's walk and
+loses on round3_public.
 
 **Speed** (the sample, 53,758 rows, one core, measured 7 Nov): trend_follower 151 ms a run in Python, 1.7 ms in
 Rust (90x); F1 274 ms, 3.9 ms (70x); parsing the CSV once is 5 ms more. On 4 threads, F1's 16-cell grid

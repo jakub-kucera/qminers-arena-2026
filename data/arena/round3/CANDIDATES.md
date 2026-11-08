@@ -63,6 +63,7 @@ Trials so far: 0 experiments, 0 cells.
 
 ### R3-F3 (8 Nov 01:45): R3-B1 plus the filter (`python/bots/qminers/candidates/r3_F3_latent_filter_b1.py`)
 - R3-B1 (L9 plus L8's speed-switched one-lot quotes) plus R3-F1's filter code and three features (FEATURE_COUNT 39). FILTER = 0 is B1. validate OK. Rust (`B1's --set line --set FILTER=1`): **505,212 on r3 public** (the best FILTER base there), 1,323,666 hi_vol_fast1.25, 1,107,567 hi_vol, 1,008,798 pub+mirror. The Python parity run and its run time are next.
+- 02:20: Python F3 = Rust 505,212 byte for byte; side by side F1 171 s, F3 181 s, F2 172 s. Validation: **F3 +883,559** (F1 +862,764; 590 s of server time). The filter's own settings on B1F (r3 public, Rust, by holdout) are at their top in every grid: FT_EDGE x FILTER_IMPACT (impact 3, FT_EDGE 0.15-0.35 a plateau), FILTER_W x FILTER_DEPTH (flat), FILTER_RATE x FILTER_EPS (rate 2, eps 0.01), FILTER_PI (round 1's), FILTER_JUMP (-10k to -30k everywhere). No F4. The oracle on tape_gen's draws: the true gap correlates 0.76 with the 0.4-s move against the filter's 0.40; jumps lift the filter to 0.53 there but lose on the real tape (IDEAS.md's R3-F1 row).
 ## Uploads (validation tape, 12,000 s; results folders in data/arena/round3/<file>_res/)
 | # | time | file | validation pnl | fills / lots | sim time | local r3 public (6,000 s) | read |
 |---|---|---|---|---|---|---|---|

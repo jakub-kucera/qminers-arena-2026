@@ -179,7 +179,14 @@
 //! FILTER_PI0/1/2 (0.55/0.39/0.06), clamped one tick off the other touch, plus FILTER_EPS (0.01). lb random-walks at
 //! FILTER_RATE (2.0) steps a second each way. A market taker's filled lots move lb FILTER_IMPACT (3.0) x tape_gen's
 //! impact table, or FILTER_SQRT_C x sqrt(lots) when that is > 0. The features are gap = E[lb] + 0.5 - mid
-//! (clipped +-5), gap |gap| / 3 and min(3, the posterior sd). It needs QUOTEFEAT 1 for its new-order set.)
+//! (clipped +-5), gap |gap| / 3 and min(3, the posterior sd). It needs QUOTEFEAT 1 for its new-order set.
+//! `FILTER_JUMP` (0.0: off) adds jumps to lb's walk: at that rate a second, a lognormal size (median
+//! FILTER_JUMP_MED 6.66, log-sd FILTER_JUMP_SD 0.79, tape_gen v2's r3 preset) either way, mixed in around the
+//! posterior's mode and renormalised. No Python file has it yet: it loses on round3_public, -10k to -30k in every cell
+//! of rate 0.03-0.3 x median 3-6.66 x W 8-16 on B1F, though it lifts the filter's correlation on tape_gen's draws.
+//! `FILTER_VQS` (0.0: off; needs QS_RATE): while L8's |mid change| rate is at least FILTER_VQS ticks a second, the
+//! inserts' k weights are FILTER_VPI0/1/2 (0.45/0.40/0.15, normalised) instead of FILTER_PI*. Rust only. On B1F it
+//! gains 3-6k out of sample on round3_public but loses 1-6k in the first 75%, and loses 35-41k on hi_vol_fast1.25.)
 //!   F1  (r3_F1_latent_filter.py, round3_public 480469.00, round2_public 303720.00): L9's and --set FILTER=1
 
 use std::collections::{HashMap, HashSet, VecDeque};
@@ -559,6 +566,41 @@ pub struct RidgeMaker {
     feat_log: Option<std::io::BufWriter<std::fs::File>>,
     feat_pending: VecDeque<(i64, f64, [f64; 14])>,
     fx: FeatExtras,
+    /// FILTER_JUMP (0: off): lb also jumps at that rate a second, a lognormal size either way, spread around the MAP
+    lf_jump: f64,
+    lf_jump_k: Vec<f64>,
+    /// FILTER_VQS (0: off): while QS_RATE's |mid change| rate is at least this, the inserts' k weights are FILTER_VPI*
+    lf_vqs: f64,
+    lf_vpi: [f64; 3],
+    lf_vcum: [f64; 3],
+}
+
+extern "C" {
+    /// the C library's erf, the one CPython's math.erf calls
+    fn erf(x: f64) -> f64;
+}
+
+/// FILTER_JUMP's kernel by |offset| from the mode (each sign half), as `r3_F*`'s `_lf_jump_kernel`.
+fn lf_jump_kernel(n: usize, med: f64, sd: f64) -> Vec<f64> {
+    let cdf = |x: f64| 0.5 * (1.0 + unsafe { erf((x.ln() - med.ln()) / (sd * 2f64.sqrt())) });
+    let mut w = Vec::new();
+    for k in 1..n {
+        let hi = cdf(k as f64 + 0.5);
+        let lo = if k > 1 { cdf(k as f64 - 0.5) } else { 0.0 };
+        w.push(hi - lo);
+    }
+    let mut tot = 0.0;
+    for x in &w {
+        tot += x;
+    }
+    if tot == 0.0 {
+        tot = 1.0;
+    }
+    let mut k = vec![0.0];
+    for x in w {
+        k.push(x / tot / 2.0);
+    }
+    k
 }
 
 /// pretrain_dump_bot.py's AExtras (R3-P1's PreExtras): the frozen forecast's extra inputs' running state
@@ -727,7 +769,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 150] = [
+pub const KEYS: [&str; 157] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -750,7 +792,8 @@ pub const KEYS: [&str; 150] = [
     "BURST_THRU", "BURST_MAXSPREAD", "BURST_HOLD", "BURST_JUMP", "BURST_QUIET_MS", "BURST_AGREE",
     "BURST_JUMP_MS",
     "FILTER", "FILTER_W", "FILTER_RATE", "FILTER_EPS", "FILTER_PI0", "FILTER_PI1", "FILTER_PI2", "FILTER_IMPACT",
-    "FILTER_SQRT_C", "FILTER_DEPTH",
+    "FILTER_SQRT_C", "FILTER_DEPTH", "FILTER_JUMP", "FILTER_JUMP_MED", "FILTER_JUMP_SD",
+    "FILTER_VQS", "FILTER_VPI0", "FILTER_VPI1", "FILTER_VPI2",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -803,6 +846,12 @@ impl RidgeMaker {
         let raw = [params.float("FILTER_PI0", 0.55)?, params.float("FILTER_PI1", 0.39)?, params.float("FILTER_PI2", 0.06)?];
         let total = 0.0 + raw[0] + raw[1] + raw[2];
         let lf_pi = [raw[0] / total, raw[1] / total, raw[2] / total];
+        let vraw = [params.float("FILTER_VPI0", 0.45)?, params.float("FILTER_VPI1", 0.40)?, params.float("FILTER_VPI2", 0.15)?];
+        let vtotal = 0.0 + vraw[0] + vraw[1] + vraw[2];
+        let lf_vpi = [vraw[0] / vtotal, vraw[1] / vtotal, vraw[2] / vtotal];
+        if params.float("FILTER_VQS", 0.0)? > 0.0 && params.float("QS_RATE", 0.0)? <= 0.0 {
+            return Err("FILTER_VQS reads QS_RATE's speed: set QS_RATE".to_string());
+        }
         let position_limit = params.int("POSITION_LIMIT", 100)?;
         let exposure = params.int("EXPOSURE", 0)?;
         Ok(RidgeMaker {
@@ -1070,6 +1119,12 @@ impl RidgeMaker {
             lf_p: Vec::new(),
             lf_base: 0,
             lf_t: None,
+            lf_jump: params.float("FILTER_JUMP", 0.0)?,
+            lf_jump_k: lf_jump_kernel((2 * lf_w + 1) as usize, params.float("FILTER_JUMP_MED", 6.66)?,
+                                      params.float("FILTER_JUMP_SD", 0.79)?),
+            lf_vqs: params.float("FILTER_VQS", 0.0)?,
+            lf_vpi,
+            lf_vcum: [lf_vpi[0], lf_vpi[0] + lf_vpi[1], 1.0],
         })
     }
 
@@ -1462,6 +1517,26 @@ impl RidgeMaker {
         }
         q[0] += a * p[0];
         q[n - 1] += a * p[n - 1];
+        if self.lf_jump > 0.0 {
+            let x = self.lf_jump * dt;
+            let pj = if x < 0.5 { x } else { 0.5 };
+            let mut m = 0usize;
+            for i in 1..n {
+                if q[i] > q[m] {
+                    m = i;
+                }
+            }
+            let mut total = 0.0;
+            for i in 0..n {
+                let v = (1.0 - pj) * q[i] + pj * self.lf_jump_k[if i > m { i - m } else { m - i }];
+                q[i] = v;
+                total += v;
+            }
+            let inv = 1.0 / total;
+            for v in q.iter_mut() {
+                *v *= inv;
+            }
+        }
         self.lf_p = q;
     }
 
@@ -1529,7 +1604,11 @@ impl RidgeMaker {
         let n = self.lf_n;
         let base = self.lf_base;
         let eps = self.lf_eps;
-        let (pi, cum) = (self.lf_pi, self.lf_cum);
+        let (pi, cum) = if self.lf_vqs > 0.0 && self.qs_rate >= self.lf_vqs {
+            (self.lf_vpi, self.lf_vcum)
+        } else {
+            (self.lf_pi, self.lf_cum)
+        };
         let p = &mut self.lf_p;
         let mut total = 0.0;
         if buy {
