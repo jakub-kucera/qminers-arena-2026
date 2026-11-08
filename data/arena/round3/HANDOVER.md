@@ -36,6 +36,8 @@ Check it is marked final on the portal before 06:00.
 | 3 | 02:57 | `r3_B1_huber_quote_switch.py` (F3 without the filter) | +733,790 | 433,922 | the filter on the server: F3 - B1 = **+149,769 (+20.4%)**, against ~+124k expected from the local +71,290 (+16.4%); round 4 starts from the filter bots |
 | 4 | 03:22 | `r3_F5_jump_bar.py` (F3 with a 0.25 take bar, 0.15 for 5 s after a 3-tick jump) | +888,195 | 515,670 | F5 - F3 = +4,636, a tie (9 of 12 1,000-s segments, t 0.51); loses ~25k on round 1's calm tape |
 | 5 | 04:34 | `r3_F4_filter_bank.py` (F3 with the impact scale chosen online by likelihood) | +839,401 | 512,175 | F4 - F3 = **-44,158**: choosing the filter's impact by likelihood loses on the server |
+| 6 | 05:00 | `r3_F10_blend150.py` (F5 plus a 150-ms ridge, 50/50) | +818,039 | 535,244 | F10 - F5 = **-70,156**: shorter horizons lose on the server (the r3b seeds said so) |
+| 7 | 05:20 | `r3_F6c_policy_s3_const.py` (F5 with the policy search's search-3 constants) | +868,327 | 518,573 | F6c - F5 = **-19,868** (the seeds said +51.6k); **F5 is the final** |
 
 ### What round 3 established (details and commands in the IDEAS.md rows named)
 - **The tape:** round 2's generator again, a bit more volatile (68% of 60-s blocks volatile; 389 jumps of 3+ ticks in
