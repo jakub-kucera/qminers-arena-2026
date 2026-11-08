@@ -188,6 +188,15 @@
 //! inserts' k weights are FILTER_VPI0/1/2 (0.45/0.40/0.15, normalised) instead of FILTER_PI*. Rust only. On B1F it
 //! gains 3-6k out of sample on round3_public but loses 1-6k in the first 75%, and loses 35-41k on hi_vol_fast1.25.)
 //!   F1  (r3_F1_latent_filter.py, round3_public 480469.00, round2_public 303720.00): L9's and --set FILTER=1
+//! The forecast take's early exit (R3-G1, 8 Nov), off by default: `FT_EXIT` (99.0: off). When the forecast take does
+//! not fire (the signal within its need) and the signal against the position is more than FT_EXIT plus half the
+//! spread, an IOC FT_THRU ticks through the touch on the reducing side for at most `FT_EXIT_SZ` (0: all) of the
+//! position net of the live orders on that side, never past flat; it shares the take's FT_GAP_MS and spread cap
+//! (python/experiments/day/loss_anatomy.py: on round3_public R3-F3 held 100 lots for about 550 s while its forecast
+//! was 0.3-0.65 against, the position's mark-to-market -168 ticks over the next 5 s there). `FT_EXIT_WIDE` (0: off):
+//! at a spread of at least that many ticks, the same reduce-only IOC at the touch, unless the signal is with the
+//! position by at least `FT_EXIT_KEEP` (99.0: never kept), at most once a FT_GAP_MS (loss_anatomy: the position's
+//! next 5-s mark-to-market -260 ticks at a 3+ spread).
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -501,6 +510,11 @@ pub struct RidgeMaker {
     /// round 2's takers (8 Nov, all off by default): FT_MAXSPREAD, FT_ROOM_LIVE, LIQ, IMPACT_US, HUBER, QS_RATE, QS_US
     ft_maxspread: i64,
     ft_room_live: bool,
+    /// R3-G1's early exit (FT_EXIT 99.0: off; FT_EXIT_SZ 0: the whole position)
+    ft_exit: f64,
+    ft_exit_sz: i64,
+    ft_exit_wide: i64,
+    ft_exit_keep: f64,
     liq: i64,
     /// LIQ: the last recompute's time and mid, each market order's first-seen time, the young imbalance, the dispersion
     liq_time: Option<i64>,
@@ -769,7 +783,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 157] = [
+pub const KEYS: [&str; 161] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -794,6 +808,7 @@ pub const KEYS: [&str; 157] = [
     "FILTER", "FILTER_W", "FILTER_RATE", "FILTER_EPS", "FILTER_PI0", "FILTER_PI1", "FILTER_PI2", "FILTER_IMPACT",
     "FILTER_SQRT_C", "FILTER_DEPTH", "FILTER_JUMP", "FILTER_JUMP_MED", "FILTER_JUMP_SD",
     "FILTER_VQS", "FILTER_VPI0", "FILTER_VPI1", "FILTER_VPI2",
+    "FT_EXIT", "FT_EXIT_SZ", "FT_EXIT_WIDE", "FT_EXIT_KEEP",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -1065,6 +1080,10 @@ impl RidgeMaker {
             ),
             ft_maxspread: params.int("FT_MAXSPREAD", 0)?,
             ft_room_live: params.int("FT_ROOM_LIVE", 0)? != 0,
+            ft_exit: params.float("FT_EXIT", 99.0)?,
+            ft_exit_sz: params.int("FT_EXIT_SZ", 0)?,
+            ft_exit_wide: params.int("FT_EXIT_WIDE", 0)?,
+            ft_exit_keep: params.float("FT_EXIT_KEEP", 99.0)?,
             liq: params.int("LIQ", 0)?,
             liq_time: None,
             liq_mid: 0.0,
@@ -2982,6 +3001,66 @@ impl Strategy for RidgeMaker {
                     self.orders.push(Record {
                         id,
                         sign,
+                        price,
+                        quantity,
+                        accepted: false,
+                        cancelling: false,
+                        exempt_until: now + 1_000_000,
+                        target: 0,
+                        kept: false,
+                    });
+                    self.ft_last = now;
+                }
+            } else if self.ft_exit < 99.0 && self.inventory != 0 {
+                // FT_EXIT (R3-G1): the signal against the position past FT_EXIT + half the spread, flatten (reduce only)
+                let s = if self.inventory > 0 { -1 } else { 1 };
+                if signal * (s as f64) > self.ft_exit + 0.5 * spread_f {
+                    let reserved: i64 = self.orders.iter().filter(|r| r.sign == s).map(|r| r.quantity).sum();
+                    let mut quantity = self.inventory.abs() - reserved;
+                    if self.ft_exit_sz > 0 {
+                        quantity = quantity.min(self.ft_exit_sz);
+                    }
+                    if quantity > 0 {
+                        let price = if s > 0 { ask + self.ft_thru } else { 1i64.max(bid - self.ft_thru) };
+                        let id = ctx.send_order(if s > 0 { Side::Buy } else { Side::Sell }, price, quantity, true);
+                        self.orders.push(Record {
+                            id,
+                            sign: s,
+                            price,
+                            quantity,
+                            accepted: false,
+                            cancelling: false,
+                            exempt_until: now + 1_000_000,
+                            target: 0,
+                            kept: false,
+                        });
+                        self.ft_last = now;
+                    }
+                }
+            }
+        }
+        // FT_EXIT_WIDE (R3-G1): at a wide spread, flatten (reduce only) unless the signal is with the position
+        if self.ft_exit_wide > 0
+            && spread >= self.ft_exit_wide
+            && self.inventory != 0
+            && self.m1.labels >= self.min_labels
+            && now - self.ft_last >= self.ft_gap_ms * 1000
+        {
+            let source = if self.ft_src == 1 { p2_only } else { prediction };
+            let signal = if self.ft_net > 0 { source - skew } else { source };
+            let s = if self.inventory > 0 { -1 } else { 1 };
+            if -signal * (s as f64) < self.ft_exit_keep {
+                let reserved: i64 = self.orders.iter().filter(|r| r.sign == s).map(|r| r.quantity).sum();
+                let mut quantity = self.inventory.abs() - reserved;
+                if self.ft_exit_sz > 0 {
+                    quantity = quantity.min(self.ft_exit_sz);
+                }
+                if quantity > 0 {
+                    let price = if s > 0 { ask + self.ft_thru } else { 1i64.max(bid - self.ft_thru) };
+                    let id = ctx.send_order(if s > 0 { Side::Buy } else { Side::Sell }, price, quantity, true);
+                    self.orders.push(Record {
+                        id,
+                        sign: s,
                         price,
                         quantity,
                         accepted: false,
