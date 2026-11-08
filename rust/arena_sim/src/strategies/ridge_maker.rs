@@ -668,6 +668,19 @@ pub struct RidgeMaker {
     lf_xgap: i64,
     /// FILTER_LL_MARGIN (0.0): a bank copy is chosen only while its log-likelihood beats FILTER_IMPACT's by this many nats
     lf_ll_margin: f64,
+    /// GASYM_US (R4-S1, 0: off): one more feature at the very end of the base features, the new market limit orders'
+    /// mean distance behind their own (cached) touch, asks minus bids, each side's count and distance decayed over
+    /// GASYM_US (round 4's tape: partial R^2 1.4% of the 0.4-s move beyond F5's forecast; ~0 on rounds 2 and 3)
+    gasym_us: i64,
+    gasym: [f64; 4],
+    gasym_last: Option<i64>,
+    /// GAPMEAN_US (R4-S1, 0: off; needs FILTER): one more feature after GASYM_US's, the filter's gap averaged over
+    /// GAPMEAN_US (an exponential average at every valid book)
+    gapmean_us: i64,
+    gapmean: f64,
+    gapmean_last: Option<i64>,
+    /// the features GASYM_US and GAPMEAN_US add at the end (0-2)
+    xf_n: usize,
     /// FILTER_CLIP (5.0): the gap feature's clip, +-ticks
     lf_clip: f64,
     /// FILTER_VRATE / FILTER_VIMPACT (0.0: FILTER_RATE's / FILTER_IMPACT's): the walk's rate and the impact scale while
@@ -920,7 +933,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 194] = [
+pub const KEYS: [&str; 196] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -950,6 +963,7 @@ pub const KEYS: [&str; 194] = [
     "FT_EDGE_CALM", "FT_CALM_RATE", "FT_JUMP_DIR",
     "FT_EDGE_FLIP", "FT_SD", "FT_SD_EDGE",
     "ENS", "ENS_H1", "ENS_H2", "ENS_H3", "ENS_NOFILT", "ENS_FIMP", "ENS_W_S", "ENS_MARGIN", "ENS_ETA",
+    "GASYM_US", "GAPMEAN_US",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -973,7 +987,15 @@ impl RidgeMaker {
                 + if params.int("LIQ", 0)? > 0 { 4 } else { 0 }
                 + if params.int("IMPACT_US", 0)? > 0 { 3 } else { 0 }
                 + if params.int("TREND", 0)? > 0 { 2 } else { 0 }
-                + if params.int("FILTER", 0)? > 0 { 3 + params.int("FILTER_XGAP", 0)? as usize } else { 0 };
+                + if params.int("FILTER", 0)? > 0 { 3 + params.int("FILTER_XGAP", 0)? as usize } else { 0 }
+                + if params.int("GASYM_US", 0)? > 0 { 1 } else { 0 }
+                + if params.int("GAPMEAN_US", 0)? > 0 { 1 } else { 0 };
+        if params.int("GASYM_US", 0)? > 0 && params.int("QUOTEFEAT", 0)? == 0 {
+            return Err("GASYM_US reads the new market orders QUOTEFEAT tracks: set QUOTEFEAT=1".to_string());
+        }
+        if params.int("GAPMEAN_US", 0)? > 0 && params.int("FILTER", 0)? == 0 {
+            return Err("GAPMEAN_US averages the filter's gap: set FILTER=1".to_string());
+        }
         if params.int("FILTER_XGAP", 0)? > 0 && params.float("FILTER_IMP2", 0.0)? <= 0.0 {
             return Err("FILTER_XGAP reads the bank's first copy: set FILTER_IMP2".to_string());
         }
@@ -1332,6 +1354,13 @@ impl RidgeMaker {
             lf_ll_keep: 1.0 - 1.0 / params.float("FILTER_LL_N", 100000.0)?,
             lf_xgap: params.int("FILTER_XGAP", 0)?,
             lf_ll_margin: params.float("FILTER_LL_MARGIN", 0.0)?,
+            gasym_us: params.int("GASYM_US", 0)?,
+            gasym: [0.0; 4],
+            gasym_last: None,
+            gapmean_us: params.int("GAPMEAN_US", 0)?,
+            gapmean: 0.0,
+            gapmean_last: None,
+            xf_n: (params.int("GASYM_US", 0)? > 0) as usize + (params.int("GAPMEAN_US", 0)? > 0) as usize,
             lf_clip: params.float("FILTER_CLIP", 5.0)?,
             lf_vrate: params.float("FILTER_VRATE", 0.0)?,
             lf_vimpact: params.float("FILTER_VIMPACT", 0.0)?,
@@ -1893,6 +1922,37 @@ impl RidgeMaker {
 
     /// `_lf_observe`: the book's market taker fills, then its new market orders within FILTER_DEPTH of the previous
     /// valid book's touch (the cached one), in the feed's order; before quote_centres moves `known_ids` on.
+    /// GASYM_US: decay each side's count and summed distance behind its own cached touch, then add the snapshot's new
+    /// market orders (ids not yet in `known_ids`)
+    fn gasym_observe(&mut self, snapshot: &Snapshot, now: i64) {
+        let Some((bid, ask, _)) = self.cached else { return };
+        if bid >= ask {
+            return;
+        }
+        if let Some(t) = self.gasym_last {
+            let d = ((-((now - t).max(0))) as f64 / self.gasym_us as f64).exp();
+            for v in self.gasym.iter_mut() {
+                *v *= d;
+            }
+        }
+        self.gasym_last = Some(now);
+        let mut seen: HashSet<u64> = HashSet::new();
+        for side in [Side::Buy, Side::Sell] {
+            for order in snapshot.side(side) {
+                if order.owner != Owner::Market || !seen.insert(order.order_id) || self.known_ids.contains(&order.order_id) {
+                    continue;
+                }
+                if order.side == Side::Buy {
+                    self.gasym[0] += 1.0;
+                    self.gasym[1] += (bid - order.price) as f64;
+                } else {
+                    self.gasym[2] += 1.0;
+                    self.gasym[3] += (order.price - ask) as f64;
+                }
+            }
+        }
+    }
+
     fn lf_observe(&mut self, snapshot: &Snapshot, trades: &[Trade], now: i64) {
         if self.lf_ladder > 0 {
             self.lf_ladders(snapshot, now);
@@ -2034,7 +2094,7 @@ impl RidgeMaker {
         if kind == 0 {
             return f;
         }
-        let k = self.n_base - (3 + self.lf_xgap as usize);
+        let k = self.n_base - self.xf_n - (3 + self.lf_xgap as usize);
         if kind == 1 {
             f[k] = 0.0;
             f[k + 1] = 0.0;
@@ -2520,6 +2580,9 @@ impl Strategy for RidgeMaker {
             }
         };
         self.invalid_since = None;
+        if self.gasym_us > 0 {
+            self.gasym_observe(snapshot, now);
+        }
         if self.filter > 0 {
             self.lf_observe(snapshot, trades, now);
         }
@@ -2835,7 +2898,7 @@ impl Strategy for RidgeMaker {
         let tail = trend_n + if self.impact_us > 0 { 3 } else { 0 };
         if self.liq > 0 {
             self.liquidity(snapshot, now, bid, ask, mid);
-            let k = self.n_base - tail - 4;
+            let k = self.n_base - self.xf_n - tail - 4;
             let (young, dispersion) = (self.liq_young, self.liq_disp);
             features[k] = young;
             features[k + 1] = young * dispersion;
@@ -2843,19 +2906,19 @@ impl Strategy for RidgeMaker {
             features[k + 3] = count_imbalance * dispersion;
         }
         if self.impact_us > 0 {
-            let k = self.n_base - trend_n - 3;
+            let k = self.n_base - self.xf_n - trend_n - 3;
             features[k] = self.impact_frame[0];
             features[k + 1] = self.impact_frame[1];
             let far = if self.impact_net >= 0.0 { aq } else { bq };
             features[k + 2] = clamp(self.impact_net / (1 + far) as f64, -3.0, 3.0);
         }
         if self.trend > 0 {
-            let k = self.n_base - filter_n - 2;
+            let k = self.n_base - self.xf_n - filter_n - 2;
             features[k] = clamp(mid - self.trend_e[0], -20.0, 20.0);
             features[k + 1] = clamp(mid - self.trend_e[1], -20.0, 20.0);
         }
         if self.filter > 0 {
-            let k = self.n_base - filter_n;
+            let k = self.n_base - self.xf_n - filter_n;
             let f = self.lf_features(mid);
             self.lf_gap_now = f[0];
             features[k] = f[0];
@@ -2875,6 +2938,23 @@ impl Strategy for RidgeMaker {
                 if self.lf_xgap > 1 {
                     features[k + 4] = gap * gap.abs() / 3.0;
                 }
+            }
+        }
+        if self.xf_n > 0 {
+            let mut k = self.n_base - self.xf_n;
+            if self.gasym_us > 0 {
+                let [nb, ob, na, oa] = self.gasym;
+                features[k] = if nb >= 0.5 && na >= 0.5 { clamp(oa / na - ob / nb, -5.0, 5.0) } else { 0.0 };
+                k += 1;
+            }
+            if self.gapmean_us > 0 {
+                let d = match self.gapmean_last {
+                    Some(t) => ((-((now - t).max(0))) as f64 / self.gapmean_us as f64).exp(),
+                    None => 0.0,
+                };
+                self.gapmean_last = Some(now);
+                self.gapmean = self.gapmean * d + (1.0 - d) * self.lf_gap_now;
+                features[k] = self.gapmean;
             }
         }
         let n = self.n_base;
