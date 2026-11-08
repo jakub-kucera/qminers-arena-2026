@@ -21,6 +21,8 @@ Subcommands:
   ticks at a 1-tick spread: share, hit rate, mean move the forecast's way) for a frozen ridge, a frozen MLP and
   HistGradientBoosting, against the online ridge as the bot ran it (its stored forecast) and an offline replay of it
   with the frozen MLP's forecast as a 40th feature (stacked).
+- `rescale --dir DIR --gen GLOB [--hgb]`: models trained on generated dumps only, scored on round 3's last 25%:
+  (a) as fitted, (b) rescaled by one linear fit on round3_public before 4,500 s, (c) (b) stacked under the online ridge.
 - `export --dir DIR --gen GLOB --out W.json`: the MLP fitted on every training tape (round 3 only before 4,500 s),
   its weights as JSON lists; `embed --weights W.json --bot FILE` writes them into the candidate's PRE_BLOB block
   (`python/bots/qminers/candidates/r3_P1_pretrained_mlp.py`).
@@ -466,6 +468,61 @@ def cmd_table(args) -> int:
     return 0
 
 
+def cmd_rescale(args) -> int:
+    """Generated-only training, scored on round 3's last 25% (t >= 4,500 s, never trained on): (a) the frozen model
+    as fitted; (b) its output rescaled by one linear fit (slope, intercept) on round3_public before 4,500 s, the shape
+    learnt from the draws and the scale from the real tape; (c) (b) as the online ridge's 40th feature (the offline
+    replay, stacked). The draws' own label sd and online-ridge R^2 against the real tape's, first."""
+    set_nf(args.nf)
+    dumps, gen = load_dumps(args.dir, args.gen)
+    a = dumps["round3_public"]
+    t, y_all = a[:, 0], a[:, 2]
+    early, te = t < R3_SPLIT, t >= R3_SPLIT
+    y, spread = y_all[te], a[te, HEAD + NF]
+    print(f"generated {len(gen)} ({sum(len(dumps[g]) for g in gen):,} rows): {gen}", flush=True)
+    for s in ["round3_public", *gen]:
+        d = dumps[s]
+        print(f"  {s}: label sd {d[:, 2].std():.3f}, |label| mean {np.abs(d[:, 2]).mean():.3f}, "
+              f"online ridge as run R^2 {r2(d[:, 2], d[:, 3]):.4f}, forecast sd {d[:, 3].std():.3f}", flush=True)
+    base_edge = None
+    rows = []
+
+    def row(name, p, note=""):
+        nonlocal base_edge
+        sh, hit, mv = take_stats(y, p, spread)
+        edge = sh * (mv - 0.5)
+        base_edge = edge if base_edge is None else base_edge
+        rows.append((name, r2(y, p), sh, hit, mv, edge, edge / base_edge - 1.0, note))
+        print(rows[-1], flush=True)
+
+    row("online ridge (as run)", a[te, 3])
+    Xall = a[:, HEAD:HEAD + NF]
+    row("online ridge (replay)", online_ridge(Xall, y_all, t)[te])
+    tr = gather(dumps, gen, sub=args.sub)
+    for feats in ("f1", "all"):
+        Xtr, ytr, _ = split_xy(tr, feats)
+        Xa = split_xy(a, feats)[0]
+        models = {"ridge": lambda: fit_ridge(Xtr, ytr), "mlp": lambda: fit_mlp(Xtr, ytr, epochs=args.epochs)[0]}
+        if args.hgb and feats == "all":
+            models["hgb"] = lambda: fit_hgb(Xtr, ytr)
+        for mname, fit in models.items():
+            t0 = time.time()
+            p = fit()(Xa)
+            row(f"(a) {mname}/{feats}", p[te])
+            slope, icpt = np.polyfit(p[early], y_all[early], 1)
+            q = slope * p + icpt
+            row(f"(b) {mname}/{feats}", q[te], f"x {slope:.3f} {icpt:+.3f}")
+            row(f"(c) stack {mname}/{feats}", online_ridge(np.hstack([Xall, q[:, None]]), y_all, t)[te])
+            print(f"  {time.time() - t0:.0f}s", flush=True)
+    print("\n| model | R^2 | take share | hit | mean move | edge | edge vs as run | rescale |")
+    print("|---|---|---|---|---|---|---|---|")
+    for r in rows:
+        print(f"| {r[0]} | {r[1]:.4f} | {r[2]:.4f} | {r[3]:.3f} | {r[4]:.3f} | {r[5]:.4f} | {r[6]:+.1%} | {r[7]} |")
+    if args.out:
+        args.out.write_text(json.dumps(rows))
+    return 0
+
+
 def cmd_export(args) -> int:
     set_nf(args.nf)
     dumps, gen = load_dumps(args.dir, args.gen)
@@ -475,7 +532,16 @@ def cmd_export(args) -> int:
     tr = gather(dumps, stems, sub=args.sub)
     X, y, _ = split_xy(tr, args.feats)
     print(f"training on {len(X):,} rows from {stems}", flush=True)
-    _, wts = fit_mlp(X, y, hidden=tuple(int(h) for h in args.hidden.split(",")), epochs=args.epochs, log=print)
+    predict, wts = fit_mlp(X, y, hidden=tuple(int(h) for h in args.hidden.split(",")), epochs=args.epochs, log=print)
+    if args.rescale:
+        # (b) of `rescale`: one linear fit of the output on the tape's rows before 4,500 s, folded into the last layer
+        a = dumps[args.rescale]
+        early = a[:, 0] < R3_SPLIT
+        slope, icpt = np.polyfit(predict(split_xy(a[early], args.feats)[0]), a[early, 2], 1)
+        wts["W"][-1] = (np.array(wts["W"][-1]) * slope).tolist()
+        wts["B"][-1] = (np.array(wts["B"][-1]) * slope + icpt).tolist()
+        wts["rescale"] = [float(slope), float(icpt)]
+        print(f"rescaled on {args.rescale} before {R3_SPLIT:.0f} s: x {slope:.4f} {icpt:+.4f}")
     wts["feats"] = args.feats
     wts["stems"] = stems
     args.out.write_text(json.dumps(wts))
@@ -555,6 +621,14 @@ def main(argv=None) -> int:
     t.add_argument("--sources", default="real,gen,both")
     t.add_argument("--out", type=Path)
     t.add_argument("--nf", type=int, default=39, help="the dumps' feature count (36 for `rdump --settings F2`)")
+    rs = sub.add_parser("rescale", help="generated-only training on round 3's last 25%: raw, rescaled on its first 75%, stacked")
+    rs.add_argument("--dir", type=Path, required=True)
+    rs.add_argument("--gen", default="r3b_seed*", help="the generated dumps' stems (a glob)")
+    rs.add_argument("--sub", type=int, default=2, help="every n-th training row")
+    rs.add_argument("--epochs", type=int, default=4)
+    rs.add_argument("--hgb", action="store_true")
+    rs.add_argument("--out", type=Path)
+    rs.add_argument("--nf", type=int, default=39)
     e = sub.add_parser("export")
     e.add_argument("--dir", type=Path, required=True)
     e.add_argument("--gen", default="r*_*")
@@ -565,12 +639,13 @@ def main(argv=None) -> int:
     e.add_argument("--epochs", type=int, default=6)
     e.add_argument("--out", type=Path, required=True)
     e.add_argument("--nf", type=int, default=39)
+    e.add_argument("--rescale", help="a real dump's stem: rescale the output by one linear fit on its rows before 4,500 s")
     m = sub.add_parser("embed")
     m.add_argument("--weights", type=Path, required=True)
     m.add_argument("--bot", type=Path, required=True)
     args = ap.parse_args(argv)
     return {"gen": cmd_gen, "dump": cmd_dump, "table": cmd_table, "export": cmd_export, "embed": cmd_embed,
-            "rdump": cmd_rdump, "run": cmd_run, "baseline": cmd_baseline}[args.cmd](args)
+            "rdump": cmd_rdump, "run": cmd_run, "baseline": cmd_baseline, "rescale": cmd_rescale}[args.cmd](args)
 
 
 if __name__ == "__main__":
