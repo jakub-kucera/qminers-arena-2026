@@ -14,6 +14,7 @@ Subcommands:
   R3-F1's settings (`RIDGE_FEAT_LOG`, ridge_maker.rs), about 10 s a 6,000-s tape instead of 200-400 s.
 - `run BOT... --tapes TAPE... --dir DIR [--split 4500] --jobs 3`: the bots on the tapes through the starter's
   simulator, the PnL before and after --split and the run's seconds (the candidates' backtests).
+- `baseline TAPE... [--split 4500]`: R3-F1, F2 and F3 by the Rust twin, the PnL before and after --split.
 - `table --dir DIR --gen GLOB`: the offline comparison. For each test tape (round 3's last 25%, t >= 4,500 s; round
   2's public tape; round 1) and each training source (real tapes only, generated only, both; the test tape and its
   mirror never in training, round 3 only before 4,500 s): out-of-sample R^2 and the take region (|forecast| > 0.65
@@ -52,6 +53,13 @@ NX = 14       # the dump bot's extras
 HEAD = 5      # t, mid, response, stored forecast, inventory
 ROW = HEAD + NF + NX
 R3_SPLIT = 4500.0   # round 3's held-out last 25% starts here
+
+
+def set_nf(n: int) -> None:
+    """The dumps' feature count: 39 (R3-F1's ridge, the default) or 36 (R3-F2's, `rdump --settings F2`)."""
+    global NF, ROW
+    NF = n
+    ROW = HEAD + NF + NX
 
 
 # ---------------------------------------------------------------- tapes and dumps
@@ -126,11 +134,12 @@ def _rdump(job):
     """One tape through the Rust ridge_maker with R3-F1's settings and RIDGE_FEAT_LOG (the same rows as `dump`)."""
     from arena import qsim_rust
     from experiments.day import gen_calibrate
-    tape, out_dir, stem, stride = job
+    tape, out_dir, stem, stride, settings = job
     out = Path(out_dir) / f"{stem}.bin"
     t0 = time.time()
+    base = {"F1": gen_calibrate.L9, "F2": gen_calibrate.L8}[settings]
     with open(Path(out_dir) / f"{stem}.task.jsonl", "w") as f:
-        f.write(json.dumps({**gen_calibrate.L9, "FILTER": 1}) + "\n")
+        f.write(json.dumps({**base, "FILTER": 1}) + "\n")
     res = subprocess.run([str(qsim_rust.BINARY), "batch", "--strategy", "ridge_maker", "--tasks",
                           str(Path(out_dir) / f"{stem}.task.jsonl"), "--threads", "1", "--public-depth", "20",
                           "--backtest", str(tape)], capture_output=True, text=True,
@@ -140,6 +149,7 @@ def _rdump(job):
     except (IndexError, KeyError, ValueError):
         pnl = float("nan")
     if stride > 1 and out.exists():
+        set_nf(36 if settings == "F2" else 39)
         load(out)[::stride].tofile(out)
     (Path(out_dir) / f"{stem}.pnl").write_text(f"{pnl} {time.time() - t0:.0f} rust\n")
     return stem, pnl, time.time() - t0, res.returncode
@@ -155,7 +165,7 @@ def cmd_rdump(args) -> int:
         tapes = [head_copy(t, args.head_seconds, args.dir / "tapes", f"{t.parent.name}_" if args.tag_parent else "")
                  for t in tapes]
     stems = [f"{t.parent.name}_{t.stem}" if args.tag_parent and not args.head_seconds else t.stem for t in tapes]
-    jobs = [(str(t), str(args.dir), st, args.stride) for t, st in zip(tapes, stems)
+    jobs = [(str(t), str(args.dir), st, args.stride, args.settings) for t, st in zip(tapes, stems)
             if not (args.dir / f"{st}.pnl").exists()]
     with ProcessPoolExecutor(args.jobs) as ex:
         for stem, pnl, sec, rc in ex.map(_rdump, jobs):
@@ -188,6 +198,23 @@ def cmd_run(args) -> int:
         for bot, tape, pnl, at, sec, err in ex.map(_run, jobs):
             print(f"{bot} | {tape} | pnl {pnl:,.0f} | to {args.split:.0f} s {at:,.0f} | after {pnl - at:,.0f} | {sec:.0f} s {err}",
                   flush=True)
+    return 0
+
+
+def cmd_baseline(args) -> int:
+    """R3-F1, R3-F2 and R3-F3 by the Rust twin (each reproducing its file to the unit): PnL before / after --split."""
+    from arena import qsim_rust
+    from experiments.day import gen_calibrate
+    qsim_rust.build()
+    bots = {"F1": {**gen_calibrate.L9, "FILTER": 1}, "F2": {**gen_calibrate.L8, "FILTER": 1},
+            "F3": {**gen_calibrate.B1, "FILTER": 1}}
+    tapes = [Path(t) for t in args.tapes]
+    runs = qsim_rust.run_batch("ridge_maker", list(bots.values()), tapes, threads=args.jobs)
+    for name, row in zip(bots, runs):
+        for tape, r in zip(tapes, row):
+            before = [p for ts, p in r["curve"] if ts <= args.split * 1e6]
+            at = before[-1] if before else 0.0
+            print(f"{name} | {tape.stem} | pnl {r['pnl']:,.0f} | to {args.split:.0f} s {at:,.0f} | after {r['pnl'] - at:,.0f}")
     return 0
 
 
@@ -366,6 +393,7 @@ def load_dumps(d: Path, gen_glob: str):
 
 
 def cmd_table(args) -> int:
+    set_nf(args.nf)
     dumps, gen = load_dumps(args.dir, args.gen)
     if args.only:
         dumps = {k: v for k, v in dumps.items() if k in args.only.split(",") or k in gen}
@@ -439,6 +467,7 @@ def cmd_table(args) -> int:
 
 
 def cmd_export(args) -> int:
+    set_nf(args.nf)
     dumps, gen = load_dumps(args.dir, args.gen)
     stems = [s for s in dumps if s in REAL] + gen
     if args.exclude:
@@ -503,12 +532,18 @@ def main(argv=None) -> int:
     r.add_argument("--head-seconds", type=float)
     r.add_argument("--tag-parent", action="store_true", help="prefix each dump's name with its tape's folder's")
     r.add_argument("--stride", type=int, default=1, help="keep every n-th row (the generated tapes: 12,000 s a tape)")
+    r.add_argument("--settings", default="F1", choices=("F1", "F2"),
+                   help="the bot whose features are dumped: R3-F1 (R2-L9 + FILTER, 39) or R3-F2 (R2-L8 + FILTER, 36)")
     u = sub.add_parser("run", help="bots on tapes through the starter's simulator: PnL, before / after --split, run time")
     u.add_argument("bots", nargs="+")
     u.add_argument("--tapes", nargs="+", required=True)
     u.add_argument("--dir", type=Path, required=True)
     u.add_argument("--split", type=float, default=R3_SPLIT)
     u.add_argument("--jobs", type=int, default=3)
+    bl = sub.add_parser("baseline", help="R3-F1 / F2 / F3 by the Rust twin: PnL before / after --split")
+    bl.add_argument("tapes", nargs="+")
+    bl.add_argument("--split", type=float, default=R3_SPLIT)
+    bl.add_argument("--jobs", type=int, default=1)
     t = sub.add_parser("table")
     t.add_argument("--dir", type=Path, required=True)
     t.add_argument("--gen", default="r*_*", help="the generated dumps' stems (a glob)")
@@ -519,6 +554,7 @@ def main(argv=None) -> int:
     t.add_argument("--only", help="comma-separated real stems to load (default every dump)")
     t.add_argument("--sources", default="real,gen,both")
     t.add_argument("--out", type=Path)
+    t.add_argument("--nf", type=int, default=39, help="the dumps' feature count (36 for `rdump --settings F2`)")
     e = sub.add_parser("export")
     e.add_argument("--dir", type=Path, required=True)
     e.add_argument("--gen", default="r*_*")
@@ -528,12 +564,13 @@ def main(argv=None) -> int:
     e.add_argument("--hidden", default="32,16")
     e.add_argument("--epochs", type=int, default=6)
     e.add_argument("--out", type=Path, required=True)
+    e.add_argument("--nf", type=int, default=39)
     m = sub.add_parser("embed")
     m.add_argument("--weights", type=Path, required=True)
     m.add_argument("--bot", type=Path, required=True)
     args = ap.parse_args(argv)
     return {"gen": cmd_gen, "dump": cmd_dump, "table": cmd_table, "export": cmd_export, "embed": cmd_embed,
-            "rdump": cmd_rdump, "run": cmd_run}[args.cmd](args)
+            "rdump": cmd_rdump, "run": cmd_run, "baseline": cmd_baseline}[args.cmd](args)
 
 
 if __name__ == "__main__":
