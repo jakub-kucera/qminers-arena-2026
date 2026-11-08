@@ -164,7 +164,10 @@
 //! `FILTER_JUMP` (0.0: off) adds jumps to lb's walk: at that rate a second, a lognormal size (median
 //! FILTER_JUMP_MED 6.66, log-sd FILTER_JUMP_SD 0.79, tape_gen v2's r3 preset) either way, mixed in around the
 //! posterior's mode and renormalised. No Python file has it yet: it loses on round3_public, -10k to -30k in every cell
-//! of rate 0.03-0.3 x median 3-6.66 x W 8-16 on B1F, though it lifts the filter's correlation on tape_gen's draws.)
+//! of rate 0.03-0.3 x median 3-6.66 x W 8-16 on B1F, though it lifts the filter's correlation on tape_gen's draws.
+//! `FILTER_VQS` (0.0: off; needs QS_RATE): while L8's |mid change| rate is at least FILTER_VQS ticks a second, the
+//! inserts' k weights are FILTER_VPI0/1/2 (0.45/0.40/0.15, normalised) instead of FILTER_PI*. Rust only. On B1F it
+//! gains 3-6k out of sample on round3_public but loses 1-6k in the first 75%, and loses 35-41k on hi_vol_fast1.25.)
 //!   F1  (r3_F1_latent_filter.py, round3_public 480469.00, round2_public 303720.00): L9's and --set FILTER=1
 
 use std::collections::{HashMap, HashSet, VecDeque};
@@ -512,6 +515,10 @@ pub struct RidgeMaker {
     /// FILTER_JUMP (0: off): lb also jumps at that rate a second, a lognormal size either way, spread around the MAP
     lf_jump: f64,
     lf_jump_k: Vec<f64>,
+    /// FILTER_VQS (0: off): while QS_RATE's |mid change| rate is at least this, the inserts' k weights are FILTER_VPI*
+    lf_vqs: f64,
+    lf_vpi: [f64; 3],
+    lf_vcum: [f64; 3],
 }
 
 extern "C" {
@@ -592,7 +599,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 138] = [
+pub const KEYS: [&str; 142] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -613,6 +620,7 @@ pub const KEYS: [&str; 138] = [
     "FT_MAXSPREAD", "FT_ROOM_LIVE", "LIQ", "IMPACT_US", "HUBER", "QS_RATE", "QS_US",
     "FILTER", "FILTER_W", "FILTER_RATE", "FILTER_EPS", "FILTER_PI0", "FILTER_PI1", "FILTER_PI2", "FILTER_IMPACT",
     "FILTER_SQRT_C", "FILTER_DEPTH", "FILTER_JUMP", "FILTER_JUMP_MED", "FILTER_JUMP_SD",
+    "FILTER_VQS", "FILTER_VPI0", "FILTER_VPI1", "FILTER_VPI2",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -665,6 +673,12 @@ impl RidgeMaker {
         let raw = [params.float("FILTER_PI0", 0.55)?, params.float("FILTER_PI1", 0.39)?, params.float("FILTER_PI2", 0.06)?];
         let total = 0.0 + raw[0] + raw[1] + raw[2];
         let lf_pi = [raw[0] / total, raw[1] / total, raw[2] / total];
+        let vraw = [params.float("FILTER_VPI0", 0.45)?, params.float("FILTER_VPI1", 0.40)?, params.float("FILTER_VPI2", 0.15)?];
+        let vtotal = 0.0 + vraw[0] + vraw[1] + vraw[2];
+        let lf_vpi = [vraw[0] / vtotal, vraw[1] / vtotal, vraw[2] / vtotal];
+        if params.float("FILTER_VQS", 0.0)? > 0.0 && params.float("QS_RATE", 0.0)? <= 0.0 {
+            return Err("FILTER_VQS reads QS_RATE's speed: set QS_RATE".to_string());
+        }
         let position_limit = params.int("POSITION_LIMIT", 100)?;
         let exposure = params.int("EXPOSURE", 0)?;
         Ok(RidgeMaker {
@@ -904,6 +918,9 @@ impl RidgeMaker {
             lf_jump: params.float("FILTER_JUMP", 0.0)?,
             lf_jump_k: lf_jump_kernel((2 * lf_w + 1) as usize, params.float("FILTER_JUMP_MED", 6.66)?,
                                       params.float("FILTER_JUMP_SD", 0.79)?),
+            lf_vqs: params.float("FILTER_VQS", 0.0)?,
+            lf_vpi,
+            lf_vcum: [lf_vpi[0], lf_vpi[0] + lf_vpi[1], 1.0],
         })
     }
 
@@ -1361,7 +1378,11 @@ impl RidgeMaker {
         let n = self.lf_n;
         let base = self.lf_base;
         let eps = self.lf_eps;
-        let (pi, cum) = (self.lf_pi, self.lf_cum);
+        let (pi, cum) = if self.lf_vqs > 0.0 && self.qs_rate >= self.lf_vqs {
+            (self.lf_vpi, self.lf_vcum)
+        } else {
+            (self.lf_pi, self.lf_cum)
+        };
         let p = &mut self.lf_p;
         let mut total = 0.0;
         if buy {
