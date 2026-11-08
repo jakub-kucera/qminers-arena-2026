@@ -37,8 +37,10 @@ the latent c sqrt(q), round 2 0.0365, instead of the table), `f_limit_latent` (a
 ticks), scheduled jumps (`jx_rate_off` / `jx_rate_on` a second in a hidden two-state intensity chain with mean stays
 `jx_dwell_off` / `jx_dwell_on` s; lognormal sizes `jx_median`, `jx_logsd` clipped to `jx_min` / `jx_max`; inserts
 `jx_warn_k` ticks wider a side `jx_warn_s` s before each; stale orders cancelled within Exp(`jx_stale_s`) after it;
-`jx_lead_extra` informed IOC orders a second the jump's way in the `jx_lead_s` s before it, sizes at least
-`jx_lead_min`); and generic ones — `impact_scale`, `impact_delay` / `impact_tau` (a share of the impact released over
+`jx_lead_extra` informed IOC orders a second the jump's way in the `jx_lead_s` s before it, or `jx_after_extra` in the
+`jx_after_s` s after it (the real tape's: they follow the latent's jump), sizes at least `jx_lead_min`; the volatile
+state's texture: `jx_on_k` wider inserts in it, `jx_warn_sd` a lognormal warning lead, `jx_false_rate` widenings with
+no jump, `jx_diff_sd` diffusion); `--latent-out` writes the true latent every 10 ms; and generic ones — `impact_scale`, `impact_delay` / `impact_tau` (a share of the impact released over
 time), `jump_df` (Student-t sizes for the `jump_rate` jumps), `jump_stale_s`, `drift_sd` / `drift_tau` (an OU drift),
 `vol_states` / `vol_dwell_s` (a Markov volatility multiplier) and `vol_logsd` / `vol_logtau` (a log-OU one) on the
 jumps (and the impact with `vol_impact`), `k_vol` (wider inserts at a high multiplier), `place_noise` (inserts

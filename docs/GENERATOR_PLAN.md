@@ -224,3 +224,87 @@ new bid inserts plus that of the new ask inserts, halved, over 0.1 s; its noise 
 Commands (each tape about 10 s once its replay is cached):
 `uv run python -m experiments.day.gen_identify data/arena/round3/round3_public.csv --cache R3.npz --json R3.json`, then
 `uv run python -m experiments.day.gen_identify --compare R1.json R2.json R3.json`.
+
+## Phase 2 results (8 Nov, 02:25; `python/experiments/day/gen_calibrate.py`, IDEAS.md "Calibrating the generator to round 2's validation scoreboard")
+
+**tape_gen v2.** Phase 1's structure, as latent options that are all off by default (a draw without them is the same
+bytes as before):
+- `impact_sqrt`: c·√lots impact.
+- `f_limit_latent`: IOC limits at the latent ±1.
+- Scheduled lognormal jumps in a two-state intensity chain (`jx_*`).
+- Wider inserts before each jump: `jx_warn_s` / `jx_warn_k`, a lognormal lead with `jx_warn_sd`, and false alarms with
+  `jx_false_rate`.
+- The volatile state's own wider placement (`jx_on_k`) and diffusion (`jx_diff_sd`).
+- Informed IOC orders at the jump: `jx_lead_extra` before it, `jx_after_extra` after it.
+- A transient part of the impact: a negative `impact_delay`.
+- `--latent-out`: the true latent every 10 ms.
+The calibrated option sets are `gen_calibrate.PRESETS`, used as `--opts NAME`.
+
+**Against round 2's validation scoreboard** (14 server scores, 12,000-s draws, the bots in Rust or `simulator.main`):
+
+| generator | Spearman (bots) | level (draws / server) | misses |
+|---|---|---|---|
+| round 2's plain fit | 0.17 (8) | makers 5-7x, takers 0.45-0.84x, M 0 | everything but the takers' order |
+| generic jumps + drift (sd right at every horizon) | 0.64-0.76 (8) | 2-5x | M negative, makers far too rich |
+| `r2_validation` (informed IOC orders before the jump), 3 draws | **0.974 (14)** | about 0.75x (common factor 1.35) | E2 +45k against -41k; T1 / T2 a little high |
+| `r2_validation_after` (informed IOC orders after the jump), 1 draw | 0.95 (8) | about 0.82x (asinh error 0.29 against 0.59 on the same seed) | L9 under L3; M 1.1x |
+
+What made the difference:
+- the sqrt impact, the latent-priced IOC orders and the clustered jumps (the makers stop being rich);
+- stale cancels at the default 0.2 s, not Phase 1's 4-21 ms burst: a fast burst makes the makers rich and the takers
+  poor (asinh error 0.98 against 0.59), and Phase 1's race table shows the stale book drains slowly too;
+- informed IOC orders at each jump (the M-family's edge).
+
+The last needs care. Timed by the latent (`gen_calibrate jumpflow`), the real tape's 500+ lot orders run 113 / 3 the
+jump's way in the 0.1 s around the onset, but 43 / 30 from 0.5 to 0.2 s before. They follow an already-moved latent,
+so a bot sees them 0.1-0.2 s before the mid moves, never before the latent does. The scoreboard wants about 3-4 such
+orders a jump; the tape shows about 0.75 (r2 223 / 300, r3 341 / 458). With that much informed flow, a big order's
+move at 0.5 s is 2.6 ticks on the draws against 1.9 on the tape.
+
+**Round 3** (six bases on the public tape, all reproduced to the unit in Rust: L8 427,819, L3 425,321, L9 424,730, B1
+433,922, L8F 484,057, B1F 505,212; checked on 5 fresh 6,000-s draws):
+
+| preset | Spearman | draws / real | FILTER gain on L8 / B1 (real +13.1% / +16.4%) | misses |
+|---|---|---|---|---|
+| `r3_public_stats` (fitted to price statistics only) | 0.31 | 1.16-1.46 | +6.2% / +6.7% | L9, B1 overrated by 20-25% |
+| `r3_public_after` (fitted to the six scores) | **0.60** | **1.12-1.21** (\|log ratio\| after a common factor 0.020) | **+16.7% / +13.1%** | L9, B1 about 7% above L8, L3 (real: equal) |
+
+`r3_public_after`'s volatile state has smaller jumps (median 3) and diffusion (4 ticks/√s), with wider placement in
+it, warnings of varying lead and widenings with no jump after them. This answers the filter agent's finding (the
+draws' jumps were cleaner than the tape's) in the direction it pointed. Round 3's first validation score, R3-F1
++862,764 on 12,000 s, is 0.90x the public tape's rate a second: the same regime.
+
+Shared draws (data/ is ignored; each folder has a README.txt with the command and params.json):
+- `data/arena/gen/r3b/seed201-220.csv` (`r3_public_after`, 12,000 s), with seed201-203_latent.csv;
+- `data/arena/gen/r3/seed101-130.csv` (`r3_public_stats`), with seed101-103_latent.csv.
+
+## Using the generator in round 4
+
+The first hour of round 4, beside round_start:
+1. **Fit and profile the new public tape:** `uv run python -m experiments.day.tape_gen --fit D --params-out P.json`;
+   `uv run python -m experiments.day.gen_calibrate stats D` (the price sd over 1-300 s, spreads, impact by size, a big
+   order's move curve, the touch-landing test, 3+ tick jumps per 1,000 s) and `gen_calibrate jumpflow D`. Compare with round 2's
+   and round 3's rows in IDEAS.md.
+2. **Choose the starting preset:**
+   - calm, round 1's state (no 3+ tick jumps, sd at 1 s under 1.5): no preset, the plain fit;
+   - volatile: start from `r3_public_after`. Its volatile share is set by `jx_rate_on` / `jx_dwell_on`, and c by
+     `impact_sqrt`, which Phase 1's `gen_identify` estimates per tape.
+3. **Fit to the public scores of 6+ Rust bases** (5 minutes on 4 cores): put their public scores in a JSON file, then
+   `uv run python -m experiments.day.gen_calibrate search --params P.json --scoreboard S.json --bots ... --seconds 6000
+   --scale 1 --seeds 1 --around PRESET --spread 0.35 --vary impact_sqrt,jx_rate_on,jx_median,jx_after_extra,jx_diff_sd
+   --trials 15 --jobs 4 --out F.jsonl`.
+4. **Check before trusting it:** `uv run python -m experiments.day.gen_calibrate rank --opts BEST --seeds 2-6
+   --seconds 6000 --real D --bots ...`. Trust a ranking only between bots whose gap on the draws is well beyond their
+   pairwise se and whose order the check reproduces. Each validation score that lands is one more point:
+   `--scoreboard` with `--seconds 12000`.
+5. **Share the draws:** `uv run python -m experiments.day.gen_calibrate write --opts BEST --seeds 1-20 --dir
+   data/arena/gen/r4 --latent-seeds 1-3`.
+
+What it gets wrong, so far:
+- the level runs 0.75-0.85x of round 2's validation scores and 1.1-1.2x of round 3's public ones;
+- the pure takers (L9, B1) are overrated against the quoting L8 family by about 7% on round 3;
+- the informed post-jump flow is about 4x the tape's, to get the momentum family's level;
+- the mid changes a little too rarely (4.2 a second against 4.85 on round 2);
+- the 2-tick spread share is a little low (0.08-0.11 against 0.11-0.14).
+A gain that rests on the generator's own latent (the FILTER features) is partly circular: compare its gain on the
+draws with its gain on the real public tape before reading it.

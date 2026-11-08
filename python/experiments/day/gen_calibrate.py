@@ -19,8 +19,9 @@ Subcommands:
 - `score TAPE...`: the bots on given tapes (real or generated), against the scoreboard (`--target public` compares
   with round 2's public-tape scores instead, PUBLIC).
 - `draw`: `--params` (a fitted tape_gen model) with `--opts JSON` (tape_gen latent options merged in, e.g.
-  '{"jump_rate": 1, "jump_size": 1.5}', or a PRESETS name: `r2_validation`, `r3_public_stats`), `--seeds`,
-  `--seconds`; generates the draws in `--dir` and scores them.
+  '{"jump_rate": 1, "jump_size": 1.5}', or a PRESETS name: `r2_validation`, `r2_validation_after`, `r3_public_stats`,
+  `r3_public_after`), `--seeds`, `--seconds`; generates the draws in `--dir` and scores them. docs/GENERATOR_PLAN.md,
+  "Phase 2 results" and "Using the generator in round 4", say which preset is checked how well.
 - `search`: a random search over SPACE (the latent options added for v2, PRIOR for the ranges; `--trials N`, `--seeds`,
   `--seconds`, `--jobs`), each trial its own process (generate, run, score, delete the tapes), one JSON line per
   trial appended to `--out`; the best trials are printed, ranked by OBJECTIVE (asinh error + 0.5 x (1 - Spearman)).
@@ -121,7 +122,22 @@ PRESETS = {
                         "jx_dwell_on": 142.9, "jx_median": 6.66, "jx_logsd": 0.79, "jx_warn_s": 2.47, "jx_warn_k": 1.15,
                         "jx_lead_s": 0.5, "jx_lead_min": 500, "jx_rate_on": 0.4, "jx_lead_extra": 2.0, "stale_s": 0.216,
                         "impact_delay": -0.22, "impact_tau": 6.8},
+    # round 2's validation tape with the informed IOC orders AFTER each jump (Phase 1's reading; search 2, trial 1, one
+    # draw): asinh error 0.29 against 0.59 for r2_validation on the same seed, Spearman 0.95 over 8 bots, E2 negative
+    "r2_validation_after": {"impact_sqrt": 0.0365, "f_limit_latent": 1, "jx_rate_off": 0.004, "jx_dwell_off": 600,
+                            "jx_dwell_on": 200, "jx_median": 5.6, "jx_logsd": 0.95, "jx_warn_s": 2, "jx_warn_k": 1.2,
+                            "jx_rate_on": 0.3, "jx_lead_min": 500, "jx_after_extra": 20, "jx_after_s": 0.2},
+    # round 3's public tape fitted to six bots' public scores (L8, L3, L9, B1, L8F, B1F; search r3b, trial 14): the
+    # after-jump flow, smaller jumps (median 3) plus diffusion (4 ticks per sqrt(s)) in the volatile state, its wider
+    # placement, warnings of varying lead and widenings without a jump
+    "r3_public_after": {"impact_sqrt": 0.047, "f_limit_latent": 1, "jx_rate_off": 0.0046, "jx_dwell_off": 600,
+                        "jx_dwell_on": 119.2, "jx_logsd": 0.85, "jx_warn_s": 2.47, "jx_rate_on": 0.3911,
+                        "jx_lead_min": 500, "jx_after_extra": 15.5, "jx_after_s": 0.2, "stale_s": 0.1907,
+                        "impact_delay": -0.2623, "impact_tau": 6.8, "jx_median": 3.0, "jx_warn_k": 1.0, "jx_on_k": 0.4,
+                        "jx_warn_sd": 0.8, "jx_false_rate": 0.05, "jx_diff_sd": 4.0},
 }
+# Round 3's public tape (6,000 s): the Rust bases' scores (each reproduced to the unit), the r3 presets' check
+PUBLIC_R3 = {"L8": 427_819, "L3": 425_321, "L9": 424_730, "B1": 433_922, "L8F": 484_057, "B1F": 505_212}
 
 
 def parse_opts(text) -> dict:
