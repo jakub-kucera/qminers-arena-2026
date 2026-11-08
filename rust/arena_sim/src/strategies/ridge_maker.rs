@@ -3911,7 +3911,7 @@ impl Strategy for RidgeMaker {
             let source = if self.ft_src == 1 { p2_only } else { prediction };
             let signal = if self.ft_net > 0 { source - skew } else { source };
             let d = if signal > 0.0 { 1.0 } else { -1.0 };
-            let g = ProfitGate::feats(&features[..n], d, signal, 0.5 * spread_f, pg_inv, pg_jump);
+            let g = ProfitGate::feats(&features[..n], d, signal, 0.5 * spread_f, pg_inv, pg_jump, self.pg.unsigned);
             self.pg.observe(now, mid, signal, 0.5 * spread_f, g);
         }
         let bursting = now < self.burst_until;
@@ -4005,8 +4005,8 @@ impl Strategy for RidgeMaker {
             // R4-PG's vote (PG 2): each side's bar lowered by PG_K * (the gate's prediction that way - PG_G), floor 0
             if self.pg.mode == 2 && self.pg.ready() {
                 let hs = 0.5 * spread_f;
-                let up = self.pg.predict(&ProfitGate::feats(&features[..n], 1.0, signal, hs, pg_inv, pg_jump), pg_w);
-                let dn = self.pg.predict(&ProfitGate::feats(&features[..n], -1.0, signal, hs, pg_inv, pg_jump), pg_w);
+                let up = self.pg.predict(&ProfitGate::feats(&features[..n], 1.0, signal, hs, pg_inv, pg_jump, self.pg.unsigned), pg_w);
+                let dn = self.pg.predict(&ProfitGate::feats(&features[..n], -1.0, signal, hs, pg_inv, pg_jump, self.pg.unsigned), pg_w);
                 edge_up = (edge_up - self.pg.k * (up - self.pg.g)).max(0.0);
                 edge_dn = (edge_dn - self.pg.k * (dn - self.pg.g)).max(0.0);
             }
@@ -4080,7 +4080,7 @@ impl Strategy for RidgeMaker {
                 self.pg.on_signal(sign, mid);
             }
             let sign = if sign != 0 && self.pg.mode == 1 && self.pg.ready() {
-                let g = ProfitGate::feats(&features[..n], sign as f64, signal, 0.5 * spread_f, pg_inv, pg_jump);
+                let g = ProfitGate::feats(&features[..n], sign as f64, signal, 0.5 * spread_f, pg_inv, pg_jump, self.pg.unsigned);
                 if self.pg.predict(&g, pg_w) > self.pg.g {
                     sign
                 } else {

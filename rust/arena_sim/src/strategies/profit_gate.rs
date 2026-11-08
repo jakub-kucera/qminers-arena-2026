@@ -15,13 +15,17 @@ use std::collections::VecDeque;
 
 use crate::params::Params;
 
-pub const KEYS: [&str; 11] =
-    ["PG", "PG_H_MS", "PG_G", "PG_K", "PG_BIN", "PG_HOLD", "PG_CAP_MS", "PG_TMIN", "PG_OBS_MS", "PG_STATS", "PG_TAG"];
+pub const KEYS: [&str; 12] =
+    ["PG", "PG_H_MS", "PG_G", "PG_K", "PG_BIN", "PG_HOLD", "PG_CAP_MS", "PG_TMIN", "PG_OBS_MS", "PG_STATS", "PG_TAG", "PG_UNSIGNED"];
 
 const NG: usize = 72;
 
 pub struct ProfitGate {
     pub mode: i64,
+    /// PG_UNSIGNED (0: R4-PG as tested): a bitmask of main-model features that enter the gate as x, not d * x (the
+    /// direction-free ones; on R3-F5's 39: 2^24 + 2^29 + 2^30 + 2^38 = 276505296896, FLOWGRP's volume share, LIQ's
+    /// young share and young x dispersion, the filter's sd), so they can lower or raise a take's value either way
+    pub unsigned: u64,
     h_us: i64,
     pub g: f64,
     pub k: f64,
@@ -58,6 +62,7 @@ impl ProfitGate {
         Ok(ProfitGate {
             mode: params.int("PG", 0)?,
             h_us: params.int("PG_H_MS", 1000)? * 1000,
+            unsigned: params.int("PG_UNSIGNED", 0)? as u64,
             g: params.float("PG_G", 0.0)?,
             k: params.float("PG_K", 0.0)?,
             bin: params.int("PG_BIN", 0)? > 0,
@@ -93,11 +98,11 @@ impl ProfitGate {
     }
 
     /// the gate's features for direction d: d * x, d * signal, half spread, d * inventory / exposure, jump, 1
-    pub fn feats(x: &[f64], d: f64, signal: f64, hs: f64, inv: f64, jump: bool) -> [f64; NG] {
+    pub fn feats(x: &[f64], d: f64, signal: f64, hs: f64, inv: f64, jump: bool, unsigned: u64) -> [f64; NG] {
         let mut g = [0.0; NG];
         let n = x.len();
         for i in 0..n {
-            g[i] = d * x[i];
+            g[i] = if i < 64 && (unsigned >> i) & 1 == 1 { x[i] } else { d * x[i] };
         }
         g[n] = d * signal;
         g[n + 1] = hs;
