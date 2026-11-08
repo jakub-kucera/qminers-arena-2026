@@ -1,0 +1,49 @@
+== profile (2,412,805 rows replayed in 5.1 s)
+time     0.001 .. 5999.994 s, length 6,000.0 s (1.67 h), 402.1 events/s, 5.77 mid changes/s
+spread   time share 1 tick 81.6%, 2 ticks 14.0%, 3+ ticks 4.4%, one-sided 0.0%, empty 0.0%
+depth    median lots a side at the touch 733.5, within 5 ticks 3895.5 (sampled each second)
+trades   8.827 aggressive orders/s (52,961; 204,124 prints, 1194.10 lots/s); size median 57, p90 329, mean 135.3
+markout  the mid's move in ticks in the event's direction (mean / median; + momentum, - reversion), from the mid just after it
+  after                          n         impact            1 s            5 s           30 s           60 s
+  trade (all)               52,956   +0.14 / +0.0   +0.72 / +0.0   +0.68 / +0.5   +0.43 / +0.0   +0.51 / -0.0
+  trade <= 57 lots          26,526   +0.07 / -0.0   +0.42 / +0.0   +0.43 / -0.0   +0.38 / +0.0   +0.57 / +0.0
+  trade > 57 lots           26,430   +0.22 / +0.0   +1.02 / +0.5   +0.94 / +0.5   +0.47 / -0.0   +0.45 / -0.0
+  1-tick mid move           33,083              -   +1.07 / +0.5   +0.95 / +0.5   +0.38 / +0.5   +0.45 / +0.0
+  1-tick move, no trade     22,829              -   +1.08 / +0.5   +1.00 / +0.5   +0.37 / +0.0   +0.50 / -0.0
+verdict  WEAK (+0.68 ticks at 5 s, mean spread ~1.2): following pays no spread; make markets (A0, pmaker, F1)
+
+== candidates (each at its file's defaults, the session set to the data's length; 2,412,805 rows)
+ #  candidate         pnl   first 75%  last 25%     max dd    fills     volume  |inv| q997  breach  rej  run s  s @8.8M
+ 1  R2_L8         427,819     316,872   110,947     14,985   49,494    499,390         100       0    0  203.1      741         SLOW
+ 2  R2_L3         425,321     317,700   107,621     14,616    3,789    452,916         100       0    0  189.4      691         SLOW
+ 3  R2_T2         419,613     315,451   104,162     10,563  105,576    531,714         100       0    0  180.2      657         SLOW
+ 4  R2_L1         404,789     300,012   104,777     12,046  105,119    555,234         100       0    0  224.0      817         SLOW
+ 5  R2_H1         393,037     301,035    92,002     10,378  104,026    646,260         100      59    0  172.2      628  SLOW BREACH
+ 6  R2_M4         287,039     221,137    65,902     16,488    1,803    276,700         100       0    0   16.9       62
+ 7  tmpl_mom      194,956     155,842    39,114     19,602    3,379    258,914         100       0    0   48.4      176
+ 8  R2_V2         111,293      69,803    41,491      9,446   21,477    865,634         100   8,206    0  176.9      645  SLOW BREACH
+ 9  fade                0           0         0          0        0          0           0       0    0    9.4       34
+10  pmaker         -1,310        -250    -1,060      3,620        2         20          10       0    0   10.3       37
+11  A0            -29,173     -17,894   -11,279     29,270    8,518     41,152          50       0    0   52.4      191
+12  F1            -63,602     -48,722   -14,880     64,634   24,763    122,128          24       0    0   16.0       58
+13  mmaker        -84,869     -66,791   -18,078     85,069   12,042    116,200          50       0    0   11.0       40
+14  M2           -149,982    -122,035   -27,947    167,661    6,465    930,052         100       0    0   17.7       65
+15  R1_F8        -361,122    -290,073   -71,049    373,821   39,566  1,098,780         100       0    0   44.3      162
+16  R1_F7        -361,658    -286,590   -75,068    373,354   33,531  1,071,365         100       0    0   35.0      128
+17  R1_F6        -377,403    -299,966   -77,437    389,505   31,127  1,068,132         100       0    0   28.9      105
+18  R1_F6b       -380,674    -302,570   -78,104    392,092   36,477  1,084,932         100       0    0   32.3      118
+19  R1_C11       -446,919    -343,904  -103,015    453,417   12,666  1,149,560         100   4,828    0  167.1      609  SLOW BREACH
+20  R1_C1        -451,369    -351,342  -100,027    461,161   21,844  1,212,074         100       0    0  101.2      369         SLOW
+21  R1_F5        -464,083    -359,393  -104,690    474,147   21,590  1,386,840         100       0    0   27.5      100
+22  R1_C5        -469,378    -366,517  -102,862    475,821   11,777  1,177,890         100   6,811    0  102.6      374  SLOW BREACH
+23  R1_F3        -526,223    -416,132  -110,091    530,188   17,254  1,487,168         100       0    0   25.1       91
+24  taker        -646,158    -485,049  -161,109    646,207   41,216  1,407,696          50       0    0   10.3       37
+25  runner     -3,568,166  -2,648,257  -919,909  3,568,166   32,527  4,896,924         100       0    0   10.6       39
+26  M1         -3,568,166  -2,648,257  -919,909  3,568,166   32,527  4,896,924         100       0    0   10.9       40
+run s: wall time in the pool (contention inflates it); s @8.8M: projected to a real round's rows; SLOW: over 240 s here, at risk in the sandbox's 15 minutes on a 2-3x slower CPU
+
+== next grids (the top two by PnL)
+uv run python -m arena.qgrid python/bots/qminers/candidates/r2_L8_quote_switch.py data/arena/round3/round3_public.csv  --grid QS_RATE=1.5,2.5,3.5 --grid TAKE_MAXSPREAD=1,2 --holdout 0.25 --jobs 6 --sort holdout
+uv run python -m arena.qgrid python/bots/qminers/candidates/r2_L3_taker_pure.py data/arena/round3/round3_public.csv  --grid TAKE_MAXSPREAD=1,2 --holdout 0.25 --jobs 6 --sort holdout
+
+done in 364.8 s
