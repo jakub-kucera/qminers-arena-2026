@@ -39,7 +39,7 @@ def title(cell: str) -> str:
 def short(text: str, limit: int = TRIGGER) -> str:
     text = re.sub(r"<br>.*", "", text).strip()
     cut = min((i for i in (text.find("; "), text.find(". ")) if i > 0), default=len(text))
-    text = text[:cut].rstrip(".;")
+    text = text[:cut].rstrip(".; ")
     return text if len(text) <= limit else text[: limit - 1].rsplit(" ", 1)[0].rstrip(",;:") + " …"  # whole words
 
 
