@@ -46,6 +46,19 @@ time), `jump_df` (Student-t sizes for the `jump_rate` jumps), `jump_stale_s`, `d
 jumps (and the impact with `vol_impact`), `k_vol` (wider inserts at a high multiplier), `place_noise` (inserts
 centred on a noisy latent). `--impact-cap` keeps a fitted size bin's impact above 1 tick.
 
+**v3 size laws (opt-in):** `latent.f_size_law` and `latent.g_size_law` replace the
+empirical size tables with named laws, measured by `gen_inventory`. Supported:
+`{"law": "lognormal", "mu": 4.1, "sigma": 1.4, "rounding": "round"}` (normal
+parameters of log size, rounded then clipped at one; floor/ceil also supported),
+and `{"law": "uniform", "low": 20, "high": 40}` (inclusive integer bounds).
+The F law also supplies informed orders, conditioned on `jx_lead_min`; G's law
+applies at every offset. Round 3's G sizes/lifetimes are a mixture: do not replace
+them with a single fitted lognormal. Absent these options, every v2 draw is unchanged.
+`latent.impact_traded` (default false) bases an IOC's impact on its filled lots,
+including zero impact when nothing trades. Phase 1's impact regression uses filled
+lots; the v2 implementation uses requested lots. This option permits an explicit
+comparison without silently changing calibrated presets.
+
     uv run python -m experiments.day.tape_gen --fit data/arena/round1/round1.csv --params-out P.json
     uv run python -m experiments.day.tape_gen --params P.json --seed N --seconds 12000 --out tape.csv [--opts JSON] \
         [--latent-out latent.csv]   # the true latent mid every 10 ms, the jump chain's state, the jumps since the last row
@@ -201,6 +214,56 @@ class Sampler:
         return self.buffer.pop()
 
 
+class SizeLawSampler:
+    """Positive integer sizes from an explicit law; optional lower conditioning.
+
+Uses its own random stream in generate(), so opting into a law does not consume
+the v2 extension stream. Rejection conditioning preserves the law above minimum;
+clamping would incorrectly create an atom at jx_lead_min.
+"""
+
+    def __init__(self, spec: dict, rng: np.random.Generator, minimum: int = 1):
+        self.spec, self.rng = spec, rng
+        self.minimum = max(1, int(minimum))
+        self.buffer = []
+        self.law = spec["law"]
+        if self.law == "lognormal":
+            self.mu, self.sigma = float(spec["mu"]), float(spec["sigma"])
+            self.rounding = spec.get("rounding", "round")
+            if self.rounding not in ("floor", "round", "ceil"):
+                raise ValueError("size-law rounding must be floor, round or ceil")
+            if not math.isfinite(self.mu) or not math.isfinite(self.sigma) or self.sigma <= 0:
+                raise ValueError("lognormal size law needs finite mu and positive finite sigma")
+            if self.minimum > 1:
+                bound = self.minimum + {"floor": 0, "round": -.5, "ceil": -1}[self.rounding]
+                survival = .5 * math.erfc((math.log(bound) - self.mu) / (self.sigma * math.sqrt(2)))
+                if survival < 1e-4:
+                    raise ValueError("size-law lower conditioning is too far into the tail (probability < 1e-4)")
+        elif self.law == "uniform":
+            self.low, self.high = int(spec["low"]), int(spec["high"])
+            if self.low != spec["low"] or self.high != spec["high"] or self.low < 1 or self.high < self.low:
+                raise ValueError("uniform size law needs positive inclusive integer low <= high")
+            self.low = max(self.low, self.minimum)
+            if self.low > self.high:
+                raise ValueError("size-law minimum exceeds the uniform upper bound")
+        else:
+            raise ValueError(f"unsupported size law: {self.law!r}")
+
+    def draw(self) -> int:
+        while not self.buffer:
+            if self.law == "uniform":
+                values = self.rng.integers(self.low, self.high + 1, 4096)
+            else:
+                raw = self.rng.lognormal(self.mu, self.sigma, 4096)
+                rounded = {"floor": np.floor, "round": np.rint, "ceil": np.ceil}[self.rounding](raw)
+                if not np.isfinite(rounded).all() or np.any(rounded >= 2.0 ** 63):
+                    raise ValueError("size law produced a non-finite or out-of-int64 quantity")
+                values = np.maximum(1, rounded).astype(np.int64)
+                values = values[values >= self.minimum]
+            self.buffer = values.tolist()
+        return self.buffer.pop()
+
+
 
 
 def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Path | None = None) -> dict:
@@ -217,6 +280,12 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
     impact_probs = [row[1] for row in latent["impact"]]
     sizes = {c: Sampler(params["sizes"][c], rng) for c in CLASSES}
     f_sizes = Sampler(params["f_sizes"], rng)
+    size_rng = np.random.default_rng([seed, 3])
+    if latent.get("g_size_law"):
+        g_sampler = SizeLawSampler(latent["g_size_law"], size_rng)
+        sizes = {c: g_sampler for c in CLASSES}
+    if latent.get("f_size_law"):
+        f_sizes = SizeLawSampler(latent["f_size_law"], size_rng)
     f_offsets = Sampler(params["f_offsets"], rng)
     lq = np.array(params["lifetime_quantiles"])
     grid = np.linspace(0, 1, len(lq))
@@ -260,6 +329,7 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
     place_noise = latent.get("place_noise", 0.0)  # each insert centred on the latent + N(0, place_noise) ticks
     jump_stale = latent.get("jump_stale_s")  # the stale cancels after the latent's own jumps within Exp(jump_stale_s), not stale_s: how fast the book shows them
     impact_c = latent.get("impact_sqrt", 0.0)  # > 0: a trade of q lots moves the latent impact_c sqrt(q) ticks (Phase 1), not the table
+    impact_traded = latent.get("impact_traded", False)
     f_lim = latent.get("f_limit_latent", 0.0)  # > 0: an IOC's limit is the latent mid +- f_lim ticks, not the touch + an offset
     # scheduled jumps (Phase 1, round 2): lognormal sizes (median jx_median, log-sd jx_logsd, clipped to [jx_min, jx_max]),
     # a random sign, at jx_rate_off / jx_rate_on a second in a hidden two-state intensity chain (mean stays jx_dwell_off /
@@ -307,6 +377,8 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
     after = []  # (time, side) of the informed orders after the last jumps, latest first
     warn = False
     f_sizes2 = Sampler([row for row in params["f_sizes"] if row[0] >= jx_lead_min] or params["f_sizes"], rng2)
+    if latent.get("f_size_law") and (jx_lead_extra or jx_after_extra):
+        f_sizes2 = SizeLawSampler(latent["f_size_law"], size_rng, jx_lead_min)
     f_offsets2 = Sampler(params["f_offsets"], rng2)
 
     def schedule(now: float) -> None:
@@ -334,10 +406,12 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
         price = opp + e if side == 0 else opp - e
         if f_lim:
             price = math.floor(level + f_lim + 0.5) if side == 0 else math.ceil(level - f_lim - 0.5)
-        book.insert(oid, side, price, q, True)
+        traded = book.insert(oid, side, price, q, True)
         lines.append(f"{now:.6f},Insert,{oid},{'B' if side == 0 else 'A'},{q},{price},F\n")
         oid += 1
-        prob = impact_c * math.sqrt(q) if impact_c else impact_probs[min(len(impact_probs) - 1, np.searchsorted(impact_sizes, q))]
+        impact_q = traded if impact_traded else q
+        prob = (impact_c * math.sqrt(impact_q) if impact_c else
+                impact_probs[min(len(impact_probs) - 1, np.searchsorted(impact_sizes, impact_q))]) if impact_q else 0.0
         imp = prob * impact_scale * (mult if vol_impact else 1.0)
         shift(imp if side == 0 else -imp, now)
 
@@ -483,9 +557,11 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
                 price = opp + e if side == 0 else opp - e
                 if f_lim:  # the limit at the latent mid +- f_lim (it may not reach a lagging touch: no trade, impact all the same)
                     price = math.floor(level + f_lim + 0.5) if side == 0 else math.ceil(level - f_lim - 0.5)
-                book.insert(oid, side, price, q, True)
+                traded = book.insert(oid, side, price, q, True)
                 lines.append(f"{t:.6f},Insert,{oid},{'B' if side == 0 else 'A'},{q},{price},F\n")
-                prob = impact_c * math.sqrt(q) if impact_c else impact_probs[min(len(impact_probs) - 1, np.searchsorted(impact_sizes, q))]
+                impact_q = traded if impact_traded else q
+                prob = (impact_c * math.sqrt(impact_q) if impact_c else
+                        impact_probs[min(len(impact_probs) - 1, np.searchsorted(impact_sizes, impact_q))]) if impact_q else 0.0
                 if continuous:  # the latent mid moves by the bin's mean impact; the reference bid is its floor
                     imp = prob * impact_scale * (mult if vol_impact else 1.0)
                     if delay:  # part of it released later, by the timed update

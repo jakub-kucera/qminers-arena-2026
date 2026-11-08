@@ -313,3 +313,125 @@ draws with its gain on the real public tape before reading it.
 
 From round 3 on, the generator work moves to its own Claude session; its prompt is `docs/GENERATOR_SESSION_PROMPT.md`
 (the data inventory, what is known, the open discrepancies, the method, the deliverables and the round-4 playbook).
+
+## Raw-stream identification (8 Nov, gen-v3)
+
+`gen_inventory` measures raw CSV fields without assuming a latent/book model. The compact table is
+`docs/GENERATOR_COMPONENTS.json`; it records input SHA256s, candidate-law likelihoods, conditional 95% intervals,
+half-tape fits, and observed lifetime/size dependence. Reproduce the table from the repository root:
+
+```sh
+uv run python -m experiments.day.gen_inventory r1=data/arena/round1/round1.csv r2=data/arena/round2/round2_public.csv r3=data/arena/round3/round3_public.csv sample1=data/sample.csv sample2=data/arena/playground/sample_v2.csv r1_private=data/arena/round1/private_reconstructed.csv --reconstructed r1_private --out data/arena/gen/gen_v3_inventory.json --summary-out docs/GENERATOR_COMPONENTS.json
+```
+
+- Public rounds 1-3: every insert increments the shared OrderId by exactly one, across both G and F orders.
+  Every timestamp has six decimals and is strictly increasing, with a minimum gap of 1 microsecond. This supports
+  one shared ID allocator and a serialization rule; it does not identify how many agents produced the orders.
+- **IOC sizes fit a rounded lognormal**, clipped at one: `max(1, round(exp(N(mu,sigma))))`.
+  The (mu, sigma) estimates are r1 (4.10576, 1.39594), r2 (4.10438, 1.40237), r3 (4.09358, 1.39656).
+  CDF distances are 0.00186, 0.00224, 0.00181. Flooring loses 101.5 / 65.5 / 56.2 AIC units; the rounded
+  Lomax (a genuine power-law tail) loses 2706.7 / 1519.1 / 1591.2. The earlier Hill estimate alone did not identify
+  a Pareto law. The three estimates are compatible with shared settings; the original code's exact constants
+  remain unproved. Confidence intervals condition on the fitted law and iid observations.
+- **Base limit sizes also fit a rounded lognormal**: r1 (2.65811, 1.79913), r2 (2.65686, 1.80280), with CDF
+  distances 0.00039 / 0.00105. Flooring loses 9074 / 4583 AIC units. This replaces a large empirical table with
+  two parameters and an explicit rounding rule, and permits tail values beyond the observed maximum.
+- **Round 3's G population is different.** Its rate is 196.39/s versus 178.31/s on r2. A single lognormal's best
+  CDF distance is 0.01117 (roughly ten times the r2 discrepancy), and its apparent preference for flooring should
+  not be interpreted as a changed rounding rule. There are 3,755 observed G lifetimes above 10 s, all with sizes
+  53-406, median 153; r1/r2 have none. The size law and cancellation clock need a joint population model before
+  a new round-3 preset is justified. Simply enlarging the base G law loses this distinction.
+- Samples are structurally different: the original sample has G rate 7.38/s and sizes uniform 10-40; sample_v2
+  has G rate 179.66/s and sizes uniform 20-40, F rate 6.00/s with lognormal (3.71155, 1.39968). sample_v2 has
+  100,561 G inserts without observed cancels, so its lifetime censoring needs separate investigation. Neither
+  sample is used to choose bots. The private reconstruction has missing IOC quantities and imputed cancels;
+  its fitted IOC/cancel laws cannot identify the original generator's parameters.
+
+`tape_gen` now accepts optional `latent.f_size_law` and `latent.g_size_law` objects: a `lognormal` with
+`mu`, `sigma`, and `rounding`, or an inclusive integer `uniform` with `low`, `high`. F's law also supplies
+post-jump informed orders **conditioned** on `jx_lead_min` (not clamped to it). All existing presets retain their
+empirical tables and their byte-identical draws; a base draw and `r3_public_after` are pinned by SHA256 tests.
+For a component experiment, add `--opts '{"f_size_law":{"law":"lognormal","mu":4.09358,"sigma":1.39656,"rounding":"round"}}'`
+to `tape_gen` with an existing full params file. This is a size-law correction, not a claim of improved bot ranking.
+
+Next: identify the extra round-3 populations jointly by size, lifetime and placement; test PnL-only recovery
+against an existing public full-logs run before treating server PnL curves as recovered market prices.
+
+## The PnL inversion check (8 Nov, gen-v3)
+
+The proposed direct recovery of a signed 1-s mid path from PnL alone does **not** pass the local check.
+`gen_pnl_probe` reuses the public F1/r3 and L3/r2 full logs, reproduces every recorded PnL sample with **zero
+accounting error**, and measures the approximation against the actual market book from that run:
+
+```sh
+uv run python -m experiments.day.gen_pnl_probe logs/r3_F1_full logs/r2_L3_full --curves data/arena/round3/r3_F1_latent_filter_res data/arena/round3/r3_F3_latent_filter_b1_res data/arena/round2/r2_L3_taker_pure_res --out data/arena/gen/gen_v3_pnl_probe.json
+```
+
+If the local logs are absent, generate them with `exchange-simulator` and the corresponding committed candidate
+on its public tape (the probe's docstring gives F1's exact command). No fresh bot runs are needed when they exist.
+
+| Local test | F1 on r3 public | L3 on r2 public |
+|---|---:|---:|
+| Correlation, signed dPnL/100 versus signed mid change | -0.171 | 0.050 |
+| Correlation, absolute dPnL/100 versus absolute mid change | 0.925 | 0.864 |
+| Signed RMSE using **oracle** starting inventory, abs(position) >= 95 | 2.85 ticks | 2.64 ticks |
+| Same oracle, also requiring no user fill in the second | 0.48 ticks | 0.95 ticks |
+| Correlation of squared PnL/100 with squared mid moves in 60-s blocks | 0.957 | 0.802 |
+
+The missing position sign, intrasecond trades and liquidation-depth marking prevent the simple inversion.
+`result.json.mark_price` is an inventory-dependent liquidation VWAP (or last trade when flat), **not an end mid**:
+F1's public mark is 9872 versus mid 9872.5, L3's 9690 versus mid 9689.5. These checks reject this shortcut, not every
+possible inverse model using deterministic bot policies and multiple runs.
+
+What survives is a **PnL-derived volatility proxy**, to compare the same bot across tapes and to add to the
+simulation-based calibration objective. The one-second RMS of dPnL/100 is:
+- L3: r2 public **3.471**, validation **4.789**, a **1.380x** ratio;
+- F1: r3 public **4.082**, validation **4.280**, a **1.048x** ratio;
+- F3: r3 validation **4.156** (no matching F3 public full-log check here).
+
+The JSON includes 60-s proxy trajectories and counts of large proxy steps. These are not recovered prices,
+jump counts or exact volatility parameters. On the public checks, the squared proxy underestimates true squared
+mid moves by about 2.4 (r2) / 3.4 (r3) ticks²/s; do not apply one universal correction across bots or regimes.
+Use the same proxy computed from generated bot runs to fit the validation curves directly.
+
+## Filled-volume impact ablation (8 Nov, gen-v3)
+
+Phase 1 regresses impact on filled lots, while v2 applies it to requested lots. `tape_gen` now exposes
+`latent.impact_traded` (off by default) for this distinction, including zero impact for unfilled IOC orders.
+Both ordinary and informed IOC orders use it. The original default draws remain byte-identical.
+`gen_identify` also reports observed moves and standard errors for zero-filled isolated orders: r3 has 228,
+mean -0.120 ticks their way (SE 0.0403). This is conditional evidence, not a causal estimate of their own impact.
+On the 6,598 isolated orders the sqrt regression residual variance is 0.3522 using fills versus 0.3690 using
+requested size, enough to warrant testing the distinction.
+
+**The replacement preset fails.** All six Rust public scores reproduced to the unit before the comparison.
+Three fresh 6,000-s seeds (301-303), same seed set for both arms, gave:
+
+| Measure | Existing r3_public_after | Add impact_traded=true | Real r3 public |
+|---|---:|---:|---:|
+| L8 mean PnL | 457,399 | 803,328 | 427,819 |
+| L9 mean PnL | 490,045 | 823,200 | 424,730 |
+| B1F mean PnL | 560,290 | 886,413 | 505,212 |
+| Six-bot Spearman | 0.60 | 0.60 | — |
+| Asinh score error | 0.108 | 0.620 | 0 |
+| FILTER gain on L8 / B1 | 20.3% / 15.8% | 9.3% / 7.8% | 13.1% / 16.4% |
+
+Yet the first seed's big-order move curve improves markedly: at 0.5 / 5 s it changes from 2.78 / 3.03 ticks to
+1.87 / 1.94, versus real 1.90 / 2.05. Its 1-tick spread share worsens from 0.901 to 0.912 (real 0.818), and
+mid changes/s from 6.283 to 6.510 (real 5.774). These structural checks are one seed only. This is why matching
+one impact curve is insufficient: the joint trading opportunities remain wrong. Keep the option for model
+experiments; do not promote this arm or label its tapes r3c.
+
+Reproduce from the root (build `arena-sim` first if absent). `PRESET:JSON` is now supported by
+`gen_calibrate --opts` and `--around`, so an ablation can be specified without copying or editing a preset:
+
+```sh
+cargo build --release -p arena_sim --manifest-path rust/Cargo.toml
+uv run python -m experiments.day.tape_gen --fit data/arena/round3/round3_public.csv --params-out data/arena/gen/v3_r3_params.json
+uv run python -m experiments.day.gen_calibrate rank --params data/arena/gen/v3_r3_params.json --opts r3_public_after --bots L8,L3,L9,B1,L8F,B1F --seeds 301-303 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_check/baseline --out data/arena/gen/v3_check/baseline_scores.json
+uv run python -m experiments.day.gen_calibrate rank --params data/arena/gen/v3_r3_params.json --opts 'r3_public_after:{"impact_traded":true}' --bots L8,L3,L9,B1,L8F,B1F --seeds 301-303 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_check/traded --out data/arena/gen/v3_check/traded_scores.json
+uv run python -m experiments.day.gen_calibrate stats data/arena/round3/round3_public.csv data/arena/gen/v3_check/baseline/rank_6000s_301.csv data/arena/gen/v3_check/traded/rank_6000s_301.csv --jobs 2
+```
+
+The existing generated files and score JSONs are in `data/arena/gen/v3_check/`. Use a fresh output directory for
+a changed parameter set: `gen_calibrate` reuses existing tape paths without validating their parameters.
