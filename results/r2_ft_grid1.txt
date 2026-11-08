@@ -1,0 +1,40 @@
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:169:5
+    |
+168 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+169 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+55 runs (54 cells + baseline, 1 files) on 8 threads (Rust)
+done in 106.79 s
+rank  FT_EDGE  SKEW_K  EXPOSURE  DEAD_ZONE       pnl    in 75%  out 25%     nbhd   max dd  breach   fills     volume  |inv| q997  pnl se  rej  cxl rej
+base  (as is)                               -251,473  -193,067  -58,407        -  280,774   3,550  12,685  1,228,294         100  31,213    0      213  !
+   1      0.1   0.025        30        0.3    35,046    22,833   12,213   22,804   17,436       0  14,791    620,766          30  10,009    0      279
+   2     0.25   0.025        30       0.18    31,066    19,871   11,195   16,759   19,220       0  12,352    522,008          30   8,711    0      258
+   3     0.25   0.025        30        0.3    28,418    23,430    4,988   20,455   20,044       0  14,068    582,192          30  12,440    0      266
+   4      0.1   0.025        30       0.18    27,584    19,691    7,893   21,250   15,874       0  13,067    555,338          30  10,303    0      272
+   5     0.25     0.1        30        0.3    24,033    15,474    8,559    1,692   23,636       0  15,868    656,328          30  10,235    0      288
+   6     0.25     0.1        30       0.18    19,740    14,800    4,940      638   21,455       0  14,333    605,300          30  10,981    0      298
+   7      0.5   0.025        30        0.3    13,699     8,678    5,021      984   30,000       0  13,232    546,976          30  10,716    0      241
+   8      0.1     0.1        30        0.3    13,581    10,711    2,870  -13,591   21,689       0  17,106    721,588          30  11,623    0      326
+   9      0.5   0.025        30       0.18     9,965     7,400    2,565      537   28,373       0  11,557    491,664          30  10,669    0      239
+  10      0.1     0.1        30       0.18     9,672     8,886      786  -13,416   19,893       0  15,231    651,494          30  11,638    0      309
+  11      0.1   0.025        60        0.3     9,393     1,550    7,843   -8,258   47,277   4,680  16,673  1,135,494          60  19,117    0      263  !
+  12      0.5     0.1        30        0.3     8,457     2,948    5,509   -5,909   32,574       0  14,530    596,634          30   9,006    0      275
+  13      0.5     0.1        30       0.18     7,845     2,205    5,640   -6,480   31,668       0  13,095    551,530          30   9,044    0      279
+  14      0.1   0.025        60       0.18     2,883     7,514   -4,631  -11,295   50,743   6,150  14,616  1,017,586          60  23,984    0      273  !
+  15     0.25   0.025        60        0.3    -9,531    -3,784   -5,746  -18,536   67,716   5,149  15,450  1,038,896          60  24,882    0      284  !
+  ... 39 more (--top, or --out for all)
+
+best by pnl      FT_EDGE=0.1, SKEW_K=0.025, EXPOSURE=30, DEAD_ZONE=0.3  (35,046)
+best by holdout  FT_EDGE=0.1, SKEW_K=0.025, EXPOSURE=30, DEAD_ZONE=0.3  (12,213)
+best by nbhd     FT_EDGE=0.1, SKEW_K=0.025, EXPOSURE=30, DEAD_ZONE=0.3  (22,804)
+all measures agree
+! breach penalty in 43 cells (|position| over the limit costs 10,000 a second): base | FT_EDGE=0.1, SKEW_K=0.025, EXPOSURE=60, DEAD_ZONE=0.18 | FT_EDGE=0.1, SKEW_K=0.025, EXPOSURE=60, DEAD_ZONE=0.3 | FT_EDGE=0.1, SKEW_K=0.025, EXPOSURE=100, DEAD_ZONE=0.18 | FT_EDGE=0.1, SKEW_K=0.025, EXPOSURE=100, DEAD_ZONE=0.3 | ... 38 more
+! the best cell by pnl has FT_EDGE=0.1, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+! the best cell by pnl has SKEW_K=0.025, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+! the best cell by pnl has EXPOSURE=30, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+wrote results/r2_ft_grid1.csv

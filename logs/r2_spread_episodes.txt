@@ -1,0 +1,40 @@
+rows 2,193,064; two-tick episodes 7,717; improvers 15,011; clears 13,862
+two-tick episodes by how they opened x who closed: n, median duration ms, p90 ms, median closer size, mid move 1 s after the close toward the moved side (+ = continued)
+  cancel /     moved-back: n    624  dur med    63.0 p90    255.7  closer size med    12  move1s -0.280
+  cancel / other-followed: n  2,080  dur med    16.2 p90    110.8  closer size med    15  move1s +0.639
+   trade /     moved-back: n  1,712  dur med    19.3 p90    135.6  closer size med    14  move1s -0.237
+   trade / other-followed: n  3,301  dur med    14.5 p90     82.3  closer size med    15  move1s +0.333
+price-improving inserts: by side, n, median lots, mean lots, mid move at 1 s and 5 s in the insert's direction (+ = the price went the way the improver leaned)
+  B: n  7,432  lots med    14 mean   68.7  move1s +1.073  move5s +0.533
+  A: n  7,579  lots med    14 mean   71.1  move1s +1.442  move5s +2.498
+  improver lots p50/p75/p90/p99: 14 / 47 / 140 / 890
+order-flow imbalance over the last 300 ms at the touch (dBid - dAsk lots), quintiles: n, mean OFI, mid move at 1 s, 5 s
+  q1: n   8,146  ofi  -2961.3  move1s -0.322  move5s -0.455
+  q2: n   8,146  ofi   -808.3  move1s -0.265  move5s -0.641
+  q3: n   8,146  ofi    -11.6  move1s -0.066  move5s -0.204
+  q4: n   8,146  ofi   +789.1  move1s +0.137  move5s -0.081
+  q5: n   8,146  ofi  +2959.8  move1s +0.216  move5s +0.038
+touch imbalance (bid - ask)/(bid + ask) quintiles: mean imb, mid move at 1 s, 5 s
+  q1: n   8,146  imb -0.872  move1s -0.221  move5s -0.443
+  q2: n   8,146  imb -0.472  move1s -0.035  move5s -0.224
+  q3: n   8,146  imb -0.019  move1s -0.076  move5s -0.153
+  q4: n   8,146  imb +0.446  move1s -0.038  move5s -0.216
+  q5: n   8,146  imb +0.864  move1s +0.070  move5s -0.307
+touch clears: by how (trade/cancel) x the depth behind the touch before it: n, mid move at 1 s in the clear's direction (+ = continued beyond the first tick), share that moved 2+ ticks by 1 s
+   trade depth behind [0,100): n  1,734  move1s +1.436  2+ ticks 48.7%
+   trade depth behind [100,300): n  1,312  move1s +1.700  2+ ticks 45.7%
+   trade depth behind [300,800): n  2,111  move1s +1.217  2+ ticks 38.7%
+   trade depth behind [800,2000): n  2,503  move1s +1.112  2+ ticks 30.0%
+   trade depth behind [2000,1000000000): n  1,244  move1s +0.894  2+ ticks 28.8%
+  cancel depth behind [0,100): n  1,780  move1s +2.316  2+ ticks 53.3%
+  cancel depth behind [100,300): n    805  move1s +1.400  2+ ticks 44.6%
+  cancel depth behind [300,800): n    971  move1s +1.313  2+ ticks 36.0%
+  cancel depth behind [800,2000): n    963  move1s +0.753  2+ ticks 27.8%
+  cancel depth behind [2000,1000000000): n    439  move1s +0.776  2+ ticks 23.5%
+mid change autocorrelation (lag 1) at horizons 1, 5, 10, 30, 60, 300 s
+     1 s: n  5,998  autocorr +0.034  sd 3.79
+     5 s: n  1,198  autocorr +0.001  sd 8.58
+    10 s: n    598  autocorr +0.086  sd 12.06
+    30 s: n    198  autocorr -0.030  sd 23.20
+    60 s: n     98  autocorr +0.067  sd 33.19
+   300 s: n     18  autocorr +0.504  sd 82.89

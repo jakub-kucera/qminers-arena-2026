@@ -1,0 +1,73 @@
+600000 samples every 10 ms; train t < 4500 s
+
+== horizon 0.1 s (mean |move| 0.237 ticks)
+A tau  0.1: corr in +0.161 out +0.118  slope +0.308  R2 out +0.014  out move by in-decile: -0.28 -0.16 -0.09 -0.03 +0.01 +0.04 +0.06 +0.09 +0.17 +0.26
+A tau  0.3: corr in +0.124 out +0.091  slope +0.305  R2 out +0.008  out move by in-decile: -0.21 -0.13 -0.07 -0.06 +0.03 +0.07 +0.08 +0.08 +0.12 +0.17
+A tau  1.0: corr in +0.079 out +0.056  slope +0.300  R2 out +0.003  out move by in-decile: -0.12 -0.10 -0.04 -0.04 +0.07 +0.03 +0.06 +0.06 +0.08 +0.10
+A tau  3.0: corr in +0.049 out +0.037  slope +0.302  R2 out +0.001  out move by in-decile: -0.06 -0.06 -0.05 +0.06 -0.02 +0.01 +0.04 +0.03 +0.08 +0.07
+R tau  0.1: corr in +0.222 out +0.161  slope +0.280  R2 out +0.026  out move by in-decile: -0.45 -0.12 +0.01 +0.00 -0.01 +0.00 +0.03 +0.05 +0.12 +0.45
+R tau  0.3: corr in +0.167 out +0.120  slope +0.279  R2 out +0.014  out move by in-decile: -0.34 -0.10 -0.02 +0.00 +0.02 -0.00 +0.04 +0.08 +0.12 +0.29
+R tau  1.0: corr in +0.106 out +0.070  slope +0.278  R2 out +0.005  out move by in-decile: -0.20 -0.03 -0.04 +0.00 -0.00 +0.01 +0.05 +0.06 +0.08 +0.15
+R tau  3.0: corr in +0.066 out +0.045  slope +0.285  R2 out +0.002  out move by in-decile: -0.11 +0.00 -0.04 -0.00 -0.00 +0.02 +0.01 +0.03 +0.08 +0.10
+L tau  0.1: corr in +0.019 out +0.017  slope +0.030  R2 out +0.000  out move by in-decile: -0.15 -0.09 -0.04 +0.01 +0.01 +0.02 +0.04 +0.06 +0.09 +0.14
+L tau  0.3: corr in -0.067 out -0.018  slope -0.063  R2 out -0.003  out move by in-decile: +0.11 -0.08 -0.04 -0.01 +0.04 +0.01 +0.04 +0.05 +0.12 -0.17
+L tau  1.0: corr in -0.061 out -0.007  slope -0.029  R2 out -0.003  out move by in-decile: +0.09 +0.00 -0.01 -0.01 -0.01 +0.04 +0.02 -0.00 +0.01 -0.06
+L tau  3.0: corr in -0.041 out +0.014  slope -0.010  R2 out -0.002  out move by in-decile: +0.05 +0.04 -0.01 -0.00 +0.00 +0.00 +0.00 -0.02 -0.01 +0.03
+C tau  0.1: corr in +0.021 out +0.017  slope +0.053  R2 out +0.000  out move by in-decile: -0.06 -0.00 +0.01 +0.02 +0.02 +0.03 +0.02 -0.01 +0.01 +0.06
+C tau  0.3: corr in +0.014 out +0.012  slope +0.046  R2 out +0.000  out move by in-decile: -0.05 +0.00 +0.04 -0.01 +0.00 +0.07 +0.04 -0.04 -0.01 +0.05
+C tau  1.0: corr in +0.006 out +0.010  slope +0.032  R2 out +0.000  out move by in-decile: -0.03 +0.01 +0.01 -0.01 +0.02 -0.02 +0.03 +0.06 -0.02 +0.03
+C tau  3.0: corr in -0.001 out +0.008  slope -0.003  R2 out -0.000  out move by in-decile: -0.02 +0.02 +0.01 -0.04 +0.02 +0.04 +0.00 +0.09 -0.02 +0.00
+
+== horizon 0.5 s (mean |move| 0.899 ticks)
+A tau  0.1: corr in +0.150 out +0.115  slope +0.719  R2 out +0.013  out move by in-decile: -0.67 -0.40 -0.23 -0.07 +0.24 +0.17 +0.36 +0.32 +0.38 +0.56
+A tau  0.3: corr in +0.113 out +0.084  slope +0.697  R2 out +0.007  out move by in-decile: -0.46 -0.36 -0.20 -0.07 +0.27 +0.36 +0.28 +0.28 +0.24 +0.34
+A tau  1.0: corr in +0.073 out +0.053  slope +0.692  R2 out +0.003  out move by in-decile: -0.25 -0.18 -0.21 -0.09 +0.26 +0.20 +0.34 +0.26 +0.19 +0.17
+A tau  3.0: corr in +0.044 out +0.045  slope +0.700  R2 out +0.002  out move by in-decile: -0.16 -0.05 -0.28 +0.23 +0.01 +0.02 +0.11 +0.13 +0.47 +0.17
+R tau  0.1: corr in +0.184 out +0.138  slope +0.580  R2 out +0.019  out move by in-decile: -1.03 -0.28 -0.04 -0.01 +0.24 +0.15 +0.15 +0.23 +0.36 +0.84
+R tau  0.3: corr in +0.136 out +0.092  slope +0.571  R2 out +0.008  out move by in-decile: -0.75 -0.27 -0.06 +0.22 +0.12 +0.24 +0.14 +0.19 +0.33 +0.45
+R tau  1.0: corr in +0.089 out +0.051  slope +0.586  R2 out +0.002  out move by in-decile: -0.38 -0.07 -0.14 -0.04 +0.22 +0.24 +0.24 +0.21 +0.16 +0.21
+R tau  3.0: corr in +0.056 out +0.046  slope +0.618  R2 out +0.002  out move by in-decile: -0.25 +0.01 +0.02 -0.13 +0.05 +0.07 +0.11 +0.05 +0.53 +0.15
+L tau  0.1: corr in +0.039 out -0.056  slope +0.155  R2 out -0.009  out move by in-decile: -0.33 -0.14 -0.03 +0.01 +0.08 +0.09 +0.20 +0.17 +0.27 +0.33
+L tau  0.3: corr in -0.029 out -0.064  slope -0.069  R2 out +0.003  out move by in-decile: +0.23 -0.24 -0.12 -0.03 +0.20 +0.12 +0.26 +0.18 +0.21 -0.17
+L tau  1.0: corr in -0.034 out -0.012  slope -0.041  R2 out -0.000  out move by in-decile: +0.14 +0.04 +0.13 -0.03 +0.02 +0.15 +0.02 +0.00 +0.04 +0.16
+L tau  3.0: corr in -0.029 out +0.026  slope -0.019  R2 out -0.002  out move by in-decile: +0.28 +0.14 -0.05 -0.06 +0.02 +0.01 -0.05 -0.01 +0.06 +0.48
+C tau  0.1: corr in +0.015 out +0.011  slope +0.097  R2 out +0.000  out move by in-decile: +0.00 +0.03 +0.04 +0.10 +0.07 +0.04 +0.11 +0.09 +0.04 +0.14
+C tau  0.3: corr in +0.010 out +0.011  slope +0.084  R2 out +0.000  out move by in-decile: -0.08 +0.08 +0.08 +0.11 +0.06 +0.12 +0.14 -0.03 +0.05 +0.13
+C tau  1.0: corr in +0.002 out +0.013  slope +0.027  R2 out +0.000  out move by in-decile: -0.05 +0.06 +0.06 +0.09 +0.08 -0.02 +0.19 +0.09 +0.05 +0.12
+C tau  3.0: corr in -0.008 out +0.002  slope -0.143  R2 out -0.000  out move by in-decile: +0.08 +0.12 +0.04 -0.15 +0.07 +0.17 +0.02 +0.36 -0.08 +0.01
+
+== horizon 1.0 s (mean |move| 1.475 ticks)
+A tau  0.1: corr in +0.111 out +0.074  slope +0.761  R2 out +0.005  out move by in-decile: -0.64 -0.38 -0.04 +0.04 +0.47 +0.27 +0.39 +0.32 +0.29 +0.65
+A tau  0.3: corr in +0.085 out +0.052  slope +0.756  R2 out +0.002  out move by in-decile: -0.41 -0.31 -0.16 +0.16 +0.41 +0.49 +0.29 +0.37 +0.21 +0.35
+A tau  1.0: corr in +0.056 out +0.038  slope +0.776  R2 out +0.001  out move by in-decile: -0.23 -0.20 -0.23 +0.11 +0.31 +0.41 +0.47 +0.49 +0.18 +0.13
+A tau  3.0: corr in +0.034 out +0.044  slope +0.786  R2 out +0.002  out move by in-decile: -0.16 -0.12 -0.43 +0.58 -0.08 +0.11 +0.22 +0.15 +0.90 +0.19
+R tau  0.1: corr in +0.134 out +0.076  slope +0.607  R2 out +0.005  out move by in-decile: -0.83 -0.15 +0.04 +0.07 +0.35 +0.27 +0.20 +0.24 +0.41 +0.69
+R tau  0.3: corr in +0.104 out +0.044  slope +0.625  R2 out +0.001  out move by in-decile: -0.52 -0.13 -0.05 +0.24 +0.29 +0.37 +0.27 +0.18 +0.36 +0.29
+R tau  1.0: corr in +0.070 out +0.028  slope +0.670  R2 out -0.000  out move by in-decile: -0.27 +0.04 -0.20 -0.04 +0.24 +0.32 +0.60 +0.41 +0.17 +0.08
+R tau  3.0: corr in +0.045 out +0.042  slope +0.724  R2 out +0.002  out move by in-decile: -0.37 +0.05 +0.23 -0.18 +0.10 +0.12 +0.12 +0.10 +0.77 +0.33
+L tau  0.1: corr in +0.029 out -0.032  slope +0.163  R2 out -0.004  out move by in-decile: -0.41 -0.11 -0.01 +0.07 +0.24 +0.17 +0.28 +0.27 +0.33 +0.52
+L tau  0.3: corr in -0.026 out -0.026  slope -0.090  R2 out +0.001  out move by in-decile: +0.06 -0.29 -0.09 +0.03 +0.47 +0.19 +0.38 +0.23 +0.25 +0.13
+L tau  1.0: corr in -0.034 out +0.035  slope -0.059  R2 out -0.003  out move by in-decile: -0.03 +0.10 +0.31 -0.02 +0.06 +0.34 -0.02 -0.01 +0.09 +0.63
+L tau  3.0: corr in -0.032 out +0.064  slope -0.030  R2 out -0.005  out move by in-decile: +0.38 +0.38 -0.09 -0.14 +0.01 +0.06 -0.11 +0.04 +0.20 +1.00
+C tau  0.1: corr in +0.006 out +0.014  slope +0.060  R2 out +0.000  out move by in-decile: +0.00 +0.08 +0.05 +0.21 +0.19 +0.13 +0.09 +0.24 +0.09 +0.30
+C tau  0.3: corr in +0.001 out +0.016  slope +0.022  R2 out +0.000  out move by in-decile: -0.08 +0.07 +0.08 +0.26 +0.16 +0.29 +0.10 -0.05 +0.32 +0.25
+C tau  1.0: corr in -0.005 out +0.015  slope -0.070  R2 out -0.000  out move by in-decile: -0.05 +0.02 +0.28 +0.08 +0.10 -0.00 +0.45 +0.08 +0.32 +0.11
+C tau  3.0: corr in -0.015 out -0.001  slope -0.388  R2 out -0.000  out move by in-decile: +0.23 +0.12 +0.08 -0.02 +0.13 +0.19 -0.01 +0.67 +0.00 -0.05
+
+== horizon 5.0 s (mean |move| 3.930 ticks)
+A tau  0.1: corr in +0.054 out +0.058  slope +0.872  R2 out +0.003  out move by in-decile: -0.56 -0.27 +0.15 +0.50 +1.19 +1.39 +1.46 +1.00 +0.78 +1.38
+A tau  0.3: corr in +0.044 out +0.051  slope +0.911  R2 out +0.002  out move by in-decile: -0.43 -0.18 +0.09 +0.28 +1.40 +1.37 +1.57 +1.30 +0.60 +1.07
+A tau  1.0: corr in +0.031 out +0.056  slope +1.035  R2 out +0.002  out move by in-decile: -0.51 -0.10 +0.20 +0.80 +1.00 +0.60 +1.30 +1.55 +1.19 +1.03
+A tau  3.0: corr in +0.015 out +0.082  slope +0.987  R2 out +0.002  out move by in-decile: -0.49 -0.27 -0.39 +1.99 -0.10 +0.20 +0.49 +0.57 +3.59 +1.34
+R tau  0.1: corr in +0.071 out +0.059  slope +0.743  R2 out +0.003  out move by in-decile: -1.04 +0.07 +0.31 +0.68 +1.28 +1.01 +1.08 +1.05 +0.97 +1.44
+R tau  0.3: corr in +0.059 out +0.049  slope +0.824  R2 out +0.002  out move by in-decile: -0.64 -0.02 +0.11 +0.67 +1.25 +1.21 +1.16 +1.03 +1.26 +0.81
+R tau  1.0: corr in +0.045 out +0.059  slope +1.038  R2 out +0.003  out move by in-decile: -1.06 +0.53 +0.43 +0.52 +1.01 +0.56 +0.76 +1.37 +1.61 +1.11
+R tau  3.0: corr in +0.026 out +0.086  slope +1.118  R2 out +0.004  out move by in-decile: -1.08 -0.14 +1.22 +0.49 +0.26 +0.71 +0.54 +0.14 +1.76 +2.85
+L tau  0.1: corr in +0.010 out +0.020  slope +0.136  R2 out +0.000  out move by in-decile: -0.58 +0.22 +0.35 +0.67 +0.91 +0.89 +1.03 +1.04 +0.92 +1.55
+L tau  0.3: corr in -0.028 out +0.041  slope -0.221  R2 out -0.004  out move by in-decile: +0.07 +0.26 +0.42 +0.30 +1.18 +0.96 +1.00 +0.91 +1.00 +0.88
+L tau  1.0: corr in -0.053 out +0.073  slope -0.210  R2 out -0.011  out move by in-decile: +1.23 +0.99 +0.82 +0.24 +0.06 +1.08 +0.17 +0.22 +0.73 +1.80
+L tau  3.0: corr in -0.067 out +0.063  slope -0.141  R2 out -0.013  out move by in-decile: +2.32 +0.91 +0.48 +0.52 +0.75 +0.15 +0.03 +0.14 +0.75 +0.87
+C tau  0.1: corr in -0.012 out +0.015  slope -0.232  R2 out -0.000  out move by in-decile: +0.64 +0.69 +0.11 +0.55 +0.92 +0.55 +0.70 +0.85 +1.19 +0.78
+C tau  0.3: corr in -0.017 out +0.010  slope -0.429  R2 out -0.000  out move by in-decile: +0.95 +0.10 +0.24 +0.59 +0.88 +1.15 +0.79 +0.68 +0.93 +0.77
+C tau  1.0: corr in -0.029 out -0.009  slope -1.084  R2 out +0.000  out move by in-decile: +1.37 +0.83 +0.58 -0.18 +0.02 +0.21 +1.16 +1.24 +1.24 +0.38
+C tau  3.0: corr in -0.038 out -0.041  slope -2.237  R2 out +0.002  out move by in-decile: +2.39 +0.55 +0.73 +0.17 +0.33 +0.26 +0.64 +0.31 +0.66 +0.41

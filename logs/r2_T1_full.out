@@ -1,0 +1,14 @@
+Simulation complete
+fills=105389
+traded_volume=352494
+inventory=-100
+cash=1169813.00
+mark_price=9690.00
+breach_penalty=8829.04
+pnl=191983.96
+pnl_se=23915.05
+abs_inventory_q50=92
+abs_inventory_q68=100
+abs_inventory_q95=100
+abs_inventory_q997=100
+log_dir=logs/r2_T1_full

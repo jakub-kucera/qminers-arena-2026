@@ -1,0 +1,37 @@
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:169:5
+    |
+168 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+169 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+49 runs (48 cells + baseline, 1 files) on 8 threads (Rust)
+done in 73.23 s
+rank  EXPOSURE  DEAD_ZONE  FT_EDGE  QUOTE_SIZE          pnl       in 75%      out 25%    nbhd      max dd      breach   fills     volume  |inv| q997   pnl se  rej  cxl rej
+base   (as is)                                  -57,046,619  -42,812,466  -14,234,153       -  57,046,619  54,962,537  26,974  2,966,396        1000  283,227    0      730  !
+   1        30        0.3      0.1         200       35,046       22,833       12,213  30,570      17,436           0  14,791    620,766          30   10,009    0      279
+   2        30        0.3      0.1          50       34,810       22,728       12,082  31,746      15,188           0  20,388    619,264          30    9,890    0      475
+   3        30       0.45     0.25         200       34,088       22,240       11,848  27,087      21,361           0  15,746    634,722          30    8,693    0      287
+   4        30       0.45      0.1          50       33,456       22,805       10,651  30,159      16,193           0  22,688    685,164          30    9,893    0      451
+   5        45        0.3      0.1          50       31,903       23,637        8,266  23,779      24,242       1,613  21,885    876,583          45   15,585    0      486  !
+   6        30       0.45      0.1         200       31,452       20,061       11,391  30,131      17,281           0  16,575    686,772          30    9,979    0      261
+   7        30       0.18     0.25         200       31,066       19,871       11,195  25,988      19,220           0  12,352    522,008          30    8,711    0      258
+   8        30       0.45     0.25          50       30,900       22,131        8,769  27,923      20,618           0  22,112    635,878          30   10,498    0      468
+   9        20        0.3     0.25          50       30,848       21,088        9,760  28,319      12,280           0  13,445    407,618          20    6,918    0      289
+  10        20        0.3     0.25         200       30,848       21,088        9,760  28,437      12,280           0  13,445    407,618          20    6,918    0      289
+  11        20        0.3      0.1          50       29,914       20,651        9,263  28,419       9,870           0  14,265    437,920          20    6,835    0      297
+  12        20        0.3      0.1         200       29,914       20,651        9,263  28,446       9,870           0  14,265    437,920          20    6,835    0      297
+  13        20       0.45     0.25          50       29,708       22,116        7,592  28,376      13,587           0  14,852    441,292          20    7,166    0      284
+  14        20       0.45     0.25         200       29,708       22,116        7,592  28,899      13,587           0  14,852    441,292          20    7,166    0      284
+  15        30       0.18      0.1          50       29,494       20,699        8,795  27,201      16,560           0  18,283    560,602          30   10,493    0      480
+  ... 33 more (--top, or --out for all)
+
+best by pnl      EXPOSURE=30, DEAD_ZONE=0.3, FT_EDGE=0.1, QUOTE_SIZE=200  (35,046)
+best by holdout  EXPOSURE=30, DEAD_ZONE=0.3, FT_EDGE=0.1, QUOTE_SIZE=200  (12,213)
+best by nbhd     EXPOSURE=30, DEAD_ZONE=0.3, FT_EDGE=0.1, QUOTE_SIZE=50  (31,746)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+! breach penalty in 13 cells (|position| over the limit costs 10,000 a second): base | EXPOSURE=45, DEAD_ZONE=0.18, FT_EDGE=0.1, QUOTE_SIZE=50 | EXPOSURE=45, DEAD_ZONE=0.18, FT_EDGE=0.1, QUOTE_SIZE=200 | EXPOSURE=45, DEAD_ZONE=0.18, FT_EDGE=0.25, QUOTE_SIZE=50 | EXPOSURE=45, DEAD_ZONE=0.18, FT_EDGE=0.25, QUOTE_SIZE=200 | ... 8 more
+wrote results/r2_ft_grid2.csv
