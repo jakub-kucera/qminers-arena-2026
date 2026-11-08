@@ -623,3 +623,40 @@ justify a stronger performance claim. The primary five-arm results are unchanged
 No candidate or Rust strategy was changed. This feature change is dropped for now. The next user-directed
 job is truth-validated identification of placement, impact and drift, then a75%/25% predictive gate and a
 fast settings exporter for round4; the above50%/50% probe is not a substitute for that requested test.
+
+
+## Filter identification checkpoint (8 Nov, 04:30 target)
+
+The narrower job measures placement, impact and drift for the latent filter. All new code is offline;
+no candidate bot or Rust strategy is changed. The process audit explicitly separates known-truth recovery
+from estimation on public observations. Commands are in IDEAS.md's "Truth-first identification of the latent filter".
+Artifacts live in `data/arena/gen/filter_process/` and `data/arena/gen/filter_placement/` in the main checkout.
+
+- On r3b201-203, the oracle process fit recovers impact c=.047001, tau6.797-6.800s, diffusion3.987-3.994
+  versus configured .047/6.8/4. The ordinary pre-impact F anchor covers the exact calm latent within half a
+  tick on every audited observation. Injected orders and ambiguous rounded timestamps are treated separately.
+- The public-observation fit recovers immediate synthetic impact within0.4%, but permanent c and decay tau
+  are much less precise; conditional confidence intervals miss true c on two seeds. Five-to20-minute
+  prefixes can give negative permanent c and tau near100s. These must not become exported process settings.
+- On real R3, the observable impact model fails its heldout anchor-increment MSE gate:10.0019 versus9.9445
+  for zero change. Requested-size impact beats filled-size on synthetic tapes, slightly loses on real tapes.
+  All profiled real tau0.1-100s are within0.1% of minimum robust loss: decay is unidentified.
+- Impact-adjusted1s anchor variance is .0566/18.00/27.79 ticks²/s on r1/r2/r3; R3's300s-block interval is
+  [20.22,36.57]. This combines diffusion, jumps and anchor/model error. Synthetic recovery of total exogenous
+  variance is98.1-99.3%; even calm synthetic prefixes show a positive rounding floor. Drift intervals all
+  cross zero. Threshold exceedance rates are not latent jump rates. R3's5/10/20min variance7.83/14.14/29.11
+  shows why a short-prefix estimate cannot establish a stable regime law.
+- Placement uses G orders immediately before an ordinary F, within0.5/1/2/5ms, and the F-price interval
+  `[price-sign-.5, price-sign+.5)`. Integrating its two possible floor states with a fixed half/half prior
+  biases pi because the pre-G book already informs phase. EM learns that nuisance phase prior jointly from
+  both sides, conditional on anchor-minus-bid and spread. Side-only reports freeze that joint prior.
+  With the2ms window, fitted effective pi differs from exact safe latent labels by at most .00595/.00591/
+  .00683 on201/202/203. Exact labels require the following10ms latent sample to precede every later insert;
+  the audit excludes near-integer rounding ambiguities and assumes no unlogged standalone jumps.
+- Existing F3 baseline is reproduced exactly:0.4s correlations .3043/.4053 and1s .2656/.3398 (first75/last25),
+  insert score-1.20389. The current filter's `eps + pi` score is not a normalized probability over all prices,
+  so optimizing eps by that score is invalid. The identification tool uses a normalized clamped price law.
+
+A fitted placement/reference mixture is an observational hypothesis, not proof of two generator agents.
+Near-F selection, F-price noise and hidden placement regimes can mimic it. The actual filter forecast gate
+is required before suggesting new settings or structural changes. Until that result, retain F3's settings.
