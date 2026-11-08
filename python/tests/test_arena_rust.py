@@ -336,6 +336,9 @@ TAKERS = [
     ("r2_L8_quote_switch.py", {**L1, "QS_RATE": 2.5}, "296181.00", 75762),
     ("r2_L9_taker_huber.py", {**L3, "POSITION_LIMIT": 100, "IMPACT_US": 500000, "HUBER": 6.0, "RIDGE_MIN": 30,
                               "RIDGE_FRAC": 0.003}, "317057.00", 2803),
+    # R3-F1 (8 Nov): L9 plus the latent-price filter's three features
+    ("r3_F1_latent_filter.py", {**L3, "POSITION_LIMIT": 100, "IMPACT_US": 500000, "HUBER": 6.0, "RIDGE_MIN": 30,
+                                "RIDGE_FRAC": 0.003, "FILTER": 1}, "303720.00", 3795),
 ]
 
 
