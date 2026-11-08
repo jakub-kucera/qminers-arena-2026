@@ -18,7 +18,8 @@ is a discrete hidden-Markov filter over integer `lb` (2W+1 states around the boo
   also holds every 2-7 tick insert 2 ms to drop the chain's first order) and `--skip IDS.npy` (an oracle set of order
   ids never observed); `--extra K=V,...` runs another filter on the same events and
   `ridge` (`ridge_check`) reports the 0.4-s / 1-s R² with its gap added. All lost on round3_public (IDEAS.md, "A better
-  state for R3-F3's latent-price filter").
+  state for R3-F3's latent-price filter"). Round 4 (drift_filter.py): `informed` (a market order's side as an
+  observation of lb) and `drift` / `drift_sw` / `drift_w0` (`DriftFilter`, a joint HMM over lb and a drift bucket).
 
 `--latent FILE` (tape_gen --latent-out's true latent of a generated tape) adds the oracle check: the tracking RMSE by
 regime, the lag after 3+ tick jumps, and the true gap's correlation with the mid's moves beside the filter's (the
@@ -70,6 +71,14 @@ DEFAULTS["cancel_h"] = 0.0
 DEFAULTS["ladder"] = 0
 DEFAULTS["cancel_l0"] = 0.0
 DEFAULTS["linear_c"] = 0.0  # offline structural test only; no Rust knob yet
+# round 4 (drift_filter.py): a market order's side as an observation of lb, `informed` its informed share: the generator's
+# informed IOC buys when the latent mid lb + 0.5 is above the book's mid (sells below), so P(buy | lb) = 0.5 +- informed / 2
+DEFAULTS["informed"] = 0.0
+# round 4 (drift_filter.py): a joint HMM over (lb, a drift bucket): drift > 0 lets the latent move v ticks a second,
+# v in (-drift, 0, +drift), the bucket redrawn from (1 - drift_w0) / 2, drift_w0, (1 - drift_w0) / 2 at drift_sw a second
+DEFAULTS["drift"] = 0.0
+DEFAULTS["drift_sw"] = 0.5
+DEFAULTS["drift_w0"] = 0.5
 HORIZONS = (0.1, 0.4, 1.0, 5.0)
 STEP = 0.05
 SETTINGS_KEYS = {"FILTER_PI0": "pi0", "FILTER_PI1": "pi1", "FILTER_PI2": "pi2",
@@ -91,8 +100,9 @@ class LatentFilter:
     """The bot's copy lives in candidates/r3_F1_latent_filter.py (kept identical by hand)."""
 
     def __init__(self, W=8, rate=2.0, eps=0.01, pi0=0.55, pi1=0.39, pi2=0.06, pi3=0.0, impact_scale=1.0, depth=99, sqrt_c=0.0, use_size=0,
-                 jump=0.0, jump_med=6.66, jump_sd=0.79, sweep=-1, sweep_eps=0.01, linear_c=0.0):
+                 jump=0.0, jump_med=6.66, jump_sd=0.79, sweep=-1, sweep_eps=0.01, linear_c=0.0, informed=0.0):
         self.W = int(W)
+        self.informed = informed
         self.n = 2 * self.W + 1
         self.rate = rate
         self.eps = eps
@@ -170,6 +180,23 @@ class LatentFilter:
             for i in range(n):
                 q[i] *= inv
         self.p = q
+
+    def fside(self, side, bid, ask):
+        """A market order's side (0 buy, 1 sell) before its fills, the touch (bid, ask): P(buy | lb) is 0.5 + informed / 2
+        where lb + 0.5 is above the mid, 0.5 - informed / 2 below, 0.5 at it."""
+        p, n, base = self.p, self.n, self.base
+        hi, lo = 0.5 + self.informed / 2, 0.5 - self.informed / 2
+        mid2 = bid + ask  # 2 x the mid; lb + 0.5 > mid  <=>  2 lb + 1 > bid + ask
+        total = 0.0
+        for i in range(n):
+            x = 2 * (base + i) + 1 - mid2
+            like = 0.5 if x == 0 else (hi if (x > 0) == (side == 0) else lo)
+            v = p[i] * like
+            p[i] = v
+            total += v
+        inv = 1.0 / total
+        for i in range(n):
+            p[i] *= inv
 
     def bound(self, direction, deepest):
         """(b): truncate the mass below (a buy) or above (a sell) what the order's deepest fill says."""
@@ -473,6 +500,162 @@ class MixFilter(LatentFilter):
         return self.base + i, p[i]
 
 
+class DriftFilter(LatentFilter):
+    """(d) Round 4: the latent with a drift (tape_gen's drift_sd / drift_tau, round 4's wide6 model): a vector over lb
+    per drift bucket v (-drift, 0, +drift); between events each bucket's mass walks as before and moves v dt ticks (a
+    fractional shift), and the bucket is redrawn from its stationary weights at drift_sw a second; inserts, trades and
+    market-order sides update every bucket alike. `vmean()` is E[v], ticks a second."""
+
+    def __init__(self, drift=3.0, drift_sw=0.5, drift_w0=0.5, **kw):
+        super().__init__(**kw)
+        self.vel = (-drift, 0.0, drift)
+        self.sw = drift_sw
+        self.stat = ((1 - drift_w0) / 2, drift_w0, (1 - drift_w0) / 2)
+        self.pp = None
+
+    @property
+    def p(self):
+        return None if self.pp is None else [a + b + c for a, b, c in zip(*self.pp)]
+
+    @p.setter
+    def p(self, value):
+        pass
+
+    def reset(self, bid):
+        self.base = bid - self.W
+        self.pp = [[0.0] * self.n for _ in self.vel]
+        for j, w in enumerate(self.stat):
+            self.pp[j][self.W] = w
+
+    def vmean(self):
+        if self.pp is None:
+            return 0.0
+        return sum(v * sum(q) for v, q in zip(self.vel, self.pp))
+
+    def _move(self, p, delta):
+        n = self.n
+        k = math.floor(delta)
+        frac = delta - k
+        q = [0.0] * n
+        for i in range(n):
+            v = p[i]
+            if v == 0.0:
+                continue
+            j = min(n - 1, max(0, i + k))
+            j2 = min(n - 1, max(0, i + k + 1))
+            q[j] += v * (1.0 - frac)
+            q[j2] += v * frac
+        return q
+
+    def advance(self, t):
+        if self.t is None:
+            self.t = t
+            return
+        dt = t - self.t
+        if dt <= 0:
+            return
+        self.t = t
+        stay = math.exp(-self.sw * dt)
+        tot = [a + b + c for a, b, c in zip(*self.pp)]
+        mixed = [[stay * x + (1 - stay) * w * y for x, y in zip(q, tot)] for q, w in zip(self.pp, self.stat)]
+        a = min(0.3, self.rate * dt)
+        n = self.n
+        out = []
+        for q, v in zip(mixed, self.vel):
+            if a >= 1e-9:
+                keep = 1.0 - 2.0 * a
+                r = [0.0] * n
+                prev = 0.0
+                for i in range(n):
+                    cur = q[i]
+                    nxt = q[i + 1] if i + 1 < n else 0.0
+                    r[i] = keep * cur + a * (prev + nxt)
+                    prev = cur
+                r[0] += a * q[0]
+                r[-1] += a * q[-1]
+                q = r
+            out.append(self._move(q, v * dt) if v else q)
+        self.pp = out
+
+    def recenter(self, bid):
+        shift = bid - self.W - self.base
+        if shift == 0:
+            return
+        if abs(shift) >= self.n:
+            w = [sum(q) for q in self.pp]
+            self.reset(bid)
+            for j in range(len(self.pp)):
+                self.pp[j][self.W] = w[j]
+            return
+        self.pp = [self._move(q, -shift) for q in self.pp]
+        self.base += shift
+
+    def trade(self, direction, lots):
+        if self.sqrt_c > 0:
+            m = self.sqrt_c * math.sqrt(lots)
+        else:
+            m = self.impact_scale
+            for top, value in IMPACT:
+                if lots <= top:
+                    m *= value
+                    break
+        if m > 0:
+            self.pp = [self._move(q, direction * m) for q in self.pp]
+
+    def bound(self, direction, deepest):
+        return
+
+    def _scale(self, like):
+        total = 0.0
+        for q in self.pp:
+            for i in range(self.n):
+                q[i] *= like[i]
+                total += q[i]
+        if total <= 0 or not math.isfinite(total):
+            self.reset(self.base + self.W)
+            return 0.0
+        inv = 1.0 / total
+        for q in self.pp:
+            for i in range(self.n):
+                q[i] *= inv
+        return total
+
+    def fside(self, side, bid, ask):
+        hi, lo = 0.5 + self.informed / 2, 0.5 - self.informed / 2
+        mid2 = bid + ask
+        like = []
+        for i in range(self.n):
+            x = 2 * (self.base + i) + 1 - mid2
+            like.append(0.5 if x == 0 else (hi if (x > 0) == (side == 0) else lo))
+        self._scale(like)
+
+    def insert(self, side, price, bid, ask):
+        n, base, eps = self.n, self.base, self.eps
+        pi, cum, K = self.pi, self.cum, self.K
+        like = [0.0] * n
+        for i in range(n):
+            if side == 0:
+                clamp = ask - 1
+                if price >= clamp:
+                    d = base + i - clamp
+                    like[i] = eps + (cum[d] if d < K else 1.0) if d >= 0 else eps
+                else:
+                    k = base + i - price
+                    like[i] = eps + pi[k] if 0 <= k < K else eps
+            else:
+                clamp = bid + 1
+                if price <= clamp:
+                    d = clamp - 1 - (base + i)
+                    like[i] = eps + (cum[d] if d < K else 1.0) if d >= 0 else eps
+                else:
+                    k = price - 1 - (base + i)
+                    like[i] = eps + pi[k] if 0 <= k < K else eps
+        total = self._scale(like)
+        if total > 0:
+            self.loglik += math.log(total)
+            self.n_obs += 1
+
+
 def make_filter(params: dict):
     params = dict(params)
     maxsz = params.pop("maxsz", 0)
@@ -531,6 +714,11 @@ def survival_update(filt, book, bb, ba, dt):
 
 def _make_filter(params: dict):
     reference = params.pop("reference", None)
+    drift, sw, w0 = params.pop("drift", 0.0), params.pop("drift_sw", 0.5), params.pop("drift_w0", 0.5)
+    if drift > 0:
+        for key in MIX_KEYS:
+            params.pop(key, None)
+        return DriftFilter(drift=drift, drift_sw=sw, drift_w0=w0, **params)
     if params.pop("mix", 0):
         if reference:
             raise ValueError("reference and regime mixtures cannot be combined")
@@ -646,12 +834,19 @@ def replay(path: Path, params: dict, offsets: bool = False, extra: tuple = (), s
                     aq = book.depth(1, last_ba)
                     rows.append((next_t, mid, e + 0.5 - mid, sd, (bq - aq) / (bq + aq), last_ba - last_bb,
                                  filt.pv() if hasattr(filt, "pv") and filt.p is not None else 0.0)
-                                + tuple(o.moments()[0] + 0.5 - mid for o in others))
+                                + tuple(o.moments()[0] + 0.5 - mid for o in others)
+                                + tuple(o.vmean() for o in others if hasattr(o, "vmean")))
                 next_t += STEP
             if op == "Insert":
                 sd_ = 0 if side == "B" else 1
                 p_, q_ = int(price), int(vol)
                 if life == "F":
+                    if filt.p is not None and bb is not None and ba is not None and bb < ba:
+                        for f_ in [filt] + others:
+                            if f_.informed > 0 and not isinstance(f_, MixFilter):
+                                f_.advance(t)
+                                f_.recenter(bb)
+                                f_.fside(sd_, bb, ba)
                     fills = []
                     book.insert(oid, sd_, p_, q_, True, fills)
                     lots = sum(f[1] for f in fills)
