@@ -11,6 +11,14 @@ Our engine and tools were built before it on **IMC Prosperity data as a stand-in
 `KICKOFF_PROMPT.md` is what the user pastes to start a session; `ARCHITECTURE.md`'s "The Arena path" says how it fits.
 - Their `simulator/`, `explorer/`, `strategies/`, `data/sample.csv.gz` at the root, as they wrote them: the engine.
 - `python/bots/qminers/`: `template.py` (`ArenaBot`), `families/` (five strategies in their style), `candidates/`.
+- **Rust first:** grid and compare in the Rust port (`arena.qsim_rust`, about 10 s a 6,000-s tape against 150-200 s in
+  Python); a new idea gets its knob in `rust/arena_sim/src/strategies/ridge_maker.rs` (off by default, byte-identical)
+  before it is tuned. Python's `exchange-simulator` is for the upload file's last check and full-logs runs.
+- **Judge on the round's own tapes:** its public tape (first 75% / last 25%), its mirror and tapes stitched from its own
+  segments (`tape_character stitch`); earlier rounds' tapes only as extra regimes, the last round's pick only a start.
+  Each upload is a paired test: read its validation score against the local table in `data/arena/round*/CANDIDATES.md`.
+- **14 cores, shared with the agents** (at most five at once): keep the total of parallel runs near 14 (load 53 on 8 Nov).
+- The generator's structure (latent price, √-impact, calm / volatile regimes, jumps): `docs/GENERATOR_PLAN.md`.
 
 ```sh
 uv run exchange-simulator --strategy BOT --backtest D/<file>.csv --log-dir logs/<run> [--no-logs]   # their simulator (unzip first)
@@ -18,6 +26,8 @@ uv run backtest-explorer --log-dir logs/<run>                        # their Das
 uv run python -m experiments.day.round_start data/round1.csv.gz [--jobs N] [--out DIR]   # the round's first look: tape profile, markouts, every candidate ranked, next grids
 uv run python -m arena.qgrid python/bots/qminers/template.py data/sample.csv.gz --set 'PARAMS.ASSET={"fair": "mid"}' --grid PARAMS.ASSET.make_edge=0,1,2 [--holdout 0.25] [--out results/qgrid.csv]
 uv run python -m arena.qsim_rust fallback_maker data/sample.csv.gz --grid QUOTE=2,5 --threads 4   # the same, its Rust port (rust/arena_sim)
+uv run python -m experiments.day.family_rust D/<tape>.csv [MORE.csv ...] [--bot NAME=L8:'--set K=V']   # the forecast takers in Rust, every bot on every tape
+uv run python -m experiments.day.tape_character stitch D/<tape>.csv --dir DIR --only hi_vol_fast1.25 --keep   # a validation-like tape from the round's own segments
 uv run python -m experiments.day.run_review logs/<run>               # our fills against the mid, from a full-logs run
 uv run python -m arena.validate BOT all --format qminers             # the sandbox's source checks; exit 1 on FAIL
 ```
