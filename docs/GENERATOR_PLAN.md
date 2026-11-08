@@ -434,4 +434,122 @@ uv run python -m experiments.day.gen_calibrate stats data/arena/round3/round3_pu
 ```
 
 The existing generated files and score JSONs are in `data/arena/gen/v3_check/`. Use a fresh output directory for
-a changed parameter set: `gen_calibrate` reuses existing tape paths without validating their parameters.
+a changed parameter set. At the time of this ablation `gen_calibrate` reused existing tape paths without
+validating their parameters; the provenance guard below now rejects that reuse. Older artifacts remain available
+for explicit `score` / `stats` runs.
+
+## Round 3's scheduled ladder population (8 Nov, gen-v3)
+
+`gen_ladders` identifies exact same-side timestamp chains, with both inserts 2-7 ticks behind their own touch.
+It replays the market book once and records placement, preexisting depth, scheduled cancels, remaining quantity
+and the touch timeline. Cached input metadata and a source SHA256 guard against mixing tapes.
+
+```sh
+uv run python -m experiments.day.gen_ladders data/arena/round3/round3_public.csv --cache data/arena/gen/gen_v3_r3_ladders.npz --json data/arena/gen/gen_v3_r3_ladders.json
+uv run python -m experiments.day.gen_ladders data/arena/round2/round2_public.csv --cache data/arena/gen/gen_v3_r2_ladders.npz --json data/arena/gen/gen_v3_r2_ladders.json
+```
+
+- R3 has **44,941 exact 2-ms links**, versus 19/23 at nearby 1/3-ms lags; r2 has only **8** in the same band.
+  There are 23,586 chains and 68,527 identified orders (11.42/s). This is a labelled subset: singleton or broken
+  batches remain unlabelled. The rate is below the roughly 18/s increase over r2.
+- 43,112 of those pairs step one tick deeper. Sibling log sizes have correlation **0.950**, lifetimes **0.668**.
+  Independent empirical size and lifetime draws cannot preserve this structure. Most chains have 2-6 members;
+  51 longer chains may include chance links and require caution in a batch fit.
+- Candidate sizes below 80: median **33**, lifetime median **0.604 s**; sizes 80+: median **153**, lifetime median
+  **2.833 s**. Still resting at cancel: 78.77% / 96.02%. These are descriptive cuts, not identified component laws.
+- **A pure band-exit cancel policy fails.** Of 56,062 candidates still resting at cancellation, 19,028 (33.94%)
+  never previously left the 2-7 tick band. Only 45.54% cancel within 0.2 s of their first exit. For those with
+  an exit, the delay median is 72.5 ms, p90 0.728 s. The check excludes already-filled orders and touch changes
+  caused by the cancellation itself. Scheduled refreshes, another reference price, and repeated exits remain
+  possible explanations; being outside the band at cancel alone does not identify the policy.
+
+Next experiment: preserve complete joint batch marks (placement offsets, sizes, observed lifetimes) rather than
+asserting an unproved cancellation rule. Exclude labelled orders from the background marginals and rate to avoid
+double counting. Such an empirical batch model is an ablation, not recovery of the organisers' original code.
+
+### Empirical batch ablation
+
+The optional top-level `g_ladders` component in `tape_gen` has named `rate` (batch starts/s), `bid_share`,
+`gap_us`, and `batches` (joint `[own_touch_offset, size, lifetime_us]` marks). Each sampled batch shares one
+side; its children are scheduled independently of the background clock at exact integer-microsecond gaps.
+Placement follows the current own touch. Lifetimes are sampled jointly and are not shortened by background
+stale cancels. The mechanism is off when the object is absent; both pinned old tape hashes still match.
+
+`gen_ladders --params BASE --params-out MIXTURE` fits complete 2-6 order chains and removes them from
+background G rate, side share, size/offset marginals and lifetime quantiles. On r3 this labels 68,145 orders in
+23,531 batches: background **185.030/s**, batch starts **3.92184/s**, total expected G rate **196.387/s**.
+It leaves unidentified singletons, long chains and end-censored batches in the background.
+
+This first ablation has a serious stated limitation: starts are Poisson at an unconditional rate. Real detected
+chain starts per 60 s range **40-684**, mean **235.86**, sd **218.70**, Fano factor **202.78**. Marks also vary
+with market state. Empirical lifetime marks are not a causal policy on a different price path. Those conditional
+dependencies need separate identification; a match to the timing fingerprint alone cannot justify a new preset.
+
+```sh
+uv run python -m experiments.day.gen_ladders data/arena/round3/round3_public.csv --cache data/arena/gen/gen_v3_r3_ladders.npz --json data/arena/gen/gen_v3_r3_ladders_fit.json --params data/arena/gen/r3_params.json --params-out data/arena/gen/gen_v3_r3_batch_params.json
+uv run python -m experiments.day.gen_calibrate rank --params data/arena/gen/r3_params.json --opts r3_public_after --bots L8,L3,L9,B1,L8F,B1F --seeds 304-306 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_ladders/baseline --out data/arena/gen/v3_ladders/baseline_scores.json
+uv run python -m experiments.day.gen_calibrate rank --params data/arena/gen/gen_v3_r3_batch_params.json --opts r3_public_after --bots L8,L3,L9,B1,L8F,B1F --seeds 304-306 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_ladders/mixture --out data/arena/gen/v3_ladders/mixture_scores.json
+```
+
+Use a fresh output directory when parameters change. All six bots' settings and the original preset stay fixed.
+
+Three fresh 6,000-s seeds (304-306), six bots, unchanged `r3_public_after` latent settings:
+
+| Measure | Existing generator | Joint batch ablation | Real r3 |
+|---|---:|---:|---:|
+| L8 mean PnL | 462,266 | 438,924 | 427,819 |
+| L9 mean PnL | 505,279 | 477,147 | 424,730 |
+| B1F mean PnL | 569,193 | 539,156 | 505,212 |
+| Six-bot asinh error | 0.1254 | 0.0729 | 0 |
+| Six-bot Spearman | 0.60 | 0.60 | 1 |
+| FILTER gain, L8 / B1 | 19.1% / 13.7% | 18.6% / 14.2% | 13.1% / 16.4% |
+
+The score level is closer on these draws, but the paired L8 change is -23,342 with SE 27,501: three seeds
+do not establish a reliable level improvement. Pure takers still beat L8 by too much. **Do not promote a new
+preset or publish this as r3c.** Retain the component as an experimental structural improvement.
+
+First-seed structural check (304): exact 2-ms band links **20 -> 44,640**, versus real **44,941**; sibling
+log-size correlation **-0.195 -> 0.948**, real **0.950**; lifetime correlation **0.271 -> 0.669**, real **0.668**.
+But the candidate-start count Fano factor is **0.755**, versus real **202.78**. Among orders still resting at
+cancel, **71.6%** never leave the placement band in the mixture, versus real **33.9%**. Copying joint lifetime
+marks does not reproduce the original policy's interaction with the market.
+
+The same seed's 1-tick spread share improves **0.907 -> 0.888** (real **0.818**) and 60-s return sd
+**23.11 -> 28.00** (real **32.18**), but mid changes/s worsen **6.225 -> 6.519** (real **5.774**), as does
+the 5-s move after a large IOC: **2.64 -> 3.37 ticks**, real **2.05**. These are one-seed diagnostics.
+
+Reproduce the structural comparisons with `gen_ladders` on each arm's `rank_6000s_304.csv` and:
+
+```sh
+uv run python -m experiments.day.gen_calibrate stats data/arena/round3/round3_public.csv data/arena/gen/v3_ladders/baseline/rank_6000s_304.csv data/arena/gen/v3_ladders/mixture/rank_6000s_304.csv --jobs 2
+```
+
+Shared artifacts: `data/arena/gen/v3_ladders/` contains both arms' tapes, score JSONs, first-seed ladder
+measurements and `stats_304.json`; `gen_v3_r3_batch_params.json` contains the exact empirical component.
+Next: identify batch intensity and joint marks conditional on observed activity, and a causal cancellation
+policy. For the model-testing session, the identified deep ladders are also a reason to test whether pooling
+all G inserts in a latent-price estimator contaminates it; this is a hypothesis for that session, not a bot change.
+
+## Calibration cache provenance (8 Nov, gen-v3)
+
+`gen_calibrate draw`, `rank` and `write` no longer silently reuse a tape merely because its filename exists.
+Each new draw gets a `.csv.provenance.json` containing the canonical parameter hash, seed, duration, generator
+and book source hashes, Python/numpy versions, output size and SHA256. Reuse checks both identity and content.
+A mismatch or missing provenance fails with instructions to use a fresh directory; existing legacy tapes can
+still be scored explicitly with `score` and measured with `stats`. No legacy file is relabelled as verified.
+
+Generation is staged in a temporary directory and published only after success. Adding latent logging to a
+verified tape must regenerate the same tape checksum before publishing the latent; a failed check preserves
+existing outputs. `write` rejects an incompatible directory before replacing its README or params.json, and
+records a shell-quoted reproduction command. This fixes a source of false ablation comparisons; it changes
+no model parameters or generated tape bytes.
+
+Validation: nine targeted cache tests cover reuse, changed parameters/seed/duration, legacy and altered files,
+interrupted generation, latent logging consistency, and mixed-directory rejection. Full focused suite: **56
+passed**, plus wiki lint with zero warnings/errors. Actual CLI smoke: two 40-s empirical-batch draws, one with
+a latent path, then an identical cached rerun under `data/arena/gen/v3_cache_smoke/`.
+
+```sh
+uv run pytest python/tests/test_gen_cache.py python/tests/test_gen_ladders.py python/tests/test_gen_inventory.py python/tests/test_gen_pnl_probe.py python/tests/test_docs.py -q
+uv run python -m experiments.day.gen_calibrate write --params data/arena/gen/gen_v3_r3_batch_params.json --opts r3_public_after --seeds 71-72 --seconds 40 --jobs 2 --latent-seeds 71 --dir data/arena/gen/v3_cache_smoke
+```
