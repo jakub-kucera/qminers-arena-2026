@@ -213,6 +213,7 @@
 //! take from a position against it goes past flat only when the signal clears its bar by FT_FLIP_M, else it stops at
 //! flat (loss_anatomy: the worst 1% of takes are 200-lot flips from a full opposite position). `FT_EDGE_CALM` (-1.0:
 //! off): the base bar while L8's |mid change| rate is below `FT_CALM_RATE` (0.0: QS_RATE; needs QS_RATE).
+//! `FT_JUMP_DIR` (0: both sides): 1 lowers only the bar the last jump's way, -1 only the bar against it.
 //!   F5  (r3_F5_jump_bar.py, round3_public 515670.00, round2_public 330980.00): F3's and --set FT_EDGE=0.25
 //!       --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set FT_JUMP_EDGE=0.15
 //!
@@ -548,6 +549,8 @@ pub struct RidgeMaker {
     ft_jump_edge: f64,
     ft_jump_mids: VecDeque<(i64, f64)>,
     ft_jump_until: i64,
+    ft_jump_sign: i64,
+    ft_jump_dir: i64,
     ft_flip_m: f64,
     ft_edge_calm: f64,
     ft_calm_rate: f64,
@@ -851,7 +854,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 180] = [
+pub const KEYS: [&str; 181] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -878,7 +881,7 @@ pub const KEYS: [&str; 180] = [
     "FILTER_VQS", "FILTER_VPI0", "FILTER_VPI1", "FILTER_VPI2", "FILTER_IMP2", "FILTER_IMP3", "FILTER_LL_N", "FILTER_XGAP", "FILTER_LL_MARGIN", "FILTER_CLIP", "FILTER_VRATE", "FILTER_VIMPACT",
     "FT_EXIT", "FT_EXIT_SZ", "FT_EXIT_WIDE", "FT_EXIT_KEEP", "QS_PULL", "QUOTE_GAP",
     "FT_LGAP", "FT_LGAP_EDGE", "FT_JUMP", "FT_JUMP_MS", "FT_JUMP_HOLD_MS", "FT_JUMP_EDGE", "FT_FLIP_M",
-    "FT_EDGE_CALM", "FT_CALM_RATE",
+    "FT_EDGE_CALM", "FT_CALM_RATE", "FT_JUMP_DIR",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -1165,6 +1168,8 @@ impl RidgeMaker {
             ft_jump_edge: params.float("FT_JUMP_EDGE", 0.15)?,
             ft_jump_mids: VecDeque::new(),
             ft_jump_until: i64::MIN,
+            ft_jump_sign: 0,
+            ft_jump_dir: params.int("FT_JUMP_DIR", 0)?,
             ft_flip_m: params.float("FT_FLIP_M", 99.0)?,
             ft_edge_calm: params.float("FT_EDGE_CALM", -1.0)?,
             ft_calm_rate: params.float("FT_CALM_RATE", 0.0)?,
@@ -2336,6 +2341,7 @@ impl Strategy for RidgeMaker {
             if let Some(&(_, m)) = self.ft_jump_mids.front() {
                 if (mid - m).abs() >= self.ft_jump {
                     self.ft_jump_until = now + self.ft_jump_hold_ms * 1000;
+                    self.ft_jump_sign = if mid > m { 1 } else { -1 };
                 }
             }
         }
@@ -3140,8 +3146,13 @@ impl Strategy for RidgeMaker {
             let base_edge = if self.ft_edge_calm >= 0.0 && self.qs_rate < calm_rate { self.ft_edge_calm } else { self.ft_edge };
             let (mut edge_up, mut edge_dn) = (base_edge, base_edge);
             if self.ft_jump > 0.0 && now < self.ft_jump_until {
-                edge_up = edge_up.min(self.ft_jump_edge);
-                edge_dn = edge_dn.min(self.ft_jump_edge);
+                // FT_JUMP_DIR: 0 both sides, 1 only the jump's way, -1 only against it
+                if self.ft_jump_dir == 0 || self.ft_jump_dir * self.ft_jump_sign > 0 {
+                    edge_up = edge_up.min(self.ft_jump_edge);
+                }
+                if self.ft_jump_dir == 0 || self.ft_jump_dir * self.ft_jump_sign < 0 {
+                    edge_dn = edge_dn.min(self.ft_jump_edge);
+                }
             }
             if self.ft_lgap < 99.0 && self.filter > 0 {
                 let gap = self.lf_features(mid)[0];

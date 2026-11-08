@@ -198,7 +198,9 @@ R3-F5's state-dependent take bar and flip size (8 Nov, Rust only, off by default
 `FT_JUMP_HOLD_MS` 5000, `FT_JUMP_EDGE` 0.15; `FT_LGAP` 99.0 with `FT_LGAP_EDGE` 0.15; `FT_FLIP_M` 99.0): each side's take
 bar is the lowest of FT_EDGE, FT_JUMP_EDGE for FT_JUMP_HOLD_MS after a move of FT_JUMP+ ticks within FT_JUMP_MS, and
 FT_LGAP_EDGE while the filter's gap that way is FT_LGAP+; FT_FLIP_M stops a flip at flat unless the signal clears its
-bar by that much. F3 unchanged with them off (505212.00); results in IDEAS.md, "R3-F5". R3-F5
+bar by that much; `FT_EDGE_CALM` (-1.0: off) the base bar while L8's rate is under `FT_CALM_RATE` (0: QS_RATE);
+`FT_JUMP_DIR` (0: both sides) 1 / -1 lowers only the bar the jump's way / against it. F3 unchanged with them off
+(505212.00); results in IDEAS.md, "R3-F5". R3-F5
 (`r3_F5_jump_bar.py`) is `$B1 --set FILTER=1 --set FT_EDGE=0.25 --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set
 FT_JUMP_EDGE=0.15`: round3_public 515670.00 and round2_public 330980.00, the Python file's result.json and pnl.csv byte
 for byte on round3_public (`test_ridge_maker_round2_takers` keeps F3 and F5 on round2_public). Grids with
