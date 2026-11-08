@@ -245,6 +245,7 @@ use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::params::Params;
 use crate::strategies::profit_gate::ProfitGate;
+use crate::strategies::calib::Calib;
 use crate::sim::{BookOrder, Ctx, Owner, PrivateEvent, Side, Snapshot, Status, Strategy, Trade};
 
 const N: usize = 15;
@@ -695,6 +696,8 @@ pub struct RidgeMaker {
     lf_skip: HashSet<u64>,
     /// R4-PG's profit gate (profit_gate.rs; PG 0: off)
     pg: ProfitGate,
+    /// R4-C1 (calib.rs, off by default): the take's forecast rescaled by the market's speed
+    cal: Calib,
     /// R4-E1's online ensemble selector (ENS, 0: off): more ridges beside the first model, each with a paper
     /// position under the take rule, chosen by decayed paper PnL
     ens: i64,
@@ -976,7 +979,7 @@ fn side_index(sign: i64) -> usize {
 
 impl RidgeMaker {
     pub fn new(params: &Params) -> Result<RidgeMaker, String> {
-        params.check_keys(&[&KEYS[..], &MOE_KEYS[..], &crate::strategies::profit_gate::KEYS[..]].concat())?;
+        params.check_keys(&[&KEYS[..], &MOE_KEYS[..], &crate::strategies::profit_gate::KEYS[..], &crate::strategies::calib::KEYS[..]].concat())?;
         let n_base = N + if params.int("PLACE", 0)? > 0 { 2 } else { 0 }
                 + if params.int("DEPTH5", 0)? > 0 { 1 } else { 0 }
                 + if params.int("FLOW2", 0)? > 0 { 2 } else { 0 }
@@ -998,6 +1001,9 @@ impl RidgeMaker {
         }
         if params.int("FILTER_XGAP", 0)? > 0 && params.float("FILTER_IMP2", 0.0)? <= 0.0 {
             return Err("FILTER_XGAP reads the bank's first copy: set FILTER_IMP2".to_string());
+        }
+        if params.int("CAL", 0)? > 0 && params.float("QS_RATE", 0.0)? <= 0.0 {
+            return Err("CAL reads QS_RATE's speed: set QS_RATE".to_string());
         }
         if params.int("FILTER", 0)? > 0 && params.int("QUOTEFEAT", 0)? == 0 {
             return Err("FILTER reads the new market orders QUOTEFEAT tracks: set QUOTEFEAT=1".to_string());
@@ -1368,6 +1374,7 @@ impl RidgeMaker {
             lf_recent: [VecDeque::new(), VecDeque::new()],
             lf_skip: HashSet::new(),
             pg: ProfitGate::new(params)?,
+            cal: Calib::new(params, params.int("HORIZON_US", 100_000)?)?,
             ens: params.int("ENS", 0)?,
             ens_models: Vec::new(),
             ens_kind: Vec::new(),
@@ -3532,6 +3539,22 @@ impl Strategy for RidgeMaker {
                 }
             }
         }
+        // R4-C1 (calib.rs, off by default): its matured labels learned, then an observation of the take's forecast
+        let cal_x = if self.cal.mode > 0 && self.m1.labels >= self.min_labels {
+            let source = if let Some(src) = ens_src {
+                src
+            } else if self.ft_src == 1 {
+                p2_only
+            } else if self.cal.raw {
+                py_sum(self.m1.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x))
+            } else {
+                prediction
+            };
+            self.cal.observe(now, mid, source, self.qs_rate);
+            source
+        } else {
+            prediction
+        };
         // R4-PG (profit_gate.rs, off by default): its matured labels learned, then an observation at the take's signal
         let pg_w = ProfitGate::width(n);
         let pg_jump = self.ft_jump > 0.0 && now < self.ft_jump_until;
@@ -3552,6 +3575,7 @@ impl Strategy for RidgeMaker {
             && (ft_maxspread <= 0 || spread <= ft_maxspread)
         {
             let source = if let Some(src) = ens_src { src } else if self.ft_src == 1 { p2_only } else { prediction };
+            let source = if self.cal.mode > 0 { self.cal.apply(cal_x, self.qs_rate) } else { source };
             let signal = if self.ft_net > 0 { source - skew } else { source };
             // R3-F5 (off by default): each side's bar is the lowest of FT_EDGE, FT_JUMP_EDGE within FT_JUMP_HOLD_MS of
             // a jump, and FT_LGAP_EDGE while the filter's gap that way is at least FT_LGAP
@@ -3685,6 +3709,8 @@ impl Strategy for RidgeMaker {
                 if quantity > 0 {
                     self.pg.takes += 1;
                     self.pg.lots += quantity;
+                    self.cal.takes += 1;
+                    self.cal.lots += quantity;
                     if big {
                         self.burst_lots += quantity;
                     }

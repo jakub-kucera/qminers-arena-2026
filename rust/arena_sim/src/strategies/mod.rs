@@ -1,6 +1,7 @@
 //! Rust versions of Python strategies, each line for line with its file. `make` builds one by name from its
 //! parameters (the Python file's module globals by name; a Rust-only knob is named in the strategy's docs).
 
+pub mod calib;
 pub mod fallback_maker;
 pub mod probe;
 pub mod profit_gate;
