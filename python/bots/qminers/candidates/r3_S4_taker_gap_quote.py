@@ -1,6 +1,9 @@
 """R3-S4 (8 Nov, round 3): R3-F1's taker (R2-L9 plus the latent filter's features) with R3-S1's quote in place of none:
 a QUOTE_SIZE-lot quote at the touch only on the side the filter's gap favours (the bid while gap > GAP_ON, kept while
-gap > GAP_OFF; the ask the mirror image), at a 1-tick spread, sharing the taker's inventory and EXPOSURE. R3-S1 alone
+gap > GAP_OFF; the ask the mirror image), at a 1-tick spread, sharing the taker's inventory and EXPOSURE. With
+REDUCE_ONLY 1 the quote only reduces the position (never past flat): a passive, gap-timed exit for the taker's lots.
+REDUCE_ONLY 0 (both sides, QUOTE_SIZE 50) made 341,739 on round3_public against R3-F1's 480,469: the quote's fills
+took the taker's room. R3-S1 alone
 made +41k on round3_public with a per-second PnL correlation of 0.04 with R2-L8 (experiments.day.pnl_corr). The
 notes of R3-F1 follow.
 
@@ -26,6 +29,7 @@ TAKE_MAXSPREAD = 1  # the forecast take fires only while the spread is at most t
 TAKE_ROOM_LIVE = 1  # R2-T2: the take's room is EXPOSURE - pos - every live same-side order's lots (0: R2-T1, EXPOSURE - pos)
 GAP_ON = 0.6  # R3-S4: quote the bid while the filter's gap > GAP_ON (the ask while gap < -GAP_ON) ...
 GAP_OFF = -0.3  # ... and keep a resting bid while gap > GAP_OFF
+REDUCE_ONLY = 1  # R3-S4: 1 quotes only the side that reduces the position, at most |position| lots (a passive exit for the taker); 0 both
 FILTER = 1  # R3-F1: the latent-price filter's three features in the ridge (0: R2-L9 exactly)
 FILTER_W = 8  # the filter's grid: lb within bid - W .. bid + W
 FILTER_RATE = 2.0  # the latent's random walk, steps a second each way
@@ -507,6 +511,8 @@ class PassiveStrategy(BaseStrategy):
         effective=reserved
         quantity=min(self.QUOTE_SIZE,self.EXPOSURE-sign*self.inventory-effective,
                      self.POSITION_LIMIT-sign*self.inventory-reserved)
+        if REDUCE_ONLY and self.QUOTE_SIZE > 0 and FILTER:
+            quantity=min(quantity,max(0,-sign*self.inventory-reserved))  # R3-S4: never past flat
         if quantity <= 0 or (current and quantity < 1):
             return
         order_id = self.send_order(OrderRequest(side=Side.BUY if sign > 0 else Side.SELL,
@@ -734,9 +740,9 @@ class PassiveStrategy(BaseStrategy):
             rest_a = any(r[0] == -1 and r[1] == ask and not r[4] and r[6] == 0 for r in self._orders.values())
             buy = bid if spread <= 1 and (gap > GAP_ON or (gap > GAP_OFF and rest_b)) else None
             sell = ask if spread <= 1 and (gap < -GAP_ON or (gap < -GAP_OFF and rest_a)) else None
-            if self.inventory >= self.EXPOSURE:
+            if self.inventory >= self.EXPOSURE or (REDUCE_ONLY and self.inventory >= 0):
                 buy = None
-            if self.inventory <= -self.EXPOSURE:
+            if self.inventory <= -self.EXPOSURE or (REDUCE_ONLY and self.inventory <= 0):
                 sell = None
             if (self.TAKE_SZ > 0 and self._labels >= self.MIN_LABELS
                     and (self._take_last is None or now-self._take_last >= self.TAKE_GAP_MS*1000)):
