@@ -61,6 +61,8 @@ Trials so far: 0 experiments, 0 cells.
 ### R3-F2 (8 Nov 01:40): R2-L8 plus the filter (`python/bots/qminers/candidates/r3_F2_latent_filter_l8.py`)
 - L8 (L1's one-lot quotes below QS_RATE 2.5, the plain ridge, POSITION_LIMIT 1000 / EXPOSURE 100) plus R3-F1's filter code and three features (FEATURE_COUNT 36). FILTER = 0 is L8. validate OK. Rust: 484,057 on r3 public, 1,349,326 on hi_vol_fast1.25. The Python parity run is next.
 
+### R3-F3 (8 Nov 01:45): R3-B1 plus the filter (`python/bots/qminers/candidates/r3_F3_latent_filter_b1.py`)
+- R3-B1 (L9 plus L8's speed-switched one-lot quotes) plus R3-F1's filter code and three features (FEATURE_COUNT 39). FILTER = 0 is B1. validate OK. Rust (`B1's --set line --set FILTER=1`): **505,212 on r3 public** (the best FILTER base there), 1,323,666 hi_vol_fast1.25, 1,107,567 hi_vol, 1,008,798 pub+mirror. The Python parity run and its run time are next.
 ## Uploads (validation tape, 12,000 s; results folders in data/arena/round3/<file>_res/)
 | # | time | file | validation pnl | fills / lots | sim time | local r3 public (6,000 s) | read |
 |---|---|---|---|---|---|---|---|
