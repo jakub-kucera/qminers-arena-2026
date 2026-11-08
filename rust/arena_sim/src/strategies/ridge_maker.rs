@@ -197,6 +197,12 @@
 //! at a spread of at least that many ticks, the same reduce-only IOC at the touch, unless the signal is with the
 //! position by at least `FT_EXIT_KEEP` (99.0: never kept), at most once a FT_GAP_MS (loss_anatomy: the position's
 //! next 5-s mark-to-market -260 ticks at a 3+ spread).
+//! The forecast take's state-dependent bar and flip size (R3-F5, 8 Nov; Rust only, off by default: F3's 505212.00
+//! unchanged): each side's bar is the lowest of FT_EDGE, `FT_JUMP_EDGE` (0.15) for `FT_JUMP_HOLD_MS` (5000) after the mid
+//! moved `FT_JUMP` (0.0: off) ticks or more from the oldest mid within `FT_JUMP_MS` (200), and `FT_LGAP_EDGE` (0.15)
+//! while the latent filter's gap that way is at least `FT_LGAP` (99.0: off; needs FILTER); `FT_FLIP_M` (99.0: off): a
+//! take from a position against it goes past flat only when the signal clears its bar by FT_FLIP_M, else it stops at
+//! flat (loss_anatomy: the worst 1% of takes are 200-lot flips from a full opposite position).
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -515,6 +521,19 @@ pub struct RidgeMaker {
     ft_exit_sz: i64,
     ft_exit_wide: i64,
     ft_exit_keep: f64,
+    /// R3-F5's state-dependent take bar and flip size (8 Nov, all off by default): FT_LGAP / FT_LGAP_EDGE, FT_JUMP /
+    /// FT_JUMP_MS / FT_JUMP_HOLD_MS / FT_JUMP_EDGE, FT_FLIP_M
+    ft_lgap: f64,
+    ft_lgap_edge: f64,
+    ft_jump: f64,
+    ft_jump_ms: i64,
+    ft_jump_hold_ms: i64,
+    ft_jump_edge: f64,
+    ft_jump_mids: VecDeque<(i64, f64)>,
+    ft_jump_until: i64,
+    ft_flip_m: f64,
+    ft_edge_calm: f64,
+    ft_calm_rate: f64,
     liq: i64,
     /// LIQ: the last recompute's time and mid, each market order's first-seen time, the young imbalance, the dispersion
     liq_time: Option<i64>,
@@ -783,7 +802,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 161] = [
+pub const KEYS: [&str; 170] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -809,6 +828,8 @@ pub const KEYS: [&str; 161] = [
     "FILTER_SQRT_C", "FILTER_DEPTH", "FILTER_JUMP", "FILTER_JUMP_MED", "FILTER_JUMP_SD",
     "FILTER_VQS", "FILTER_VPI0", "FILTER_VPI1", "FILTER_VPI2",
     "FT_EXIT", "FT_EXIT_SZ", "FT_EXIT_WIDE", "FT_EXIT_KEEP",
+    "FT_LGAP", "FT_LGAP_EDGE", "FT_JUMP", "FT_JUMP_MS", "FT_JUMP_HOLD_MS", "FT_JUMP_EDGE", "FT_FLIP_M",
+    "FT_EDGE_CALM", "FT_CALM_RATE",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -1084,6 +1105,17 @@ impl RidgeMaker {
             ft_exit_sz: params.int("FT_EXIT_SZ", 0)?,
             ft_exit_wide: params.int("FT_EXIT_WIDE", 0)?,
             ft_exit_keep: params.float("FT_EXIT_KEEP", 99.0)?,
+            ft_lgap: params.float("FT_LGAP", 99.0)?,
+            ft_lgap_edge: params.float("FT_LGAP_EDGE", 0.15)?,
+            ft_jump: params.float("FT_JUMP", 0.0)?,
+            ft_jump_ms: params.int("FT_JUMP_MS", 200)?,
+            ft_jump_hold_ms: params.int("FT_JUMP_HOLD_MS", 5000)?,
+            ft_jump_edge: params.float("FT_JUMP_EDGE", 0.15)?,
+            ft_jump_mids: VecDeque::new(),
+            ft_jump_until: i64::MIN,
+            ft_flip_m: params.float("FT_FLIP_M", 99.0)?,
+            ft_edge_calm: params.float("FT_EDGE_CALM", -1.0)?,
+            ft_calm_rate: params.float("FT_CALM_RATE", 0.0)?,
             liq: params.int("LIQ", 0)?,
             liq_time: None,
             liq_mid: 0.0,
@@ -2193,6 +2225,23 @@ impl Strategy for RidgeMaker {
             }
             self.burst_rate_last = Some((now, mid));
         }
+        if self.ft_jump > 0.0 {
+            // FT_JUMP (R3-F5): the mid at least FT_JUMP ticks from the oldest mid within FT_JUMP_MS opens FT_JUMP_HOLD_MS
+            // of the take bar FT_JUMP_EDGE
+            self.ft_jump_mids.push_back((now, mid));
+            while let Some(&(t, _)) = self.ft_jump_mids.front() {
+                if t < now - self.ft_jump_ms * 1000 {
+                    self.ft_jump_mids.pop_front();
+                } else {
+                    break;
+                }
+            }
+            if let Some(&(_, m)) = self.ft_jump_mids.front() {
+                if (mid - m).abs() >= self.ft_jump {
+                    self.ft_jump_until = now + self.ft_jump_hold_ms * 1000;
+                }
+            }
+        }
         let spread = ask - bid;
         let flow = self.net / (1.0 + self.volume);
         let imbalance = (bq - aq) as f64 / (bq + aq) as f64;
@@ -2953,14 +3002,35 @@ impl Strategy for RidgeMaker {
         {
             let source = if self.ft_src == 1 { p2_only } else { prediction };
             let signal = if self.ft_net > 0 { source - skew } else { source };
-            let need = self.ft_edge + 0.5 * spread_f;
-            let sign = if signal > need {
+            // R3-F5 (off by default): each side's bar is the lowest of FT_EDGE, FT_JUMP_EDGE within FT_JUMP_HOLD_MS of
+            // a jump, and FT_LGAP_EDGE while the filter's gap that way is at least FT_LGAP
+            // FT_EDGE_CALM: the bar in its place while L8's |mid change| rate is below FT_CALM_RATE (0: QS_RATE)
+            let calm_rate = if self.ft_calm_rate > 0.0 { self.ft_calm_rate } else { self.qs_th };
+            let base_edge = if self.ft_edge_calm >= 0.0 && self.qs_rate < calm_rate { self.ft_edge_calm } else { self.ft_edge };
+            let (mut edge_up, mut edge_dn) = (base_edge, base_edge);
+            if self.ft_jump > 0.0 && now < self.ft_jump_until {
+                edge_up = edge_up.min(self.ft_jump_edge);
+                edge_dn = edge_dn.min(self.ft_jump_edge);
+            }
+            if self.ft_lgap < 99.0 && self.filter > 0 {
+                let gap = self.lf_features(mid)[0];
+                if gap >= self.ft_lgap {
+                    edge_up = edge_up.min(self.ft_lgap_edge);
+                }
+                if -gap >= self.ft_lgap {
+                    edge_dn = edge_dn.min(self.ft_lgap_edge);
+                }
+            }
+            let need_up = edge_up + 0.5 * spread_f;
+            let need_dn = edge_dn + 0.5 * spread_f;
+            let sign = if signal > need_up {
                 1
-            } else if signal < -need {
+            } else if signal < -need_dn {
                 -1
             } else {
                 0
             };
+            let need = if sign < 0 { need_dn } else { need_up };
             if sign != 0 {
                 let pos = sign * self.inventory;
                 // a burst on this side: BURST_EXP is the exposure and the limit, BURST_SZ (0: BURST_EXP) the take's lots
@@ -2991,7 +3061,12 @@ impl Strategy for RidgeMaker {
                 } else {
                     (self.ft_sz, self.position_limit, self.ft_thru)
                 };
-                let quantity = size.min(room).min(limit - pos - reserved);
+                let mut quantity = size.min(room).min(limit - pos - reserved);
+                // FT_FLIP_M (R3-F5): from a position against the take, past flat only when the signal clears its bar
+                // by FT_FLIP_M
+                if self.ft_flip_m < 99.0 && pos < 0 && signal * (sign as f64) < need + self.ft_flip_m {
+                    quantity = quantity.min(-pos - reserved);
+                }
                 if quantity > 0 {
                     if big {
                         self.burst_lots += quantity;

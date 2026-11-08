@@ -188,6 +188,13 @@ spread and the forecast take does not fire, or at a spread of FT_EXIT_WIDE+ unle
 FT_EXIT_KEEP. On R3-F3 (`$B1 --set FILTER=1`, 505212.00 on round3_public, unchanged with the knob off) every setting tied or
 lost, so no Python file was written (IDEAS.md, "R3-F3's loss anatomy").
 
+R3-F5's state-dependent take bar and flip size (8 Nov, Rust only, off by default: `FT_JUMP` 0.0 with `FT_JUMP_MS` 200,
+`FT_JUMP_HOLD_MS` 5000, `FT_JUMP_EDGE` 0.15; `FT_LGAP` 99.0 with `FT_LGAP_EDGE` 0.15; `FT_FLIP_M` 99.0): each side's take
+bar is the lowest of FT_EDGE, FT_JUMP_EDGE for FT_JUMP_HOLD_MS after a move of FT_JUMP+ ticks within FT_JUMP_MS, and
+FT_LGAP_EDGE while the filter's gap that way is FT_LGAP+; FT_FLIP_M stops a flip at flat unless the signal clears its
+bar by that much. F3 unchanged with them off (505212.00); results in IDEAS.md, "R3-F5". Grids with
+`uv run python -m experiments.day.paired_rust TAPE ... --bot F3=B1:'--set FILTER=1' --bot X=B1:'--set FILTER=1 --set ...'`.
+
 **Speed** (the sample, 53,758 rows, one core, measured 7 Nov): trend_follower 151 ms a run in Python, 1.7 ms in
 Rust (90x); F1 274 ms, 3.9 ms (70x); parsing the CSV once is 5 ms more. On 4 threads, F1's 16-cell grid
 (plus the baseline) takes 1.6 s in `arena.qgrid --jobs 4` and 0.2 s in `arena.qsim_rust`, the same table to the
