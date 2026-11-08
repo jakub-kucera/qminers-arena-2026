@@ -127,6 +127,11 @@ large displacement onto an edge. Require corroborating fresh evidence, especiall
 unclamped orders, before a large change. Pass surprise/disagreement to a small action
 model only if they add value beyond the existing mean, nonlinear gap and sd.
 
+**Audited 8 Nov 09:30 (IDEAS.md, "R4-FA"; `experiments.day.filter_audit`): no such failure.** The fresh orders that
+contradict F5's filter lag it on r4 and r3. After 3+ aggressive surprises within 0.5 s (112/h on r4), the mid moves
+3.2 / 7.4 ticks against them at 0.4 / 1 s, the way the filter's gap already points. Nudging the forecast towards them
+drops better takes than it adds. Re-entries never reach the filter. The proposal is dropped.
+
 This is not a recommendation to widen the grid or add unconditional jumps. R4-D1
 already tried those: WJ5 won 40,411 / 31,345 / 20,971 on synthetic seeds 511-513 but
 lost 13,757 on real r4. Drift and informed-side observations also failed. Better latent
