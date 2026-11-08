@@ -179,6 +179,11 @@ R3-F1 as `ridge_maker` (8 Nov, the knob `FILTER` with `FILTER_W`, `FILTER_RATE`,
 the Python file's numbers: round3_public 480469.00 (volume 571,820; FILTER 0 is L9's 424730.00), and round2_public
 303720.00 with pnl.csv and result.json byte for byte (`test_ridge_maker_round2_takers`). FILTER needs `QUOTEFEAT` 1.
 
+R3-G1's early exit (8 Nov, Rust only, off by default: `FT_EXIT` 99.0, `FT_EXIT_SZ` 0): a reduce-only IOC at the touch
+when the forecast is against the position by more than FT_EXIT plus half the spread and the forecast take does not
+fire. On R3-F3 (`$B1 --set FILTER=1`, 505212.00 on round3_public, unchanged with the knob off) every setting tied or
+lost, so no Python file was written (IDEAS.md, "R3-F3's loss anatomy").
+
 **Speed** (the sample, 53,758 rows, one core, measured 7 Nov): trend_follower 151 ms a run in Python, 1.7 ms in
 Rust (90x); F1 274 ms, 3.9 ms (70x); parsing the CSV once is 5 ms more. On 4 threads, F1's 16-cell grid
 (plus the baseline) takes 1.6 s in `arena.qgrid --jobs 4` and 0.2 s in `arena.qsim_rust`, the same table to the
