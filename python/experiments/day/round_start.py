@@ -37,6 +37,7 @@ from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 from arena import qgrid
+from experiments.day.family_rust import FAMILY as RIDGE_FAMILY
 
 ROOT = Path(__file__).resolve().parents[3]
 HORIZONS_S = (1, 5, 30, 60)
@@ -60,6 +61,12 @@ CANDIDATES = {
     "tmpl_mom": (TEMPLATE, "SESSION_US", {"PARAMS.ASSET": MOMENTUM_PARAMS}),
     "A0": (TEMPLATE, "SESSION_US", {"PARAMS.ASSET": A0_PARAMS}),
     # Round 1's makers (7 Nov): their files never wind down (SESSION_S 1e9), whatever the private tape's length, so no session is set
+    # Round 3's files (data/arena/round3/HANDOVER.md): R3-F5 the final (+888,195 on validation), R3-F3 (+883,559), R3-F4
+    # (F3 with the filter's impact chosen online), R3-B1 (F3 without the filter, +733,790: the filter's value on the new tape)
+    "R3_F5": (CANDIDATE_DIR / "r3_F5_jump_bar.py", None, {}),
+    "R3_F3": (CANDIDATE_DIR / "r3_F3_latent_filter_b1.py", None, {}),
+    "R3_F4": (CANDIDATE_DIR / "r3_F4_filter_bank.py", None, {}),
+    "R3_B1": (CANDIDATE_DIR / "r3_B1_huber_quote_switch.py", None, {}),
     # Round 2's winners on the server's validation tape (data/arena/round2/HANDOVER.md, "Round 2 results, marked"):
     # the forecast takers first (R2-L3 the final, +804,018), then the composite, the big-order follower, the maker
     "R2_L8": (CANDIDATE_DIR / "r2_L8_quote_switch.py", None, {}),
@@ -89,6 +96,8 @@ RIDGE_C5 = ("--set POSITION_LIMIT=1000 --set EXPOSURE=100 --set CANCEL_FREE=1.0 
             " --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000 --set DEAD_ZONE=0.18")
 RUST_RIDGE = {"R1_C11": RIDGE_C5 + " --set QUOTEFEAT=1 --set FLOWGRP=2 --set FLOWGRP_CAP=1", "R1_C5": RIDGE_C5, "R1_C1": ""}
 # R2-V2 (the speed-scaled maker) in ridge_maker: R2-E2's sets with EXPOSURE 100 and the VOL_REF exposure
+# Round 3's files in ridge_maker (byte for byte; experiments.day.family_rust's lines)
+RUST_RIDGE.update({"R3_F5": RIDGE_FAMILY["F5"], "R3_F3": RIDGE_FAMILY["F3"], "R3_F4": RIDGE_FAMILY["F4"], "R3_B1": RIDGE_FAMILY["B1"]})
 RUST_RIDGE["R2_V2"] = ("--set POSITION_LIMIT=1000 --set CANCEL_FREE=1.0 --set HEDGE=1 --set MODEL_MEMORY_US=100000000000"
                        " --set HORIZON_US=400000 --set QUOTEFEAT=1 --set FLOWGRP=2 --set FLOWGRP_CAP=20 --set FLOWGRP_US=1000000"
                        " --set FT_SZ=200 --set FT_GAP_MS=50 --set SKEW_K=0.025 --set FT_EDGE=0.25 --set QUOTE_SIZE=200"
@@ -366,6 +375,11 @@ def next_grids(table: list[dict], p: dict | None, data: Path, length_us: int, jo
     for name in RUST_RIDGE:
         axes[name] = ridge
     # the round-2 takers: their forecast settings are class constants (edit the file to change them); the module knobs here
+    # round 3's: the filter's impact scale (x2 won on round 2's tape, x3 on round 3's), the take bar and F5's jump rule
+    for name in ("R3_F5", "R3_F3"):
+        axes[name] = ["--grid FILTER_IMPACT=2,2.5,3 --grid FT_EDGE=0.15,0.2,0.25 --grid FT_JUMP=0,3"]
+    axes["R3_F4"] = ["--grid FILTER_IMP2=0,1.5,2 --grid FT_EDGE=0.15,0.25"]
+    axes["R3_B1"] = ["--grid QS_RATE=1.5,2.5,3.5 --grid FT_EDGE=0.15,0.25"]
     axes["R2_L8"] = ["--grid QS_RATE=1.5,2.5,3.5 --grid TAKE_MAXSPREAD=1,2"]
     for name in ("R2_L3", "R2_L1", "R2_T2"):
         axes[name] = ["--grid TAKE_MAXSPREAD=1,2"]

@@ -2,7 +2,8 @@
 data/arena/round3/HANDOVER.md, "Rule for round 3: Rust first").
 
 Each bot is a `--set` line of `arena.qsim_rust ridge_maker` that reproduces its Python file to the unit (rust/README.md,
-"Round 2's forecast takers": R2-T2, R2-L1, R2-L3, R2-L8, R2-L9; R3-B1 is R2-L9 with R2-L8's quote switch). The runs go in
+"Round 2's forecast takers": R2-T2, R2-L1, R2-L3, R2-L8, R2-L9; R3-B1 is R2-L9 with R2-L8's quote switch; R3-F3, R3-F4 and
+R3-F5 are B1 with the latent-price filter, its impact bank and the jump-dependent take bar). The runs go in
 parallel, one thread each, so `--jobs` is the cores they take. `--bot NAME=BASE:'--set K=V ...'` adds a bot (BASE one of
 the family, or empty).
 
@@ -31,7 +32,10 @@ L3 = L1 + " --set QUOTE_SIZE=0"
 L8 = L1 + " --set QS_RATE=2.5"
 L9 = L3 + " --set POSITION_LIMIT=100 --set IMPACT_US=500000 --set HUBER=6.0 --set RIDGE_MIN=30 --set RIDGE_FRAC=0.003"
 B1 = L9 + " --set QUOTE_SIZE=1 --set QS_RATE=2.5"
-FAMILY = {"T2": T2, "L1": L1, "L3": L3, "L8": L8, "L9": L9, "B1": B1}
+F3 = B1 + " --set FILTER=1"  # R3-F3, round 3's first final: B1 plus the latent-price filter (505,212 on round3_public)
+F4 = F3 + " --set FILTER_IMP2=2.0"  # R3-F4: a second filter at impact x2, the better-fitting copy's features (512,175)
+F5 = F3 + " --set FT_EDGE=0.25 --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set FT_JUMP_EDGE=0.15"  # R3-F5 (515,670)
+FAMILY = {"T2": T2, "L1": L1, "L3": L3, "L8": L8, "L9": L9, "B1": B1, "F3": F3, "F4": F4, "F5": F5}
 FIELDS = ("pnl", "in", "out", "nbhd", "max_dd", "breach", "fills")
 
 
