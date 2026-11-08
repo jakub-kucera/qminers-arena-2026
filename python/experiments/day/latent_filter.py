@@ -638,7 +638,11 @@ def ridge_check(rows: np.ndarray) -> dict:
         base = [np.ones(m), imb[:m], gap[:m], gap[:m] * np.abs(gap[:m]) / 3, sd[:m]]
         xs = [rows[:m, j] for j in range(7, rows.shape[1])]
         xx = base + [c for g in xs for c in (g, g * np.abs(g) / 3)]
-        for name, cols in (("f3", base), ("f3+pv", base + [pv[:m], gap[:m] * pv[:m]]), ("f3+x", xx)):
+        wide = (rows[:m, 5] >= 2).astype(float)
+        spr = base + [gap[:m] * wide]
+        swap = base[:3] + [gap[:m] * wide, sd[:m]]
+        for name, cols in (("f3", base), ("f3+pv", base + [pv[:m], gap[:m] * pv[:m]]), ("f3+x", xx), ("f3+spr", spr),
+                           ("f3swap", swap)):
             x = np.column_stack(cols)
             beta, *_ = np.linalg.lstsq(x[:cut], fut[:cut], rcond=None)
             r = lambda a, b: 1 - np.var(fut[a:b] - x[a:b] @ beta) / np.var(fut[a:b])
