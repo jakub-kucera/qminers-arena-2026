@@ -22,9 +22,9 @@ from simulator.strategy import BaseStrategy
 QS_RATE = 2.5  # quote one lot only while the 5-s |mid change| rate is below this (ticks/s); else pure taker
 TAKE_MAXSPREAD = 1  # the forecast take fires only while the spread is at most this many ticks (99: no limit)
 TAKE_ROOM_LIVE = 1  # R2-T2: the take's room is EXPOSURE - pos - every live same-side order's lots (0: R2-T1, EXPOSURE - pos)
-TAKE_DEPTH_K = 1  # R4-T1: the take goes up to this many ticks past TAKE_THRU while the marginal price p keeps sign*(signal) - spread/2 - THRU - extra above TAKE_DEPTH_E (0: R4-W2 exactly)
+TAKE_DEPTH_K = 1  # R4-T1: the take goes up to this many ticks past TAKE_THRU while the marginal price p keeps sign*(signal) - spread/2 - THRU - extra above TAKE_DEPTH_E (0: no deeper take; with FLOW2 1 that is W3 without it, not R4-W2)
 TAKE_DEPTH_E = 0.25
-FLOW2 = 1  # R4-FL1: signed market-order flow over 0.1 s and 2 s, two ridge features before the filter's (0: R4-W2 exactly)
+FLOW2 = 1  # R4-FL1: signed market-order flow over 0.1 s and 2 s, two ridge features at positions 15-16, after the 15 base ones as in the Rust twin (0: no FLOW2, but then the 41-feature warm start below does not load, since it needs FEATURE_COUNT 41: FLOW2 0 with TAKE_DEPTH_K 0 is R3-F5 cold, not R4-W2; R4-W2 is its own file with the 39-feature statistics)
 FILTER = 1  # R3-F1: the latent-price filter's three features in the ridge (0: R3-B1 exactly)
 FILTER_W = 8  # the filter's grid: lb within bid - W .. bid + W
 FILTER_RATE = 2.0  # the latent's random walk, steps a second each way
