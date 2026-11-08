@@ -95,6 +95,9 @@ of the public tape. Mark the final before 12:00.
   **So F5 unchanged is round 4's base and likely final.**
 
 ## Uploaded
+| # | time | file | validation (12,000 s) | local r4 public (6,000 s) | read |
+|---|---|---|---|---|---|
+| 1 | 07:12 | `r4_W1_warm.py` at PRIOR_MASS 0 (= R3-F5 exactly; 1,029,443 on r4 public in Python too) | **+1,752,785** (se 56,235, breach 0, end +100 at 10,348; 94,615 fills / 1,111,284 lots; 10 min 9 s) | 1,029,443 | 146k per 1,000 s against the public tape's 172k (0.85x; round 3 0.87x). Per 1,000 s (k): 127, 169, 119, 101, 77, 95, 100, 142, 203, 219, 193, 207; max drawdown 13.3k; 4 25-s steps under -3k, 67 over +10k. Results folder `r4_W1_warm_res/`. |
 <!-- each upload: file, time, why; local PnL; the validation PnL; the paired difference against the base per 1,000 s -->
 
 ## Portal against local
