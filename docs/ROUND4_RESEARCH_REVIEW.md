@@ -69,6 +69,11 @@ only if extra timely exposure beats the worse execution price in full-engine PnL
 First report how much can be gained even with hindsight choosing *only these actions*;
 if little remains after costs, stop before building a learned execution model.
 
+**Tested on F5 (IDEAS.md, "R4-T1", 09:35): dropped.** One extra tick while the marginal price keeps
+`d * (mid + signal - p) > 0.25` gives r4 +4,308 (6/6 segments), but 88% of it sits in the fastest speed tercile
+(r3 +464, r2 +2,497, r1 +131; r3b seed 203 -4,719). A retry within 50 ms of an incomplete take loses (r4 -4,497,
+r3 -4,043, round-4 synthetic seeds -7k to -18k).
+
 ## 2. Learn action advantage against baseline continuation
 
 **Largest policy opportunity, more work and overfitting risk.** At a decision state s,
