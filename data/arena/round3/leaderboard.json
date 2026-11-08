@@ -1,0 +1,373 @@
+[
+ {
+  "rank": 1,
+  "teamName": "Team 1",
+  "isTie": false,
+  "pnl": 1458005.2,
+  "pnlSeries": []
+ },
+ {
+  "rank": 2,
+  "teamName": "Team 3",
+  "isTie": false,
+  "pnl": 1240532.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 3,
+  "teamName": "Team 2",
+  "isTie": false,
+  "pnl": 1198047.66,
+  "pnlSeries": []
+ },
+ {
+  "rank": 4,
+  "teamName": "Team 4",
+  "isTie": false,
+  "pnl": 1134420.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 5,
+  "teamName": "Team 6",
+  "isTie": false,
+  "pnl": 1073870.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 6,
+  "teamName": "Team 7",
+  "isTie": false,
+  "pnl": 1071858.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 7,
+  "teamName": "Team 8",
+  "isTie": false,
+  "pnl": 995565.41,
+  "pnlSeries": []
+ },
+ {
+  "rank": 8,
+  "teamName": "Team 5",
+  "isTie": false,
+  "pnl": 978183.08,
+  "pnlSeries": []
+ },
+ {
+  "rank": 9,
+  "teamName": "Team 9",
+  "isTie": false,
+  "pnl": 973500.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 10,
+  "teamName": "Team 13",
+  "isTie": false,
+  "pnl": 929224.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 11,
+  "teamName": "Team 14",
+  "isTie": false,
+  "pnl": 926626.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 12,
+  "teamName": "Team 11",
+  "isTie": false,
+  "pnl": 874971.48,
+  "pnlSeries": []
+ },
+ {
+  "rank": 13,
+  "teamName": "Team 19",
+  "isTie": false,
+  "pnl": 874824.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 14,
+  "teamName": "Team 17",
+  "isTie": false,
+  "pnl": 857561.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 15,
+  "teamName": "Team 12",
+  "isTie": false,
+  "pnl": 832916.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 16,
+  "teamName": "Team 24",
+  "isTie": false,
+  "pnl": 832476.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 17,
+  "teamName": "ThatsMyQuant",
+  "isTie": false,
+  "pnl": 827253.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 18,
+  "teamName": "Team 38",
+  "isTie": false,
+  "pnl": 826437.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 19,
+  "teamName": "Team 22",
+  "isTie": false,
+  "pnl": 823537.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 20,
+  "teamName": "Team 18",
+  "isTie": false,
+  "pnl": 816404.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 21,
+  "teamName": "Team 20",
+  "isTie": false,
+  "pnl": 798923.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 22,
+  "teamName": "Team 25",
+  "isTie": false,
+  "pnl": 764132.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 23,
+  "teamName": "Team 27",
+  "isTie": false,
+  "pnl": 745245.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 24,
+  "teamName": "Team 21",
+  "isTie": false,
+  "pnl": 745105.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 25,
+  "teamName": "Team 15",
+  "isTie": false,
+  "pnl": 739221.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 26,
+  "teamName": "Team 10",
+  "isTie": false,
+  "pnl": 734198.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 27,
+  "teamName": "Team 26",
+  "isTie": false,
+  "pnl": 724745.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 28,
+  "teamName": "Team 28",
+  "isTie": false,
+  "pnl": 678233.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 29,
+  "teamName": "Team 54",
+  "isTie": false,
+  "pnl": 665249.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 30,
+  "teamName": "Team 23",
+  "isTie": false,
+  "pnl": 653111.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 31,
+  "teamName": "Team 36",
+  "isTie": false,
+  "pnl": 646317.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 32,
+  "teamName": "Team 37",
+  "isTie": false,
+  "pnl": 617855.3,
+  "pnlSeries": []
+ },
+ {
+  "rank": 33,
+  "teamName": "Team 29",
+  "isTie": false,
+  "pnl": 591544.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 34,
+  "teamName": "Team 30",
+  "isTie": false,
+  "pnl": 589202.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 35,
+  "teamName": "Team 44",
+  "isTie": false,
+  "pnl": 582289.06,
+  "pnlSeries": []
+ },
+ {
+  "rank": 36,
+  "teamName": "Team 31",
+  "isTie": false,
+  "pnl": 511252.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 37,
+  "teamName": "Team 32",
+  "isTie": false,
+  "pnl": 498204.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 38,
+  "teamName": "Team 49",
+  "isTie": false,
+  "pnl": 473420.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 39,
+  "teamName": "Team 46",
+  "isTie": false,
+  "pnl": 467674.78,
+  "pnlSeries": []
+ },
+ {
+  "rank": 40,
+  "teamName": "Team 33",
+  "isTie": false,
+  "pnl": 452218.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 41,
+  "teamName": "Team 40",
+  "isTie": false,
+  "pnl": 452076.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 42,
+  "teamName": "Team 34",
+  "isTie": false,
+  "pnl": 449340.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 43,
+  "teamName": "Team 42",
+  "isTie": false,
+  "pnl": 426611.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 44,
+  "teamName": "Team 53",
+  "isTie": false,
+  "pnl": 385471.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 45,
+  "teamName": "Team 39",
+  "isTie": false,
+  "pnl": 346533.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 46,
+  "teamName": "Team 45",
+  "isTie": false,
+  "pnl": 328828.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 47,
+  "teamName": "Team 35",
+  "isTie": false,
+  "pnl": 311258.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 48,
+  "teamName": "Team 47",
+  "isTie": false,
+  "pnl": 281034.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 49,
+  "teamName": "Team 48",
+  "isTie": false,
+  "pnl": 246636.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 50,
+  "teamName": "Team 41",
+  "isTie": false,
+  "pnl": 231396.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 51,
+  "teamName": "Team 57",
+  "isTie": false,
+  "pnl": 206608.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 52,
+  "teamName": "Team 43",
+  "isTie": false,
+  "pnl": 204944.0,
+  "pnlSeries": []
+ },
+ {
+  "rank": 53,
+  "teamName": "Team 52",
+  "isTie": false,
+  "pnl": -2192.0,
+  "pnlSeries": []
+ }
+]
