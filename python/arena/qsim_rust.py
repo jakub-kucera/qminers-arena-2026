@@ -101,7 +101,7 @@ def to_run(row: dict) -> qgrid.Run:
 
 def run_grid(strategy: str, data: list[Path], axes: list[Axis], base: dict, threads: int, holdout: float) -> tuple[qgrid.Cell, list[qgrid.Cell]]:
     """arena.qgrid.run_grid with the runs in Rust: the baseline and every cell, with their measures."""
-    cells = [(None, ())] + qgrid.cells_of(axes)
+    cells = [(None, ())] + (qgrid.cells_of(axes) if axes else [])  # no axes: the baseline alone, not a second identical run
     params = []
     for _, values in cells:
         overrides = dict(base)
@@ -149,8 +149,9 @@ def main(argv: list[str] | None = None) -> int:
     build()
     with tempfile.TemporaryDirectory(prefix="qsim_rust_") as scratch:
         files = qgrid.plain_csv(args.data, Path(scratch))
-        n = (1 + len(qgrid.cells_of(args.grid))) * len(files)
-        print(f"{n} runs ({len(qgrid.cells_of(args.grid))} cells + baseline, {len(files)} files) on {args.threads} threads (Rust)", file=sys.stderr)
+        n_cells = len(qgrid.cells_of(args.grid)) if args.grid else 0
+        n = (1 + n_cells) * len(files)
+        print(f"{n} runs ({n_cells} cells + baseline, {len(files)} files) on {args.threads} threads (Rust)", file=sys.stderr)
         start = time.perf_counter()
         baseline, grid = run_grid(args.strategy, files, args.grid, dict(args.overrides), args.threads, args.holdout)
         print(f"done in {time.perf_counter() - start:.2f} s", file=sys.stderr)
