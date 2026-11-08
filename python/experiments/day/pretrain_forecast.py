@@ -10,6 +10,8 @@ Subcommands:
 - `gen --params P.json --opts PRESET --seeds 1-12 --seconds 3000 --dir DIR`: tape_gen draws (gen_calibrate's presets).
 - `dump TAPE... --dir DIR --jobs 3 [--head-seconds 3000 --tag-parent]`: each tape (or its first seconds) through the starter's simulator with `pretrain_dump_bot.py` (R3-F1 plus
   a dump of every observation's features and matured label) to DIR/<stem>.bin; the PnL line to DIR/<stem>.pnl.
+- `rdump TAPE... --dir DIR --jobs 3 [--head-seconds S --tag-parent]`: the same rows from the Rust ridge_maker with
+  R3-F1's settings (`RIDGE_FEAT_LOG`, ridge_maker.rs), about 10 s a 6,000-s tape instead of 200-400 s.
 - `table --dir DIR --gen GLOB`: the offline comparison. For each test tape (round 3's last 25%, t >= 4,500 s; round
   2's public tape; round 1) and each training source (real tapes only, generated only, both; the test tape and its
   mirror never in training, round 3 only before 4,500 s): out-of-sample R^2 and the take region (|forecast| > 0.65
@@ -114,6 +116,45 @@ def cmd_dump(args) -> int:
     jobs = [(str(t), str(args.dir), args.bot) for t in tapes]
     with ProcessPoolExecutor(args.jobs) as ex:
         for stem, pnl, sec, rc in ex.map(_dump, jobs):
+            print(f"{stem}: pnl {pnl:,.0f}, {sec:.0f} s, rc {rc}", flush=True)
+    return 0
+
+
+def _rdump(job):
+    """One tape through the Rust ridge_maker with R3-F1's settings and RIDGE_FEAT_LOG (the same rows as `dump`)."""
+    from arena import qsim_rust
+    from experiments.day import gen_calibrate
+    tape, out_dir = job
+    stem = Path(tape).stem
+    out = Path(out_dir) / f"{stem}.bin"
+    t0 = time.time()
+    with open(Path(out_dir) / f"{stem}.task.jsonl", "w") as f:
+        f.write(json.dumps({**gen_calibrate.L9, "FILTER": 1}) + "\n")
+    res = subprocess.run([str(qsim_rust.BINARY), "batch", "--strategy", "ridge_maker", "--tasks",
+                          str(Path(out_dir) / f"{stem}.task.jsonl"), "--threads", "1", "--public-depth", "20",
+                          "--backtest", str(tape)], capture_output=True, text=True,
+                         env=dict(os.environ, RIDGE_FEAT_LOG=str(out)))
+    try:
+        pnl = json.loads(res.stdout.splitlines()[0])["pnl"]
+    except (IndexError, KeyError, ValueError):
+        pnl = float("nan")
+    (Path(out_dir) / f"{stem}.pnl").write_text(f"{pnl} {time.time() - t0:.0f} rust\n")
+    return stem, pnl, time.time() - t0, res.returncode
+
+
+def cmd_rdump(args) -> int:
+    from arena import qsim_rust
+    qsim_rust.build()
+    args.dir.mkdir(parents=True, exist_ok=True)
+    tapes = [Path(t) for t in args.tapes]
+    if args.head_seconds:
+        (args.dir / "tapes").mkdir(exist_ok=True)
+        tapes = [head_copy(t, args.head_seconds, args.dir / "tapes", f"{t.parent.name}_" if args.tag_parent else "")
+                 for t in tapes]
+    elif args.tag_parent:
+        raise SystemExit("--tag-parent needs --head-seconds")
+    with ProcessPoolExecutor(args.jobs) as ex:
+        for stem, pnl, sec, rc in ex.map(_rdump, [(str(t), str(args.dir)) for t in tapes]):
             print(f"{stem}: pnl {pnl:,.0f}, {sec:.0f} s, rc {rc}", flush=True)
     return 0
 
@@ -420,6 +461,12 @@ def main(argv=None) -> int:
     d.add_argument("--bot", help="the base bot (default R3-F1)")
     d.add_argument("--head-seconds", type=float, help="dump only each tape's first this many seconds (a cut copy in DIR/tapes)")
     d.add_argument("--tag-parent", action="store_true", help="with --head-seconds: prefix the copy's name with its folder's")
+    r = sub.add_parser("rdump", help="dump through the Rust ridge_maker (R3-F1's settings, RIDGE_FEAT_LOG): ~10 s a tape")
+    r.add_argument("tapes", nargs="+")
+    r.add_argument("--dir", type=Path, required=True)
+    r.add_argument("--jobs", type=int, default=3)
+    r.add_argument("--head-seconds", type=float)
+    r.add_argument("--tag-parent", action="store_true")
     t = sub.add_parser("table")
     t.add_argument("--dir", type=Path, required=True)
     t.add_argument("--gen", default="r*_*", help="the generated dumps' stems (a glob)")
@@ -443,7 +490,8 @@ def main(argv=None) -> int:
     m.add_argument("--weights", type=Path, required=True)
     m.add_argument("--bot", type=Path, required=True)
     args = ap.parse_args(argv)
-    return {"gen": cmd_gen, "dump": cmd_dump, "table": cmd_table, "export": cmd_export, "embed": cmd_embed}[args.cmd](args)
+    return {"gen": cmd_gen, "dump": cmd_dump, "table": cmd_table, "export": cmd_export, "embed": cmd_embed,
+            "rdump": cmd_rdump}[args.cmd](args)
 
 
 if __name__ == "__main__":

@@ -153,6 +153,10 @@
 //!       --set HUBER=6.0 --set RIDGE_MIN=30 --set RIDGE_FRAC=0.003 (its `_quote`'s `effective=reserved` is this
 //!       file's quote room at CANCEL_FREE 0 while no KEEP shrink is in flight: with quotes of at most KEEP_LOTS too,
 //!       so L9 with L8's switch is L9's and --set QUOTE_SIZE=1 --set QS_RATE=2.5)
+//! `RIDGE_FEAT_LOG` (an environment variable, a path; off by default, runs without it unchanged) writes each matured
+//! first-model label as little-endian f64s: the observation's time (s), its mid, the label, the stored forecast,
+//! inventory, the n features, then the 14 extras of `python/experiments/day/pretrain_dump_bot.py` (FeatExtras): the
+//! rows `experiments.day.pretrain_forecast rdump` trains on, the same bits as the Python dump (R3-F1's settings).
 //! Round 3's latent-price filter (R3-F1, `r3_F1_latent_filter.py`, 8 Nov), off by default: `FILTER` (0; 1 adds three
 //! features at the end of the base features, after TREND's: a hidden-Markov filter over the latent reference bid
 //! lb on FILTER_W (8) ticks either side of the bid. Each new market order within FILTER_DEPTH (6) of the previous
@@ -505,6 +509,127 @@ pub struct RidgeMaker {
     lf_p: Vec<f64>,
     lf_base: i64,
     lf_t: Option<f64>,
+    /// RIDGE_FEAT_LOG (env var, a path; experiments/day/pretrain_forecast.py): each matured first-model label as
+    /// little-endian f64s: t (s), the observation's mid, the label, the stored forecast, inventory, the n features,
+    /// then the 14 extras of pretrain_dump_bot.py's AExtras (fx) at the observation
+    feat_log: Option<std::io::BufWriter<std::fs::File>>,
+    feat_pending: VecDeque<(i64, f64, [f64; 14])>,
+    fx: FeatExtras,
+}
+
+/// pretrain_dump_bot.py's AExtras (R3-P1's PreExtras): the frozen forecast's extra inputs' running state
+#[derive(Default)]
+struct FeatExtras {
+    t: Option<i64>,
+    mid: Option<f64>,
+    v1: f64,
+    v10: f64,
+    t_wide: i64,
+    t_move: i64,
+    last_move: f64,
+    fsq: f64,
+    fbig: f64,
+}
+
+impl FeatExtras {
+    fn update(&mut self, now: i64, bid: i64, ask: i64, trades: &[Trade]) {
+        let mid = (bid + ask) as f64 * 0.5;
+        let dt = match self.t {
+            None => 0,
+            Some(t) => (now - t).max(0),
+        };
+        self.t = Some(now);
+        if dt != 0 {
+            let d1 = ((-dt) as f64 / 1e6).exp();
+            self.v1 *= d1;
+            self.v10 *= ((-dt) as f64 / 1e7).exp();
+            self.fsq *= d1;
+            self.fbig *= d1;
+        }
+        if let Some(m) = self.mid {
+            if mid != m {
+                let mv = mid - m;
+                self.v1 += mv.abs();
+                self.v10 += mv.abs();
+                self.t_move = now;
+                self.last_move = mv;
+            }
+        }
+        self.mid = Some(mid);
+        if ask - bid >= 2 {
+            self.t_wide = now;
+        }
+        let mut lots: Vec<(u64, i64, i64)> = Vec::new();
+        for trade in trades {
+            if trade.taker_owner != Owner::Market {
+                continue;
+            }
+            let direction = if trade.book_side == Side::Sell { 1 } else { -1 };
+            match lots.iter_mut().find(|(id, _, _)| *id == trade.taker_order_id) {
+                Some(entry) => entry.2 += trade.quantity,
+                None => lots.push((trade.taker_order_id, direction, trade.quantity)),
+            }
+        }
+        for (_, direction, q) in lots {
+            self.fsq += direction as f64 * (q as f64).powf(0.5);
+            if q as f64 > self.fbig.abs() {
+                self.fbig = (direction * q) as f64;
+            }
+        }
+    }
+
+    fn features(&self, now: i64, snapshot: &Snapshot, bid: i64, ask: i64, lf_p: &[f64], lf_base: i64) -> [f64; 14] {
+        let mid = (bid + ask) as f64 * 0.5;
+        let mut q = [[0i64; 2]; 2];
+        for (k, (side, touch, sgn)) in [(Side::Buy, bid, -1i64), (Side::Sell, ask, 1)].into_iter().enumerate() {
+            for order in snapshot.side(side) {
+                if order.owner != Owner::Market {
+                    continue;
+                }
+                let d = (order.price - touch) * sgn;
+                if d == 0 {
+                    q[k][0] += order.quantity;
+                } else if d == 1 {
+                    q[k][1] += order.quantity;
+                } else if d > 1 {
+                    break;
+                }
+            }
+        }
+        let (bq, b2, aq, a2) = (q[0][0] as f64, q[0][1] as f64, q[1][0] as f64, q[1][1] as f64);
+        let (mut up, mut dn, mut raw) = (0.0f64, 0.0f64, 0.0f64);
+        if !lf_p.is_empty() {
+            let mut m = 0.0f64;
+            for (i, &v) in lf_p.iter().enumerate() {
+                let g = (lf_base + i as i64) as f64 + 0.5 - mid;
+                m += v * g;
+                if g >= 0.5 {
+                    up += v;
+                } else if g <= -0.5 {
+                    dn += v;
+                }
+            }
+            raw = clamp(m, -10.0, 10.0);
+        }
+        let fb = self.fbig;
+        let sgn = if fb > 0.0 { 1.0 } else if fb < 0.0 { -1.0 } else { 0.0 };
+        [
+            (ask - bid).min(5) as f64,
+            bq.ln_1p() - aq.ln_1p(),
+            (bq.ln_1p() + aq.ln_1p()) / 5.0,
+            self.v1.min(20.0) / 5.0,
+            self.v10.min(200.0) / 50.0,
+            ((now - self.t_wide) as f64 / 1e6).min(10.0),
+            ((now - self.t_move) as f64 / 1e6).min(5.0),
+            clamp(self.last_move, -5.0, 5.0),
+            clamp(self.fsq, -50.0, 50.0) / 10.0,
+            sgn * fb.abs().ln_1p() / 5.0,
+            up,
+            dn,
+            raw,
+            b2.ln_1p() - a2.ln_1p(),
+        ]
+    }
 }
 
 impl RidgeMaker {
@@ -773,6 +898,11 @@ impl RidgeMaker {
             pred_log: std::env::var("RIDGE_PRED_LOG")
                 .ok()
                 .map(|p| std::io::BufWriter::new(std::fs::File::create(p).expect("RIDGE_PRED_LOG"))),
+            feat_log: std::env::var("RIDGE_FEAT_LOG")
+                .ok()
+                .map(|p| std::io::BufWriter::new(std::fs::File::create(p).expect("RIDGE_FEAT_LOG"))),
+            feat_pending: VecDeque::new(),
+            fx: FeatExtras { t_wide: -1_000_000_000_000, t_move: -1_000_000_000_000, ..Default::default() },
             prior_mass: params.float("PRIOR_MASS", 0.0)?,
             dump_us: params.int("DUMP_US", 0)?,
             dump_snap: None,
@@ -971,6 +1101,28 @@ impl RidgeMaker {
             let decay = ((-(elapsed.max(0))) as f64 / memory as f64).exp();
             m.last_label_us = Some(now);
             let mut response = clamp(mid - old_mid, -20.0, 20.0);
+            if which == 0 {
+                if let Some(w) = self.feat_log.as_mut() {
+                    while self.feat_pending.front().is_some_and(|e| e.0 < observed_us) {
+                        self.feat_pending.pop_front();
+                    }
+                    if let Some(&(t, inv, extra)) = self.feat_pending.front() {
+                        if t == observed_us {
+                            self.feat_pending.pop_front();
+                            use std::io::Write;
+                            let mut buf: Vec<u8> = Vec::with_capacity(8 * (5 + n + 14));
+                            for v in [observed_us as f64 * 1e-6, old_mid, response, stored, inv]
+                                .into_iter()
+                                .chain(features[..n].iter().copied())
+                                .chain(extra)
+                            {
+                                buf.extend_from_slice(&v.to_le_bytes());
+                            }
+                            let _ = w.write_all(&buf);
+                        }
+                    }
+                }
+            }
             if label_mode == 2 {
                 response = if response > 0.0 { 1.0 } else if response < 0.0 { -1.0 } else { 0.0 };
             }
@@ -2188,6 +2340,9 @@ impl Strategy for RidgeMaker {
             }
         }
         let n = self.n;
+        if self.feat_log.is_some() {
+            self.fx.update(now, bid, ask, trades);
+        }
         self.learn(0, now, mid);
         let m2_on = self.blend_w > 0.0 || (self.lean_k != 0.0 && self.lean_src == 0) || self.ft_src == 1;
         if m2_on {
@@ -2208,6 +2363,10 @@ impl Strategy for RidgeMaker {
                 0.0
             };
             self.m1.observations.push_back((now, mid, features, self.mid_changes, stored));
+            if self.feat_log.is_some() {
+                let extra = self.fx.features(now, snapshot, bid, ask, &self.lf_p, self.lf_base);
+                self.feat_pending.push_back((now, self.inventory as f64, extra));
+            }
             if m2_on {
                 if self.m2.observations.len() >= self.obs_cap {
                     self.m2.observations.pop_front();
