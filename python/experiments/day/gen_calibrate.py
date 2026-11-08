@@ -636,6 +636,22 @@ def add_extra_bots(specs) -> None:
         BOTS[name] = ("py", Path(file).resolve())
 
 
+def _gen_latent(job):
+    """A draw with its true latent (seed<N>_latent.csv); the tape is regenerated beside it and must equal seed<N>.csv."""
+    params, seed, seconds, out = job
+    out = Path(out)
+    tmp = out.with_suffix(".tmp")
+    tape_gen.generate(params, seed, seconds, tmp, out.with_name(f"{out.stem}_latent.csv"))
+    if out.exists():
+        same = tmp.read_bytes() == out.read_bytes()
+        tmp.unlink()
+        if not same:
+            raise RuntimeError(f"{out}: the regenerated tape differs")
+    else:
+        tmp.rename(out)
+    return str(out.with_name(f"{out.stem}_latent.csv"))
+
+
 def cmd_write(args) -> int:
     """A shared set of draws: DIR/seed<N>.csv for each seed (existing files kept), and DIR/README.txt saying how."""
     opts = parse_opts(args.opts)
@@ -647,16 +663,27 @@ def cmd_write(args) -> int:
             f" the starter's CSV format.\nThe model: {args.params} (tape_gen --fit of the round's public tape) with the"
             f" latent options {args.opts!r}:\n{json.dumps(opts)}\nMade by:\n  uv run python -m experiments.day."
             f"gen_calibrate write --params {args.params} --opts {args.opts} --seeds {args.seeds} --seconds "
-            f"{args.seconds:.0f} --dir {args.dir}\nThe calibration: IDEAS.md, \"Calibrating the generator to round 2's"
+            f"{args.seconds:.0f} --dir {args.dir}"
+            + (f" --latent-seeds {args.latent_seeds}" if args.latent_seeds else "")
+            + "\nseed<N>_latent.csv (for the --latent-seeds): the true latent mid every 10 ms (time, latent, the jump chain's"
+            " state 0 calm / 1 volatile, the latent's own jumps in ticks since the previous row); the same draw as"
+            f" seed<N>.csv (tape_gen --latent-out).\nThe calibration: IDEAS.md, \"Calibrating the generator to round 2's"
             f" validation scoreboard\"; gen_calibrate.PRESETS.\n")
     readme.write_text(note + "params.json here is the fitted model with those options merged in (tape_gen --params"
                       " params.json --seed N --seconds S --out X.csv draws one more).\n")
     (args.dir / "params.json").write_text(json.dumps(params))
     t0 = time.time()
-    jobs = [(params, sd, args.seconds, str(args.dir / f"seed{sd}.csv")) for sd in seeds]
-    with ProcessPoolExecutor(min(args.jobs, len(jobs))) as ex:
-        for i, out in enumerate(ex.map(_gen, jobs), 1):
-            print(f"  {i}/{len(jobs)} {out} ({time.time() - t0:.0f} s)", flush=True)
+    lat = set(parse_seeds(args.latent_seeds)) if args.latent_seeds else set()
+    jobs = [(params, sd, args.seconds, str(args.dir / f"seed{sd}.csv")) for sd in seeds if sd not in lat]
+    if jobs:
+        with ProcessPoolExecutor(min(args.jobs, len(jobs))) as ex:
+            for i, out in enumerate(ex.map(_gen, jobs), 1):
+                print(f"  {i}/{len(jobs)} {out} ({time.time() - t0:.0f} s)", flush=True)
+    jobs = [(params, sd, args.seconds, str(args.dir / f"seed{sd}.csv")) for sd in sorted(lat)]
+    if jobs:
+        with ProcessPoolExecutor(min(args.jobs, len(jobs))) as ex:
+            for out in ex.map(_gen_latent, jobs):
+                print(f"  {out} ({time.time() - t0:.0f} s)", flush=True)
     return 0
 
 
@@ -818,6 +845,8 @@ def main(argv=None) -> int:
     wr.add_argument("--seconds", type=float, default=12000.0)
     wr.add_argument("--dir", type=Path, required=True)
     wr.add_argument("--jobs", type=int, default=4)
+    wr.add_argument("--latent-seeds", help="seeds whose draws also get seed<N>_latent.csv, tape_gen's true latent every"
+                    " 10 ms (time, latent, state, jump); an existing tape is regenerated and checked identical")
     rk = sub.add_parser("rank", help="bots ranked on a parameter set's draws (no scoreboard)")
     rk.add_argument("--params", type=Path, required=True)
     rk.add_argument("--opts", help="JSON latent options merged into the params")

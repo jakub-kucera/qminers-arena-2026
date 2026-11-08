@@ -45,7 +45,8 @@ jumps (and the impact with `vol_impact`), `k_vol` (wider inserts at a high multi
 centred on a noisy latent). `--impact-cap` keeps a fitted size bin's impact above 1 tick.
 
     uv run python -m experiments.day.tape_gen --fit data/arena/round1/round1.csv --params-out P.json
-    uv run python -m experiments.day.tape_gen --params P.json --seed N --seconds 12000 --out tape.csv [--opts JSON]
+    uv run python -m experiments.day.tape_gen --params P.json --seed N --seconds 12000 --out tape.csv [--opts JSON] \
+        [--latent-out latent.csv]   # the true latent mid every 10 ms, the jump chain's state, the jumps since the last row
 """
 
 from __future__ import annotations
@@ -66,6 +67,7 @@ SPREADS = (1, 2, 3)  # 3 stands for 3+
 CLASSES = ("inside", "touch", "behind1", "deeper")
 DEEPEST = -30
 FIRST_ID = 1_000_001
+LATENT_STEP = 0.01  # --latent-out's grid (s)
 # the impact table's size bins (lots); fit() fills in each bin's mean mid move 5 s after (ticks, the trade's way)
 IMPACT = [[10, 0.097], [30, 0.111], [60, 0.161], [120, 0.254], [250, 0.349], [500, 0.468], [1000, 0.704], [10**9, 0.903]]
 
@@ -199,7 +201,7 @@ class Sampler:
 
 
 
-def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
+def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Path | None = None) -> dict:
     """The latent model: a reference bid `lb` (the latent mid is lb + 0.5) that jumps one tick at `jump_rate` a second
     either way and, after an aggressive order of q lots, one tick its way with probability impact(q); limit bids land
     at lb - k, asks at lb + 1 + k (k from `k_pmf`), never crossing the book (clamped one tick off the other touch)."""
@@ -359,6 +361,22 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
     gaps, us, life, jumps = [], [], [], []
     t = 0.0
     lines = []
+    # --latent-out: the true latent every LATENT_STEP s (the value in force at that time), the jump chain's state, and
+    # the latent's own jumps (signed ticks, summed) since the previous row; no random draws, so the tape is unchanged
+    lat_fh = Path(latent_out).open("w") if latent_out else None
+    lat_rows, lat_i, jump_acc = [], 0, 0.0
+    if lat_fh:
+        lat_fh.write("time,latent,state,jump\n")
+
+    def latent_rows(until: float) -> None:
+        nonlocal lat_i, jump_acc
+        while lat_i * LATENT_STEP < until:
+            lat_rows.append(f"{lat_i * LATENT_STEP:.2f},{level if continuous else lb + 0.5:.4f},{jx_state},{jump_acc:.4f}\n")
+            jump_acc = 0.0
+            lat_i += 1
+        if len(lat_rows) > 100_000:
+            lat_fh.writelines(lat_rows)
+            lat_rows.clear()
     with out.open("w") as fh:
         fh.write("Time,Operation,OrderId,Side,Volume,Price,Lifespan\n")
         while True:
@@ -387,6 +405,8 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
             if nxt >= seconds:
                 break
             t = nxt
+            if lat_fh:
+                latent_rows(t)
             if timed:  # the v2 processes in continuous time: the delayed impact, the drift, the volatility multiplier
                 dt = t - t_last
                 t_last = t
@@ -423,6 +443,7 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
                     if t >= jx_next:
                         size = min(jx_max, max(jx_min, jx_median * math.exp(jx_logsd * normal())))
                         shift(jx_sign * size, t, jx_stale)
+                        jump_acc += jx_sign * size
                         if jx_after_extra:
                             side_j = 0 if jx_sign > 0 else 1
                             new = rng2.uniform(t, t + jx_after_s, rng2.poisson(jx_after_extra * jx_after_s)).tolist()
@@ -460,7 +481,9 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
                 step = 1 if jumps.pop() < 0.5 else -1
                 if continuous:
                     size = latent.get("jump_size", 1.0) * mult
-                    shift(size * float(rng2.standard_t(jump_df)) if jump_df else step * size, t, jump_stale)
+                    delta = size * float(rng2.standard_t(jump_df)) if jump_df else step * size
+                    shift(delta, t, jump_stale)
+                    jump_acc += delta
                     continue
                 lb += step
                 if stale:
@@ -524,6 +547,10 @@ def generate(params: dict, seed: int, seconds: float, out: Path) -> dict:
                 lines = []
         rows += len(lines)
         fh.writelines(lines)
+    if lat_fh:
+        latent_rows(seconds)
+        lat_fh.writelines(lat_rows)
+        lat_fh.close()
     return {"rows": rows, "seed": seed, "seconds": seconds, "out": str(out)}
 
 
@@ -539,6 +566,7 @@ def main(argv=None) -> int:
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--seconds", type=float, help="the tape's length (default: the fitted tape's)")
     parser.add_argument("--out", type=Path)
+    parser.add_argument("--latent-out", type=Path, help="also write the true latent (time, latent, state, jump) every 10 ms")
     args = parser.parse_args(argv)
     if args.fit:
         if not args.params_out:
@@ -552,7 +580,7 @@ def main(argv=None) -> int:
         parser.error("give --fit DATA --params-out P.json, or --params P.json --out tape.csv")
     params = json.loads(args.params.read_text())
     params["latent"].update(json.loads(args.opts or "{}"))
-    result = generate(params, args.seed, args.seconds or params["duration_s"], args.out)
+    result = generate(params, args.seed, args.seconds or params["duration_s"], args.out, args.latent_out)
     print(json.dumps(result))
     return 0
 
