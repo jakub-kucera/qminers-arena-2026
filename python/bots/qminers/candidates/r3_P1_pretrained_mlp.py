@@ -7,7 +7,9 @@ PRE = 2: it replaces the ridge's forecast (the ridge is not fitted); PRE = 3: a 
 wide spread and the last mid move, that move, the market takers' signed sqrt flow and largest order over 1 s, the
 filter's probability the latent is a tick or more above / below the mid, and its unclamped gap). It is evaluated at
 each ridge observation (every 20 ms) and again at a 1-tick spread when the forecast is within PRE_GATE of a take.
-The notes of R3-F1 follow.
+Result (IDEAS.md, "A pretrained forecaster of the 400-ms move"): round3_public 502,454 against F1's 480,469 (held-out last
+25% 125,269 / 120,628), round2_public 317,111 / 303,720 and round1 148,197 / 152,188 with weights fitted without that
+round. The notes of R3-F1 follow.
 
 R3-F1 (8 Nov, round 3): R2-L9 (the Huber-ridge taker) plus a latent-price filter's features in the ridge. The filter
 is a hidden-Markov filter over the generator's latent reference bid lb (experiments/day/latent_filter.py, the offline
@@ -44,7 +46,7 @@ PRE = 1  # R3-P1: 1 stacked (the frozen forecast as the ridge's 40th feature), 2
 PRE_BLEND = 0.5  # PRE = 3: the ridge's weight
 PRE_GATE = 0.3  # re-evaluate the frozen forecast at an event when the forecast is within this of the take threshold
 PRE_CLIP = 3.0  # the frozen forecast's clip (ticks)
-NUMPY_RIDGE = 1  # the online ridge's sums and solve in numpy (the same sums to the bit, LAPACK's solve; ~20% faster); 0: F1's pure-Python loops
+NUMPY_RIDGE = 1  # the online ridge's sums and solve in numpy (the same sums to the bit, LAPACK's solve; F3 146 s against 162 s on round3_public, the same PnL); 0: the pure-Python loops
 # BEGIN PRETRAINED WEIGHTS (written by `uv run python -m experiments.day.pretrain_forecast embed`)
 PRE_SHAPES = ()
 PRE_BLOB = ""
