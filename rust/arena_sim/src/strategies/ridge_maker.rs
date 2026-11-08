@@ -219,6 +219,11 @@
 //! `FT_JUMP_DIR` (0: both sides): 1 lowers only the bar the last jump's way, -1 only the bar against it.
 //!   F5  (r3_F5_jump_bar.py, round3_public 515670.00, round2_public 330980.00): F3's and --set FT_EDGE=0.25
 //!       --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set FT_JUMP_EDGE=0.15
+//! The take bar's two more states (R3-P1, 8 Nov; Rust only, off by default: F3 and F5 unchanged), searched with the
+//! rest by `experiments.day.policy_search`: `FT_EDGE_FLIP` (-1.0: off), the base bar (FT_EDGE's place) of a take
+//! against the position, a reduce or a flip; `FT_SD` (99.0: off; needs FILTER) with `FT_SD_EDGE` (0.15), the bar at
+//! most FT_SD_EDGE while the latent filter's posterior sd is at least FT_SD (loss_anatomy: takes at sd 0.5-1 earn
+//! +1.34-1.39 a lot at 5 s, under 0.3 +0.41). The jump and gap rules lower either further.
 //!
 //! The audit's quote knobs (8 Nov), off by default: `QS_PULL` (0) 1 withdraws both quotes, so the resting ones are
 //! cancelled, while QS_RATE's switch is off; `QUOTE_GAP` (99.0: off) withdraws the quote on the side the latent filter's
@@ -557,6 +562,10 @@ pub struct RidgeMaker {
     ft_flip_m: f64,
     ft_edge_calm: f64,
     ft_calm_rate: f64,
+    /// R3-P1's take-bar states (8 Nov, off by default): FT_EDGE_FLIP, FT_SD / FT_SD_EDGE
+    ft_edge_flip: f64,
+    ft_sd: f64,
+    ft_sd_edge: f64,
     liq: i64,
     /// LIQ: the last recompute's time and mid, each market order's first-seen time, the young imbalance, the dispersion
     liq_time: Option<i64>,
@@ -863,7 +872,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 182] = [
+pub const KEYS: [&str; 185] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -891,6 +900,7 @@ pub const KEYS: [&str; 182] = [
     "FT_EXIT", "FT_EXIT_SZ", "FT_EXIT_WIDE", "FT_EXIT_KEEP", "QS_PULL", "QUOTE_GAP",
     "FT_LGAP", "FT_LGAP_EDGE", "FT_JUMP", "FT_JUMP_MS", "FT_JUMP_HOLD_MS", "FT_JUMP_EDGE", "FT_FLIP_M",
     "FT_EDGE_CALM", "FT_CALM_RATE", "FT_JUMP_DIR",
+    "FT_EDGE_FLIP", "FT_SD", "FT_SD_EDGE",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -1182,6 +1192,9 @@ impl RidgeMaker {
             ft_flip_m: params.float("FT_FLIP_M", 99.0)?,
             ft_edge_calm: params.float("FT_EDGE_CALM", -1.0)?,
             ft_calm_rate: params.float("FT_CALM_RATE", 0.0)?,
+            ft_edge_flip: params.float("FT_EDGE_FLIP", -1.0)?,
+            ft_sd: params.float("FT_SD", 99.0)?,
+            ft_sd_edge: params.float("FT_SD_EDGE", 0.15)?,
             liq: params.int("LIQ", 0)?,
             liq_time: None,
             liq_mid: 0.0,
@@ -3194,6 +3207,20 @@ impl Strategy for RidgeMaker {
             let calm_rate = if self.ft_calm_rate > 0.0 { self.ft_calm_rate } else { self.qs_th };
             let base_edge = if self.ft_edge_calm >= 0.0 && self.qs_rate < calm_rate { self.ft_edge_calm } else { self.ft_edge };
             let (mut edge_up, mut edge_dn) = (base_edge, base_edge);
+            // FT_EDGE_FLIP (R3-P1): the base bar of a take against the position (a reduce or a flip)
+            if self.ft_edge_flip >= 0.0 {
+                if self.inventory < 0 {
+                    edge_up = self.ft_edge_flip;
+                }
+                if self.inventory > 0 {
+                    edge_dn = self.ft_edge_flip;
+                }
+            }
+            // FT_SD (R3-P1): the bar at most FT_SD_EDGE while the latent filter's posterior sd is at least FT_SD
+            if self.ft_sd < 99.0 && self.filter > 0 && self.lf_features(mid)[2] >= self.ft_sd {
+                edge_up = edge_up.min(self.ft_sd_edge);
+                edge_dn = edge_dn.min(self.ft_sd_edge);
+            }
             if self.ft_jump > 0.0 && now < self.ft_jump_until {
                 // FT_JUMP_DIR: 0 both sides, 1 only the jump's way, -1 only against it
                 if self.ft_jump_dir == 0 || self.ft_jump_dir * self.ft_jump_sign > 0 {

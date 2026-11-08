@@ -207,6 +207,11 @@ FT_JUMP_EDGE=0.15`: round3_public 515670.00 and round2_public 330980.00, the Pyt
 for byte on round3_public (`test_ridge_maker_round2_takers` keeps F3 and F5 on round2_public). Grids with
 `uv run python -m experiments.day.paired_rust TAPE ... --bot F3=B1:'--set FILTER=1' --bot X=B1:'--set FILTER=1 --set ...'`.
 
+R3-P1's two more take-bar states (8 Nov, Rust only, off by default: `FT_EDGE_FLIP` -1.0; `FT_SD` 99.0 with `FT_SD_EDGE`
+0.15): FT_EDGE_FLIP is the base bar of a take against the position (a reduce or a flip), FT_SD_EDGE caps the bar while the
+latent filter's posterior sd is FT_SD+; the jump and gap rules lower either further. F3 505212.00 and F5 515670.00
+unchanged with them off. `experiments.day.policy_search` tunes them with the rest of the policy (IDEAS.md, "R3-P1").
+
 The round-3 audit's quote knobs (8 Nov, Rust only, off by default: `QS_PULL` 0, `QUOTE_GAP` 99.0) withdraw the
 quotes while QS_RATE's switch is off, or on the side the latent filter's gap is against; both lose on R3-F3 (IDEAS.md,
 "Round 3 audit"). `RIDGE_PRED_EXTRA` (an environment variable, with `RIDGE_PRED_LOG`) adds the filter's gap and
