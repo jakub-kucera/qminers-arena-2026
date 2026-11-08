@@ -56,3 +56,8 @@ Trials so far: 0 experiments, 0 cells.
 - F1 / L9 (pnl; breach 0 everywhere): **round3_public 480,469 / 424,730** (+55.7k; 500-s segments won 7/11, t +1.57; first 75% +46.2k, last 25% +9.5k); round2_public 303,720 / 317,057 (-4.2%); round 2's hi_vol_fast1.25 1,012,787 / 1,020,848 (-0.8%); round1 152,188 / 134,626 (+13%).
 - Local run time on r3 205 s vs 187 s (+10%), about 360 s on the server. It trades more: 572k lots vs 460k on r3.
 - Next: round 3's stitched tapes (running), TAKE_EDGE 0.3 on F1 and L9 (running), the Rust port behind a FILTER knob, then the sqrt-impact variant.
+
+## Uploads (validation tape, 12,000 s; results folders in data/arena/round3/<file>_res/)
+| # | time | file | validation pnl | fills / lots | sim time | local r3 public (6,000 s) | read |
+|---|---|---|---|---|---|---|---|
+| 1 | 01:24 | `r3_F1_latent_filter.py` (R3-F1 = R2-L9 + FILTER) | **+862,764** (se 46,223, breach 0, end -17 at 10,035) | 8,173 / 1,073,759 | 9 min 23 s | 480,469 (4,277 / 571,820) | per 1,000 s 72k against the public tape's 80k (0.90x); fills and lots a second 0.95x / 0.94x, PnL a lot 0.80 against 0.84: **the validation tape looks like another draw of the public tape's regime**, not round 2's faster volatile half (round 2: validation 1.38x the public rate). Per 1,000 s: 78, 44, 111, 19, 97, 68, 95, 55, 121, 45, 72, 57k; max dd 23k; 38 one-second PnL steps over 2k (public: 15 in 6,000 s). So rank on the public tape first; the stitched hi_vol_fast1.25 overstates. Sim time 63% of the 15-min limit. |
