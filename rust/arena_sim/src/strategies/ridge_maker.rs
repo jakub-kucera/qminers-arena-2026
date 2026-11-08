@@ -160,7 +160,11 @@
 //! FILTER_PI0/1/2 (0.55/0.39/0.06), clamped one tick off the other touch, plus FILTER_EPS (0.01). lb random-walks at
 //! FILTER_RATE (2.0) steps a second each way. A market taker's filled lots move lb FILTER_IMPACT (3.0) x tape_gen's
 //! impact table, or FILTER_SQRT_C x sqrt(lots) when that is > 0. The features are gap = E[lb] + 0.5 - mid
-//! (clipped +-5), gap |gap| / 3 and min(3, the posterior sd). It needs QUOTEFEAT 1 for its new-order set.)
+//! (clipped +-5), gap |gap| / 3 and min(3, the posterior sd). It needs QUOTEFEAT 1 for its new-order set.
+//! `FILTER_JUMP` (0.0: off) adds jumps to lb's walk: at that rate a second, a lognormal size (median
+//! FILTER_JUMP_MED 6.66, log-sd FILTER_JUMP_SD 0.79, tape_gen v2's r3 preset) either way, mixed in around the
+//! posterior's mode and renormalised. No Python file has it yet: it loses on round3_public, -10k to -30k in every cell
+//! of rate 0.03-0.3 x median 3-6.66 x W 8-16 on B1F, though it lifts the filter's correlation on tape_gen's draws.)
 //!   F1  (r3_F1_latent_filter.py, round3_public 480469.00, round2_public 303720.00): L9's and --set FILTER=1
 
 use std::collections::{HashMap, HashSet, VecDeque};
@@ -505,6 +509,37 @@ pub struct RidgeMaker {
     lf_p: Vec<f64>,
     lf_base: i64,
     lf_t: Option<f64>,
+    /// FILTER_JUMP (0: off): lb also jumps at that rate a second, a lognormal size either way, spread around the MAP
+    lf_jump: f64,
+    lf_jump_k: Vec<f64>,
+}
+
+extern "C" {
+    /// the C library's erf, the one CPython's math.erf calls
+    fn erf(x: f64) -> f64;
+}
+
+/// FILTER_JUMP's kernel by |offset| from the mode (each sign half), as `r3_F*`'s `_lf_jump_kernel`.
+fn lf_jump_kernel(n: usize, med: f64, sd: f64) -> Vec<f64> {
+    let cdf = |x: f64| 0.5 * (1.0 + unsafe { erf((x.ln() - med.ln()) / (sd * 2f64.sqrt())) });
+    let mut w = Vec::new();
+    for k in 1..n {
+        let hi = cdf(k as f64 + 0.5);
+        let lo = if k > 1 { cdf(k as f64 - 0.5) } else { 0.0 };
+        w.push(hi - lo);
+    }
+    let mut tot = 0.0;
+    for x in &w {
+        tot += x;
+    }
+    if tot == 0.0 {
+        tot = 1.0;
+    }
+    let mut k = vec![0.0];
+    for x in w {
+        k.push(x / tot / 2.0);
+    }
+    k
 }
 
 impl RidgeMaker {
@@ -557,7 +592,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 135] = [
+pub const KEYS: [&str; 138] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -577,7 +612,7 @@ pub const KEYS: [&str; 135] = [
     "L2_LOTS", "L2_ORDERS", "L2_FREE", "BURST",
     "FT_MAXSPREAD", "FT_ROOM_LIVE", "LIQ", "IMPACT_US", "HUBER", "QS_RATE", "QS_US",
     "FILTER", "FILTER_W", "FILTER_RATE", "FILTER_EPS", "FILTER_PI0", "FILTER_PI1", "FILTER_PI2", "FILTER_IMPACT",
-    "FILTER_SQRT_C", "FILTER_DEPTH",
+    "FILTER_SQRT_C", "FILTER_DEPTH", "FILTER_JUMP", "FILTER_JUMP_MED", "FILTER_JUMP_SD",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -866,6 +901,9 @@ impl RidgeMaker {
             lf_p: Vec::new(),
             lf_base: 0,
             lf_t: None,
+            lf_jump: params.float("FILTER_JUMP", 0.0)?,
+            lf_jump_k: lf_jump_kernel((2 * lf_w + 1) as usize, params.float("FILTER_JUMP_MED", 6.66)?,
+                                      params.float("FILTER_JUMP_SD", 0.79)?),
         })
     }
 
@@ -1236,6 +1274,26 @@ impl RidgeMaker {
         }
         q[0] += a * p[0];
         q[n - 1] += a * p[n - 1];
+        if self.lf_jump > 0.0 {
+            let x = self.lf_jump * dt;
+            let pj = if x < 0.5 { x } else { 0.5 };
+            let mut m = 0usize;
+            for i in 1..n {
+                if q[i] > q[m] {
+                    m = i;
+                }
+            }
+            let mut total = 0.0;
+            for i in 0..n {
+                let v = (1.0 - pj) * q[i] + pj * self.lf_jump_k[if i > m { i - m } else { m - i }];
+                q[i] = v;
+                total += v;
+            }
+            let inv = 1.0 / total;
+            for v in q.iter_mut() {
+                *v *= inv;
+            }
+        }
         self.lf_p = q;
     }
 

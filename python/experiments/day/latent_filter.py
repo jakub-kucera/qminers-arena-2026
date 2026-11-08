@@ -9,7 +9,14 @@ is a discrete hidden-Markov filter over integer `lb` (2W+1 states around the boo
 - **an aggressive trade** of q lots moves the mass `impact(q) * impact_scale` ticks its way (a fractional shift);
 - **a new limit order** within `depth` ticks of its touch multiplies the mass by its likelihood: a bid at p < ask - 1
   says lb = p + k with P(k) = pi[k] (pi0-pi2, and pi3 if set); a bid at ask - 1 (the clamp) says lb - k >= ask - 1;
-  asks the mirror image; plus a floor `eps` for outliers.
+  asks the mirror image; plus a floor `eps` for outliers;
+- **options, off by default:** `sqrt_c` (Phase 1's impact, sqrt_c x sqrt(lots), instead of the table); `jump` (lognormal
+  jumps at that rate a second, `jump_med` / `jump_sd`, mixed in around the mode: Rust's FILTER_JUMP); `sweep` (a market
+  buy that filled up to P truncates lb < P - 1 - sweep, a sell lb > P + sweep, by `sweep_eps`).
+
+`--latent FILE` (tape_gen --latent-out's true latent of a generated tape) adds the oracle check: the tracking RMSE by
+regime, the lag after 3+ tick jumps, and the true gap's correlation with the mid's moves beside the filter's (the
+ceiling). Every run reports `loglik_per_insert`, the inserts' predictive log-likelihood (the dynamics' fit).
 
 The signal is E[lb] + 0.5 - mid, the filter's forecast of where the mid is going. `--eval` replays a tape through
 tape_book.Book (what the bot sees: every insert with the touch before it, every aggressive trade's filled lots),
@@ -34,7 +41,8 @@ from experiments.day.tape_book import Book
 
 # tape_gen's round-1 impact table: (max lots, mean 5 s mid move in ticks)
 IMPACT = ((10, 0.097), (30, 0.111), (60, 0.161), (120, 0.254), (250, 0.349), (500, 0.468), (1000, 0.704), (10**9, 0.903))
-DEFAULTS = {"W": 8, "rate": 2.0, "eps": 0.01, "pi0": 0.55, "pi1": 0.39, "pi2": 0.06, "pi3": 0.0, "impact_scale": 1.0, "depth": 99, "sqrt_c": 0.0, "use_size": 0}
+DEFAULTS = {"W": 8, "rate": 2.0, "eps": 0.01, "pi0": 0.55, "pi1": 0.39, "pi2": 0.06, "pi3": 0.0, "impact_scale": 1.0, "depth": 99, "sqrt_c": 0.0, "use_size": 0,
+            "jump": 0.0, "jump_med": 6.66, "jump_sd": 0.79, "sweep": -1, "sweep_eps": 0.01}
 HORIZONS = (0.1, 0.4, 1.0, 5.0)
 STEP = 0.05
 
@@ -42,7 +50,8 @@ STEP = 0.05
 class LatentFilter:
     """The bot's copy lives in candidates/r3_F1_latent_filter.py (kept identical by hand)."""
 
-    def __init__(self, W=8, rate=2.0, eps=0.01, pi0=0.55, pi1=0.39, pi2=0.06, pi3=0.0, impact_scale=1.0, depth=99, sqrt_c=0.0, use_size=0):
+    def __init__(self, W=8, rate=2.0, eps=0.01, pi0=0.55, pi1=0.39, pi2=0.06, pi3=0.0, impact_scale=1.0, depth=99, sqrt_c=0.0, use_size=0,
+                 jump=0.0, jump_med=6.66, jump_sd=0.79, sweep=-1, sweep_eps=0.01):
         self.W = int(W)
         self.n = 2 * self.W + 1
         self.rate = rate
@@ -57,7 +66,22 @@ class LatentFilter:
         self.impact_scale = impact_scale
         self.sqrt_c = sqrt_c  # > 0: Phase 1's rule, the latent moves sqrt_c * sqrt(lots) (replaces the table)
         self.use_size = use_size  # offline only: 1 moves it by the order's size, 0 by its filled lots (what a bot sees)
+        # (a) jumps: at `jump` a second lb jumps a lognormal size (median jump_med, log-sd jump_sd) either way,
+        # spread around the MAP (the posterior is concentrated, so the convolution is taken at its mode)
+        self.jump = jump
+        w = []
+        for k in range(1, self.n):
+            hi = 0.5 * (1 + math.erf((math.log(k + 0.5) - math.log(jump_med)) / (jump_sd * math.sqrt(2))))
+            lo = 0.5 * (1 + math.erf((math.log(k - 0.5) - math.log(jump_med)) / (jump_sd * math.sqrt(2)))) if k > 1 else 0.0
+            w.append(hi - lo)
+        tot = sum(w) or 1.0
+        self.jump_k = [0.0] + [x / tot / 2 for x in w]  # by |offset| from the mode, each sign half
+        # (b) sweep bounds: a market buy that filled up to P says lb >= P - 1 - sweep, a sell down to P lb <= P + sweep
+        self.sweep = sweep
+        self.sweep_eps = sweep_eps
         self.base = None  # lb of index 0 is base
+        self.loglik = 0.0
+        self.n_obs = 0
         self.p = None
         self.t = None
 
@@ -92,7 +116,35 @@ class LatentFilter:
         # mass lost off the edges goes back to the edge states
         q[0] += a * p[0]
         q[-1] += a * p[-1]
+        if self.jump > 0:
+            pj = min(0.5, self.jump * dt)
+            m = max(range(n), key=q.__getitem__)
+            k = self.jump_k
+            total = 0.0
+            for i in range(n):
+                v = (1.0 - pj) * q[i] + pj * k[abs(i - m)]
+                q[i] = v
+                total += v
+            inv = 1.0 / total
+            for i in range(n):
+                q[i] *= inv
         self.p = q
+
+    def bound(self, direction, deepest):
+        """(b): truncate the mass below (a buy) or above (a sell) what the order's deepest fill says."""
+        if self.sweep < 0:
+            return
+        p, n, base, e = self.p, self.n, self.base, self.sweep_eps
+        total = 0.0
+        for i in range(n):
+            lb = base + i
+            if (direction > 0 and lb < deepest - 1 - self.sweep) or (direction < 0 and lb > deepest + self.sweep):
+                p[i] *= e
+            total += p[i]
+        if total > 0:
+            inv = 1.0 / total
+            for i in range(n):
+                p[i] *= inv
 
     def recenter(self, bid):
         """Keep the grid centred on the book's bid (shift by whole ticks; mass beyond the edge piles on the edge)."""
@@ -187,6 +239,10 @@ class LatentFilter:
         if total <= 0 or not math.isfinite(total):
             self.p = [1.0 / n] * n
             return
+        # the predictive likelihood of this insert (up to the observation model's constant): its log summed is the
+        # fit of the dynamics (rate, impact, jumps) to the tape's inserts, the maximum-likelihood criterion
+        self.loglik += math.log(total)
+        self.n_obs += 1
         inv = 1.0 / total
         for i in range(n):
             p[i] *= inv
@@ -244,6 +300,8 @@ def replay(path: Path, params: dict, offsets: bool = False):
                         fchk.append(((p_ - 1 if sd_ == 0 else p_ + 1) - (bb + ba) / 2, e + 0.5 - (bb + ba) / 2))
                     if lots and filt.p is not None:
                         filt.advance(t)
+                        if filt.sweep >= 0:
+                            filt.bound(1 if sd_ == 0 else -1, max(f[2] for f in fills) if sd_ == 0 else min(f[2] for f in fills))
                         filt.trade(1 if sd_ == 0 else -1, q_ if filt.use_size else lots)
                 else:
                     if bb is not None and ba is not None and bb < ba:
@@ -263,6 +321,7 @@ def replay(path: Path, params: dict, offsets: bool = False):
             else:
                 book.cancel(oid)
             last_bb, last_ba = book.best
+    replay.last_loglik = (filt.loglik, filt.n_obs)
     return np.array(rows), ks, np.array(fchk)
 
 
@@ -335,12 +394,55 @@ def big_moves(rows: np.ndarray) -> dict:
     return out
 
 
+def oracle(rows: np.ndarray, latent_path: Path) -> dict:
+    """Against a generated tape's true latent (tape_gen --latent-out: time, latent, state, jump every 10 ms): the
+    filter's tracking error by regime, its lag after jumps of 3+ ticks (time until within 1 tick), and the true gap's
+    correlation with the mid's moves (the ceiling) beside the filter's."""
+    lat = np.loadtxt(latent_path, delimiter=",", skiprows=1)
+    t = rows[:, 0]
+    idx = np.clip(np.rint(t / 0.01).astype(int), 0, len(lat) - 1)
+    L, state = lat[idx, 1], lat[idx, 2]
+    mid, sig = rows[:, 1], rows[:, 2]
+    est = mid + sig  # E[lb] + 0.5
+    out = {}
+    for name, sel in (("all", np.ones(len(t), bool)), ("calm", state == 0), ("volatile", state == 1)):
+        if sel.sum() < 10:
+            continue
+        out[name] = {"share": round(float(sel.mean()), 3),
+                     "rmse_filter": round(float(np.sqrt(np.mean((est[sel] - L[sel]) ** 2))), 3),
+                     "rmse_mid": round(float(np.sqrt(np.mean((mid[sel] - L[sel]) ** 2))), 3),
+                     "rmse_floor": round(float(np.sqrt(np.mean((est[sel] - (np.floor(L[sel]) + 0.5)) ** 2))), 3)}
+    # jumps of 3+ ticks: the lag until the filter (and the mid) is within 1 tick of the latent
+    jt = lat[np.abs(lat[:, 3]) >= 3, 0]
+    lags_f, lags_m = [], []
+    for tj in jt:
+        i0 = np.searchsorted(t, tj)
+        seg = slice(i0, min(len(t), i0 + 200))  # 10 s
+        ok_f = np.nonzero(np.abs(est[seg] - L[seg]) < 1)[0]
+        ok_m = np.nonzero(np.abs(mid[seg] - L[seg]) < 1)[0]
+        lags_f.append(ok_f[0] * STEP if len(ok_f) else 10.0)
+        lags_m.append(ok_m[0] * STEP if len(ok_m) else 10.0)
+    if jt.size:
+        out["jumps3"] = {"n": int(jt.size), "lag_filter_median": round(float(np.median(lags_f)), 3),
+                         "lag_filter_q90": round(float(np.quantile(lags_f, 0.9)), 3),
+                         "lag_mid_median": round(float(np.median(lags_m)), 3),
+                         "lag_mid_q90": round(float(np.quantile(lags_m, 0.9)), 3)}
+    n = len(t)
+    for h in HORIZONS:
+        lag = int(round(h / STEP))
+        fut = mid[lag:] - mid[: n - lag]
+        r = lambda x: round(float(np.corrcoef(x[: n - lag], fut)[0, 1]), 4)
+        out[f"corr_{h:g}s"] = {"filter_gap": r(sig), "true_gap": r(L - mid), "true_floor_gap": r(np.floor(L) + 0.5 - mid)}
+    return out
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("tape", type=Path)
     ap.add_argument("--set", action="append", default=[], help="a filter parameter, NAME=VALUE (see DEFAULTS)")
     ap.add_argument("--offsets", action="store_true", help="also tabulate the inserts' offsets to a confident MAP")
     ap.add_argument("--out", type=Path, help="write the result as JSON")
+    ap.add_argument("--latent", type=Path, help="a generated tape's true latent (tape_gen --latent-out): the oracle check")
     args = ap.parse_args(argv)
     params = dict(DEFAULTS)
     for item in args.set:
@@ -349,7 +451,11 @@ def main(argv=None) -> int:
             ap.error(f"unknown parameter {k}")
         params[k] = float(v)
     rows, ks, fchk = replay(args.tape, params, args.offsets)
-    result = {"tape": str(args.tape), "params": params, "samples": len(rows), **evaluate(rows), "f_check": f_check(fchk)}
+    ll, n_obs = replay.last_loglik
+    result = {"tape": str(args.tape), "params": params, "samples": len(rows), "loglik_per_insert": round(ll / max(1, n_obs), 5),
+              **evaluate(rows), "f_check": f_check(fchk)}
+    if args.latent:
+        result["oracle"] = oracle(rows, args.latent)
     if args.offsets:
         result["offsets"] = {f"spread{s}_{'clamp' if c else 'free'}_k{k}": v for (s, c, k), v in sorted(ks.items())}
     text = json.dumps(result, indent=1)
