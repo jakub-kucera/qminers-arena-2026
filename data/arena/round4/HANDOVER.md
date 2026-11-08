@@ -72,7 +72,7 @@ the server (F3 - B1), and F5's higher take bar away from jumps only +4.6k (a tie
   The same shape as ours with a higher slope means a better forecast; a different shape means a different strategy.
 
 ### Upload discipline
-About 15 uploads a round (round 3 used 4 by 05:00). Each upload is a paired test against the current base on the same
+**Round 4 allows 10 uploads** (the portal, ~07:15; round 3 used 7). Upload 1 (~07:10): `r4_W1_warm.py` with PRIOR_MASS 0, which is F5 exactly, so it is F5's validation score. Each upload is a paired test against the current base on the same
 validation tape. A single run's noise is ~45k; switch the final only for a gain that also holds locally on both halves
 of the public tape. Mark the final before 12:00.
 
