@@ -42,6 +42,8 @@ ticks), scheduled jumps (`jx_rate_off` / `jx_rate_on` a second in a hidden two-s
 state's texture: `jx_on_k` wider inserts in it, `jx_warn_sd` a lognormal warning lead, `jx_false_rate` widenings with
 no jump, `jx_diff_sd` diffusion); `--latent-out` writes the true latent every 10 ms; and generic ones — `impact_scale`, `impact_delay` / `impact_tau` (a share of the impact released over
 time), `jump_df` (Student-t sizes for the `jump_rate` jumps), `jump_stale_s`, `drift_sd` / `drift_tau` (an OU drift),
+`drift_jx_only` (default false: apply that drift only during the volatile jump-intensity state;
+the OU velocity itself evolves in both states, with no reset at transitions),
 `vol_states` / `vol_dwell_s` (a Markov volatility multiplier) and `vol_logsd` / `vol_logtau` (a log-OU one) on the
 jumps (and the impact with `vol_impact`), `k_vol` (wider inserts at a high multiplier), `place_noise` (inserts
 centred on a noisy latent). `--impact-cap` keeps a fitted size bin's impact above 1 tick.
@@ -372,6 +374,7 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
     jump_df = latent.get("jump_df", 0)  # > 0: the latent's own jumps are jump_size x Student-t(jump_df), not +-jump_size
     drift_sd = latent.get("drift_sd", 0.0)  # an OU drift of the latent (ticks a second, its stationary sd) ...
     drift_tau = latent.get("drift_tau", 300.0)  # ... and its mean-reversion time (s)
+    drift_jx_only = latent.get("drift_jx_only", False)
     vol_states = latent.get("vol_states", [1.0])  # volatility multipliers, a Markov chain over them ...
     vol_dwell = latent.get("vol_dwell_s", 600.0)  # ... leaving a state after Exp(vol_dwell_s) s for a uniformly drawn other one
     vol_logsd = latent.get("vol_logsd", 0.0)  # and/or a log-OU multiplier, sd of the log ...
@@ -578,7 +581,10 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
                 if drift_sd:
                     a = math.exp(-dt / drift_tau)
                     mu = mu * a + drift_sd * math.sqrt(1.0 - a * a) * normal()
-                    dl += mu * dt
+                    # Left-end intensity state; transitions are processed below at this event.
+                    # With the gate disabled, both the arithmetic and RNG order are unchanged.
+                    if not drift_jx_only or jx_state == 1:
+                        dl += mu * dt
                 if t >= next_switch:
                     state = (state + 1 + int(unif() * (len(vol_states) - 1))) % len(vol_states)
                     next_switch = t + rng2.exponential(vol_dwell)
