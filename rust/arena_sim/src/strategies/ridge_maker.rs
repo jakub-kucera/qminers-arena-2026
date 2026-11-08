@@ -90,7 +90,8 @@
 //! `FT_GAP_MS` (100), exempt from the re-quote's cancels for 1 s; the room is EXPOSURE minus the position its way
 //! (`FT_MODE` 0), only the position against it (1: reduce, if at least `FT_INV` 0 lots) or only when not against it
 //! (2: open). `RIDGE_PRED_LOG` (an environment variable, a path) writes each book event's time, mid, prediction,
-//! skew, spread and inventory, for measuring the forecast.
+//! skew, spread and inventory, for measuring the forecast; with `RIDGE_PRED_EXTRA` set too, the latent filter's gap
+//! and QS_RATE's speed as two more columns (experiments/day/quote_audit.py).
 //!   FT1 (r2_FT1_forecast_take.py, 688311.10, 23,522): C12's and --set FT_EDGE=0.25 --set FT_SZ=200 --set FT_GAP_MS=50
 //! Queue preservation (R2-Q, 7 Nov), off by default: an accepted order resting at the market's touch that the
 //! quoting would cancel (its price no longer the desired one) keeps its queue place: whole while the market lots
@@ -206,6 +207,11 @@
 //! off): the base bar while L8's |mid change| rate is below `FT_CALM_RATE` (0.0: QS_RATE; needs QS_RATE).
 //!   F5  (r3_F5_jump_bar.py, round3_public 515670.00, round2_public 330980.00): F3's and --set FT_EDGE=0.25
 //!       --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set FT_JUMP_EDGE=0.15
+//!
+//! The audit's quote knobs (8 Nov), off by default: `QS_PULL` (0) 1 withdraws both quotes, so the resting ones are
+//! cancelled, while QS_RATE's switch is off; `QUOTE_GAP` (99.0: off) withdraws the quote on the side the latent filter's
+//! gap is against by more than that many ticks. Both lose on R3-F3 (round3_public: QS_PULL 1 495,475, QUOTE_GAP
+//! 0-1.0 497,848-501,145, against 505,212; IDEAS.md, "Round 3 audit").
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -553,6 +559,11 @@ pub struct RidgeMaker {
     qs_us: i64,
     qs_last: Option<(i64, f64)>,
     qs_rate: f64,
+    /// the audit's quote knobs (8 Nov, off by default): QS_PULL 1 cancels the resting quotes while QS_RATE's switch is
+    /// off; QUOTE_GAP (99.0: off) withdraws the side the filter's gap is against by more than this many ticks
+    qs_pull: bool,
+    quote_gap: f64,
+    lf_gap_now: f64,
     /// round 3's burst sizing (R3-J1, 8 Nov, off by default): BURST_TH ... BURST_HOLD
     burst_th: f64,
     burst_exp: i64,
@@ -805,7 +816,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 170] = [
+pub const KEYS: [&str; 172] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -830,7 +841,7 @@ pub const KEYS: [&str; 170] = [
     "FILTER", "FILTER_W", "FILTER_RATE", "FILTER_EPS", "FILTER_PI0", "FILTER_PI1", "FILTER_PI2", "FILTER_IMPACT",
     "FILTER_SQRT_C", "FILTER_DEPTH", "FILTER_JUMP", "FILTER_JUMP_MED", "FILTER_JUMP_SD",
     "FILTER_VQS", "FILTER_VPI0", "FILTER_VPI1", "FILTER_VPI2",
-    "FT_EXIT", "FT_EXIT_SZ", "FT_EXIT_WIDE", "FT_EXIT_KEEP",
+    "FT_EXIT", "FT_EXIT_SZ", "FT_EXIT_WIDE", "FT_EXIT_KEEP", "QS_PULL", "QUOTE_GAP",
     "FT_LGAP", "FT_LGAP_EDGE", "FT_JUMP", "FT_JUMP_MS", "FT_JUMP_HOLD_MS", "FT_JUMP_EDGE", "FT_FLIP_M",
     "FT_EDGE_CALM", "FT_CALM_RATE",
 ];
@@ -1134,6 +1145,9 @@ impl RidgeMaker {
             qs_us: params.int("QS_US", 5_000_000)?,
             qs_last: None,
             qs_rate: 0.0,
+            qs_pull: params.int("QS_PULL", 0)? > 0,
+            quote_gap: params.float("QUOTE_GAP", 99.0)?,
+            lf_gap_now: 0.0,
             burst_th: params.float("BURST_TH", 0.0)?,
             burst_exp: params.int("BURST_EXP", 100)?,
             burst_sz: params.int("BURST_SZ", 0)?,
@@ -2541,6 +2555,7 @@ impl Strategy for RidgeMaker {
         if self.filter > 0 {
             let k = self.n_base - 3;
             let f = self.lf_features(mid);
+            self.lf_gap_now = f[0];
             features[k] = f[0];
             features[k + 1] = f[1];
             features[k + 2] = f[2];
@@ -2790,6 +2805,18 @@ impl Strategy for RidgeMaker {
         if flow > self.flow_cut || self.inventory <= -cap_sell {
             sell = None;
         }
+        if self.qs_pull && self.qs_th > 0.0 && !(self.qs_rate < self.qs_th) {
+            buy = None;
+            sell = None;
+        }
+        if self.quote_gap < 99.0 {
+            if self.lf_gap_now < -self.quote_gap {
+                buy = None;
+            }
+            if self.lf_gap_now > self.quote_gap {
+                sell = None;
+            }
+        }
         self.dbg[5] += 1.0;
         if let Some(t) = self.dbg_inv_t {
             let dt = (now - t).max(0) as f64;
@@ -2898,7 +2925,13 @@ impl Strategy for RidgeMaker {
         if self.m1.labels >= self.min_labels {
             if let Some(w) = self.pred_log.as_mut() {
                 use std::io::Write;
-                let _ = writeln!(w, "{},{},{},{},{},{}", now, mid, prediction, skew, spread, self.inventory);
+                if std::env::var("RIDGE_PRED_EXTRA").is_ok() {
+                    // the audit (8 Nov): the filter's gap and QS_RATE's speed as two more columns
+                    let _ = writeln!(w, "{},{},{},{},{},{},{},{}", now, mid, prediction, skew, spread, self.inventory,
+                                     self.lf_gap_now, self.qs_rate);
+                } else {
+                    let _ = writeln!(w, "{},{},{},{},{},{}", now, mid, prediction, skew, spread, self.inventory);
+                }
             }
         }
         // BURST (R3-J1): a forecast of BURST_TH or more starts a burst of BURST_MS on its side, the take's room there
