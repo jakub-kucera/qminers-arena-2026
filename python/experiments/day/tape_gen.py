@@ -59,6 +59,16 @@ including zero impact when nothing trades. Phase 1's impact regression uses fill
 lots; the v2 implementation uses requested lots. This option permits an explicit
 comparison without silently changing calibrated presets.
 
+**Empirical G ladders (opt-in):** `gen_ladders --params P --params-out Q`
+separates identified batches from the background G marginals. The resulting
+top-level `g_ladders` object supplies a Poisson batch-start rate, bid share,
+microsecond child spacing, and joint [own-touch offset, size, lifetime_us]
+marks. Children run on their exact scheduled clock; a batch shares one side.
+Lifetimes are sampled jointly and are not shortened by the background stale
+rule. This is an empirical ablation: it does not identify the original cancel
+policy or state-dependent batch-start intensity. Existing params omit this
+object and retain byte-identical draws.
+
     uv run python -m experiments.day.tape_gen --fit data/arena/round1/round1.csv --params-out P.json
     uv run python -m experiments.day.tape_gen --params P.json --seed N --seconds 12000 --out tape.csv [--opts JSON] \
         [--latent-out latent.csv]   # the true latent mid every 10 ms, the jump chain's state, the jumps since the last row
@@ -266,6 +276,46 @@ clamping would incorrectly create an atom at jx_lead_min.
 
 
 
+class LadderStream:
+    """Independent Poisson batch starts, exact child clocks, joint batch marks."""
+
+    def __init__(self, spec: dict, rng: np.random.Generator):
+        self.rate = float(spec["rate"])
+        self.bid_share = float(spec.get("bid_share", .5))
+        self.gap = spec["gap_us"]
+        self.batches = spec["batches"]
+        if not math.isfinite(self.rate) or self.rate <= 0:
+            raise ValueError("g_ladders.rate must be finite and positive")
+        if not 0 <= self.bid_share <= 1:
+            raise ValueError("g_ladders.bid_share must be in [0, 1]")
+        if not isinstance(self.gap, int) or self.gap <= 0 or not self.batches:
+            raise ValueError("g_ladders needs positive integer gap_us and nonempty batches")
+        for batch in self.batches:
+            if not batch or any(len(row) != 3 or any(not isinstance(v, int) or v < 1 for v in row) for row in batch):
+                raise ValueError("g_ladders marks must be positive integer [offset, qty, lifetime_us] triples")
+        self.rng, self.pending, self.serial = rng, [], 0
+        self.next_start = self._gap()
+
+    def _gap(self):
+        return max(1, round(float(self.rng.exponential(1 / self.rate)) * 1e6))
+
+    @property
+    def next_time(self):
+        return min(self.next_start, self.pending[0][0] if self.pending else math.inf) / 1e6
+
+    def pop(self):
+        if not self.pending or self.next_start <= self.pending[0][0]:
+            now = self.next_start
+            batch = self.batches[int(self.rng.integers(len(self.batches)))]
+            side = 0 if self.rng.random() < self.bid_share else 1
+            for i, (offset, qty, life_us) in enumerate(batch):
+                heapq.heappush(self.pending, (now + i * self.gap, self.serial, side, offset, qty, life_us))
+                self.serial += 1
+            self.next_start = now + self._gap()
+        now, _, side, offset, qty, life_us = heapq.heappop(self.pending)
+        return now, side, offset, qty, life_us
+
+
 def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Path | None = None) -> dict:
     """The latent model: a reference bid `lb` (the latent mid is lb + 0.5) that jumps one tick at `jump_rate` a second
     either way and, after an aggressive order of q lots, one tick its way with probability impact(q); limit bids land
@@ -296,6 +346,8 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
     stale = latent.get("stale_s", 0.0)  # >0: on a latent move, the orders it leaves on the wrong side cancel within Exp(stale_s)
     due = {}  # oid -> the cancel time that counts (only with stale_s); -1 once written while a second time is queued
     extra = set()  # orders with a second (earlier, stale) cancel time queued
+    ladder = LadderStream(params["g_ladders"], np.random.default_rng([seed, 4])) if params.get("g_ladders") else None
+    ladder_ids = set()  # their joint empirical cancel marks are separate from background stale cancels
 
     def restale(step: int, now: float, mean: float | None = None) -> None:
         # lb up: asks at or below lb are now under the latent ask; lb down: bids at or above lb + 1
@@ -303,7 +355,7 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
         for price, queue in list(book.levels[side].items()):
             if (side == 1 and price <= lb) or (side == 0 and price >= lb + 1):
                 for entry in queue:
-                    if entry[1] > 0:
+                    if entry[1] > 0 and entry[0] not in ladder_ids:
                         ct = now + rng.exponential(stale if mean is None else mean)
                         if ct < due[entry[0]] and entry[0] not in extra:
                             due[entry[0]] = ct
@@ -447,6 +499,7 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
     batch = 65536
     gaps, us, life, jumps = [], [], [], []
     t = 0.0
+    base_next = None
     lines = []
     # --latent-out: the true latent every LATENT_STEP s (the value in force at that time), the jump chain's state, and
     # the latent's own jumps (signed ticks, summed) since the previous row; no random draws, so the tape is unchanged
@@ -467,16 +520,20 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
     with out.open("w") as fh:
         fh.write("Time,Operation,OrderId,Side,Volume,Price,Lifespan\n")
         while True:
-            if not gaps:
-                gaps = rng.exponential(1.0 / total, batch).tolist()
-                us = rng.random(batch).tolist()
-                jumps = rng.random(batch).tolist()
-            nxt = t + gaps.pop()
+            if base_next is None:
+                if not gaps:
+                    gaps = rng.exponential(1.0 / total, batch).tolist()
+                    us = rng.random(batch).tolist()
+                    jumps = rng.random(batch).tolist()
+                base_next = t + gaps.pop()
+            nxt = min(base_next, ladder.next_time) if ladder else base_next
             while cancels and cancels[0][0] <= nxt:
                 ct, cid = heapq.heappop(cancels)
                 if ct >= seconds:
                     break
-                if stale:
+                if cid in ladder_ids:
+                    ladder_ids.remove(cid)
+                elif stale:
                     d = due.get(cid)
                     if d != ct:  # the other of an order's two cancel times: skip it (and forget the order once both are out)
                         if d == -1.0:
@@ -491,7 +548,23 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
                 lines.append(f"{ct:.6f},Cancel,{cid},,,,\n")
             if nxt >= seconds:
                 break
-            t = nxt
+            if ladder and ladder.next_time <= base_next:
+                now_us, side, offset, q, life_us = ladder.pop()
+                own = book.best[side]
+                if own is not None:
+                    price = own - offset if side == 0 else own + offset
+                    book.insert(oid, side, price, q, False)
+                    lines.append(f"{now_us / 1e6:.6f},Insert,{oid},{'B' if side == 0 else 'A'},{q},{price},G\n")
+                    heapq.heappush(cancels, ((now_us + life_us) / 1e6, oid))
+                    ladder_ids.add(oid)
+                    oid += 1
+                if len(lines) > 100_000:
+                    rows += len(lines)
+                    fh.writelines(lines)
+                    lines = []
+                continue
+            t = base_next
+            base_next = None
             if lat_fh:
                 latent_rows(t)
             if timed:  # the v2 processes in continuous time: the delayed impact, the drift, the volatility multiplier

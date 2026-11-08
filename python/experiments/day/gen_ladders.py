@@ -13,6 +13,14 @@ for a cancellation policy. Sample selection and timing coincidences are explicit
 Cache metadata binds the source path, size, mtime and measurement version; reports
 also include a SHA256 of the original CSV. No strategy runs or latent model needed.
 
+With --params BASE.json --params-out MIXTURE.json, separate complete 2-6 order
+chains from the background G marginals. The optional tape_gen component resamples
+joint batch marks at Poisson start times, keeping exact child spacing. Observed
+lifetimes are marks, not an identified causal cancellation policy; batch rates are
+unconditional. Singletons, longer chains and end-censored batches stay in the
+background. This empirical ablation must pass statistics and bot-score checks
+before use as a replacement preset.
+
     uv run python -m experiments.day.gen_ladders data/arena/round3/round3_public.csv \
         --cache data/arena/gen/r3_ladders.npz --json data/arena/gen/r3_ladders.json
 """
@@ -22,6 +30,7 @@ from __future__ import annotations
 import argparse
 from array import array
 from collections import Counter
+import copy
 import hashlib
 import json
 from pathlib import Path
@@ -220,7 +229,68 @@ def measure(data: dict, gap_us: int = 2000) -> dict:
         out["segments_60s"].append({"start_s": lo, "candidate_orders": len(ix), "candidate_starts": len(st),
                                     "qty_median": float(np.median(q[ix])) if len(ix) else None,
                                     "large_share": float((q[ix] >= 80).mean()) if len(ix) else None})
+    counts = np.array([segment["candidate_starts"] for segment in out["segments_60s"]])
+    if len(counts):
+        out["candidate_start_counts_60s"] = {"mean": float(counts.mean()), "sd": float(counts.std()),
+                                           "min": int(counts.min()), "max": int(counts.max()),
+                                           "fano": float(counts.var() / counts.mean()) if counts.mean() else None}
     return out
+
+
+def fit_population(data: dict, params: dict, gap_us: int = 2000) -> dict:
+    """Separate complete observed batches without double counting their G flow."""
+    from experiments.day.tape_gen import CLASSES, DEEPEST, SPREADS, _counts, offset_class
+
+    result = copy.deepcopy(params)
+    t, side, q, p, own, other, cancel = (data[k] for k in
+                                      ("time_us", "side", "qty", "price", "own", "opposite", "cancel_us"))
+    duration = (int(data["end_us"]) - int(t[0])) / 1e6 if len(t) else 0
+    if duration <= 0:
+        raise ValueError("population fit needs positive duration and G orders")
+    left, right = links(data, gap_us)
+    detected = chains(len(t), left, right)
+    batches = [b for b in detected if 2 <= len(b) <= 6 and np.all(cancel[b] > t[b])]
+    if not batches:
+        raise ValueError("no complete 2-6 order chains to fit")
+    members = np.concatenate(batches)
+    background = np.ones(len(t), dtype=bool)
+    background[members] = False
+    if not background.any():
+        raise ValueError("population fit needs background G orders")
+    offset = np.where(side == 0, own - p, p - own)
+    spread = np.abs(own - other)
+    valid = background & (own > 0) & (other > 0) & (spread > 0)
+    sizes = {c: Counter() for c in CLASSES}
+    offsets = {s: Counter() for s in SPREADS}
+    for i in np.flatnonzero(valid):
+        d, s = -int(offset[i]), min(int(spread[i]), 3)
+        sizes[offset_class(d)][int(q[i])] += 1
+        offsets[s][max(DEEPEST, min(d, s - 1))] += 1
+    if not offsets[1]:
+        raise ValueError("background needs observations at a one-tick spread")
+    completed = background & (cancel > t)
+    if not completed.any():
+        raise ValueError("background has no observed lifetimes")
+    fallback = Counter(map(int, q[background]))
+    result.update(g_rate=float(background.sum() / duration),
+                  g_bid_share=float((side[background] == 0).mean()),
+                  sizes={c: _counts(sizes[c] or fallback) for c in CLASSES},
+                  offsets={str(s): _counts(offsets[s]) for s in SPREADS},
+                  lifetime_quantiles=np.quantile((cancel[completed] - t[completed]) / 1e6,
+                                                 np.linspace(0, 1, 2001)).round(6).tolist())
+    result["latent"]["k_pmf"] = [[-d, count] for d, count in sorted(offsets[1].items()) if d <= 0]
+    # This fit replaces empirical G marginals, not an independently requested size law.
+    if result["latent"].get("g_size_law"):
+        raise ValueError("remove g_size_law before fitting empirical background G sizes")
+    result["g_ladders"] = {
+        "rate": len(batches) / duration, "gap_us": gap_us,
+        "bid_share": float(np.mean([side[b[0]] == 0 for b in batches])),
+        "batches": [[[int(offset[i]), int(q[i]), int(cancel[i] - t[i])] for i in b] for b in batches],
+        "fit": {"source_sha256": str(data["sha256"]), "duration_s": duration,
+                "source_g_orders": len(t), "background_g_orders": int(background.sum()),
+                "batch_g_orders": len(members), "chains_excluded_long_or_censored": len(detected) - len(batches),
+                "assumptions": "Poisson batch starts; empirical joint marks; no inferred state or cancel policy; unidentified orders remain background"}}
+    return result
 
 
 def main(argv=None) -> int:
@@ -229,10 +299,23 @@ def main(argv=None) -> int:
     parser.add_argument("--cache", type=Path)
     parser.add_argument("--json", type=Path, required=True)
     parser.add_argument("--gap-us", type=int, default=2000)
+    parser.add_argument("--params", type=Path, help="base tape_gen fit of the same source, for the optional batch ablation")
+    parser.add_argument("--params-out", type=Path, help="write separated background plus empirical g_ladders model")
     args = parser.parse_args(argv)
     if args.gap_us <= 0:
         parser.error("--gap-us must be positive")
-    report = measure(load(args.tape, args.cache), args.gap_us)
+    if bool(args.params) != bool(args.params_out):
+        parser.error("--params and --params-out must be provided together")
+    data = load(args.tape, args.cache)
+    report = measure(data, args.gap_us)
+    if args.params:
+        params = json.loads(args.params.read_text())
+        if Path(params["source"]).resolve() != args.tape.resolve() or params["tests"]["g_inserts"] != len(data["oid"]):
+            parser.error("base params must be fitted to this same source tape")
+        mixture = fit_population(data, params, args.gap_us)
+        args.params_out.parent.mkdir(parents=True, exist_ok=True)
+        args.params_out.write_text(json.dumps(mixture, separators=(",", ":"), allow_nan=False) + "\n")
+        report["population_fit"] = mixture["g_ladders"]["fit"]
     report["source"] = str(args.tape)
     args.json.parent.mkdir(parents=True, exist_ok=True)
     args.json.write_text(json.dumps(report, indent=2, allow_nan=False) + "\n")
