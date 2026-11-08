@@ -1,0 +1,4 @@
+round4_public.csv: net -445.500 range 834.500 sd1 6.194 sd60 59.172 trend 0.929 var_ratio 1.521 one_tick 0.813 big_per_100s 62.660 ioc_lots_s 1558.319 changes_s 6.646 seconds 5999.000
+round3_public.csv: net -123.000 range 362.500 sd1 4.490 sd60 33.787 trend 0.354 var_ratio 0.944 one_tick 0.818 big_per_100s 59.860 ioc_lots_s 1495.127 changes_s 5.774 seconds 5999.000
+round2_public.csv: net -308.000 range 548.500 sd1 3.793 sd60 32.851 trend 1.049 var_ratio 1.250 one_tick 0.839 big_per_100s 60.043 ioc_lots_s 1441.315 changes_s 4.852 seconds 5999.000
+round1.csv: net 29.000 range 103.000 sd1 0.920 sd60 7.528 trend 0.288 var_ratio 1.116 one_tick 0.930 big_per_100s 52.121 ioc_lots_s 1286.575 changes_s 2.566 seconds 11999.000

@@ -1,0 +1,37 @@
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:335:5
+    |
+334 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+335 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+33 runs (32 cells + baseline, 1 files) on 9 threads (Rust)
+done in 152.04 s
+rank  FILTER_IMPACT  FT_EDGE  FT_JUMP        pnl   in 75%  out 25%       nbhd  max dd  breach   fills   volume  |inv| q997  pnl se  rej  cxl rej
+base        (as is)                    1,029,443  804,559  224,884          -   8,397       0  41,854  583,104         100  42,484    0      690
+   1              2      0.3        0  1,036,219  805,442  230,777  1,028,977   9,150       0  42,742  449,076         100  42,362    0      609
+   2            3.5      0.3        3  1,035,604  805,778  229,826  1,029,544   8,397       0  41,720  574,736         100  42,133    0      700
+   3            3.5      0.3        0  1,032,369  803,267  229,102  1,027,513   8,873       0  41,740  549,590         100  42,308    0      674
+   4              2     0.25        0  1,022,160  794,389  227,771  1,025,739   9,260       0  42,754  510,078         100  42,365    0      630
+   5            2.5     0.25        0  1,022,666  796,236  226,430  1,023,398  10,214       0  42,197  538,082         100  42,557    0      690
+   6              2      0.3        3  1,030,391  804,371  226,020  1,028,527   9,150       0  43,078  485,170         100  42,345    0      620
+   7              3     0.25        3  1,029,443  804,559  224,884  1,024,736   8,397       0  41,854  583,104         100  42,484    0      690
+   8            2.5     0.25        3  1,025,203  800,347  224,856  1,023,386  10,214       0  42,528  555,646         100  43,067    0      687
+   9            3.5     0.25        3  1,027,260  802,724  224,536  1,025,404   8,397       0  41,921  613,184         100  42,352    0      709
+  10              3      0.2        0  1,016,207  791,929  224,278  1,019,460   8,769       0  41,838  615,578         100  42,149    0      681
+  11              3     0.25        0  1,026,502  802,906  223,596  1,022,816   8,691       0  41,825  561,288         100  41,988    0      701
+  12              3      0.2        3  1,017,066  793,518  223,548  1,019,682   8,397       0  41,696  625,396         100  42,765    0      646
+  13              2     0.25        3  1,020,884  797,569  223,315  1,024,359   9,260       0  42,916  531,638         100  42,327    0      621
+  14            3.5      0.2        0  1,014,863  791,874  222,989  1,020,400   8,691       0  41,660  648,110         100  42,511    0      669
+  15            3.5     0.25        0  1,020,249  797,325  222,924  1,024,249   8,691       0  41,797  599,580         100  42,544    0      710
+  ... 17 more (--top, or --out for all)
+
+best by pnl      FILTER_IMPACT=2, FT_EDGE=0.3, FT_JUMP=0  (1,036,219)
+best by holdout  FILTER_IMPACT=2, FT_EDGE=0.3, FT_JUMP=0  (230,777)
+best by nbhd     FILTER_IMPACT=3.5, FT_EDGE=0.3, FT_JUMP=3  (1,029,544)
+measures disagree: prefer a setting near the top on every measure over the single best pnl
+! the best cell by holdout has FILTER_IMPACT=2, the axis' lowest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass
+! the best cell by holdout has FT_EDGE=0.3, the axis' highest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass

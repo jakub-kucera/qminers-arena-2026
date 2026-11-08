@@ -1,0 +1,25 @@
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:336:5
+    |
+335 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+336 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+18 runs (5 cells + baseline, 3 files) on 8 threads (Rust)
+done in 69.17 s
+rank  PRIOR_MASS        pnl  seed511.csv  seed512.csv  seed513.csv   in 17%    out 83%       nbhd  max dd  breach    fills     volume  |inv| q997  pnl se  rej  cxl rej
+base     (as is)  3,577,741    1,154,681    1,535,001      888,059  438,242  3,139,499          -   3,809       0  107,192  1,640,557         100  62,462    0     1430
+   1       30000  3,588,598    1,181,670    1,525,179      881,749  424,861  3,163,737  3,585,166   3,809       0  115,930  1,609,650         100  62,469    0     1830
+   2       10000  3,581,733    1,168,904    1,527,438      885,391  427,526  3,154,207  3,581,576   3,809       0  111,055  1,626,588         100  62,376    0     1646
+   3        3000  3,574,397    1,156,811    1,532,991      884,595  429,663  3,144,734  3,575,344   3,809       0  108,016  1,651,704         100  62,445    0     1472
+   4         300  3,570,469    1,153,606    1,531,687      885,176  433,596  3,136,873  3,570,186   3,809       0  107,214  1,659,463         100  62,495    0     1525
+   5        1000  3,569,903    1,152,998    1,532,444      884,461  431,738  3,138,165  3,571,590   3,809       0  107,345  1,662,620         100  62,531    0     1465
+
+best by pnl      PRIOR_MASS=30000  (3,588,598)
+best by holdout  PRIOR_MASS=30000  (3,163,737)
+best by nbhd     PRIOR_MASS=30000  (3,585,166)
+all measures agree
+! the best cell by pnl has PRIOR_MASS=30000, the axis' highest value: the best may lie past it, so widen the axis unless that end is a bound the setting can't pass

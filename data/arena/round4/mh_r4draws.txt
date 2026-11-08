@@ -1,0 +1,20 @@
+== data/arena/gen/r4_gated/wide6/seed511.csv
+bot          pnl       first       last   max dd   breach    fills
+F5     1,154,681   1,046,934    107,747    3,550        0   35,836
+MH1  error: FileNotFoundError: [Errno 2] No such file or directory: '/Users/jakubkucera/Documents/qminers_arena/rust/target/release/arena-sim'
+MH3    1,160,794   1,048,803    111,991    3,550        0   36,335
+== data/arena/gen/r4_gated/wide6/seed512.csv
+bot          pnl       first       last   max dd   breach    fills
+F5     1,535,001   1,392,840    142,161    3,809        0   28,709
+MH1    1,527,904   1,385,741    142,163    3,809        0   29,214
+MH3    1,533,785   1,388,823    144,962    3,809        0   28,664
+== data/arena/gen/r4_gated/wide6/seed513.csv
+bot          pnl       first       last   max dd   breach    fills
+F5       888,059     799,855     88,204    3,705        0   42,647
+MH1      893,445     803,154     90,291    3,660        0   43,244
+MH3      895,174     804,536     90,638    3,660        0   42,777
+== pnl, bots by tapes
+bot         seed511        seed512        seed513
+F5        1,154,681      1,535,001        888,059
+MH1           error      1,527,904        893,445
+MH3       1,160,794      1,533,785        895,174

@@ -1,0 +1,53 @@
+== profile (2,398,520 rows replayed in 8.8 s)
+time     0.006 .. 5999.999 s, length 6,000.0 s (1.67 h), 399.8 events/s, 6.65 mid changes/s
+spread   time share 1 tick 80.9%, 2 ticks 14.5%, 3+ ticks 4.5%, one-sided 0.1%, empty 0.0%
+depth    median lots a side at the touch 723.75, within 5 ticks 3920.5 (sampled each second)
+trades   9.372 aggressive orders/s (56,234; 209,655 prints, 1284.55 lots/s); size median 60, p90 329, mean 137.1
+markout  the mid's move in ticks in the event's direction (mean / median; + momentum, - reversion), from the mid just after it
+  after                          n         impact            1 s            5 s           30 s           60 s
+  trade (all)               56,219   +0.16 / +0.0   +1.42 / +0.5   +2.41 / +1.0   +0.95 / +0.5   +0.75 / +0.5
+  trade <= 60 lots          28,258   +0.07 / +0.0   +1.09 / +0.0   +2.01 / +0.5   +0.59 / +0.0   +0.46 / +0.5
+  trade > 60 lots           27,961   +0.25 / -0.0   +1.75 / +1.0   +2.81 / +1.0   +1.31 / +1.0   +1.05 / +0.5
+  1-tick mid move           37,767              -   +2.81 / +1.0   +6.16 / +2.0   +1.86 / +1.5   +1.95 / +1.5
+  1-tick move, no trade     26,002              -   +3.07 / +1.5   +7.12 / +2.5   +2.09 / +1.5   +2.18 / +1.5
+verdict  MOMENTUM: +2.41 ticks at 5 s against a mean spread of ~1.2; the move gives part back by 30 s (try fade too): push the runner / taker
+
+== candidates (each at its file's defaults, the session set to the data's length; 2,398,520 rows)
+ #  candidate         pnl   first 75%  last 25%     max dd   fills     volume  |inv| q997  breach  rej  run s  s @8.8M
+ 1  R3_F5       1,029,443     804,559   224,884      8,397  41,854    583,104         100       0    0  218.5      801         SLOW
+ 2  R3_F4       1,026,780     807,549   219,231     10,416  43,249    621,046         100       0    0  221.7      813         SLOW
+ 3  R3_F3       1,025,404     805,908   219,496      8,769  42,065    674,918         100       0    0  214.7      788         SLOW
+ 4  R3_B1         907,100     721,904   185,196     11,091  44,803    496,734         100       0    0  185.9      682         SLOW
+ 5  R2_L8         901,311     722,186   179,125     11,500  42,452    518,932         100       0    0  164.4      603         SLOW
+ 6  R2_L3         851,547     673,202   178,345     13,900   3,988    493,858         100       0    0  148.3      544         SLOW
+ 7  R2_T2         839,650     663,668   175,982     11,007  86,251    605,914         100       0    0  164.2      603         SLOW
+ 8  R2_L1         827,782     662,108   165,674     10,685  90,436    578,290         100       0    0  205.6      754         SLOW
+ 9  R2_H1         813,800     644,026   169,773     12,822  86,581    733,594         100     216    0  167.0      613  SLOW BREACH
+10  tmpl_mom      646,188     538,890   107,298     12,896   3,213    238,072         100       0    0   45.7      168
+11  R2_M4         554,443     410,135   144,308     17,385   1,908    292,006         100       0    0   20.2       74
+12  M2            342,415     271,393    71,022     30,076   5,396    787,368         100       0    0   13.3       49
+13  R2_V2          89,978      64,488    25,490     26,930  17,600    778,180         100   8,366    0  145.5      534  SLOW BREACH
+14  fade                0           0         0          0       0          0           0       0    0   15.5       57
+15  pmaker              0           0         0          0       0          0           0       0    0   12.2       45
+16  mmaker        -49,590     -46,315    -3,275     59,963  11,138    107,708          50       0    0   15.0       55
+17  A0           -149,438    -127,519   -21,919    149,564   9,693     46,654          50       0    0   52.8      194
+18  F1           -150,054    -124,005   -26,049    150,312  24,035    118,662          24       0    0   15.9       58
+19  R1_C11       -445,422    -342,687  -102,735    446,166  10,489    944,655         100   4,454    0  122.3      449  SLOW BREACH
+20  R1_C5        -471,082    -366,513  -104,568    472,532   9,680    976,744         100   4,748    0   81.4      299  SLOW BREACH
+21  taker        -472,653    -355,750  -116,903    476,169  40,107  1,365,758          50       0    0   16.5       60
+22  R1_C1        -642,610    -501,098  -141,512    643,984  20,314  1,144,066         100       0    0   65.4      240
+23  R1_F8        -702,355    -559,470  -142,885    703,720  40,502  1,091,305         100       0    0   25.2       92
+24  R1_F7        -710,720    -563,124  -147,596    711,954  33,165  1,059,355         100       0    0   24.4       90
+25  R1_F6b       -712,964    -566,633  -146,331    714,208  37,112  1,068,465         100       0    0   26.8       98
+26  R1_F6        -714,321    -564,516  -149,805    715,432  30,745  1,046,639         100       0    0   23.5       86
+27  R1_F5        -716,551    -558,102  -158,449    717,849  21,067  1,351,000         100       0    0   21.3       78
+28  R1_F3        -853,091    -677,616  -175,475    854,307  16,809  1,454,566         100       0    0   18.5       68
+29  runner     -3,178,119  -2,416,683  -761,436  3,178,119  31,708  4,762,290         100       0    0   17.0       63
+30  M1         -3,178,119  -2,416,683  -761,436  3,178,119  31,708  4,762,290         100       0    0   12.1       44
+run s: wall time in the pool (contention inflates it); s @8.8M: projected to a real round's rows; SLOW: over 240 s here, at risk in the sandbox's 15 minutes on a 2-3x slower CPU
+
+== next grids (the top two by PnL)
+uv run python -m arena.qsim_rust ridge_maker data/arena/round4/round4_public.csv --set POSITION_LIMIT=1000 --set EXPOSURE=100 --set HEDGE=1 --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000 --set DEAD_ZONE=0.18 --set QUOTEFEAT=1 --set FLOWGRP=2 --set FLOWGRP_CAP=20 --set FLOWGRP_US=1000000 --set FT_EDGE=0.15 --set FT_SZ=200 --set FT_GAP_MS=50 --set QUOTE_SIZE=1 --set KEEP_LOTS=20 --set KEEP_TH=0.3 --set FT_MAXSPREAD=1 --set FT_ROOM_LIVE=1 --set LIQ=1 --set QUOTE_SIZE=0 --set POSITION_LIMIT=100 --set IMPACT_US=500000 --set HUBER=6.0 --set RIDGE_MIN=30 --set RIDGE_FRAC=0.003 --set QUOTE_SIZE=1 --set QS_RATE=2.5 --set FILTER=1 --set FT_EDGE=0.25 --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set FT_JUMP_EDGE=0.15 --grid FILTER_IMPACT=2,2.5,3 --grid FT_EDGE=0.15,0.2,0.25 --grid FT_JUMP=0,3 --holdout 0.25 --threads 4 --sort holdout
+uv run python -m arena.qsim_rust ridge_maker data/arena/round4/round4_public.csv --set POSITION_LIMIT=1000 --set EXPOSURE=100 --set HEDGE=1 --set MODEL_MEMORY_US=100000000000 --set HORIZON_US=400000 --set DEAD_ZONE=0.18 --set QUOTEFEAT=1 --set FLOWGRP=2 --set FLOWGRP_CAP=20 --set FLOWGRP_US=1000000 --set FT_EDGE=0.15 --set FT_SZ=200 --set FT_GAP_MS=50 --set QUOTE_SIZE=1 --set KEEP_LOTS=20 --set KEEP_TH=0.3 --set FT_MAXSPREAD=1 --set FT_ROOM_LIVE=1 --set LIQ=1 --set QUOTE_SIZE=0 --set POSITION_LIMIT=100 --set IMPACT_US=500000 --set HUBER=6.0 --set RIDGE_MIN=30 --set RIDGE_FRAC=0.003 --set QUOTE_SIZE=1 --set QS_RATE=2.5 --set FILTER=1 --set FILTER_IMP2=2.0 --grid FILTER_IMP2=0,1.5,2 --grid FT_EDGE=0.15,0.25 --holdout 0.25 --threads 4 --sort holdout
+
+done in 626.3 s

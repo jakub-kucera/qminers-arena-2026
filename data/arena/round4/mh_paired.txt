@@ -1,0 +1,5 @@
+usage: paired_rust.py [-h] --bot BOT [--grid GRID] [--strategy STRATEGY]
+                      [--threads THREADS] [--segment SEGMENT]
+                      [--holdout HOLDOUT]
+                      tapes [tapes ...]
+paired_rust.py: error: unrecognized arguments: --jobs 4

@@ -1,0 +1,10 @@
+{
+  "trader": "jakubkucera",
+  "trader_class": "PassiveStrategy",
+  "data_file": "/Users/jakubkucera/Documents/qminers_arena/data/arena/round4/round4_public.csv",
+  "latency": 0.005,
+  "position_limit": 100,
+  "max_potential_position": 1000,
+  "position_breach_penalty_per_second": 10000.0,
+  "run_timestamp": "2026-11-08T07:06:34.853722"
+}

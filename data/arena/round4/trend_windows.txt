@@ -1,0 +1,23 @@
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:335:5
+    |
+334 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+335 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+5 runs (4 cells + baseline, 1 files) on 4 threads (Rust)
+done in 89.63 s
+rank  TREND_US1  TREND_US2        pnl   in 75%  out 25%       nbhd  max dd  breach   fills   volume  |inv| q997  pnl se  rej  cxl rej
+base    (as is)             1,021,765  800,222  221,543          -   8,769       0  41,793  585,022         100  42,515    0      684
+   1    5000000   60000000  1,020,830  797,551  223,279  1,021,288   8,769       0  41,715  584,688         100  41,687    0      712
+   2   10000000   30000000  1,019,544  797,765  221,779  1,020,859   8,769       0  41,686  582,408         100  41,906    0      695
+   3    5000000   30000000  1,021,268  799,536  221,732  1,020,547   8,769       0  42,134  582,324         100  41,914    0      717
+   4   10000000   60000000  1,021,765  800,222  221,543  1,020,713   8,769       0  41,793  585,022         100  42,515    0      684
+
+best by pnl      TREND_US1=10000000, TREND_US2=60000000  (1,021,765)
+best by holdout  TREND_US1=5000000, TREND_US2=60000000  (223,279)
+best by nbhd     TREND_US1=5000000, TREND_US2=60000000  (1,021,288)
+measures disagree: prefer a setting near the top on every measure over the single best pnl

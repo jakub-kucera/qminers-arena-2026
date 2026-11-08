@@ -1,0 +1,15 @@
+warning: field `horizon_us` is never read
+   --> arena_sim/src/strategies/ridge_maker.rs:335:5
+    |
+334 | pub struct RidgeMaker {
+    |            ---------- field in this struct
+335 |     horizon_us: i64,
+    |     ^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+1 runs (0 cells + baseline, 1 files) on 1 threads (Rust)
+done in 28.72 s
+rank        pnl   in 75%  out 25%  nbhd  max dd  breach   fills   volume  |inv| q997  pnl se  rej  cxl rej
+base  1,029,443  804,559  224,884     -   8,397       0  41,854  583,104         100  42,484    0      690
+
