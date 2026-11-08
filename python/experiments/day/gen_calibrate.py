@@ -36,6 +36,10 @@ Subcommands:
 - `stats TAPE...`: a tape's price statistics (tape_stats, impact_curve), to match a generator to a real tape.
 - `write --opts PRESET --seeds 1-30 --dir DIR`: a shared set of draws, DIR/seed<N>.csv (existing ones kept), with a
   README.txt giving the model, the options and the command.
+  Reused draws require a matching .csv.provenance.json (parameters, seed, duration,
+  generator/book source, Python/numpy versions, and tape SHA256). Legacy files without
+  provenance and mismatched files are rejected; use a fresh directory or `score` to
+  evaluate existing tapes explicitly. Failed generation does not publish partial tapes.
 - `jumpflow TAPE...`: the aggressive flow around 3+ tick jumps timed by the latent (the 0.1-s insert centre) and by
   the mid (jump_flow): whether the big IOC orders the jump's way come before the latent moves or after it.
 - `fitstats --around JSON --real TAPE`: a local search without bots for the options whose draw's statistics are
@@ -55,13 +59,16 @@ from __future__ import annotations
 
 import argparse
 import copy
+import hashlib
 import json
 import math
 import os
 import re
+import shlex
 import subprocess
 import sys
 import time
+import tempfile
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
@@ -69,6 +76,7 @@ import numpy as np
 
 from arena import qsim_rust
 from experiments.day import tape_gen
+from experiments.day import tape_book
 
 ROOT = Path(__file__).resolve().parents[3]
 CAND = ROOT / "python" / "bots" / "qminers" / "candidates"
@@ -256,11 +264,74 @@ def with_opts(params: dict, opts: dict) -> dict:
     return p
 
 
+def _file_digest(path: Path) -> str:
+    with path.open("rb") as fh:
+        return hashlib.file_digest(fh, "sha256").hexdigest()
+
+
+def _draw_identity(params, seed, seconds) -> dict:
+    """Bind a cached tape to its parameters, generator code and numeric runtime."""
+    canonical = json.dumps(params, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    return {"schema": 1, "params_sha256": hashlib.sha256(canonical).hexdigest(),
+            "seed": int(seed), "seconds": float(seconds), "numpy": np.__version__,
+            "python": sys.version.split()[0],
+            "generator_sha256": _file_digest(Path(tape_gen.__file__)),
+            "book_sha256": _file_digest(Path(tape_book.__file__))}
+
+
+def _provenance_path(out: Path) -> Path:
+    return out.with_name(out.name + ".provenance.json")
+
+
+def _check_cached(out: Path, identity: dict, verify_content=True):
+    if not out.exists():
+        return None
+    sidecar = _provenance_path(out)
+    if not sidecar.exists():
+        raise ValueError(f"{out}: existing tape has no provenance; use a fresh output directory or score this tape explicitly")
+    saved = json.loads(sidecar.read_text())
+    if saved.get("identity") != identity:
+        raise ValueError(f"{out}: cached draw parameters, seed, duration or generator differ; use a fresh output directory")
+    if saved.get("bytes") != out.stat().st_size or (verify_content and saved.get("sha256") != _file_digest(out)):
+        raise ValueError(f"{out}: cached tape content does not match its provenance; use a fresh output directory")
+    return saved
+
+
+def _generate_cached(job, with_latent=False):
+    params, seed, seconds, output = job
+    out = Path(output)
+    identity = _draw_identity(params, seed, seconds)
+    saved = _check_cached(out, identity)
+    latent = out.with_name(f"{out.stem}_latent.csv")
+    if saved:
+        if not with_latent:
+            return str(out)
+        mark = saved.get("latent")
+        if mark and latent.exists() and mark.get("bytes") == latent.stat().st_size and mark.get("sha256") == _file_digest(latent):
+            return str(latent)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    # A failed or interrupted generator never leaves a partial tape that looks reusable.
+    with tempfile.TemporaryDirectory(prefix=f".{out.name}.", dir=out.parent) as directory:
+        tmp = Path(directory) / "tape.csv"
+        lat_tmp = Path(directory) / "latent.csv"
+        tape_gen.generate(params, seed, seconds, tmp, lat_tmp if with_latent else None)
+        digest = _file_digest(tmp)
+        if saved and saved["sha256"] != digest:
+            raise RuntimeError(f"{out}: regeneration for latent logging differs; existing outputs retained")
+        record = {"identity": identity, "bytes": tmp.stat().st_size, "sha256": digest}
+        if with_latent:
+            record["latent"] = {"bytes": lat_tmp.stat().st_size, "sha256": _file_digest(lat_tmp)}
+            lat_tmp.replace(latent)
+        if not saved:
+            tmp.replace(out)
+        metadata = Path(directory) / "provenance.json"
+        metadata.write_text(json.dumps(record, indent=2) + "\n")
+        metadata.replace(_provenance_path(out))
+    return str(latent if with_latent else out)
+
+
 def _gen(job):
-    params, seed, seconds, out = job
-    if not Path(out).exists():
-        tape_gen.generate(params, seed, seconds, Path(out))
-    return out
+    return _generate_cached(job)
 
 
 # The search space: tape_gen's v2 latent options (defaults off), each a sampler; the structure is Phase 1's (8 Nov):
@@ -661,19 +732,8 @@ def add_extra_bots(specs) -> None:
 
 
 def _gen_latent(job):
-    """A draw with its true latent (seed<N>_latent.csv); the tape is regenerated beside it and must equal seed<N>.csv."""
-    params, seed, seconds, out = job
-    out = Path(out)
-    tmp = out.with_suffix(".tmp")
-    tape_gen.generate(params, seed, seconds, tmp, out.with_name(f"{out.stem}_latent.csv"))
-    if out.exists():
-        same = tmp.read_bytes() == out.read_bytes()
-        tmp.unlink()
-        if not same:
-            raise RuntimeError(f"{out}: the regenerated tape differs")
-    else:
-        tmp.rename(out)
-    return str(out.with_name(f"{out.stem}_latent.csv"))
+    """Cache both tape and true latent; adding a latent must reproduce the verified tape."""
+    return _generate_cached(job, with_latent=True)
 
 
 def cmd_write(args) -> int:
@@ -682,22 +742,32 @@ def cmd_write(args) -> int:
     params = with_opts(json.loads(args.params.read_text()), opts)
     args.dir.mkdir(parents=True, exist_ok=True)
     seeds = parse_seeds(args.seeds)
+    lat = set(parse_seeds(args.latent_seeds)) if args.latent_seeds else set()
+    stored_params = args.dir / "params.json"
+    if stored_params.exists() and json.loads(stored_params.read_text()) != params:
+        raise ValueError(f"{args.dir}: existing params.json differs; use a fresh output directory")
+    # Reject incompatible existing draws before overwriting the shared README or params.
+    for sd in sorted(set(seeds) | lat):
+        _check_cached(args.dir / f"seed{sd}.csv", _draw_identity(params, sd, args.seconds), verify_content=False)
     readme = args.dir / "README.txt"
-    note = (f"Synthetic tapes from experiments.day.tape_gen v2 (8 Nov), one per seed: seed<N>.csv, {args.seconds:.0f} s each,"
+    command = ["uv", "run", "python", "-m", "experiments.day.gen_calibrate", "write", "--params", str(args.params),
+               "--seeds", args.seeds, "--seconds", str(args.seconds), "--jobs", str(args.jobs), "--dir", str(args.dir)]
+    if args.opts:
+        command += ["--opts", args.opts]
+    if args.latent_seeds:
+        command += ["--latent-seeds", args.latent_seeds]
+    note = (f"Synthetic tapes from experiments.day.tape_gen, one per seed: seed<N>.csv, {args.seconds:.0f} s each,"
             f" the starter's CSV format.\nThe model: {args.params} (tape_gen --fit of the round's public tape) with the"
-            f" latent options {args.opts!r}:\n{json.dumps(opts)}\nMade by:\n  uv run python -m experiments.day."
-            f"gen_calibrate write --params {args.params} --opts {args.opts} --seeds {args.seeds} --seconds "
-            f"{args.seconds:.0f} --dir {args.dir}"
-            + (f" --latent-seeds {args.latent_seeds}" if args.latent_seeds else "")
+            f" latent options {args.opts!r}:\n{json.dumps(opts)}\nMade by:\n  {shlex.join(command)}"
             + "\nseed<N>_latent.csv (for the --latent-seeds): the true latent mid every 10 ms (time, latent, the jump chain's"
             " state 0 calm / 1 volatile, the latent's own jumps in ticks since the previous row); the same draw as"
             f" seed<N>.csv (tape_gen --latent-out).\nThe calibration: IDEAS.md, \"Calibrating the generator to round 2's"
             f" validation scoreboard\"; gen_calibrate.PRESETS.\n")
     readme.write_text(note + "params.json here is the fitted model with those options merged in (tape_gen --params"
-                      " params.json --seed N --seconds S --out X.csv draws one more).\n")
+                      " params.json --seed N --seconds S --out X.csv draws one more).\n"
+                      "Each seed<N>.csv.provenance.json records input identity and output checksums; mismatches fail on reuse.\n")
     (args.dir / "params.json").write_text(json.dumps(params))
     t0 = time.time()
-    lat = set(parse_seeds(args.latent_seeds)) if args.latent_seeds else set()
     jobs = [(params, sd, args.seconds, str(args.dir / f"seed{sd}.csv")) for sd in seeds if sd not in lat]
     if jobs:
         with ProcessPoolExecutor(min(args.jobs, len(jobs))) as ex:

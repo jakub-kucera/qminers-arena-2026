@@ -434,7 +434,9 @@ uv run python -m experiments.day.gen_calibrate stats data/arena/round3/round3_pu
 ```
 
 The existing generated files and score JSONs are in `data/arena/gen/v3_check/`. Use a fresh output directory for
-a changed parameter set: `gen_calibrate` reuses existing tape paths without validating their parameters.
+a changed parameter set. At the time of this ablation `gen_calibrate` reused existing tape paths without
+validating their parameters; the provenance guard below now rejects that reuse. Older artifacts remain available
+for explicit `score` / `stats` runs.
 
 ## Round 3's scheduled ladder population (8 Nov, gen-v3)
 
@@ -527,3 +529,27 @@ measurements and `stats_304.json`; `gen_v3_r3_batch_params.json` contains the ex
 Next: identify batch intensity and joint marks conditional on observed activity, and a causal cancellation
 policy. For the model-testing session, the identified deep ladders are also a reason to test whether pooling
 all G inserts in a latent-price estimator contaminates it; this is a hypothesis for that session, not a bot change.
+
+## Calibration cache provenance (8 Nov, gen-v3)
+
+`gen_calibrate draw`, `rank` and `write` no longer silently reuse a tape merely because its filename exists.
+Each new draw gets a `.csv.provenance.json` containing the canonical parameter hash, seed, duration, generator
+and book source hashes, Python/numpy versions, output size and SHA256. Reuse checks both identity and content.
+A mismatch or missing provenance fails with instructions to use a fresh directory; existing legacy tapes can
+still be scored explicitly with `score` and measured with `stats`. No legacy file is relabelled as verified.
+
+Generation is staged in a temporary directory and published only after success. Adding latent logging to a
+verified tape must regenerate the same tape checksum before publishing the latent; a failed check preserves
+existing outputs. `write` rejects an incompatible directory before replacing its README or params.json, and
+records a shell-quoted reproduction command. This fixes a source of false ablation comparisons; it changes
+no model parameters or generated tape bytes.
+
+Validation: nine targeted cache tests cover reuse, changed parameters/seed/duration, legacy and altered files,
+interrupted generation, latent logging consistency, and mixed-directory rejection. Full focused suite: **56
+passed**, plus wiki lint with zero warnings/errors. Actual CLI smoke: two 40-s empirical-batch draws, one with
+a latent path, then an identical cached rerun under `data/arena/gen/v3_cache_smoke/`.
+
+```sh
+uv run pytest python/tests/test_gen_cache.py python/tests/test_gen_ladders.py python/tests/test_gen_inventory.py python/tests/test_gen_pnl_probe.py python/tests/test_docs.py -q
+uv run python -m experiments.day.gen_calibrate write --params data/arena/gen/gen_v3_r3_batch_params.json --opts r3_public_after --seeds 71-72 --seconds 40 --jobs 2 --latent-seeds 71 --dir data/arena/gen/v3_cache_smoke
+```
