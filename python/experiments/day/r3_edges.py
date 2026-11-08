@@ -20,6 +20,9 @@ per-second PnL (`pnl.csv` from `arena-sim --log-dir` or the Arena simulator). Se
   the trade: the half spread), by regime, by spread, by the F order's size; the fill rate and PnL a second of a
   two-sided one-lot touch quote.
 - **D. Other structure:** the regime's block sequence and run lengths, jumps by regime, the last 120 s.
+- **E. A jump-catch taker** (R3-S3's rule, on the 50-ms samples): the first 0.2-s mid move of 3+ ticks after 2 s
+  without one, bought at the next sample's ask (sold at its bid) and closed at the far touch 0.5-10 s later: ticks a
+  lot, by the filter's gap the move's way at entry and the spread.
 
     uv run python -m experiments.day.r3_edges data/arena/round3/round3_public.csv --cache R3.npz [--pnl L8/pnl.csv] [--json OUT.json]
 """
@@ -408,13 +411,43 @@ def section_d(cx: Ctx) -> dict:
     return out
 
 
+def section_e(cx: Ctx) -> dict:
+    rows = cx.rows
+    t, mid, gap, spr = rows[:, 0], rows[:, 1], rows[:, 2], rows[:, 5]
+    bid, ask = mid - spr / 2, mid + spr / 2
+    L = int(round(0.2 / float(np.median(np.diff(t)))))
+    mv = np.r_[np.zeros(L), mid[L:] - mid[:-L]]
+    keep, last = [], -1e9
+    for i in np.flatnonzero(np.abs(mv) >= 3):
+        if t[i] - last > 2.0:
+            keep.append(i)
+        last = t[i]
+    keep = np.array(keep, dtype=int)
+    keep = keep[keep + 201 < len(t)]
+    if not len(keep):
+        return {"triggers": 0}
+    sg = np.sign(mv[keep])
+    e = keep + 1
+    out = {"triggers": int(len(keep)), "per_1000s": r(1000 * len(keep) / cx.tp.dur, 1), "gap_way_mean": r(np.mean(gap[e] * sg), 2)}
+    for G in (-99, 0, 1, 2, 3):
+        for SP in (1, 2, 99):
+            sel = (gap[e] * sg >= G) & (spr[e] <= SP)
+            row = {"n": int(sel.sum())}
+            for H in (10, 20, 40, 60, 100, 200):
+                x = e + H
+                tt = np.where(sg > 0, bid[x] - ask[e], bid[e] - ask[x])[sel]
+                row[f"{H * 0.05:g}s"] = r(tt.mean(), 2) if len(tt) else None
+            out[f"gap_way>={G}_spread<={SP}"] = row
+    return out
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("tape", type=Path)
     ap.add_argument("--cache", type=Path, help="gen_identify's replay cache (.npz); the filter and F replays are cached beside it")
     ap.add_argument("--pnl", type=Path, action="append", default=[], help="a bot's per-second pnl.csv (section A), repeatable")
     ap.add_argument("--json", type=Path)
-    ap.add_argument("--only", default="ABCD")
+    ap.add_argument("--only", default="ABCDE")
     a = ap.parse_args(argv)
     cx = Ctx(a.tape, a.cache)
     res = {"tape": str(a.tape), "c": cx.c, "jumps": int(len(cx.t0)), "volatile_share": r(cx.vol_block.mean(), 3)}
@@ -424,6 +457,8 @@ def main(argv=None) -> int:
         res["B"] = section_b(cx)
     if "C" in a.only:
         res["C"] = section_c(cx)
+    if "E" in a.only:
+        res["E"] = section_e(cx)
     if "D" in a.only:
         res["D"] = section_d(cx)
     gi.show(res)
