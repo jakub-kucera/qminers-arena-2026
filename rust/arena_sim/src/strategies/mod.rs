@@ -3,6 +3,7 @@
 
 pub mod fallback_maker;
 pub mod probe;
+pub mod profit_gate;
 pub mod ridge_maker;
 pub mod room_maker;
 pub mod trend_follower;

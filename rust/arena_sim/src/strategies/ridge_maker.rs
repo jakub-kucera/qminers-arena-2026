@@ -233,6 +233,7 @@
 use std::collections::{HashMap, HashSet, VecDeque};
 
 use crate::params::Params;
+use crate::strategies::profit_gate::ProfitGate;
 use crate::sim::{BookOrder, Ctx, Owner, PrivateEvent, Side, Snapshot, Status, Strategy, Trade};
 
 const N: usize = 15;
@@ -668,6 +669,8 @@ pub struct RidgeMaker {
     lf_ladder: i64,
     lf_recent: [VecDeque<(i64, bool)>; 2],
     lf_skip: HashSet<u64>,
+    /// R4-PG's profit gate (profit_gate.rs; PG 0: off)
+    pg: ProfitGate,
 }
 
 /// one more copy of R3-F1's filter (FILTER_IMP2 / FILTER_IMP3): its state, swapped into the RidgeMaker's lf_* fields
@@ -915,7 +918,7 @@ fn side_index(sign: i64) -> usize {
 
 impl RidgeMaker {
     pub fn new(params: &Params) -> Result<RidgeMaker, String> {
-        params.check_keys(&[&KEYS[..], &MOE_KEYS[..]].concat())?;
+        params.check_keys(&[&KEYS[..], &MOE_KEYS[..], &crate::strategies::profit_gate::KEYS[..]].concat())?;
         let n_base = N + if params.int("PLACE", 0)? > 0 { 2 } else { 0 }
                 + if params.int("DEPTH5", 0)? > 0 { 1 } else { 0 }
                 + if params.int("FLOW2", 0)? > 0 { 2 } else { 0 }
@@ -1276,6 +1279,7 @@ impl RidgeMaker {
             lf_ladder: params.int("FILTER_LADDER", 0)?,
             lf_recent: [VecDeque::new(), VecDeque::new()],
             lf_skip: HashSet::new(),
+            pg: ProfitGate::new(params)?,
         })
     }
 
@@ -3211,6 +3215,18 @@ impl Strategy for RidgeMaker {
                 }
             }
         }
+        // R4-PG (profit_gate.rs, off by default): its matured labels learned, then an observation at the take's signal
+        let pg_w = ProfitGate::width(n);
+        let pg_jump = self.ft_jump > 0.0 && now < self.ft_jump_until;
+        let pg_inv = self.inventory as f64 / self.exposure.max(1) as f64;
+        if self.pg.mode > 0 {
+            self.pg.learn(now, mid, pg_w);
+            let source = if self.ft_src == 1 { p2_only } else { prediction };
+            let signal = if self.ft_net > 0 { source - skew } else { source };
+            let d = if signal > 0.0 { 1.0 } else { -1.0 };
+            let g = ProfitGate::feats(&features[..n], d, signal, 0.5 * spread_f, pg_inv, pg_jump);
+            self.pg.observe(now, mid, signal, 0.5 * spread_f, g);
+        }
         let bursting = now < self.burst_until;
         let ft_maxspread = if bursting && self.burst_maxspread > 0 { self.burst_maxspread } else { self.ft_maxspread };
         if self.ft_sz > 0
@@ -3258,6 +3274,14 @@ impl Strategy for RidgeMaker {
                     edge_dn = edge_dn.min(self.ft_lgap_edge);
                 }
             }
+            // R4-PG's vote (PG 2): each side's bar lowered by PG_K * (the gate's prediction that way - PG_G), floor 0
+            if self.pg.mode == 2 && self.pg.ready() {
+                let hs = 0.5 * spread_f;
+                let up = self.pg.predict(&ProfitGate::feats(&features[..n], 1.0, signal, hs, pg_inv, pg_jump), pg_w);
+                let dn = self.pg.predict(&ProfitGate::feats(&features[..n], -1.0, signal, hs, pg_inv, pg_jump), pg_w);
+                edge_up = (edge_up - self.pg.k * (up - self.pg.g)).max(0.0);
+                edge_dn = (edge_dn - self.pg.k * (dn - self.pg.g)).max(0.0);
+            }
             let need_up = edge_up + 0.5 * spread_f;
             let need_dn = edge_dn + 0.5 * spread_f;
             let sign = if signal > need_up {
@@ -3268,6 +3292,22 @@ impl Strategy for RidgeMaker {
                 0
             };
             let need = if sign < 0 { need_dn } else { need_up };
+            // R4-PG: a take signal closes PG_HOLD's observations the other way; the gate (PG 1) vetoes a take whose
+            // predicted net is not above PG_G
+            if sign != 0 {
+                self.pg.on_signal(sign, mid);
+            }
+            let sign = if sign != 0 && self.pg.mode == 1 && self.pg.ready() {
+                let g = ProfitGate::feats(&features[..n], sign as f64, signal, 0.5 * spread_f, pg_inv, pg_jump);
+                if self.pg.predict(&g, pg_w) > self.pg.g {
+                    sign
+                } else {
+                    self.pg.vetoes += 1;
+                    0
+                }
+            } else {
+                sign
+            };
             if sign != 0 {
                 let pos = sign * self.inventory;
                 // a burst on this side: BURST_EXP is the exposure and the limit, BURST_SZ (0: BURST_EXP) the take's lots
@@ -3305,6 +3345,8 @@ impl Strategy for RidgeMaker {
                     quantity = quantity.min(-pos - reserved);
                 }
                 if quantity > 0 {
+                    self.pg.takes += 1;
+                    self.pg.lots += quantity;
                     if big {
                         self.burst_lots += quantity;
                     }
