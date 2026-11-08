@@ -127,6 +127,11 @@ large displacement onto an edge. Require corroborating fresh evidence, especiall
 unclamped orders, before a large change. Pass surprise/disagreement to a small action
 model only if they add value beyond the existing mean, nonlinear gap and sd.
 
+**Audited 8 Nov 09:30 (IDEAS.md, "R4-FA"; `experiments.day.filter_audit`): no such failure.** The fresh orders that
+contradict F5's filter lag it on r4 and r3. After 3+ aggressive surprises within 0.5 s (112/h on r4), the mid moves
+3.2 / 7.4 ticks against them at 0.4 / 1 s, the way the filter's gap already points. Nudging the forecast towards them
+drops better takes than it adds. Re-entries never reach the filter. The proposal is dropped.
+
 This is not a recommendation to widen the grid or add unconditional jumps. R4-D1
 already tried those: WJ5 won 40,411 / 31,345 / 20,971 on synthetic seeds 511-513 but
 lost 13,757 on real r4. Drift and informed-side observations also failed. Better latent
@@ -182,8 +187,10 @@ The concrete hypothesis is that one robust mean suppresses useful distinctions
 between normal noise, continuation and a rare large move. Huber weighting reduces
 the influence of large residuals, while jump windows contain much of the PnL.
 That is motivation, not proof that the downweighted residuals are predictable.
-Use the existing regressors as controls, including a regression-loss ablation, so
-any improvement can be attributed to target, history or model capacity separately.
+The later literature review found that R4-S1 already ablated Huber: turning it off
+gained only about .1k, and most alternative deltas lost (round4 stats.md, part 3).
+Do not treat removing Huber as an untested fix. Use those existing regression controls
+so any improvement can be attributed to target, history or model capacity separately.
 
 Training design matters more than making a large network:
 
@@ -216,3 +223,10 @@ training-only policy calibration. Full replay must include the baseline's later
 decisions; offline markout is just a screen. Keep an unchanged baseline fallback.
 If classification improves only accuracy or log loss, with no stable executable PnL,
 stop. This remains a proposal: no classifier was trained in this review.
+
+The subsequent [wiki transfer review](../references/wiki/concepts/arena-event-models.md)
+connects this experiment to typed event histories and MRR sign surprise, and records
+why generic quoting, raw OFI, a new latent filter and synthetic RL are lower priority.
+It also incorporates R4-FA (main d95ab9e): the earlier section 3's fresh-placement
+change-point proposal was rejected by the offline audit, because the contradictory
+orders lag the filter. No strategy PnL gain was established by that audit.
