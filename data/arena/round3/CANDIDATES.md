@@ -56,6 +56,7 @@ Trials so far: 0 experiments, 0 cells.
 - F1 / L9 (pnl; breach 0 everywhere): **round3_public 480,469 / 424,730** (+55.7k; 500-s segments won 7/11, t +1.57; first 75% +46.2k, last 25% +9.5k); round2_public 303,720 / 317,057 (-4.2%); round 2's hi_vol_fast1.25 1,012,787 / 1,020,848 (-0.8%); round1 152,188 / 134,626 (+13%).
 - Local run time on r3 205 s vs 187 s (+10%), about 360 s on the server. It trades more: 572k lots vs 460k on r3.
 - Next: round 3's stitched tapes (running), TAKE_EDGE 0.3 on F1 and L9 (running), the Rust port behind a FILTER knob, then the sqrt-impact variant.
+- 01:40, in Rust (`ridge_maker --set FILTER=1`; the Python F1's pnl.csv and result.json byte for byte on round2_public). FILTER 0 → 1, r3 public / hi_vol_fast1.25 / hi_vol / pub+mirror: L8 427,819 → 484,057 / 1,155,238 → 1,349,326 / 912,583 → 1,109,338 / 881,280 → 980,757; L3 425,321 → 490,181 / 1,181,416 → 1,330,385 / 904,944 → 1,092,788 / 876,078 → 983,281; L9 424,730 → 480,469 / 1,043,787 → 1,305,805 / 827,555 → 1,067,643 / 851,070 → 965,316; B1 433,922 → **505,212** / 1,048,313 → 1,323,666 / 853,801 → 1,107,567 / 872,624 → 1,008,798. F1 on validation: **+862,764** (0.90x the public tape's rate).
 
 ### R3-S1 / S2 / S3 / S4 (8 Nov 02:10): strategies other than the forecast taker (IDEAS.md rows "R3-S1" to "R3-S4"; the statistics: "Round 3's tape: where money can be made")
 - PnL on round3_public / pub+mirror / hi_vol / hi_vol_fast1.25 / round1 (R2-L8: 427,819 / 881,280 / 912,583 / 1,155,238 / 174,109); breach 0 on every run; each 33-106 s locally on the public tape.
@@ -65,7 +66,6 @@ Trials so far: 0 experiments, 0 cells.
 - **R3-S4**, `r3_S4_taker_gap_quote.py`: R3-F1 plus S1's quote. Dropped: both sides 341,739 against F1's 480,469; as an exit only 474,024 (a tie in 500-s segments).
 - None of them beats the taker, and none adds to it on one inventory. S3 is the strongest standalone (17-25% of R2-L8 on round 3's tapes). S1 is the only one that never pays the spread.
 - Synthetic seed 101 / 102 (secondary; makers unvalidated there): S1 -117,637 / -17,770; S2 -5,496 / +4,292; S3 GAP_MIN 2 18,723 / 11,075, GAP_MIN 1 13,424 / 57,669; R2-L8 850,972 / 1,140,765.
-- 01:40, in Rust (`ridge_maker --set FILTER=1`; the Python F1's pnl.csv and result.json byte for byte on round2_public). FILTER 0 → 1, r3 public / hi_vol_fast1.25 / hi_vol / pub+mirror: L8 427,819 → 484,057 / 1,155,238 → 1,349,326 / 912,583 → 1,109,338 / 881,280 → 980,757; L3 425,321 → 490,181 / 1,181,416 → 1,330,385 / 904,944 → 1,092,788 / 876,078 → 983,281; L9 424,730 → 480,469 / 1,043,787 → 1,305,805 / 827,555 → 1,067,643 / 851,070 → 965,316; B1 433,922 → **505,212** / 1,048,313 → 1,323,666 / 853,801 → 1,107,567 / 872,624 → 1,008,798. F1 on validation: **+862,764** (0.90x the public tape's rate).
 
 ### R3-F2 (8 Nov 01:40): R2-L8 plus the filter (`python/bots/qminers/candidates/r3_F2_latent_filter_l8.py`)
 - L8 (L1's one-lot quotes below QS_RATE 2.5, the plain ridge, POSITION_LIMIT 1000 / EXPOSURE 100) plus R3-F1's filter code and three features (FEATURE_COUNT 36). FILTER = 0 is L8. validate OK. Rust: 484,057 on r3 public, 1,349,326 on hi_vol_fast1.25. The Python parity run is next.
@@ -73,6 +73,7 @@ Trials so far: 0 experiments, 0 cells.
 ### R3-F3 (8 Nov 01:45): R3-B1 plus the filter (`python/bots/qminers/candidates/r3_F3_latent_filter_b1.py`)
 - R3-B1 (L9 plus L8's speed-switched one-lot quotes) plus R3-F1's filter code and three features (FEATURE_COUNT 39). FILTER = 0 is B1. validate OK. Rust (`B1's --set line --set FILTER=1`): **505,212 on r3 public** (the best FILTER base there), 1,323,666 hi_vol_fast1.25, 1,107,567 hi_vol, 1,008,798 pub+mirror. The Python parity run and its run time are next.
 - 02:20: Python F3 = Rust 505,212 byte for byte; side by side F1 171 s, F3 181 s, F2 172 s. Validation: **F3 +883,559** (F1 +862,764; 590 s of server time). The filter's own settings on B1F (r3 public, Rust, by holdout) are at their top in every grid: FT_EDGE x FILTER_IMPACT (impact 3, FT_EDGE 0.15-0.35 a plateau), FILTER_W x FILTER_DEPTH (flat), FILTER_RATE x FILTER_EPS (rate 2, eps 0.01), FILTER_PI (round 1's), FILTER_JUMP (-10k to -30k everywhere). No F4. The oracle on tape_gen's draws: the true gap correlates 0.76 with the 0.4-s move against the filter's 0.40; jumps lift the filter to 0.53 there but lose on the real tape (IDEAS.md's R3-F1 row).
+
 ## Uploads (validation tape, 12,000 s; results folders in data/arena/round3/<file>_res/)
 | # | time | file | validation pnl | fills / lots | sim time | local r3 public (6,000 s) | read |
 |---|---|---|---|---|---|---|---|
