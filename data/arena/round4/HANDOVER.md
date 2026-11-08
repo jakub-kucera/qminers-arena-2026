@@ -30,9 +30,11 @@ the server (F3 - B1), and F5's higher take bar away from jumps only +4.6k (a tie
      data/arena/gen/r4_ladders.json`.
    - The over-limit jump bet (1 min): `uv run python -m experiments.day.gap_burst $T --G 4,5,6,7 --hold 0.5,2 --jumps 20
      --jump-cfg 4:2,5:2,6:2,7:0.5`. Build a burst only if a cell nets positive and the filter fires ahead of most 20-tick jumps.
-4. **The generator session's filter settings tool**, if delivered (`data/arena/gen/gen_v3_handoff.txt`, deliverable C,
-   due 06:45): run it on `$T`, add its `--set` keys to F5's line, and compare in step 2's grid. Use it only if it wins
-   both halves.
+4. **The generator session's filter calibrator** (delivered 05:00, `python/experiments/day/filter_settings.py`, ~50 s):
+   `uv run python -m experiments.day.filter_settings $T --minutes 20 --out data/arena/round4/filter_settings.json`. It
+   keeps round 3's filter settings unless an alternative wins its held-out forecast gate; on round 3 all eight alternatives
+   lost, the placement mixture included. Add any keys it exports to F5's line and compare in step 2's grid; use them
+   only if they win both halves.
 5. **First upload by ~07:45:**
    - The base unchanged (F5, or F3 on a calm tape) as the paired reference.
    - Then step 2's winner as a Python file: copy the base and change only its constants. Check it against Rust: one
