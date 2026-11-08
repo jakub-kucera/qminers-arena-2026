@@ -99,6 +99,7 @@ of the public tape. Mark the final before 12:00.
 |---|---|---|---|---|---|
 | 1 | 07:12 | `r4_W1_warm.py` at PRIOR_MASS 0 (= R3-F5 exactly; 1,029,443 on r4 public in Python too) | **+1,752,785** (se 56,235, breach 0, end +100 at 10,348; 94,615 fills / 1,111,284 lots; 10 min 9 s) | 1,029,443 | 146k per 1,000 s against the public tape's 172k (0.85x; round 3 0.87x). Per 1,000 s (k): 127, 169, 119, 101, 77, 95, 100, 142, 203, 219, 193, 207; max drawdown 13.3k; 4 25-s steps under -3k, 67 over +10k. Results folder `r4_W1_warm_res/`. |
 | 2 | 08:04 | `r4_MH3.py` (F5 plus 100-ms / 0.6-s ridges as features; r4 public 1,042,419, +13.0k, 5/6 segments; round-4 synthetic +12.0k) | +1,736,913 (se 56,624; **13 min 35 s = 815 s of 900**) | 1,042,419 | **MH3 - F5 = -15,872** (7 of 12 1,000-s segments won, t -1.24; two -9k segments). The extra ridges cost 1.34x F5's server time. F5 stays the final: re-mark `r4_W1_warm.py` on the portal (the newest upload becomes final automatically). Results folder `r4_MH3_res/`. |
+| 3 | 08:34 | `r4_W2_warm10k.py` (F5 with round 4's ridge statistics at PRIOR_MASS 10000) | +1,754,574 (se 56,200; 9 min 55 s) | 1,029,781 | **W2 - F5 = +1,789, a tie** (6 of 12 segments, t 0.67; every segment within +-2k; the first 1,000 s 126.5k against 126.7k: no slow start to fix on round 4). Results folder `r4_W2_warm10k_res/`. |
 <!-- each upload: file, time, why; local PnL; the validation PnL; the paired difference against the base per 1,000 s -->
 
 ## Portal against local
