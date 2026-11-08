@@ -1,0 +1,52 @@
+{
+  "source": "data/arena/round4/py_f5_full",
+  "run_sha256": "17177a83f9f2cac61a69c681ad95297b22857862f3d2f1a7ef28d41f3313d71d",
+  "totals": {
+    "orders": 4869,
+    "requested": 693482,
+    "filled": 546069,
+    "unfilled": 147413
+  },
+  "completion": {
+    "zero": {
+      "orders": 50,
+      "requested": 7523,
+      "filled": 0,
+      "unfilled": 7523
+    },
+    "partial": {
+      "orders": 1345,
+      "requested": 230693,
+      "filled": 90803,
+      "unfilled": 139890
+    },
+    "full": {
+      "orders": 3474,
+      "requested": 455266,
+      "filled": 455266,
+      "unfilled": 0
+    }
+  },
+  "next_ioc_same_side_within_ms": {
+    "75": {
+      "orders": 160,
+      "missing_lots": 17742,
+      "median_signed_reprice": 1.0,
+      "worse_price_share": 0.85625
+    },
+    "100": {
+      "orders": 233,
+      "missing_lots": 24220,
+      "median_signed_reprice": 1,
+      "worse_price_share": 0.8583690987124464
+    },
+    "250": {
+      "orders": 468,
+      "missing_lots": 49351,
+      "median_signed_reprice": 1.0,
+      "worse_price_share": 0.8482905982905983
+    }
+  },
+  "other_user_aggressor_lots": 92,
+  "qualification": "Missing lots and later repricing are descriptive, not a PnL opportunity estimate. A different order changes the subsequent book and policy."
+}

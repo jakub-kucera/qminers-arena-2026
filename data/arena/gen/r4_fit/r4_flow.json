@@ -1,0 +1,90 @@
+{
+  "source": "data/arena/round4/round4_public.csv",
+  "sha256": "61c0b6d149e5e50806f1b09ba17fa69ac3e5d8d2cf884d6f11ce17b833af8a56",
+  "flow": {
+    "n": 58445,
+    "rate": 9.740834370732193,
+    "buy_share": 0.4983317649071777,
+    "same_side": 0.5394052426254192,
+    "iid_same_side": 0.5000055660166498,
+    "excess_same_side": 0.03939967660876942,
+    "sign_corr1": 0.078800230389233,
+    "by_gap_s": {
+      "0:0.02": {
+        "n": 11232,
+        "same_side": 0.5548433048433048
+      },
+      "0.02:0.1": {
+        "n": 25745,
+        "same_side": 0.5402214022140222
+      },
+      "0.1:0.5": {
+        "n": 20889,
+        "same_side": 0.5303748384317105
+      },
+      "0.5:2": {
+        "n": 578,
+        "same_side": 0.5294117647058824
+      }
+    },
+    "prior_G_alignment": {
+      "0.0": {
+        "n": 56761,
+        "follow_share": 0.5513644932259826
+      },
+      "0.5": {
+        "n": 22397,
+        "follow_share": 0.5968210028128768
+      },
+      "1.0": {
+        "n": 8204,
+        "follow_share": 0.6544368600682594
+      }
+    },
+    "qualification": "Prior G centre is an observable proxy, not true latent. Same-side excess accounts for unconditional buy imbalance.",
+    "by_1000s": [
+      {
+        "start_s": 0.0,
+        "n_pairs": 9354,
+        "same_side": 0.5259781911481719,
+        "n_aligned": 3136,
+        "follow_share": 0.5972576530612245
+      },
+      {
+        "start_s": 1000.0,
+        "n_pairs": 10153,
+        "same_side": 0.5534324830099479,
+        "n_aligned": 4587,
+        "follow_share": 0.6126008284281665
+      },
+      {
+        "start_s": 2000.0,
+        "n_pairs": 9537,
+        "same_side": 0.5410506448568733,
+        "n_aligned": 3561,
+        "follow_share": 0.5959000280819995
+      },
+      {
+        "start_s": 3000.0,
+        "n_pairs": 10173,
+        "same_side": 0.5514597463874963,
+        "n_aligned": 4201,
+        "follow_share": 0.5905736729350155
+      },
+      {
+        "start_s": 4000.0,
+        "n_pairs": 9208,
+        "same_side": 0.5248696785403997,
+        "n_aligned": 2924,
+        "follow_share": 0.5748974008207934
+      },
+      {
+        "start_s": 5000.0,
+        "n_pairs": 10014,
+        "same_side": 0.5373477132015179,
+        "n_aligned": 3988,
+        "follow_share": 0.6018054162487463
+      }
+    ]
+  }
+}

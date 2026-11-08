@@ -1,0 +1,195 @@
+{
+  "case": "wide6",
+  "seed": 501,
+  "options": {
+    "impact_sqrt": 0.025,
+    "f_limit_latent": 1,
+    "jx_rate_off": 0.0046,
+    "jx_dwell_off": 600,
+    "jx_dwell_on": 600,
+    "jx_logsd": 0.85,
+    "jx_warn_s": 2.47,
+    "jx_rate_on": 0.1,
+    "jx_lead_min": 500,
+    "jx_after_extra": 8,
+    "jx_after_s": 0.2,
+    "stale_s": 0.3,
+    "impact_delay": -0.2623,
+    "impact_tau": 6.8,
+    "jx_median": 8,
+    "jx_warn_k": 1.0,
+    "jx_on_k": 1.2,
+    "jx_warn_sd": 0.8,
+    "jx_false_rate": 0.05,
+    "jx_diff_sd": 4,
+    "informed": 0.3,
+    "drift_sd": 6,
+    "drift_tau": 1.5,
+    "drift_jx_only": true
+  },
+  "measurement": {
+    "stats": {
+      "seconds": 5999,
+      "changes_s": 6.579,
+      "sd1": 5.08,
+      "sd10": 21.53,
+      "sd60": 51.21,
+      "sd300": 75.3,
+      "one_tick": 0.815,
+      "two_tick": 0.114,
+      "imp<=60": 1.12,
+      "imp<=250": 1.12,
+      "imp<=500": 1.84,
+      "imp<=1000": 3.19,
+      "imp<=max": 3.36,
+      "jumps3_per_ks": 125.0,
+      "big@0.1s": 1.44,
+      "big@0.5s": 1.85,
+      "big@2s": 2.36,
+      "big@5s": 2.71,
+      "big@15s": 2.35,
+      "big@60s": 1.36,
+      "touch|up": 0.594,
+      "touch|down": 0.182,
+      "one_tick_gap": 0.18500000000000005
+    },
+    "flow": {
+      "n": 58421,
+      "rate": 9.736833893201283,
+      "buy_share": 0.5015319833621472,
+      "same_side": 0.5339438548442315,
+      "iid_same_side": 0.5000046939460437,
+      "excess_same_side": 0.033939160898187715,
+      "sign_corr1": 0.06787895905003319,
+      "by_gap_s": {
+        "0:0.02": {
+          "n": 10348,
+          "same_side": 0.553150367220719
+        },
+        "0.02:0.1": {
+          "n": 26105,
+          "same_side": 0.5317755219306646
+        },
+        "0.1:0.5": {
+          "n": 21481,
+          "same_side": 0.5270704343373214
+        },
+        "0.5:2": {
+          "n": 486,
+          "same_side": 0.5452674897119342
+        }
+      },
+      "prior_G_alignment": {
+        "0.0": {
+          "n": 57457,
+          "follow_share": 0.5573211271037471
+        },
+        "0.5": {
+          "n": 26342,
+          "follow_share": 0.6027256852175233
+        },
+        "1.0": {
+          "n": 11882,
+          "follow_share": 0.6372664534590137
+        }
+      },
+      "qualification": "Prior G centre is an observable proxy, not true latent. Same-side excess accounts for unconditional buy imbalance.",
+      "by_1000s": [
+        {
+          "start_s": 0.0,
+          "n_pairs": 9646,
+          "same_side": 0.5271615177275555,
+          "n_aligned": 3383,
+          "follow_share": 0.5858705291161691
+        },
+        {
+          "start_s": 1000.0,
+          "n_pairs": 9741,
+          "same_side": 0.5295144235704753,
+          "n_aligned": 4577,
+          "follow_share": 0.6076032335590998
+        },
+        {
+          "start_s": 2000.0,
+          "n_pairs": 9758,
+          "same_side": 0.5439639270342284,
+          "n_aligned": 3333,
+          "follow_share": 0.5937593759375938
+        },
+        {
+          "start_s": 3000.0,
+          "n_pairs": 9655,
+          "same_side": 0.5363024339720353,
+          "n_aligned": 4138,
+          "follow_share": 0.5985983566940551
+        },
+        {
+          "start_s": 4000.0,
+          "n_pairs": 9936,
+          "same_side": 0.5353260869565217,
+          "n_aligned": 6313,
+          "follow_share": 0.6150799936638682
+        },
+        {
+          "start_s": 5000.0,
+          "n_pairs": 9679,
+          "same_side": 0.5314598615559458,
+          "n_aligned": 4598,
+          "follow_share": 0.6035232709873858
+        }
+      ]
+    },
+    "sha256": "f2255526a47da05ced85a5e3b7c960e02f2ab100d1c651c3ef0fb02b682bfa8b"
+  },
+  "distance": {
+    "stat_log_rmse": 0.3473973946323024,
+    "same_side_error": -0.005460515710581704,
+    "alignment_error": 0.0059046824046465884
+  },
+  "synthetic_truth": {
+    "on_share": 0.32705,
+    "latent_sha256": "7e3581e25854f29762987c49f1360fc7a16de8ea97930429b63138164b1c8c9e"
+  },
+  "scores": {
+    "L8": 930347.0,
+    "L3": 929998.0,
+    "L9": 947184.0,
+    "B1": 944249.0,
+    "B1F": 1017646.0,
+    "F5": 1020027.0
+  },
+  "binary_sha256": "e780ea927e5eb6c0c9ec05764d9bdcce63537e8ba232caa94ee2954dbceb1f5c",
+  "score_comparison": {
+    "bots": [
+      "L3",
+      "L8",
+      "L9",
+      "B1",
+      "B1F",
+      "F5"
+    ],
+    "sim": [
+      929998.0,
+      930347.0,
+      947184.0,
+      944249.0,
+      1017646.0,
+      1020027.0
+    ],
+    "target": [
+      851547.0,
+      901311.0,
+      892246.0,
+      907100.0,
+      1025404.0,
+      1029443.0
+    ],
+    "spearman": 0.8285714285714287,
+    "asinh": 0.04839450968340639,
+    "logratio": 0.039417841468581606,
+    "scale_c": 0.9667422232063342,
+    "logratio_after_c": 0.028848753217147433,
+    "sign_misses": 0,
+    "objective": 0.13410879539769202
+  }
+}

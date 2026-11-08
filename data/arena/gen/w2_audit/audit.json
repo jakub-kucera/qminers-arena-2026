@@ -1,0 +1,238 @@
+{
+  "source_hashes": {
+    "r3_F5_jump_bar.py": "42d25960d123e18769699ddf628295b07f35ede2769176ed1dfb216fe649fe0c",
+    "r4_W1_warm.py": "37cce8d057c939fadc46146ef36a85e4ec7b677e6814536c4d5a36551a8559ac",
+    "r4_W2_warm10k.py": "17caee3c9d61e78d052d7ddedc5d9d6f9ac0f2fdfa207ab113c988c5cef0a763",
+    "r4_MH3.py": "179e7887dddb6852a7cc38d9f781053005001cf70bbb361fef8c3efe05d977d7",
+    "r4_X1R3.py": "d784fcd38e945ec61ede2d2fe541aabcdcd9667c8833f88affcbd3bb69d79c9b"
+  },
+  "stats_sha256": "0c3a3411f3f242b68de4212f8f94113156e45a1935caf758771803e0ec029303",
+  "stats_match_bit_for_bit": true,
+  "stats_mass": 254063.69739369614,
+  "stats_labels": 263498,
+  "w1_w2_match_f5_except_warm_start": true,
+  "learning": {
+    "initial_mass": 10000,
+    "initial_labels": 200,
+    "initial_ridge": 30.0,
+    "first_fit_before_live_labels": true,
+    "cholesky_max_weight_error": 1.4210854715202004e-14,
+    "label_maturity_and_stale_discard": "pass"
+  },
+  "execution": {
+    "all_live_reservation_cases": 72,
+    "incremental_fills_and_ioc_cancel_both_sides": "pass",
+    "new_reject_and_late_cancel_reject": "pass",
+    "spread_and_jump_gates": "pass"
+  },
+  "validation": {
+    "F5": {
+      "pnl": 1752785.0,
+      "difference": 0.0,
+      "segments": [
+        126683.0,
+        168935.0,
+        118953.0,
+        100650.0,
+        77477.0,
+        95052.0,
+        100488.0,
+        142109.0,
+        202729.0,
+        218933.0,
+        193425.0,
+        207351.0
+      ],
+      "segment_differences": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "segments_ahead": 0,
+      "descriptive_paired_t": null,
+      "hashes": {
+        "result.json": "5ccc5895553f5e388f13224e325b5290184457ca22d08583764302ef2388b968",
+        "metadata.json": "89445a304ef4f91eb9609b276518942f16f4a1ac491e13e7bab32c270bd74eb0",
+        "pnl.csv": "5430b5544452b16d0082933069c6b140ef629790f3569a76fe7ba33fabcca553"
+      },
+      "pnl_accounting": "pass",
+      "breach_penalty": 0.0,
+      "engine": {
+        "latency": 0.005,
+        "position_limit": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0
+      }
+    },
+    "W2": {
+      "pnl": 1754574.0,
+      "difference": 1789.0,
+      "segments": [
+        126496.0,
+        170969.0,
+        117903.0,
+        100436.0,
+        78620.0,
+        95053.0,
+        100611.0,
+        142118.0,
+        202534.0,
+        218790.0,
+        193836.0,
+        207208.0
+      ],
+      "segment_differences": [
+        -187.0,
+        2034.0,
+        -1050.0,
+        -214.0,
+        1143.0,
+        1.0,
+        123.0,
+        9.0,
+        -195.0,
+        -143.0,
+        411.0,
+        -143.0
+      ],
+      "segments_ahead": 6,
+      "descriptive_paired_t": 0.6655514535686402,
+      "hashes": {
+        "result.json": "03256f8b8421fb3103c12f25d1bee0a15aa4f887ab8b247396fd3347b5ecdae0",
+        "metadata.json": "f1b86ce286b9f7af364061af55ded55884510dae2c50e00a69d1d584325a3892",
+        "pnl.csv": "091b56e085e122bf7bc6fe728b77415616b771eb5e4b58c5c07a7b22febbc8cd"
+      },
+      "pnl_accounting": "pass",
+      "breach_penalty": 0.0,
+      "engine": {
+        "latency": 0.005,
+        "position_limit": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0
+      }
+    },
+    "MH3": {
+      "pnl": 1736913.0,
+      "difference": -15872.0,
+      "segments": [
+        126699.0,
+        169057.0,
+        118613.0,
+        98871.0,
+        78200.0,
+        94237.0,
+        101784.0,
+        143703.0,
+        203381.0,
+        209862.0,
+        194008.0,
+        198498.0
+      ],
+      "segment_differences": [
+        16.0,
+        122.0,
+        -340.0,
+        -1779.0,
+        723.0,
+        -815.0,
+        1296.0,
+        1594.0,
+        652.0,
+        -9071.0,
+        583.0,
+        -8853.0
+      ],
+      "segments_ahead": 7,
+      "descriptive_paired_t": -1.2443716603962944,
+      "hashes": {
+        "result.json": "ea4b63c736bdab884609b9a45b3a481f50cde05ef03b0920efffa1bfa8e07b81",
+        "metadata.json": "6b16a03e380009333a41ad27334d9096293ac1f2df3ea9b9e5d630e75cba6246",
+        "pnl.csv": "f8078f1dd379b93045998cfc144f9254ca9e0a18f2d144cc5135ee040b8269c7"
+      },
+      "pnl_accounting": "pass",
+      "breach_penalty": 0.0,
+      "engine": {
+        "latency": 0.005,
+        "position_limit": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0
+      }
+    },
+    "X1R3": {
+      "pnl": 1724973.0,
+      "difference": -27812.0,
+      "segments": [
+        127576.0,
+        168297.0,
+        118937.0,
+        98611.0,
+        77018.0,
+        94478.0,
+        99449.0,
+        142854.0,
+        187054.0,
+        212428.0,
+        192675.0,
+        205596.0
+      ],
+      "segment_differences": [
+        893.0,
+        -638.0,
+        -16.0,
+        -2039.0,
+        -459.0,
+        -574.0,
+        -1039.0,
+        745.0,
+        -15675.0,
+        -6505.0,
+        -750.0,
+        -1755.0
+      ],
+      "segments_ahead": 2,
+      "descriptive_paired_t": -1.7379740099161476,
+      "hashes": {
+        "result.json": "aab6468f00eb0beed565bdbad35b6358f49db00267c709cd7da1c9c82d9bc1be",
+        "metadata.json": "bf50f90be9d1ae0801333964f7c4596781b94d311df7948c990318f6dd6d5539",
+        "pnl.csv": "0c95e8d5eb6b61005dba0068fbce9759ff95b97883b692f79cd5190f449a4584"
+      },
+      "pnl_accounting": "pass",
+      "breach_penalty": 0.0,
+      "engine": {
+        "latency": 0.005,
+        "position_limit": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0
+      }
+    }
+  },
+  "limitations": [
+    "Downloaded result metadata has no submitted-source hash.",
+    "Segment t values are descriptive, not an independent-tape significance test.",
+    "W2 uses whole-public-tape statistics; its public replay is in sample."
+  ],
+  "replay": {
+    "F5_pnl": 1029443.0,
+    "W2_python_rust_exact": {
+      "pnl": 1029781.0,
+      "fills": 42139,
+      "traded_volume": 585414,
+      "inventory": 100,
+      "breach_penalty": 0.0,
+      "pnl_se": 42436.03162041541
+    },
+    "public_stats_reproduced_byte_for_byte": true,
+    "reproduced_stats_sha256": "0c3a3411f3f242b68de4212f8f94113156e45a1935caf758771803e0ec029303",
+    "rust_source_sha256": "ac05f39c822829569ca85411f48204c9d797895b2b8307d3dea082e9547c9165",
+    "tape_sha256": "61c0b6d149e5e50806f1b09ba17fa69ac3e5d8d2cf884d6f11ce17b833af8a56"
+  }
+}

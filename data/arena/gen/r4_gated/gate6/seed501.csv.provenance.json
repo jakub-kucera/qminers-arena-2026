@@ -1,0 +1,14 @@
+{
+  "identity": {
+    "schema": 1,
+    "params_sha256": "498d109c15ecf6f421752ca418470cc2b3bc34e177fcaa21e1f1f5eab380144d",
+    "seed": 501,
+    "seconds": 6000.0,
+    "numpy": "2.5.4",
+    "python": "3.13.16",
+    "generator_sha256": "2c66a02cc90b1fac4f9059301656bbbced2d1aff6fd1932c29f7912ef16aee88",
+    "book_sha256": "17d3e75838fbffe833d2d99ca03545221ad87c56356ebc5e8de37fae87cc844a"
+  },
+  "bytes": 84275154,
+  "sha256": "8ef87adb19ddfca90dd5a0ad1ca6a1542bc5047f5f84913a8e034edf7376e6e3"
+}

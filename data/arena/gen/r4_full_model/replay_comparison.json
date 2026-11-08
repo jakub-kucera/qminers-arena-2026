@@ -1,0 +1,23 @@
+{
+  "total_pnl": 1027063.0,
+  "baseline_pnl": 1029443.0,
+  "segment_differences": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    -1532.0,
+    -388.0,
+    -460.0
+  ],
+  "test_difference": -2380.0,
+  "test_segments": [
+    -1532.0,
+    -388.0,
+    -460.0
+  ],
+  "prefix_difference": 0.0
+}

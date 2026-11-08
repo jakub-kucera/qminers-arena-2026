@@ -1,0 +1,760 @@
+{
+  "source": "data/arena/round4/round4_public.csv",
+  "source_identity": {
+    "tape_sha256": "61c0b6d149e5e50806f1b09ba17fa69ac3e5d8d2cf884d6f11ce17b833af8a56",
+    "measurement_sources": {
+      "gen_round_fit.py": "286a1b6893a8494b39fa139b3ea0c6d7225c18e114c824e3c2d1136b5d3aa0c6",
+      "gen_calibrate.py": "8a3e5e7b5d8ce9f9cc14edea91baa7f901a7d4c66a7832ebde19d4b943be4877",
+      "filter_placement.py": "8b58a74026346c55c9e941f129a1b29933a41568d650a5dc73a0c930a4e5c68e",
+      "tape_book.py": "17d3e75838fbffe833d2d99ca03545221ad87c56356ebc5e8de37fae87cc844a"
+    }
+  },
+  "seconds": 6000.0,
+  "target_scores": {
+    "T2": {
+      "pnl": 839650.0,
+      "first75": 663668.0,
+      "last25": 175982.0
+    },
+    "L1": {
+      "pnl": 827782.0,
+      "first75": 662108.0,
+      "last25": 165674.0
+    },
+    "L3": {
+      "pnl": 851547.0,
+      "first75": 673202.0,
+      "last25": 178345.0
+    },
+    "L8": {
+      "pnl": 901311.0,
+      "first75": 722186.0,
+      "last25": 179125.0
+    },
+    "L9": {
+      "pnl": 892246.0,
+      "first75": 707377.0,
+      "last25": 184869.0
+    },
+    "B1": {
+      "pnl": 907100.0,
+      "first75": 721904.0,
+      "last25": 185196.0
+    },
+    "B1F": {
+      "pnl": 1025404.0,
+      "first75": 805908.0,
+      "last25": 219496.0
+    },
+    "F4": {
+      "pnl": 1026780.0,
+      "first75": 807549.0,
+      "last25": 219231.0
+    },
+    "F5": {
+      "pnl": 1029443.0,
+      "first75": 804559.0,
+      "last25": 224884.0
+    }
+  },
+  "rows": [
+    {
+      "case": "wide6",
+      "seed": 511,
+      "options": {
+        "impact_sqrt": 0.025,
+        "f_limit_latent": 1,
+        "jx_rate_off": 0.0046,
+        "jx_dwell_off": 600,
+        "jx_dwell_on": 600,
+        "jx_logsd": 0.85,
+        "jx_warn_s": 2.47,
+        "jx_rate_on": 0.1,
+        "jx_lead_min": 500,
+        "jx_after_extra": 8,
+        "jx_after_s": 0.2,
+        "stale_s": 0.3,
+        "impact_delay": -0.2623,
+        "impact_tau": 6.8,
+        "jx_median": 8,
+        "jx_warn_k": 1.0,
+        "jx_on_k": 1.2,
+        "jx_warn_sd": 0.8,
+        "jx_false_rate": 0.05,
+        "jx_diff_sd": 4,
+        "informed": 0.3,
+        "drift_sd": 6,
+        "drift_tau": 1.5,
+        "drift_jx_only": true
+      },
+      "measurement": {
+        "stats": {
+          "seconds": 5999,
+          "changes_s": 7.026,
+          "sd1": 5.69,
+          "sd10": 24.57,
+          "sd60": 67.69,
+          "sd300": 164.09,
+          "one_tick": 0.781,
+          "two_tick": 0.122,
+          "imp<=60": 1.2,
+          "imp<=250": 1.51,
+          "imp<=500": 1.48,
+          "imp<=1000": 3.41,
+          "imp<=max": 3.22,
+          "jumps3_per_ks": 143.1,
+          "big@0.1s": 1.67,
+          "big@0.5s": 2.19,
+          "big@2s": 2.67,
+          "big@5s": 2.75,
+          "big@15s": 2.45,
+          "big@60s": 3.42,
+          "touch|up": 0.596,
+          "touch|down": 0.168,
+          "one_tick_gap": 0.21899999999999997
+        },
+        "flow": {
+          "n": 58691,
+          "rate": 9.781843891203506,
+          "buy_share": 0.49876471690719193,
+          "same_side": 0.5356449139546772,
+          "iid_same_side": 0.5000030518486388,
+          "excess_same_side": 0.03564186210603837,
+          "sign_corr1": 0.07128415942684463,
+          "by_gap_s": {
+            "0:0.02": {
+              "n": 10437,
+              "same_side": 0.5522659768132605
+            },
+            "0.02:0.1": {
+              "n": 26208,
+              "same_side": 0.5358287545787546
+            },
+            "0.1:0.5": {
+              "n": 21609,
+              "same_side": 0.5269100837613957
+            },
+            "0.5:2": {
+              "n": 436,
+              "same_side": 0.5596330275229358
+            }
+          },
+          "prior_G_alignment": {
+            "0.0": {
+              "n": 57688,
+              "follow_share": 0.5610005547080849
+            },
+            "0.5": {
+              "n": 27453,
+              "follow_share": 0.6074017411576148
+            },
+            "1.0": {
+              "n": 13140,
+              "follow_share": 0.6389649923896499
+            }
+          },
+          "qualification": "Prior G centre is an observable proxy, not true latent. Same-side excess accounts for unconditional buy imbalance.",
+          "by_1000s": [
+            {
+              "start_s": 0.0,
+              "n_pairs": 9672,
+              "same_side": 0.532051282051282,
+              "n_aligned": 4651,
+              "follow_share": 0.6226617931627607
+            },
+            {
+              "start_s": 1000.0,
+              "n_pairs": 9636,
+              "same_side": 0.5445205479452054,
+              "n_aligned": 4636,
+              "follow_share": 0.5901639344262295
+            },
+            {
+              "start_s": 2000.0,
+              "n_pairs": 9814,
+              "same_side": 0.5433054819645404,
+              "n_aligned": 6762,
+              "follow_share": 0.6245193729665779
+            },
+            {
+              "start_s": 3000.0,
+              "n_pairs": 10021,
+              "same_side": 0.5338788544057479,
+              "n_aligned": 4243,
+              "follow_share": 0.5995757718595334
+            },
+            {
+              "start_s": 4000.0,
+              "n_pairs": 9846,
+              "same_side": 0.527930123908186,
+              "n_aligned": 3556,
+              "follow_share": 0.5874578177727784
+            },
+            {
+              "start_s": 5000.0,
+              "n_pairs": 9696,
+              "same_side": 0.5322813531353136,
+              "n_aligned": 3605,
+              "follow_share": 0.6066574202496533
+            }
+          ]
+        },
+        "sha256": "608e498e164ed7df3fe4ede0e06aff942c0dbc1df8db767cab2eb311f33ea8ce"
+      },
+      "distance": {
+        "stat_log_rmse": 0.2896583681280672,
+        "same_side_error": -0.0037578145027310494,
+        "alignment_error": 0.01058073834473805
+      },
+      "synthetic_truth": {
+        "on_share": 0.38125166666666666,
+        "latent_sha256": "5e31c46f3ee05b2ff5390a9beebdba6f7a2fa0c726aaa238c6930ff4c65800e2"
+      },
+      "scores": {
+        "L8": 1045206.0,
+        "L3": 1053728.0,
+        "L9": 1076126.0,
+        "B1": 1069681.0,
+        "B1F": 1146908.0,
+        "F5": 1154681.0
+      },
+      "binary_sha256": "e780ea927e5eb6c0c9ec05764d9bdcce63537e8ba232caa94ee2954dbceb1f5c",
+      "score_comparison": {
+        "bots": [
+          "L3",
+          "L8",
+          "L9",
+          "B1",
+          "B1F",
+          "F5"
+        ],
+        "sim": [
+          1053728.0,
+          1045206.0,
+          1076126.0,
+          1069681.0,
+          1146908.0,
+          1154681.0
+        ],
+        "target": [
+          851547.0,
+          901311.0,
+          892246.0,
+          907100.0,
+          1025404.0,
+          1029443.0
+        ],
+        "spearman": 0.7142857142857143,
+        "asinh": 0.16069308980725497,
+        "logratio": 0.1566978383381247,
+        "scale_c": 0.8549623566383932,
+        "logratio_after_c": 0.0317284768151317,
+        "sign_misses": 0,
+        "objective": 0.30355023266439785
+      }
+    },
+    {
+      "case": "wide6",
+      "seed": 512,
+      "options": {
+        "impact_sqrt": 0.025,
+        "f_limit_latent": 1,
+        "jx_rate_off": 0.0046,
+        "jx_dwell_off": 600,
+        "jx_dwell_on": 600,
+        "jx_logsd": 0.85,
+        "jx_warn_s": 2.47,
+        "jx_rate_on": 0.1,
+        "jx_lead_min": 500,
+        "jx_after_extra": 8,
+        "jx_after_s": 0.2,
+        "stale_s": 0.3,
+        "impact_delay": -0.2623,
+        "impact_tau": 6.8,
+        "jx_median": 8,
+        "jx_warn_k": 1.0,
+        "jx_on_k": 1.2,
+        "jx_warn_sd": 0.8,
+        "jx_false_rate": 0.05,
+        "jx_diff_sd": 4,
+        "informed": 0.3,
+        "drift_sd": 6,
+        "drift_tau": 1.5,
+        "drift_jx_only": true
+      },
+      "measurement": {
+        "stats": {
+          "seconds": 5999,
+          "changes_s": 8.454,
+          "sd1": 6.55,
+          "sd10": 28.03,
+          "sd60": 72.34,
+          "sd300": 140.8,
+          "one_tick": 0.711,
+          "two_tick": 0.16,
+          "imp<=60": 1.36,
+          "imp<=250": 1.53,
+          "imp<=500": 1.91,
+          "imp<=1000": 3.56,
+          "imp<=max": 3.5,
+          "jumps3_per_ks": 199.7,
+          "big@0.1s": 1.77,
+          "big@0.5s": 2.34,
+          "big@2s": 2.82,
+          "big@5s": 2.76,
+          "big@15s": 2.87,
+          "big@60s": 1.31,
+          "touch|up": 0.588,
+          "touch|down": 0.134,
+          "one_tick_gap": 0.28900000000000003
+        },
+        "flow": {
+          "n": 58772,
+          "rate": 9.795335916036903,
+          "buy_share": 0.4995235826584088,
+          "same_side": 0.5332561977846216,
+          "iid_same_side": 0.5000004539469667,
+          "excess_same_side": 0.03325574383765495,
+          "sign_corr1": 0.06651154834067327,
+          "by_gap_s": {
+            "0:0.02": {
+              "n": 10494,
+              "same_side": 0.5468839336763865
+            },
+            "0.02:0.1": {
+              "n": 26192,
+              "same_side": 0.5372251069028711
+            },
+            "0.1:0.5": {
+              "n": 21656,
+              "same_side": 0.5219800517177687
+            },
+            "0.5:2": {
+              "n": 429,
+              "same_side": 0.5268065268065268
+            }
+          },
+          "prior_G_alignment": {
+            "0.0": {
+              "n": 57961,
+              "follow_share": 0.5715567364262176
+            },
+            "0.5": {
+              "n": 31091,
+              "follow_share": 0.6113023061336078
+            },
+            "1.0": {
+              "n": 16884,
+              "follow_share": 0.6376451077943616
+            }
+          },
+          "qualification": "Prior G centre is an observable proxy, not true latent. Same-side excess accounts for unconditional buy imbalance.",
+          "by_1000s": [
+            {
+              "start_s": 0.0,
+              "n_pairs": 9780,
+              "same_side": 0.5371165644171779,
+              "n_aligned": 4010,
+              "follow_share": 0.5932668329177058
+            },
+            {
+              "start_s": 1000.0,
+              "n_pairs": 9835,
+              "same_side": 0.5337061514997458,
+              "n_aligned": 6735,
+              "follow_share": 0.6225686711210097
+            },
+            {
+              "start_s": 2000.0,
+              "n_pairs": 9982,
+              "same_side": 0.5300540973752755,
+              "n_aligned": 6518,
+              "follow_share": 0.6130714943234121
+            },
+            {
+              "start_s": 3000.0,
+              "n_pairs": 9830,
+              "same_side": 0.5305188199389623,
+              "n_aligned": 5992,
+              "follow_share": 0.6234979973297731
+            },
+            {
+              "start_s": 4000.0,
+              "n_pairs": 9681,
+              "same_side": 0.5287676892882966,
+              "n_aligned": 3597,
+              "follow_share": 0.6007784264664998
+            },
+            {
+              "start_s": 5000.0,
+              "n_pairs": 9658,
+              "same_side": 0.5395527024228619,
+              "n_aligned": 4239,
+              "follow_share": 0.5994338287331918
+            }
+          ]
+        },
+        "sha256": "c695b4ae7652580812c322a92c7b2d5f105590619af9e8953c3a9d29726f73b8"
+      },
+      "distance": {
+        "stat_log_rmse": 0.32194283474130864,
+        "same_side_error": -0.006143932771114469,
+        "alignment_error": 0.014481303320731054
+      },
+      "synthetic_truth": {
+        "on_share": 0.5481066666666666,
+        "latent_sha256": "08730debae669c015b41a1bdc529f07d210a7bb66fd31d958aad0256c631de20"
+      },
+      "scores": {
+        "L8": 1441072.0,
+        "L3": 1432891.0,
+        "L9": 1456791.0,
+        "B1": 1461379.0,
+        "B1F": 1529046.0,
+        "F5": 1535001.0
+      },
+      "binary_sha256": "e780ea927e5eb6c0c9ec05764d9bdcce63537e8ba232caa94ee2954dbceb1f5c",
+      "score_comparison": {
+        "bots": [
+          "L3",
+          "L8",
+          "L9",
+          "B1",
+          "B1F",
+          "F5"
+        ],
+        "sim": [
+          1432891.0,
+          1441072.0,
+          1456791.0,
+          1461379.0,
+          1529046.0,
+          1535001.0
+        ],
+        "target": [
+          851547.0,
+          901311.0,
+          892246.0,
+          907100.0,
+          1025404.0,
+          1029443.0
+        ],
+        "spearman": 0.942857142857143,
+        "asinh": 0.46108617891158654,
+        "logratio": 0.45931498364987466,
+        "scale_c": 0.6317162332735956,
+        "logratio_after_c": 0.03985316127478735,
+        "sign_misses": 0,
+        "objective": 0.48965760748301507
+      }
+    },
+    {
+      "case": "wide6",
+      "seed": 513,
+      "options": {
+        "impact_sqrt": 0.025,
+        "f_limit_latent": 1,
+        "jx_rate_off": 0.0046,
+        "jx_dwell_off": 600,
+        "jx_dwell_on": 600,
+        "jx_logsd": 0.85,
+        "jx_warn_s": 2.47,
+        "jx_rate_on": 0.1,
+        "jx_lead_min": 500,
+        "jx_after_extra": 8,
+        "jx_after_s": 0.2,
+        "stale_s": 0.3,
+        "impact_delay": -0.2623,
+        "impact_tau": 6.8,
+        "jx_median": 8,
+        "jx_warn_k": 1.0,
+        "jx_on_k": 1.2,
+        "jx_warn_sd": 0.8,
+        "jx_false_rate": 0.05,
+        "jx_diff_sd": 4,
+        "informed": 0.3,
+        "drift_sd": 6,
+        "drift_tau": 1.5,
+        "drift_jx_only": true
+      },
+      "measurement": {
+        "stats": {
+          "seconds": 5999,
+          "changes_s": 6.425,
+          "sd1": 4.58,
+          "sd10": 20.16,
+          "sd60": 53.09,
+          "sd300": 114.62,
+          "one_tick": 0.819,
+          "two_tick": 0.108,
+          "imp<=60": 0.8,
+          "imp<=250": 0.89,
+          "imp<=500": 1.53,
+          "imp<=1000": 2.64,
+          "imp<=max": 2.87,
+          "jumps3_per_ks": 112.7,
+          "big@0.1s": 1.34,
+          "big@0.5s": 1.82,
+          "big@2s": 2.26,
+          "big@5s": 2.4,
+          "big@15s": 2.02,
+          "big@60s": 2.65,
+          "touch|up": 0.592,
+          "touch|down": 0.189,
+          "one_tick_gap": 0.18100000000000005
+        },
+        "flow": {
+          "n": 58737,
+          "rate": 9.789508050238785,
+          "buy_share": 0.5036178218158912,
+          "same_side": 0.5353616180877145,
+          "iid_same_side": 0.500026177269383,
+          "excess_same_side": 0.03533544081833151,
+          "sign_corr1": 0.07067458042534527,
+          "by_gap_s": {
+            "0:0.02": {
+              "n": 10558,
+              "same_side": 0.5495358969501799
+            },
+            "0.02:0.1": {
+              "n": 26194,
+              "same_side": 0.5335573031992059
+            },
+            "0.1:0.5": {
+              "n": 21567,
+              "same_side": 0.5309036954606575
+            },
+            "0.5:2": {
+              "n": 417,
+              "same_side": 0.5203836930455635
+            }
+          },
+          "prior_G_alignment": {
+            "0.0": {
+              "n": 57699,
+              "follow_share": 0.5571153746165445
+            },
+            "0.5": {
+              "n": 25594,
+              "follow_share": 0.6022114558099555
+            },
+            "1.0": {
+              "n": 11099,
+              "follow_share": 0.6378052076763673
+            }
+          },
+          "qualification": "Prior G centre is an observable proxy, not true latent. Same-side excess accounts for unconditional buy imbalance.",
+          "by_1000s": [
+            {
+              "start_s": 0.0,
+              "n_pairs": 10002,
+              "same_side": 0.5378924215156968,
+              "n_aligned": 4036,
+              "follow_share": 0.5857284440039643
+            },
+            {
+              "start_s": 1000.0,
+              "n_pairs": 9746,
+              "same_side": 0.5442232710855736,
+              "n_aligned": 5006,
+              "follow_share": 0.617259288853376
+            },
+            {
+              "start_s": 2000.0,
+              "n_pairs": 9937,
+              "same_side": 0.5373855288316394,
+              "n_aligned": 6178,
+              "follow_share": 0.6189705406280349
+            },
+            {
+              "start_s": 3000.0,
+              "n_pairs": 9757,
+              "same_side": 0.5328482115404325,
+              "n_aligned": 3210,
+              "follow_share": 0.5906542056074766
+            },
+            {
+              "start_s": 4000.0,
+              "n_pairs": 9617,
+              "same_side": 0.5299989601746906,
+              "n_aligned": 3631,
+              "follow_share": 0.581382539245387
+            },
+            {
+              "start_s": 5000.0,
+              "n_pairs": 9672,
+              "same_side": 0.5296732837055418,
+              "n_aligned": 3533,
+              "follow_share": 0.602320973676762
+            }
+          ]
+        },
+        "sha256": "7d7c4ac9235cc11bdd50c8c8c6488decec1edfbd29aa3ff393a5458a959b1cad"
+      },
+      "distance": {
+        "stat_log_rmse": 0.4427756883226701,
+        "same_side_error": -0.004064235790437909,
+        "alignment_error": 0.005390452997078743
+      },
+      "synthetic_truth": {
+        "on_share": 0.3010833333333333,
+        "latent_sha256": "e254c111f7c9f45c7edf6b943b398a9e515829e0a9a1d379ef405d6c5d2c48aa"
+      },
+      "scores": {
+        "L8": 805233.0,
+        "L3": 798784.0,
+        "L9": 820296.0,
+        "B1": 827743.0,
+        "B1F": 881476.0,
+        "F5": 888059.0
+      },
+      "binary_sha256": "5e3e6436b7d779a50157d08485cd007b91abe7491b0a64e144b343ee0d8dc356",
+      "score_comparison": {
+        "bots": [
+          "L3",
+          "L8",
+          "L9",
+          "B1",
+          "B1F",
+          "F5"
+        ],
+        "sim": [
+          798784.0,
+          805233.0,
+          820296.0,
+          827743.0,
+          881476.0,
+          888059.0
+        ],
+        "target": [
+          851547.0,
+          901311.0,
+          892246.0,
+          907100.0,
+          1025404.0,
+          1029443.0
+        ],
+        "spearman": 0.942857142857143,
+        "asinh": 0.11307365082883564,
+        "logratio": 0.10854809752476273,
+        "scale_c": 1.1146585195647989,
+        "logratio_after_c": 0.028684520703499028,
+        "sign_misses": 0,
+        "objective": 0.14164507940026416
+      }
+    }
+  ],
+  "elapsed_s": 327.09532670816407,
+  "summary": {
+    "wide6": {
+      "seeds": [
+        511,
+        512,
+        513
+      ],
+      "mean_stats": {
+        "changes_s": 7.301666666666667,
+        "sd1": 5.6066666666666665,
+        "sd10": 24.253333333333334,
+        "sd60": 64.37333333333333,
+        "sd300": 139.83666666666667,
+        "two_tick": 0.13,
+        "big@0.1s": 1.5933333333333335,
+        "big@0.5s": 2.1166666666666667,
+        "big@5s": 2.6366666666666667,
+        "big@15s": 2.4466666666666668,
+        "touch|up": 0.592,
+        "touch|down": 0.16366666666666668,
+        "jumps3_per_ks": 151.83333333333331,
+        "imp<=60": 1.12,
+        "imp<=250": 1.31,
+        "one_tick_gap": 0.22966666666666669
+      },
+      "moment_log_rmse": 0.3156312598723584,
+      "mean_scores": {
+        "L8": 1097170.3333333333,
+        "L3": 1095134.3333333333,
+        "L9": 1117737.6666666667,
+        "B1": 1119601.0,
+        "B1F": 1185810.0,
+        "F5": 1192580.3333333333
+      },
+      "score_comparison": {
+        "bots": [
+          "L3",
+          "L8",
+          "L9",
+          "B1",
+          "B1F",
+          "F5"
+        ],
+        "sim": [
+          1095134.0,
+          1097170.0,
+          1117738.0,
+          1119601.0,
+          1185810.0,
+          1192580.0
+        ],
+        "target": [
+          851547.0,
+          901311.0,
+          892246.0,
+          907100.0,
+          1025404.0,
+          1029443.0
+        ],
+        "spearman": 0.942857142857143,
+        "asinh": 0.1996643866959826,
+        "logratio": 0.1960754758438543,
+        "scale_c": 0.8219501949523954,
+        "logratio_after_c": 0.033236706621119085,
+        "sign_misses": 0,
+        "objective": 0.22823581526741113
+      },
+      "contrasts": {
+        "L8-L3": {
+          "per_seed": [
+            -8522.0,
+            8181.0,
+            6449.0
+          ],
+          "mean": 2036.0,
+          "seed_se": 5302.62447598671,
+          "target": 49764.0
+        },
+        "B1-L9": {
+          "per_seed": [
+            -6445.0,
+            4588.0,
+            7447.0
+          ],
+          "mean": 1863.3333333333333,
+          "seed_se": 4235.35800664412,
+          "target": 14854.0
+        },
+        "B1F-B1": {
+          "per_seed": [
+            77227.0,
+            67667.0,
+            53733.0
+          ],
+          "mean": 66209.0,
+          "seed_se": 6821.200578588298,
+          "target": 118304.0
+        },
+        "F5-B1F": {
+          "per_seed": [
+            7773.0,
+            5955.0,
+            6583.0
+          ],
+          "mean": 6770.333333333333,
+          "seed_se": 533.1045342561292,
+          "target": 4039.0
+        }
+      }
+    }
+  },
+  "qualification": "Full public-tape calibration. Fresh-seed stability and real holdout checks required before strategy selection."
+}

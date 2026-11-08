@@ -1,0 +1,467 @@
+COMMITTED: gen-v3 f464c75 (merges main 3630577 without rewriting history).
+Report: .claude/worktrees/gen-v3/docs/ROUND4_EXPERIMENT_AUDIT.md
+28 doc/index checks and wiki lint pass. Strategy corrections remain with the other session.
+
+=== AUDIT RESULTS READY — 2026-11-08 ===
+Read-only reproducer: experiments.day.r4_experiment_audit on gen-v3.
+Report: docs/ROUND4_EXPERIMENT_AUDIT.md. Shared artifact:
+data/arena/gen/r4_experiment_audit/audit.json (hashes and all numerical evidence).
+Original oracle inputs copied into r4_experiment_audit/oracle_original/.
+No strategy fixes here; user handed findings to another agent.
+
+CONFIRMED: action_oracle samples one event/time stratum, but scales as though
+uniform-event sampled. Original complete 780 branches: REDUCE positive pool
+233,742 -> correctly stratum-weighted 168,825; COMPLETE mean -230.62 -> -356.19.
+For all actions the source report includes exact numbers. These are summary
+weights only; branch simulation PnLs remain valid. Hindsight sums are not
+additive achievable gains, and average losses do not rule out selective policies.
+
+CONFIRMED: K1 default 0.4s spacing gives 2,381 test points, 380 F5 takes.
+Of 2,380 adjacent pairs, 0 overlap at 0.4s, 2,010 at 1s, 2,368 at 5s.
+IID t-statistics at 1/5s are not justified by the claimed nonoverlap.
+Mid mismatch ruled out as primary issue: 7 test points, max 0.5 tick.
+
+CONFIRMED: W3 FLOW2=0 changes width41->39, skipping its width41 warm prior.
+Even FLOW2=0 + TAKE_DEPTH_K=0 starts mass0/labels0, whereas W2 is
+mass10000/labels200. Header PRIOR_MASS=0 == F5 is also false while FLOW2/depth
+remain enabled. Default submitted W3 unaffected; no evidence past Rust cells
+used this erroneous Python control. Reproduced in memory, source untouched.
+
+Profit-gate reflection reproducer compiles actual Rust feats(): only invariant
+base columns24 and38 change for mirrored decisions. This was handed over already.
+28 doc/index checks pass; wiki lint zero errors/warnings. Commit hash follows.
+
+=== CONTINUED AUDIT — 2026-11-08 11:28 CET ===
+New issue handed over to the user: ProfitGate::feats in profit_gate.rs:95-100
+multiplies EVERY base feature by trade direction. F5 column 24 (group-volume
+share) and 38 (posterior sd) are invariant under price/side reflection; those
+columns should remain invariant for a direction-normalised profit target.
+Instead their contributions change sign for mirrored buys/sells. A linear
+profit gate therefore cannot express a shared nonzero uncertainty/share effect
+through those terms. This is model misspecification, not a W2 runtime bug:
+W2 has PG=0. No source correction or corrective replay done here.
+
+Coverage probe completed: full39-feature real-R4-prefix training selected the
+frozen ridge on calibration, ahead of two MLPs and two shallow boosting fits.
+Actual Python replay changes only forecast after 4200s: PnL 1,027,063 vs F5
+1,029,443, difference -2,380; three 600s test blocks -1,532 / -388 / -460.
+Prefix difference exactly zero. data/arena/gen/r4_full_model/replay_comparison.json.
+This failed run does not support promotion or a validation-gain claim.
+
+Acknowledged main 3630577: FEAT_DROP remapped to 16916480 and rerun; intended
+drops still lose -18.8k/-18.9k against F2/F2T1. Earlier BUG finding is closed.
+Continuing classifier label-dependence and action-oracle sampling audit.
+
+=== NEW CONFIRMED AUDIT ISSUE: FLOW2 + FEAT_DROP — 2026-11-08 ===
+User now explicitly wants issue-finding only; another agent handles fixes.
+No strategy changes made here.
+
+R4-W3's F2DR/F2T1DR test reuses FEAT_DROP=4235264 (bits 13,15,22), intended
+as R4-A1's three weak F5 features. FLOW2 inserts two columns BEFORE QUOTEFEAT
+and FLOWGRP (ridge_maker.rs:3140-3144). The physical mask is applied later
+at :3285-3292 with no remapping. Thus the actual ablation is:
+  13: count-imbalance squared (same)
+  15: NEW fast FLOW2 signal, not new-order count imbalance
+  22: small new-order count imbalance, not group-1 net flow.
+The intended old features move from 13/15/22 to 13/17/24 (mask 16916480).
+Therefore IDEAS.md R4-W3's 'the drops undo the gain' does not establish that
+removing the three weak features hurts the FLOW2 combination. T1DR without
+FLOW2 is unaffected. W3 itself has FEAT_DROP=0 and is not broken by this.
+Leaving correction/retest to the other agent, as requested.
+
+RULED OUT: the old 1.5s/2s horizon result is NOT queue-corrupted. Our cap512
+reruns reproduce grid_horizon.txt exactly (1,012,285 / 973,348); cap64 instead
+learns only 14,904 / 158 labels, producing 764,517 / -19,453. The historical
+run evidently used an adequate queue, though its raw table omits the base flags.
+Queue report: data/arena/gen/r4_queue_capacity/report.json.
+
+=== COVERAGE UPDATE: LONG-HORIZON LABEL CAP — 2026-11-08 ===
+Saw main de983ca close BUCKET and record the fixed re-test losses; acknowledged.
+Checking another potentially invalid screen: OBS_CAP defaults to 64, observations
+at minimum 20ms. HORIZON 1.5s/2s/5s therefore needs a larger cap to retain labels
+in busy periods. grid_horizon.txt does not record the base overrides, so I am
+replaying cap64 vs cap512 with label-count dumps to distinguish a real failure
+from a capacity-corrupted test. No strategy edits; existing knobs only.
+Full39-feature R4 prefix model fit finished: nonlinear MLP/boosting did not beat
+the frozen linear control on calibration under the actual +/-2 forecast clamp.
+Selected ridge is in actual held-out replay now. No claim of a PnL gain yet.
+
+=== EXPERIMENT COVERAGE INTERIM — 2026-11-08 ===
+User reports overhearing multiple teams above 2.5M on round-4 validation; no
+rival curves or source supplied. Auditing all branches/results, not assuming
+that local F5 tuning exhausted the search. gen-v3 base f62989d merges main 1f34285.
+
+CONFIRMED INVALID ABLATION: ridge_maker.rs FLOWGRP block still omits k += 8,
+so BUCKET mask1 overwrites FLOWGRP's 8 features (current main lines 3161-3194;
+TODO.md already records it). The latest W3 BUCKET test therefore also is not
+F5/F2T1 plus buckets. Please do not count these runs as rejecting intact-model
+bucket features. I am not changing your strategy file.
+
+MISSING TEST: all 39 F5 features fitted on a real round-4 prefix by nonlinear
+regression and judged by a true subsequent trading replay. R3 pretraining tools
+hardcode round3_public; R4-K1 uses a small feature subset and only near-bar points,
+then stopped before replay. I am running a bounded real-R4-prefix fit (ridge,
+MLP, shallow boosting), calibration-only selection and full held-out replay.
+Original candidates remain untouched; results will be in data/arena/gen/r4_full_model/.
+
+OTHER OVERCLAIM: R4-A1's negative average forced-action advantage is not a
+headroom bound. Its own positive-part pools (155k WAIT, 200k TAKE_NOW etc.) show
+selective headroom exists in hindsight; they are NOT additive achievable PnL.
+Only simple state cuts/rules were rejected, not every learned policy.
+
+=== W2 / TOP CANDIDATE AUDIT COMPLETE — 2026-11-08 ===
+Commit 1273c2b on gen-v3; parent merge 474e574 brings in main 130022f.
+Report: docs/ROUND4_W2_AUDIT.md (in gen-v3 worktree until merged).
+Reproducer: python/experiments/day/r4_warm_audit.py.
+Shared results: data/arena/gen/w2_audit/audit.json, rust_replays.json,
+reproduced_r4_stats.txt, python_w2/{result.json,metadata.json,pnl.csv}.
+
+NO BLOCKING W2 IMPLEMENTATION DEFECT FOUND. W2/W1 are executable-AST-identical
+to F5 except warm constants and guarded initialization. All W2 numbers match
+r4_stats.txt exactly. A fresh cold-F5 public replay regenerates that file BYTE
+FOR BYTE, so the prior is reproducible solely from public data. Initial mass
+10000, labels 200, ridge 30; first fit before live labels; independent Cholesky
+weights within 1.42e-14. Causal label maturity/stale discard, 72 all-live
+reservation cases, both-side incremental fills, IOC residue cancellation and
+new/late-cancel rejects pass. Source checks pass F5/W2/MH3/X1R3.
+
+FULL FRESH PUBLIC REPLAY: F5 Rust 1,029,443. W2 Python and Rust EXACT on
+PnL 1,029,781; fills 42,139; volume 585,414; end inventory 100; breach 0;
+pnl_se 42,436.03162041541. This is parity, not a new holdout gain.
+W2 SHA256 17caee3c9d61e78d052d7ddedc5d9d6f9ac0f2fdfa207ab113c988c5cef0a763.
+
+RECALCULATED VALIDATION: F5 1,752,785; W2 1,754,574 (+1,789 = +0.102%,
+6/12 segments, descriptive paired t 0.666; first 1000s -187). MH3 1,736,913
+(-15,872, 7/12); X1R3 1,724,973 (-27,812, 2/12). Last four segments: MH3
+-16,689, X1R3 -24,685. All PnLs reconcile and engine metadata agrees.
+Conclusion: KEEP W2/F5; no demonstrated reliable W2 superiority. Entire public
+replay, including last quarter, is in-sample because prior saw the whole tape.
+This was already disclosed. Do not label it a hidden validation leak. Existing
+portal runtimes: MH3 815/900s versus W2 595s. Metadata has no uploaded-source
+hash, so association to historical submissions relies on HANDOVER.md.
+
+No candidate or strategy edits. MH3/X1R3 were audited by source diff, static
+checks and saved results; only W2/F5 had fresh full replays. 30 docs/index/warm
+embedding tests pass; wiki lint zero warnings/errors; diff check clean.
+Run after merging: uv run python -m experiments.day.r4_warm_audit --repo .
+--out data/arena/gen/w2_audit/audit.json --replay (one worker, sequential).
+
+=== WIKI / LITERATURE REVIEW COMPLETE — 2026-11-08 ===
+Commit 623f239 on gen-v3 (merge commit, preserving c19ac8b classifier proposal
+and main d95ab9e / R4-FA). Clean source changes are research documentation only;
+filter_audit.py comes from main's existing commit, not a new implementation here.
+Read: references/wiki/concepts/arena-event-models.md (new indexed concept).
+
+PRIORITY 1: Hawkes-style compact history with decomposed event channels, then a
+small classifier: market buys/sells, fresh bid/ask G placements, reliable cancels;
+fast/slow scales and nonlinear interactions or short event ordering. F5 already
+has a 500-ms flow decay and G statistics, so require matched-capacity ablations.
+Use actual callback observables, aggregate market fills by taker ID, distinguish
+cancels/fills/depth exits and old ID re-entries. Predict before updating the state.
+PRIORITY 2: MRR market-order SIGN SURPRISE conditional on prior history, versus
+expected flow. Test post-event returns beyond F5, size/book/gap/raw flow. This
+is an impact hypothesis, not assumed price dynamics or guaranteed future alpha.
+A linear residual of existing linear inputs is not new feature span by itself.
+PRIORITY 3: discrete execution/control from Guilbaud-Pham / queue-reactive work
+supports the earlier action-advantage experiment; use actual fills and future
+baseline continuation, not optimistic quote-fill rates or a large RL project.
+SUPPORT: change detection on matured predictive errors (not volatility alone),
+and conditional event-order diagnostics for real versus generated tapes.
+
+IMPORTANT CORRECTIONS: R4-FA rejects the earlier fresh-G change-point nudge;
+its contradictory fresh placements lag the filter. No reason to rebuild it from
+Das's paper. The proposed MRR F-sign test and predictive-error detector differ.
+R4-S1 already ablated Huber (off only +0.1k); do not justify the classifier as
+simply removing that weighting. Event-order irreversibility paper itself found
+no stable forecasting gain; use it as a generator check, not a trading feature.
+Generic A-S/GLFT, plain OFI, agent-archetype labels and full synthetic RL low priority.
+
+Checked local raw passages and PDF images: Hawkes history eq4 p3, MRR eq16.18
+p328, Adams-MacKay Algorithm1 p3. Wiki now distinguishes current Arena from old
+Prosperity assumptions. No new model training, strategy PnL or validation claim.
+26 docs/index tests passed; wiki lint 0 warnings/errors; git diff --check passed.
+Main owns implementation and merging. The report's methods include explicit
+failure tests rather than extrapolating PnL from papers' simulated results.
+
+=== CLASSIFIER FOLLOW-UP — 2026-11-08, after main aaa1be0 ===
+Commit c19ac8b on gen-v3; docs/ROUND4_RESEARCH_REVIEW.md, final section.
+User asked whether a better-trained classifier is worth trying. Proposal only;
+no model trained, bot changed or PnL measured in this follow-up.
+
+Latest main evidence corrects prior review: X1R3 validation -27,812 versus F5;
+W2 +1,789 is a tie. Baseline for further work should be F5/W2.
+Recommended bounded experiment: distributional classifier of the same 400-ms
+return (five bins, conditional payoff sizes preserved), then short causal history.
+Compare original regression / same features with distributional target / plus
+history at equal data budgets. Shallow trees with multinomial linear control;
+tiny MLP secondary, no large network needed to test the hypothesis.
+Huber delta6 and clip20 downweight tails, which motivates the test but does not
+prove those tails predictable. Earlier regression MLP/HGB and PG binary labels
+already failed to improve the strong bot, so architecture/accuracy alone is weak.
+Real R4 first, chronological purging, event correlation accounted for, sampling
+correction if class-balanced, calibration on earlier natural-frequency blocks.
+Expected ticks and full-engine action PnL decide; calibrated probabilities alone
+are insufficient. Full recipe, controls and failure criteria in committed review.
+26 docs/index tests and wiki lint passed. Main owns implementation and merging.
+
+=== F5/X1R3 RESEARCH REVIEW COMPLETE — 2026-11-08 08:58 CET ===
+Commit: 995aef6 on gen-v3, based on main b48c16d (fast-forwarded before edits).
+User clarified F5/X1R3, asking for ideas beyond small parameter improvements.
+Review: .claude/worktrees/gen-v3/docs/ROUND4_RESEARCH_REVIEW.md
+Reproducer: python/experiments/day/take_completion_probe.py (merge gen-v3 to use).
+Result: data/arena/gen/r4_research/take_completion_f5.json
+
+NEW MEASUREMENT, real R4 F5 full logs: 4,869 IOCs requested 693,482 lots,
+filled 546,069, left 147,413 (21.26%) unfilled. 1,345 partial / 50 zero / 3,474 full.
+The anatomy's additional 92 taker lots are non-IOC, reconciled by order ID.
+233 incomplete IOCs had the immediately next IOC same-side within 100 ms;
+those requests left 24,220 lots unfilled. Next limit worse 85.84%, median 1 tick.
+Descriptive only: repeated requests, no causal profit estimate, not yet X1R3 logs.
+
+PRIORITY 1: selective deeper execution / confirmed partial-fill retry only when the
+fresh forecast pays the marginal price, keeping all outstanding orders in room.
+First audit X1R3 and restricted-action executable headroom. Blanket FT_THRU=1 and
+shorter cooldowns already failed; this proposal conditions on edge and completion.
+PRIORITY 2: labels for action advantage versus BASELINE CONTINUATION, with actual
+fills, displaced inventory, subsequent decisions and consistent terminal marking.
+R4-PG standalone d*future_mid_move-halfspread is not this target and already failed.
+Start with a few executable branch actions; don't sum overlapping local oracles.
+PRIORITY 3: audit constant/near-floor likelihood updates, depth exclusions, boundary
+mass and fresh bid/ask disagreement before implementing a change-point filter.
+Require causal corroboration; no unconditional wide jump filter rerun. WJ5 already
+won 21-40k on wide6 seeds and lost 13,757 on real R4. Synthetic ranks are not a
+model-selection oracle. Review spells out the observation-driven alternative.
+
+No new bot/strategy, generator changes, or validation gain claimed. No upload.
+Tests: IOC completion fixture verified; 26 docs/index tests passed; index --check,
+git diff --check and wiki lint passed. Tiny index whitespace fix keeps regeneration
+and diff checks consistent. Main owns implementation and merging.
+
+2026-11-08 07:53 CET — ROUND 4 GENERATOR PASS FINISHED
+Discord completion alert delivered (HTTP204).
+Branch gen-v3, HEAD e4de870; preceding checkpoint afe756f. Commit author Jakub Kucera. Main session can merge gen-v3.
+Outcome: an experimental R4 stress model and measured cross-round directional-flow difference. No production preset, candidate-bot change, upload, or real validation-PnL gain is claimed.
+
+MEASURED COMMON SWITCH
+Raw F same-side probability changes R3 .50120 -> R4 .53941, while buy share remains near.5.
+Using strictly preceding100ms G prices (at least3 per side), c=(mean bid G + mean ask G)/2;
+when |c-preFmid|>.5 tick, F follows its sign .49424 -> .59682. At >1tick: .49159 -> .65444.
+R4's >.5tick follow share stays .575-.613 in every1000s block; R3 .486-.504.
+This supports a positive directional-flow component. tape_gen's informed around.25-.30 approximates it,
+but this is model-dependent, not an identified organiser constant. Switching informed alone fails.
+
+IMPLEMENTED / TESTED
+- gen_round_fit compares identical moments, raw-F dependence and causal prior-G alignment on real/synthetic tapes; six-bot scoring checks executable/parameter parity, tracks binary hashes, and rejects a binary replaced during runs. Named case archives, source-bound draw caching, paired seed summaries and optional latent logging.
+- New opt-in drift_jx_only gates OU velocity's contribution to the volatile intensity state. The velocity evolves in both states, without resets. Existing defaults and R3 golden hashes remain identical.
+- 25 calibration cases on seed501; frozen wide6 then fresh seeds511-513, each6000s with true latent.
+- Real six-bot Rust scores reproduced exactly before comparison. Main binary SHA256 e780ea927e5eb6c0c9ec05764d9bdcce63537e8ba232caa94ee2954dbceb1f5c.
+
+FRESH-SEED RESULT (NOT REAL VALIDATION)
+Bot       real R4    seed511    seed512    seed513    mean
+L3         851547    1053728    1432891     798784    1095134
+L8         901311    1045206    1441072     805233    1097170
+L9         892246    1076126    1456791     820296    1117738
+B1         907100    1069681    1461379     827743    1119601
+F3        1025404    1146908    1529046     881476    1185810
+F5        1029443    1154681    1535001     888059    1192580
+Mean rank correlation .94286, asinh score error .19966; refitted old model's calibration seed501 gave .65714/.57921 (unpaired descriptive comparison).
+F3 mean remains15.64% too high. L8-L3 mean2036 (seed SE5303) vs real49764;
+B1-L9 mean1863 (SE4235) vs14854; filter gain66209 (SE6821) vs118304.
+Both quote contrasts change sign across fresh seeds. Broad ranking alone is insufficient.
+
+Mean-moment log-RMSE .31563, versus old-model calibration .771. sd1/10/60=5.607/24.253/64.373 vs real6.19/27.44/56.70.
+One-tick share.7703 vs.813; changes/s7.302 vs6.646. Small-F5s1.12 vs2.43, large-F5s2.637 vs3.71, fast3+tick moves151.8/ks vs100.
+Realized volatile occupancy .381/.548/.301, showing why a single seed's near-perfect PnL was misleading.
+F same-side shares .5356/.5333/.5354 and prior-G alignment .6074/.6113/.6022 approximate the observed directional relationship.
+
+USE / LIMIT
+Use these as an extra R4 stress regime. Do not optimize quoting/filter settings or pretrain on their PnL as if it were real R4; those marginal gains remain wrong.
+The missing piece is joint placement/cancellation/latent motion: strong small-F markouts and profitable quotes without making the entire price path too predictable.
+All-time OU drift was explicitly rejected (F3 1.813m vs real1.025m). More diffusion/no stale-cancel sensitivities did not improve moment fit; no reselection after the fresh test.
+
+ARTIFACTS
+- docs/GENERATOR_ROUND4.json: all25 named cases, exact settings, real measurements, all fresh rows and summary; tracked in e4de870.
+- docs/GENERATOR_PLAN.md, R4 calibration/fresh-seed sections; IDEAS.md row Round4 needs directional flow and a new generator fit.
+- data/arena/gen/r4_params.json: empirical R4 marginal fit.
+- data/arena/gen/r4_gated/wide6/params.json, seed511.csv through seed513.csv, matching _latent.csv and provenance; README.txt labels the limitations.
+- data/arena/gen/r4_gated/fresh_wide6.json; r4_fit/{r3_flow,r4_flow}.json; r4_fit/ and r4_gated/ exploratory cases.
+
+Reproduce after merging source (use a NEW output directory if generator provenance differs):
+uv run python -m experiments.day.gen_round_fit data/arena/round4/round4_public.csv --params data/arena/gen/r4_params.json --dir data/arena/gen/r4_gated --cases docs/GENERATOR_ROUND4.json --select wide6 --seeds 511-513 --score --latent --family data/arena/round4/family_rust.txt --binary rust/target/release/arena-sim --out data/arena/gen/r4_gated/fresh_wide6.json
+Omit --score for more stress draws and diagnostics; use fresh seed numbers. Frozen3-seed run including6 bots took327.1s with a warm real-reference cache.
+Validation:62 focused/docs tests passed; final tool/docs recheck31 passed after the last guard/format edits; wiki0errors/warnings. Worktree clean. All our simulation jobs finished; no background batch remains.
+
+2026-11-08 07:39 CET — ROUND 4 MODEL CHECKPOINT (afe756f committed; drift-gate extension under test)
+The all-time OU-drift model is REJECTED despite its better moment fit: seed501 F3=1813282 vs real1025404.
+An opt-in drift_jx_only gate now applies OU velocity only during volatile jump-intensity periods; defaults and R3 sample hashes are unchanged.
+First gated test gate8slow: L8−L3 +17928, B1−L9 +3262 (correct signs), F3=1399017 (still36% too high). Not a qualified preset.
+Wider-placement test wide6: sd1/10/60=5.08/21.53/51.21, one-tick=.815(real.813), changes/s6.579(real6.646), large F0.1s1.44(real1.47). Small-F5s1.12(real2.43) remains too low. Six-bot score check running.
+Wide6's realized volatile occupancy is .327 despite nominal .5: fresh-seed averaging is essential; no single-seed fit is being promoted.
+Shared host load spiked above80 at07:37; only the existing one-thread score run is active, new batches held until load drops.
+All23 controlled cases are being archived in docs/GENERATOR_ROUND4.json with exact options and seed-level evidence; gen_round_fit can replay selected named cases. No bot/validation-PnL change claimed.
+
+2026-11-08 07:27 CET — ROUND 4 ACTIVE CALIBRATION CHECKPOINT (COMMITTED afe756f, branch gen-v3; main binary parity verified for six bots)
+Priority is now round4. Do not select bots on r3b/r3_public_after alone: those draws reverse R4 quote benefits.
+NEW DIRECT OBSERVATION: raw F side is no longer a coin flip independent of prior book/insert state.
+R3 vs R4 consecutive-same-side .50120 vs .53941 (unconditional buy shares .50043/.49833).
+For each F, use only G inserts in [t-100ms,t), at least3 per side; centre=(mean bid G + mean ask G)/2.
+When |centre-preFmid|>.5 tick, F follows its sign .49424 on R3 vs .59682 on R4; n21168/22397.
+R4 follow share stays .575-.613 in ALL six1000s blocks; R3 .486-.504. At >1tick: .49159 vs .65444.
+This is observable evidence of a new directional-flow relationship, NOT identification of true latent.
+Existing tape_gen informed is a plausible shared switch (R3 near0; R4 positive); controlled fitting underway.
+Merely refitting R4 G/F marginals with old r3 latent preset, seed501: L8 489992,L3 494766,L9 502068,B1 499431,F3 576080,F5 575365.
+Real R4: L8 901311,L3 851547,L9 892246,B1 907100,F3 1025404,F5 1029443. Thus old draws understate levels and still make quoting lose.
+Increasing informed alone improves small-F markouts but is insufficient for volatility/spread. Now testing OU drift and volatile occupancy/diffusion, then fresh seeds and the six-bot ordering.
+Artifacts: data/arena/gen/r4_params.json; r4_fit/{r3_flow,r4_flow,reference}.json; case/seed501.summary.json.
+Main-session warm-start public results already show synthetic warm gains do not transfer reliably. No new bot/validation-PnL improvement claimed.
+
+2026-11-08 04:52 CET — FINAL FILTER MEASUREMENT PASS
+BRANCH gen-v3, COMMIT 6a653dc (includes checkpoint e18c20d and merge fd755f2).
+DECISION: KEEP CURRENT F3 FILTER SETTINGS. No validation-PnL improvement established; no upload recommended.
+B is complete: all8 measured alternatives lose against the baseline on R3 in BOTH requested folds/horizons.
+C is complete as a conservative calibrator/exporter; it exports F3 defaults when the forecast gate fails.
+A is partial identification, not recovered ground truth for the real generator: synthetic estimation passes,
+but real latent reference/hidden-regime diffusion/jump law/impact decay remain unidentified. Do not label
+those missing quantities as measured constants. Candidate bots and Rust strategy were not edited by this work.
+
+B — R3 first75 | last25, .4s; 1s; insert score
+baseline            .3043|.4053   .2656|.3398   -1.20389
+measured pi0-2       .2971|.3933   .2591|.3321   -1.25785
+sqrt filled impact  .2935|.3862   .2565|.3227   -1.20859
+pi + sqrt impact    .2861|.3747   .2500|.3149   -1.26432
+variance as walk    .2926|.3888   .2528|.3282   -1.22950
+reference mixture   .2821|.3723   .2426|.3060   -1.26330 [different normalized score]
+reference + sqrt    .2677|.3468   .2337|.2848   -1.27034 [different normalized score]
+fitted table scale  .2929|.3858   .2559|.3220   -1.20925
+linear filled       .2956|.3908   .2583|.3275   -1.20988
+Parameter hypotheses: pi=.753184/.118757/.128060; sqrt_c=.0250305; walkrate14.7333;
+table scale .925387; linear_c=.00133032. Neither new structural hypothesis should be ported to the bot now.
+Legacy eps+pi score is unnormalized. Reference score is an unconditioned normalized price likelihood
+on depth-selected observations, so cross-type numerical score ranking is invalid.
+The requested baseline convention is preserved in report.correlations. Selection instead uses
+causal_correlations: exact wall-clock fit boundary, timestamp-matched horizons, purged training labels.
+Missing/invalid book samples cannot shift selection's holdout into its training fit.
+
+Why improved conditional insertion fit did not improve prediction: near-F reference-mixture LL improves
+-1.532→-1.451, yet its gap gets worse. With timestamp-matched holdout labels, 877/29972 .4s labels move5+ticks
+but contribute63.3% of squared target moves. Their frozen gap-only MSE rises74.56→77.82. At1s those labels
+contribute82.5% of target energy; MSE83.76→86.42, while small-move MSE is effectively unchanged2.66164→2.66157.
+Average insert likelihood prioritizes frequent ordinary observations; this forecast edge relies strongly
+on rare large moves. Effective filter impact may absorb informative flow/model error; it is not a direct
+physical impact estimate. This work does not pin the synthetic .40 vs .76 gap to one uniquely identified cause.
+
+A — ESTIMATION FACTS / LIMITS
+Placement: observed G crossing count is0 on all3 real tapes; clamp-boundary shares r1/r2/r3 .5144/.4563/.3855.
+Uniform half/half fractional-phase inference was biased even on synthetic truth. Joint-side book-conditioned
+phase EM recovers effective synthetic pi to max absolute error .00595/.00591/.00683 on seeds201-203.
+R1 fitted latent-anchor pi .6912/.2835/.0225 (pi0 conditionalCI[.6785,.7020]), whereas own-touch pi
+.5565/.3918/.0497 resembles the filter's presumed latent law. Do not conflate the references.
+R2/R3 simple latent-anchor models need contamination weights .5183/.4430; their pi is NOT identified
+as the generator's true global law. A latent/own-touch mixture fits better but fails B; its real own-touch
+weight~.54/.55 andr1 .49 may absorb wrong F-anchor assumptions or hidden regimes, not two true populations.
+Synthetic all-latent tapes also fit a spurious .023-.028 own-reference weight. Side, prior5s activity-proxy,
+and ladder/non-ladder conditional distributions and block intervals are in placement JSON. Activity proxies
+are not true hidden regimes; ladder labels include future chain membership and are descriptive only.
+Impact: oracle truth c≈.047001, tau6.797-6.800, volatile diffusion3.987-3.994 vs .047/6.8/4. Observable synthetic
+immediate impact recovered within0.4%. Form comparison selects sqrt over linear/table on all3seeds with
+paired blockloss intervals excludingzero. Real filled coefficients immediate sqrt .025115/.022576/.025030;
+linear .000942/.001174/.001330; table scales .968315/.837127/.925387. RealR3 anchor MSEsqrt9.99936,
+linear9.85813, table10.00972, with training selectinglinear; only5holdoutblocks and uncertain anchors do not
+identify a causal linear law. Even that winning anchor-form loses the actual gap forecast in B.
+Permanent/transient impact split and tau are unidentified onreal: profile0.1-100s nearlyflat. Prefix estimates
+can be negative/near100s. No real decay setting exported.
+Drift: total impact-adjusted1s anchor variance r1/r2/r3 .0566/18.00/27.79 ticks²/s; R3CI[20.22,36.57].
+Synthetic observable variance recovery98.1-99.3%; real decomposition into diffusion/jumps/modelnoise is unresolved.
+Signed drift intervals includezero. R3 variance5/10/20min7.83/14.14/29.11 changes with activity; no stable
+short-prefix hidden-regime law claimed. Synthetic truth jump medians3.155/2.942/2.964 andlogsd.859/.833/.918
+recover configured3/.85 with sampling uncertainty; true-state jump rates~.0047-.0053 calm/.384-.429 volatile.
+No validated real latent-jump onset/size-law estimator was obtained; previous gen_identify onset numbers are proxies.
+
+C — ROUND4 COMMAND
+uv run python -m experiments.day.filter_settings TAPE --minutes 20 --out settings.json
+For the full B check: add --full; optional --cache EVENTS.npz and --rows-out ROWS.npz.
+Outputs: settings.json (existing Rust FILTER_PI0-2,RATE,IMPACT,SQRT_C,DEPTH,EPS keys), settings.report.json
+(estimates, qualification, nine-arm forecasts, exact-time selection and fallback), settings.reference.json
+(offline structural hypothesis only). Read compatible settings with latent_filter TAPE --settings settings.json.
+Scalar Rust-named aliases also work with latent_filter --set FILTER_RATE=2 etc.
+Compatible candidates are selected on first75% only and need >=.005 correlation gain at BOTH horizons in
+BOTH folds; otherwise baseline. This is an operational screen, not a significance or PnL test. Reference/
+linear arms cannot be exported before the main session implements matching Rust knobs, and neither earns that now.
+Sparse/short data returns baseline with reason. Final version3 fullcold runtimes: R3 50.3s, R2 44.4s on6000s
+input;5/10/20min prefixes ~2.1-2.3/4.1-4.4/8.0-9.1s. All nine prefixes (r1/r2/r3 ×5/10/20min) retain baseline.
+At observed rates5-10min allows a rough effective placement/immediate-impact fit; at least40min for6training
+300s blocks. Short-prefix CIs are suppressed. Regime coverage is not guaranteed. No duration here identifies
+real diffusion separately from jumps, or permanent impact/decay; DEPTH6/EPS.01 remain defaults, not estimates.
+
+ARTIFACTS (main checkout): data/arena/gen/filter_settings/{r3,r2_full,r1_5m,r1_10m,r1_20m,r2_5m,r2_10m,r2_20m,r3_5m,r3_10m,r3_20m}.report.json
+and their settings/reference JSON; r3_rows.npz/r2_full_rows.npz. Measurement reports in filter_placement/
+and filter_process/, including *_laws.json and refreshed prefix reports (old invalid low-block CIs removed).
+Exact structural equations, parameter tables and commands: docs/GENERATOR_PLAN.md, Filter forecast gate /
+What placement measurements identify / Impact form comparison. New scripts indexed in experiments/README.md;
+IDEAS.md updated. Tests57passed, wiki0warnings/errors; commit6a653dc authored as Jakub, no attribution trailer.
+Main session can merge gen-v3. No new preset/tapes promoted. This completed measurement pass recommends no
+validation upload; unresolved A quantities are explicitly documented for a future identification method.
+
+---------------- PREVIOUS HANDOFF HISTORY ----------------
+
+Generator session handoff — 2026-11-08, continuation completed
+
+Branch: gen-v3
+Worktree: .claude/worktrees/gen-v3
+Merge-ready HEAD: 648ee87 (incorporates main through 442cd5b)
+This continuation: e25e226 (identification), f70f8b2 (batch model and evaluation), 5dd3535 (cache provenance).
+Previous pass: 12bab3a, 082de3e, e95203a.
+Main checkout was left to the main session. Merge gen-v3 there when ready.
+
+Completed this continuation:
+- Identified a separate scheduled G ladder population in r3: 44,941 exact same-side 2 ms links within 2-7 ticks of own touch, versus only 8 on r2 and 19/23 at neighboring 1/3 ms lags on r3.
+- Labels 68,527 orders in 23,586 chains. Sibling log-size correlation 0.950; lifetime correlation 0.668. A pure first-band-exit cancellation rule fails: 33.94% of still-resting candidates never left the band before cancelling.
+- Added gen_ladders analysis and optional empirical tape_gen.g_ladders component. Complete 2-6 order joint marks are sampled together; child times are exactly 2 ms apart, and labelled orders are removed from background rate/marginals. Background 185.030 G/s; batch starts 3.92184/s; expected total G rate 196.387/s.
+- Tested baseline versus component on fresh 6,000-s seeds 304-306 with L8/L3/L9/B1/L8F/B1F. Asinh score error 0.1254 -> 0.0729; Spearman unchanged at 0.60. L8 mean 462,266 -> 438,924 (real 427,819), L9 505,279 -> 477,147 (424,730). Paired L8 difference -23,342 with SE 27,501: level improvement is uncertain.
+- First-seed exact links 20 -> 44,640 (real 44,941), sibling log-size corr -0.195 -> 0.948 (real 0.950), lifetime corr 0.271 -> 0.669 (real 0.668).
+- NOT promoted to a new preset or r3c: real batch-start Fano factor is 202.78 per 60 s versus model 0.755; no-prior-band-exit share 71.6% versus real 33.9%; 5-s large-IOC move worsens 2.64 -> 3.37 ticks (real 2.05). Conditional activity and cancellation mechanisms remain unidentified.
+- Fixed calibration cache reuse: new draw provenance binds parameters/seed/duration/source/runtime and SHA256. Changed or unverified files fail rather than silently becoming a different arm. Generation is staged; latent regeneration must reproduce the tape. Legacy artifacts can still be scored/measured explicitly, but cannot be silently reused by draw/rank/write. Use a fresh output directory.
+- 56 focused tests pass after merging latest main. Wiki lint: zero errors/warnings. Existing default/preset draw hashes remain byte-identical. Clean worktree.
+
+Useful handoff to the model-testing session:
+- Test whether pooling these deep structured G orders with background inserts contaminates a latent-price estimator. This is a hypothesis, not an established bot improvement. No candidate or Rust strategy was edited here.
+- Future generator work: identify batch-start intensity and joint marks conditional on observable activity, then causal cancellation rules; preserve real statistics AND fresh-seed ranking gates.
+
+Earlier findings retained:
+- IOC rounded lognormal (log-size mu, sigma): r1 (4.10576, 1.39594), r2 (4.10438, 1.40237), r3 (4.09358, 1.39656). Base G: r1 (2.65811, 1.79913), r2 (2.65686, 1.80280).
+- PnL accounting reproduced exactly on public full logs. Signed PnL-to-mid inversion fails; absolute/block-variance proxies are useful. Same-bot RMS proxy public -> validation: r2 L3 3.471 -> 4.789; r3 F1 4.082 -> 4.280.
+- Filled-volume impact alone failed: score error 0.108 -> 0.620 despite improving the impact curve. Keep option off in existing presets.
+
+Shared artifacts, relative to main checkout:
+- data/arena/gen/gen_v3_r3_ladders{.npz,.json} and gen_v3_r2_ladders{.npz,.json}
+- data/arena/gen/gen_v3_r3_ladders_fit.json and gen_v3_r3_batch_params.json
+- data/arena/gen/v3_ladders/{baseline,mixture}/rank_6000s_304..306.csv
+- data/arena/gen/v3_ladders/{baseline_scores,mixture_scores}.json
+- data/arena/gen/v3_ladders/{baseline_304_ladders,mixture_304_ladders}.json and stats_304.json
+- data/arena/gen/v3_cache_smoke/ (two 40-s draws with provenance, seed71 latent)
+- Previous inventory/PnL/impact results remain under data/arena/gen/gen_v3_* and v3_check/.
+Tracked evidence/reproduction: docs/GENERATOR_PLAN.md, docs/GENERATOR_COMPONENTS.json, IDEAS.md, python/experiments/README.md.
+
+Still open: a validated better full preset, r3c 20 draws, joint latent/flow dynamics, and the timed single-command round-4 fit/draw/report workflow. None are claimed complete.
+The named Claude main session is not reachable through this Codex session's messaging tools; this file is the handoff.
+
+2026-11-08 04:06 focused pass committed: a800719
+- Activity/arrival and competing-risk cancellation measurements plus causal filter probe are complete; 68 focused tests pass.
+- On real r3 first3000s fit / second3000s check, prior book activity predicts4.200 ladder starts/s vs4.210 observed. Constant3.659/s; log-score gain1.980nats/s, blockCI[1.662,2.303]; residualdispersion8.627->4.076 remains abovePoisson. Log-sizeMSE.4647->.2301.
+- Current offset+size predicts held-out cancellations far better than size+age:1.506nats/cancel, CI[1.258,1.762]. Complete fills censor exposure; post-fill scheduled cancels excluded. Offset8+ hazard~44-45/s in both halves,2-4tick hazard~.02-.06/s. These predictive hazards do not prove original causal policy.
+- Causal2ms ladder exclusion does NOT establish forecast improvement: r3 gap-only MSE−0.078%/−0.038% at0.4/1s, both blockCIs includezero. Broad depth exclusion hurts. Delayingmessages2ms recognizes all68,527 labels but delaycost exceedsbenefit; net MSE+.00632/+.01262 vs immediatebaseline. No bot/Rust change justified.
+- Reproduction and qualification: docs/GENERATOR_PLAN.md sections Activity and cancellation holdout / Causal ladder exclusion. Artifacts:data/arena/gen/ladder_mechanics/{r3_mechanics,filter_r3_delayed,filter_r2_delayed}.json.
+NEW ACTIVE JOB: truth-validated filter placement/impact/drift identification on r3b201-203 before real-tape fits; requested75%/25% correlation gates and under5minute settings exporter. No new settings are ready yet. Continue to use existing filter defaults until evidence passes the gate.
+
+
+2026-11-08 04:31 CET — FILTER IDENTIFICATION CHECKPOINT e18c20d (branch gen-v3)
+No bot/Rust edits; no replacement settings recommended yet. Baseline reproduced exactly:
+R3 gap corr .4s first75|last25 .3043|.4053, 1s .2656|.3398; insert score -1.20389.
+1. Truth validation on r3b201-203: oracle impact c=.047001, tau6.797-6.800, diffusion3.987-3.994 vs configured .047/6.8/4. Public-observation immediate impact within0.4%, but permanent/transient decomposition is uncertain; conditional CIs miss true c on2seeds. Prefix5/10/20min permanent c can be negative and tau~100: do not export it.
+2. Placement estimator corrects a real selection bias: the two floor states in a rounded F anchor are NOT equally likely conditional on the current book. Joint-side phase EM estimates effective pi to maxabsoluteerror .00595/.00591/.00683 against exact-safe latent labels. F-anchor assumption itself remains unproved on real volatile tapes.
+3. Real impact fit fails R3 heldout anchor MSE:10.0019 vs9.9445 zero-change. Real tau0.1-100s essentially unidentified. Synthetic requested-size beats filled; real reverses slightly. No justified impact-law transfer.
+4. Real residual1s variance .0566/18.00/27.79 ticks²/s (r1/r2/r3) combines diffusion+jumps+anchor error; R3 blockCI[20.22,36.57]. Synthetic effective-variance recovery98.1-99.3%; no real signed drift established. R3 prefix5/10/20min variance7.83/14.14/29.11, unstable. Jump/diffusion split and exact hidden regimes remain unidentified.
+5. Placement reference hypothesis: allowing a second PMF relative to own visible touch improves conditional heldout insert LL onr3 -1.532→-1.451 andr2 -1.063→-1.004. Effective own-reference weights .54/.55, butr1 .49too; synthetic .02-.03. This can absorb wrong F-anchor assumptions/hidden regimes and is NOT proof of two populations. Next test applies this exact normalized mixture to offlinefilter and checks requested forecast gate. Current eps+pi score is unnormalized; optimizing eps by it is invalid.
+Tools: experiments.day.filter_placement and filter_process_probe (both --minutes N; reports sourcebound; CIs suppressed below6 trainingblocks). Artifacts data/arena/gen/filter_placement/{seed201,seed202,seed203,r1,r2,r3}.json and filter_process/ equivalents plus _5m/_10m/_20m. Some existing prefix CI fields predate the new guard: point estimatesvalid, old short-prefix CIs mustbeignored untilregenerated.
+Tests: placement8/process10/docs21 passed separately; wiki0errors. Source/docs committed as Jakub, e18c20d.
+Compute note: shared host load rose to84 (last78); our measurementbatches complete, no heavyprocessactive. Holding new forecastbatches underrepo load20rule, coding B/C meanwhile. B/C remains active, not complete.

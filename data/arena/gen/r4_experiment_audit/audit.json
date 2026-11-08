@@ -1,0 +1,152 @@
+{
+  "profit_gate": {
+    "mirrored_gate_columns_changed": [
+      24,
+      38
+    ],
+    "columns": {
+      "24": "group volume share",
+      "38": "posterior sd"
+    },
+    "source_sha256": "c51ed1ba7d09f5cca0bc7f0aec6b12c73dbae6dbb205ed3c6117932d33904692"
+  },
+  "warm_controls": [
+    {
+      "bot": "r4_W2_warm10k.py",
+      "overrides": {},
+      "features": 39,
+      "mass": 10000.0,
+      "labels": 200,
+      "flow2": 0,
+      "depth": 0
+    },
+    {
+      "bot": "r4_W3_flow_depth.py",
+      "overrides": {},
+      "features": 41,
+      "mass": 10000.0,
+      "labels": 200,
+      "flow2": 1,
+      "depth": 1
+    },
+    {
+      "bot": "r4_W3_flow_depth.py",
+      "overrides": {
+        "FLOW2": 0
+      },
+      "features": 39,
+      "mass": 0.0,
+      "labels": 0,
+      "flow2": 0,
+      "depth": 1
+    },
+    {
+      "bot": "r4_W3_flow_depth.py",
+      "overrides": {
+        "FLOW2": 0,
+        "TAKE_DEPTH_K": 0
+      },
+      "features": 39,
+      "mass": 0.0,
+      "labels": 0,
+      "flow2": 0,
+      "depth": 0
+    },
+    {
+      "bot": "r4_W3_flow_depth.py",
+      "overrides": {
+        "PRIOR_MASS": 0
+      },
+      "features": 41,
+      "mass": 0.0,
+      "labels": 0,
+      "flow2": 1,
+      "depth": 1
+    }
+  ],
+  "classifier": {
+    "test_points": 2381,
+    "f5_takes": 380,
+    "adjacent_pairs": 2380,
+    "overlapping_label_pairs": {
+      "0.4": 0,
+      "1.0": 2010,
+      "5.0": 2368
+    },
+    "initial_mid_mismatch_points": 7,
+    "max_initial_mid_error": 0.5,
+    "pred_sha256": "ed11c179a4efd4e6b92987fb6b69439ae139c79c73b2aa4f6eed8e00ea4fbcd1",
+    "cache_sha256": "ed236d5d78f9cb36312aaaeed412dd17e4f390f47715a7e7bdec524be3d61c65"
+  },
+  "oracle": {
+    "first_780_only": true,
+    "classes": {
+      "wait": {
+        "pool": 4869,
+        "sample": 260,
+        "stratum_size_min_max": [
+          6,
+          38
+        ],
+        "unweighted_mean": -25.9,
+        "weighted_mean": -28.34442390634627,
+        "unweighted_positive_pool": 147231.06923076924,
+        "weighted_positive_pool": 146466.0
+      },
+      "flip": {
+        "pool": 3536,
+        "sample": 110,
+        "stratum_size_min_max": [
+          19,
+          53
+        ],
+        "unweighted_mean": 3.3,
+        "weighted_mean": 2.831447963800905,
+        "unweighted_positive_pool": 88914.32727272727,
+        "weighted_positive_pool": 86921.0
+      },
+      "take": {
+        "pool": 7724,
+        "sample": 170,
+        "stratum_size_min_max": [
+          6,
+          87
+        ],
+        "unweighted_mean": -20.441176470588236,
+        "weighted_mean": -24.643190056965302,
+        "unweighted_positive_pool": 209047.7882352941,
+        "weighted_positive_pool": 193053.0
+      },
+      "reduce": {
+        "pool": 19405,
+        "sample": 110,
+        "stratum_size_min_max": [
+          37,
+          266
+        ],
+        "unweighted_mean": -70.44545454545455,
+        "weighted_mean": -72.68461736665807,
+        "unweighted_positive_pool": 233742.04545454544,
+        "weighted_positive_pool": 168825.0
+      },
+      "complete": {
+        "pool": 1345,
+        "sample": 130,
+        "stratum_size_min_max": [
+          2,
+          34
+        ],
+        "unweighted_mean": -230.62307692307692,
+        "weighted_mean": -356.18661710037173,
+        "unweighted_positive_pool": 41643.269230769234,
+        "weighted_positive_pool": 54543.0
+      }
+    },
+    "hashes": {
+      "base.json": "ef23ec45271e6337c5afdf0a450351313ced93d4641a13e4da218006ff96a0c3",
+      "fa_log.csv": "414809796691f07864a8aa0e88b60f3ec45b047251cc328e63518f0d033d39ba",
+      "tasks.jsonl": "f4be408fdf7572fe7ce297116601fdd2a422c782be52a759e4863ae4c6257000",
+      "branches.csv": "a6817261440ffdb990503036cd1ff2c14847accc6f6e958b379d4c18e84659e6"
+    }
+  }
+}
