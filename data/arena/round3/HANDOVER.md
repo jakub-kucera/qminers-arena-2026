@@ -55,7 +55,10 @@ Check it is marked final on the portal before 06:00.
   last 25%; synthetic training data hurts; "A pretrained forecaster of the 400-ms move"); S1 gap maker and S2 quiet
   maker (positive alone, +48k / +32k, but cannot share the 100 lots with the taker), S4 hybrid (-139k), S3 jump catch
   (+77k alone, round-3-shaped); a reduce-only early exit FT_EXIT and a wide-spread exit (ties or losses; "R3-F3's
-  loss anatomy"); the QS_RATE x FT_EDGE grid on L8 (flat).
+  loss anatomy"); the QS_RATE x FT_EDGE grid on L8 (flat); after 03:00: a burst over the limit triggered by the
+  filter's gap (every cell loses on both real public tapes; with the true latent only ~+20k a synthetic tape; "A
+  gap-triggered burst over the limit"), a ladder-order selector in the filter (FILTER_LADDER, loses the first 75%),
+  the filter variants and R3-F4's filter bank ("A better state for R3-F3's latent-price filter").
 - **Where the PnL is:** 82% of it from 3 s before a jump to 10 s after; every kind of take earns on average (the
   riskiest states most); the losses are jumps against a full position ("Round 3's tape: where money can be made").
 - **Side results for round 4:** the Rust feature dump (`RIDGE_FEAT_LOG`, 30 s a tape); a numpy online ridge that makes
