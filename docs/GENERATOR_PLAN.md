@@ -553,3 +553,110 @@ a latent path, then an identical cached rerun under `data/arena/gen/v3_cache_smo
 uv run pytest python/tests/test_gen_cache.py python/tests/test_gen_ladders.py python/tests/test_gen_inventory.py python/tests/test_gen_pnl_probe.py python/tests/test_docs.py -q
 uv run python -m experiments.day.gen_calibrate write --params data/arena/gen/gen_v3_r3_batch_params.json --opts r3_public_after --seeds 71-72 --seconds 40 --jobs 2 --latent-seeds 71 --dir data/arena/gen/v3_cache_smoke
 ```
+
+## Activity and cancellation holdout (8 Nov, focused continuation)
+
+`gen_ladder_mechanics` fits coefficients on r3's first3,000s and tests the second3,000s. The clock-defined
+population and hypotheses were previously discovered using the full tape; this is a temporal coefficient
+check, not a wholly independent discovery sample. Predictors use strictly prior book history.
+
+```sh
+uv run python -m experiments.day.gen_ladder_mechanics data/arena/round3/round3_public.csv --cache data/arena/gen/gen_v3_r3_ladders.npz --fills-cache data/arena/gen/ladder_mechanics/r3_fills.npz --out data/arena/gen/ladder_mechanics/r3_mechanics.json
+```
+
+A Poisson intensity model from prior1/5/30-s mid-change activity,5-s absolute moves and spread predicts
+**4.200 batch starts/s** in the holdout, against observed**4.210/s** and constant training mean**3.659/s**.
+Held-out log-score gain is**1.980 nats/s**, paired300-s-block interval**[1.662,2.303]**. Residual dispersion
+falls**8.627 to4.076**, still far above one. The same activity features reduce log-size MSE**.4647 to.2301**.
+The report contains standardization, coefficients and block results; this supports conditional activity models,
+not a claim that independent Poisson starts fully describe the process.
+
+Cancellation risk begins when a2-ms link identifies the order (the first child is recognized2ms late).
+The replay records complete fills: risk then ends, so scheduled cancels of already-filled orders do not become
+cancel events. Of68,527 detected orders,4 end before recognition,56,062 cancel while resting,12,455 are censored
+by a full fill, and6 at tape end. Predictors use the left-limit book state, excluding a cancel's own touch update.
+Exact time-boundary events belong to their event-time fold.
+
+Size + current own-touch distance strongly outperforms size + age: **1.506 nats per held-out cancel**, block
+interval**[1.258,1.762]**. Initial distance does not help over size + age. More age/activity cells do not improve
+on the simpler current-distance model. Per-second cancellation hazards by size group:
+
+| Current offset | Small, train/test | Size80+, train/test |
+|---|---:|---:|
+|2-4 ticks|.044/.059|.019/.022|
+|8+ ticks|45.51/45.16|43.47/44.47|
+
+These are cause-specific predictive hazards in the identified population. They do not prove the original
+agent's clock, latent reference, or policy; exposure/cancel correlation alone is not causal identification.
+The useful next model is activity-dependent batch flow and state-dependent cancellation, with residual
+clustering and unidentified singleton orders still unresolved.
+
+## Causal ladder exclusion (8 Nov, focused continuation)
+
+The separate model probe reuses `LatentFilter` at F3's fixed settings (impact3, depth6), preserves the same
+market book in every arm, samples50ms, fits frozen first-half forecast regressions with split-boundary purging,
+and scores second-half0.4/1-s moves. This is an offline forecast test, not the full bot's adaptive ridge or PnL.
+
+```sh
+uv run python -m experiments.day.ladder_filter_probe data/arena/round3/round3_public.csv --ladder-cache data/arena/gen/gen_v3_r3_ladders.npz --out data/arena/gen/ladder_mechanics/filter_r3_delayed.json --rows-out data/arena/gen/ladder_mechanics/filter_r3_delayed_rows.npz
+uv run python -m experiments.day.ladder_filter_probe data/arena/round2/round2_public.csv --ladder-cache data/arena/gen/gen_v3_r2_ladders.npz --out data/arena/gen/ladder_mechanics/filter_r2_delayed.json --rows-out data/arena/gen/ladder_mechanics/filter_r2_delayed_rows.npz
+```
+
+| R3 holdout |0.4s|1s|
+|---|---:|---:|
+|Baseline raw gap correlation|.321714|.268996|
+|Causal clock exclusion correlation|.322735|.269672|
+|Baseline gap-only MSE|7.485166|21.194435|
+|Causal clock exclusion MSE|7.479307|21.186425|
+|Paired MSE change, block95% interval|[-.016644,+.005136]|[-.040056,+.023976]|
+
+Causal recognition removes39,426 eligible filter observations. Both small error improvements have intervals
+crossing zero. R2 has only8 clock matches and effectively zero change. Removing every G in the2-7 tick band
+clearly harms the gap forecast: r3 MSE**+.187209/+.461475**, r2**+.163402/+.126092**. Deep orders remain informative.
+
+An explicitly exploratory arm, added after inspecting the primary results, delays all filter messages2ms to
+recognize earlier children. It recovers all68,527 labels, and improves against an equally delayed baseline,
+but the delay costs more than it recovers: versus the immediate baseline, MSE**+.006316/+.012618**. Noncausal
+oracle and nonlinear OLS diagnostics remain in the reports;1-s nonlinear OLS extrapolates poorly and does not
+justify a stronger performance claim. The primary five-arm results are unchanged in the extended reports.
+
+No candidate or Rust strategy was changed. This feature change is dropped for now. The next user-directed
+job is truth-validated identification of placement, impact and drift, then a75%/25% predictive gate and a
+fast settings exporter for round4; the above50%/50% probe is not a substitute for that requested test.
+
+
+## Filter identification checkpoint (8 Nov, 04:30 target)
+
+The narrower job measures placement, impact and drift for the latent filter. All new code is offline;
+no candidate bot or Rust strategy is changed. The process audit explicitly separates known-truth recovery
+from estimation on public observations. Commands are in IDEAS.md's "Truth-first identification of the latent filter".
+Artifacts live in `data/arena/gen/filter_process/` and `data/arena/gen/filter_placement/` in the main checkout.
+
+- On r3b201-203, the oracle process fit recovers impact c=.047001, tau6.797-6.800s, diffusion3.987-3.994
+  versus configured .047/6.8/4. The ordinary pre-impact F anchor covers the exact calm latent within half a
+  tick on every audited observation. Injected orders and ambiguous rounded timestamps are treated separately.
+- The public-observation fit recovers immediate synthetic impact within0.4%, but permanent c and decay tau
+  are much less precise; conditional confidence intervals miss true c on two seeds. Five-to20-minute
+  prefixes can give negative permanent c and tau near100s. These must not become exported process settings.
+- On real R3, the observable impact model fails its heldout anchor-increment MSE gate:10.0019 versus9.9445
+  for zero change. Requested-size impact beats filled-size on synthetic tapes, slightly loses on real tapes.
+  All profiled real tau0.1-100s are within0.1% of minimum robust loss: decay is unidentified.
+- Impact-adjusted1s anchor variance is .0566/18.00/27.79 ticks²/s on r1/r2/r3; R3's300s-block interval is
+  [20.22,36.57]. This combines diffusion, jumps and anchor/model error. Synthetic recovery of total exogenous
+  variance is98.1-99.3%; even calm synthetic prefixes show a positive rounding floor. Drift intervals all
+  cross zero. Threshold exceedance rates are not latent jump rates. R3's5/10/20min variance7.83/14.14/29.11
+  shows why a short-prefix estimate cannot establish a stable regime law.
+- Placement uses G orders immediately before an ordinary F, within0.5/1/2/5ms, and the F-price interval
+  `[price-sign-.5, price-sign+.5)`. Integrating its two possible floor states with a fixed half/half prior
+  biases pi because the pre-G book already informs phase. EM learns that nuisance phase prior jointly from
+  both sides, conditional on anchor-minus-bid and spread. Side-only reports freeze that joint prior.
+  With the2ms window, fitted effective pi differs from exact safe latent labels by at most .00595/.00591/
+  .00683 on201/202/203. Exact labels require the following10ms latent sample to precede every later insert;
+  the audit excludes near-integer rounding ambiguities and assumes no unlogged standalone jumps.
+- Existing F3 baseline is reproduced exactly:0.4s correlations .3043/.4053 and1s .2656/.3398 (first75/last25),
+  insert score-1.20389. The current filter's `eps + pi` score is not a normalized probability over all prices,
+  so optimizing eps by that score is invalid. The identification tool uses a normalized clamped price law.
+
+A fitted placement/reference mixture is an observational hypothesis, not proof of two generator agents.
+Near-F selection, F-price noise and hidden placement regimes can mimic it. The actual filter forecast gate
+is required before suggesting new settings or structural changes. Until that result, retain F3's settings.
