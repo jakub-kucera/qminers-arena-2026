@@ -24,6 +24,11 @@ is a discrete hidden-Markov filter over integer `lb` (2W+1 states around the boo
 regime, the lag after 3+ tick jumps, and the true gap's correlation with the mid's moves beside the filter's (the
 ceiling). Every run reports `loglik_per_insert`, the inserts' predictive log-likelihood (the dynamics' fit).
 
+`--settings FILE` reads existing Rust FILTER_* keys (also accepted by --set); `--minutes N` stops
+before that prefix boundary. `--reference FILE` tests filter_placement's normalized latent/book observation
+mixture offline. It changes no bot/Rust strategy; its normalized log score is not directly comparable with
+the legacy eps+pi score. Default behavior is unchanged.
+
 The signal is E[lb] + 0.5 - mid, the filter's forecast of where the mid is going. `--eval` replays a tape through
 tape_book.Book (what the bot sees: every insert with the touch before it, every aggressive trade's filled lots),
 samples every 50 ms and prints the correlation of the signal (and of the touch imbalance, the baseline) with the mid's
@@ -64,15 +69,29 @@ DEFAULTS["cancel_h"] = 0.0
 # and drops it if a child follows (the chain's first order too)
 DEFAULTS["ladder"] = 0
 DEFAULTS["cancel_l0"] = 0.0
+DEFAULTS["linear_c"] = 0.0  # offline structural test only; no Rust knob yet
 HORIZONS = (0.1, 0.4, 1.0, 5.0)
 STEP = 0.05
+SETTINGS_KEYS = {"FILTER_PI0": "pi0", "FILTER_PI1": "pi1", "FILTER_PI2": "pi2",
+                 "FILTER_RATE": "rate", "FILTER_IMPACT": "impact_scale", "FILTER_SQRT_C": "sqrt_c",
+                 "FILTER_DEPTH": "depth", "FILTER_EPS": "eps", "FILTER_W": "W"}
+
+
+def settings_params(settings):
+    unknown = set(settings) - set(SETTINGS_KEYS)
+    if unknown:
+        raise ValueError(f'unsupported exported filter settings: {sorted(unknown)}')
+    out = {SETTINGS_KEYS[k]: float(v) for k, v in settings.items()}
+    if any(not math.isfinite(x) or x < 0 for x in out.values()):
+        raise ValueError('filter settings must be finite and nonnegative')
+    return out
 
 
 class LatentFilter:
     """The bot's copy lives in candidates/r3_F1_latent_filter.py (kept identical by hand)."""
 
     def __init__(self, W=8, rate=2.0, eps=0.01, pi0=0.55, pi1=0.39, pi2=0.06, pi3=0.0, impact_scale=1.0, depth=99, sqrt_c=0.0, use_size=0,
-                 jump=0.0, jump_med=6.66, jump_sd=0.79, sweep=-1, sweep_eps=0.01):
+                 jump=0.0, jump_med=6.66, jump_sd=0.79, sweep=-1, sweep_eps=0.01, linear_c=0.0):
         self.W = int(W)
         self.n = 2 * self.W + 1
         self.rate = rate
@@ -86,6 +105,7 @@ class LatentFilter:
         self.depth = depth
         self.impact_scale = impact_scale
         self.sqrt_c = sqrt_c  # > 0: Phase 1's rule, the latent moves sqrt_c * sqrt(lots) (replaces the table)
+        self.linear_c = linear_c
         self.use_size = use_size  # offline only: 1 moves it by the order's size, 0 by its filled lots (what a bot sees)
         # (a) jumps: at `jump` a second lb jumps a lognormal size (median jump_med, log-sd jump_sd) either way,
         # spread around the MAP (the posterior is concentrated, so the convolution is taken at its mode)
@@ -190,7 +210,9 @@ class LatentFilter:
 
     def trade(self, direction, lots):
         """An aggressive order filled `lots` lots, `direction` +1 (bought the ask) or -1."""
-        if self.sqrt_c > 0:
+        if self.linear_c > 0:
+            m = self.linear_c * lots
+        elif self.sqrt_c > 0:
             m = self.sqrt_c * math.sqrt(lots)
         else:
             m = self.impact_scale
@@ -508,16 +530,70 @@ def survival_update(filt, book, bb, ba, dt):
 
 
 def _make_filter(params: dict):
+    reference = params.pop("reference", None)
     if params.pop("mix", 0):
+        if reference:
+            raise ValueError("reference and regime mixtures cannot be combined")
         vpi = tuple(params.pop(f"vpi{k}") for k in range(6))
         return MixFilter(sw01=params.pop("sw01"), sw10=params.pop("sw10"), vrate=params.pop("vrate"),
                          vimpact=params.pop("vimpact"), vpi=vpi, **params)
     for key in MIX_KEYS:
         params.pop(key, None)
-    return LatentFilter(**params)
+    return ReferenceFilter(reference, **params) if reference else LatentFilter(**params)
 
 
-def replay(path: Path, params: dict, offsets: bool = False, extra: tuple = (), skip: frozenset = frozenset()):
+class ReferenceFilter(LatentFilter):
+    """Offline normalized latent/book placement mixture; no bot/Rust change.
+
+    The book component is independent of the candidate latent state. Model
+    weights/PMFs are frozen from training data. This effective observation
+    model does not imply two actual generator populations.
+    """
+
+    def __init__(self, model, **params):
+        super().__init__(**params)
+        self.ref_pi = tuple(model['latent_pi'])
+        self.book_pi = tuple(model['book_pi'])
+        self.book_weight = float(model['book_weight'])
+        self.noise_weight = float(model['noise_weight'])
+        self.latent_weight = 1 - self.book_weight - self.noise_weight
+        for pi in (self.ref_pi, self.book_pi):
+            if not pi or any(not math.isfinite(x) or x < 0 for x in pi) or abs(sum(pi) - 1) > 1e-7:
+                raise ValueError('reference PMFs must be finite, nonnegative and normalized')
+        if any(not math.isfinite(x) or x < 0 for x in (self.book_weight, self.noise_weight, self.latent_weight)):
+            raise ValueError('reference weights must form a probability mixture')
+        self.ref_cum = tuple(sum(self.ref_pi[:j + 1]) for j in range(len(self.ref_pi)))
+        self.book_cum = tuple(sum(self.book_pi[:j + 1]) for j in range(len(self.book_pi)))
+
+    @staticmethod
+    def placement(pi, cum, distance, clamped):
+        if distance < 0:
+            return 0.0
+        if clamped:
+            return cum[distance] if distance < len(cum) else 1.0
+        return pi[distance] if distance < len(pi) else 0.0
+
+    def insert(self, side, price, bid, ask):
+        if (side == 0 and price >= ask) or (side == 1 and price <= bid):
+            raise ValueError('crossing G does not satisfy the fitted clamp model')
+        clamped = price == (ask - 1 if side == 0 else bid + 1)
+        offset = bid - price if side == 0 else price - ask
+        book_like = self.placement(self.book_pi, self.book_cum, offset, clamped)
+        noise = .5 ** (ask - bid - 1) / 1.5 if clamped else (1 / 3) * .5 ** abs(offset)
+        background = self.book_weight * book_like + self.noise_weight * noise
+        total = 0.0
+        for i in range(self.n):
+            lb = self.base + i
+            distance = lb - price if side == 0 else price - 1 - lb
+            like = self.latent_weight * self.placement(self.ref_pi, self.ref_cum, distance, clamped) + background
+            self.p[i] *= max(like, 1e-300)
+            total += self.p[i]
+        self.n_obs += 1
+        self.loglik += math.log(max(total, 1e-300))
+        self.p = [p / total for p in self.p] if total > 0 else [1 / self.n] * self.n
+
+
+def replay(path: Path, params: dict, offsets: bool = False, extra: tuple = (), skip: frozenset = frozenset(), until_s=None):
     """Replay the tape; return the 50-ms samples (t, mid, signal, sd, imbalance, spread) and, with offsets, the
     inserts' offsets k to a confident MAP (bid: lb - p, ask: p - 1 - lb) at a 1- and 2-tick spread."""
     book = Book()
@@ -556,6 +632,8 @@ def replay(path: Path, params: dict, offsets: bool = False, extra: tuple = (), s
         for line in fh:
             t, op, oid, side, vol, price, life = line.rstrip("\n").split(",")
             t = float(t)
+            if until_s is not None and t >= until_s:
+                break
             bb, ba = book.best
             if filt.cancel_l0 > 0 and filt.p is not None and bb is not None and ba is not None and bb < ba:
                 survival_update(filt, book, bb, ba, t - last_ev)
@@ -642,6 +720,7 @@ def replay(path: Path, params: dict, offsets: bool = False, extra: tuple = (), s
                 book.cancel(oid)
             last_bb, last_ba = book.best
     replay.last_loglik = (filt.loglik, filt.n_obs)
+    replay.last_extra_loglik = [(o.loglik, o.n_obs) for o in others]
     replay.skipped = skipped
     return np.array(rows), ks, np.array(fchk)
 
@@ -788,6 +867,9 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("tape", type=Path)
     ap.add_argument("--set", action="append", default=[], help="a filter parameter, NAME=VALUE (see DEFAULTS)")
+    ap.add_argument("--settings", type=Path, help="JSON with existing Rust FILTER_* keys")
+    ap.add_argument("--reference", type=Path, help="offline normalized placement-reference model JSON (not a Rust knob)")
+    ap.add_argument("--minutes", type=float, help="read observations only before this elapsed-time prefix")
     ap.add_argument("--offsets", action="store_true", help="also tabulate the inserts' offsets to a confident MAP")
     ap.add_argument("--out", type=Path, help="write the result as JSON")
     ap.add_argument("--skip", type=Path, help="a .npy of order ids never observed (the oracle ladder labels)")
@@ -795,14 +877,19 @@ def main(argv=None) -> int:
     ap.add_argument("--latent", type=Path, help="a generated tape's true latent (tape_gen --latent-out): the oracle check")
     args = ap.parse_args(argv)
     params = dict(DEFAULTS)
+    if args.settings:
+        params.update(settings_params(json.loads(args.settings.read_text())))
     for item in args.set:
         k, v = item.split("=", 1)
+        k = SETTINGS_KEYS.get(k, k)
         if k not in params:
             ap.error(f"unknown parameter {k}")
         params[k] = float(v)
+    if args.reference:
+        params['reference'] = json.loads(args.reference.read_text())
     extra = tuple({k: float(v) for k, v in (kv.split("=", 1) for kv in e.split(","))} for e in args.extra)
     skip = frozenset(str(x) for x in np.load(args.skip).tolist()) if args.skip else frozenset()
-    rows, ks, fchk = replay(args.tape, params, args.offsets, extra, skip)
+    rows, ks, fchk = replay(args.tape, params, args.offsets, extra, skip, until_s=args.minutes * 60 if args.minutes else None)
     ll, n_obs = replay.last_loglik
     result = {"tape": str(args.tape), "params": params, "samples": len(rows), "skipped": replay.skipped, "loglik_per_insert": round(ll / max(1, n_obs), 5),
               **evaluate(rows), "f_check": f_check(fchk)}

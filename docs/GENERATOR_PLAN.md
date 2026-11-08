@@ -660,3 +660,148 @@ Artifacts live in `data/arena/gen/filter_process/` and `data/arena/gen/filter_pl
 A fitted placement/reference mixture is an observational hypothesis, not proof of two generator agents.
 Near-F selection, F-price noise and hidden placement regimes can mimic it. The actual filter forecast gate
 is required before suggesting new settings or structural changes. Until that result, retain F3's settings.
+
+
+## Filter forecast gate and round-4 settings command (8 Nov)
+
+The nine-arm test (including the later impact-form comparison) froze all estimated parameters on first75% of the selected tape prefix. Every arm sees
+identical book events. F anchors identify offline parameters only; no filter gets a future F price as an
+online observation. Existing candidate bots and Rust implementations are unchanged.
+
+```sh
+uv run python -m experiments.day.filter_settings data/arena/round3/round3_public.csv --full --cache data/arena/gen/filter_placement/r3_events.npz --out data/arena/gen/filter_settings/r3.json --rows-out data/arena/gen/filter_settings/r3_rows.npz
+uv run python -m experiments.day.filter_settings data/arena/round2/round2_public.csv --full --out data/arena/gen/filter_settings/r2_full.json
+uv run python -m experiments.day.filter_settings NEW_TAPE.csv --minutes 20 --out settings.json
+uv run python -m experiments.day.latent_filter NEW_TAPE.csv --settings settings.json
+```
+
+R3 results below reproduce the requested sample-count75%/25% convention. The report additionally uses the
+exact parameter-fit wall-clock cutoff and timestamp-matched horizons for selection, with training labels
+purged before that cutoff; missing initial book samples cannot shift the holdout into the fit interval.
+
+| Frozen model | .4s first75 / last25 | 1s first75 / last25 | Insert score |
+|---|---:|---:|---:|
+|F3 baseline|.3043 / .4053|.2656 / .3398|-1.20389|
+|Measured pi0-2 projection|.2971 / .3933|.2591 / .3321|-1.25785|
+|Measured filled-size immediate sqrt impact|.2935 / .3862|.2565 / .3227|-1.20859|
+|Both pi and impact|.2861 / .3747|.2500 / .3149|-1.26432|
+|Total residual variance treated as diffusion|.2926 / .3888|.2528 / .3282|-1.22950|
+|Normalized latent/book reference mixture|.2821 / .3723|.2426 / .3060|-1.26330*|
+|Reference mixture plus measured impact|.2677 / .3468|.2337 / .2848|-1.27034*|
+|Fitted existing table scale .925387|.2929 / .3858|.2559 / .3220|-1.20925|
+|Linear impact .00133032 ticks/lot|.2956 / .3908|.2583 / .3275|-1.20988|
+
+The measured three-point projection is(.753184,.118757,.128060), the filled-size immediate sqrt
+coefficient .0250305, and the variance-as-diffusion rate14.7333. Projection discards the fitted tail beyond2;
+the full reference arm retains k0..12. The variance arm is an explicitly rejected approximation, not a claim
+that all residual motion consists of one-tick random-walk steps. Every measured variant loses in both folds.
+
+*Reference scores use a normalized price law, evaluated on depth-selected inserts without conditioning
+on admission. Legacy scores add eps to pi and are not normalized. These columns must not be ranked across
+score types. The separate near-F conditional likelihood improves from-1.532 to-1.451 for the reference
+mixture, but its online gap forecast gets worse. Its own-touch weight is.5438 and noise weight.03124.
+This effective weight does not identify a distinct agent population; even the all-latent synthetic generator
+gets a fitted own-touch weight.0226-.0280, reflecting remaining observation-model approximation.
+
+Why a better insert fit is insufficient: average insert likelihood weights frequent ordinary observations;
+forecast correlation is sensitive to the rare large moves. In R3's last25%, only877 of29,972 timestamp-matched .4s labels
+move5+ ticks, yet they contribute63.3% of squared target moves. The reference model's frozen gap-only MSE
+on these labels rises 74.56→77.82. At1s,5+ tick labels contribute82.5% of target energy; their MSE
+rises83.76→86.42, while smaller-move MSE is essentially unchanged2.66164→2.66157. The report regenerates this diagnostic
+with the exact wall-clock split and excludes labels that cross missing book-sample gaps. This supports rejecting the model, not promoting its likelihood gain.
+
+The precise offline structural hypothesis is implemented in `latent_filter.ReferenceFilter`. For state b,
+let L_b(p) be the fitted clamped latent-relative k law and B(p) the clamped own-touch-relative k law.
+The observation probability is
+`P(p|b,book) = (1-w-u)*L_b(p) + w*B(p) + u*Q(p|book)`,
+where Q is a two-sided geometric offset law with rho=.5, with its crossing tail accumulated at the clamp.
+For a free bid, L_b(p)=pi[b-p]; at p=ask-1 it is sum(k<=b-p)pi[k]; asks mirror this with distance p-1-b.
+Multiply and normalize the posterior in `_lf_insert`; `_lf_trade` and `_lf_advance` remain unchanged.
+`--reference REPORT.reference.json` reproduces it offline. No Rust knobs are proposed for deployment because
+this exact structure fails the required forecast gate. A decaying-impact extension is likewise unsupported:
+although r3b's kernel is c+b*exp(-dt/tau), real tapes do not identify its c/b/tau decomposition.
+
+The command writes only currently accepted Rust keys (FILTER_PI0-2, RATE, IMPACT, SQRT_C, DEPTH, EPS).
+The sibling `.report.json` gives estimates, uncertainty, exact candidates, correlations and fallback reason;
+`.reference.json` is an offline hypothesis only. Compatible candidates are selected by their worst training
+correlation gain across.4/1s, then must improve both horizons in both folds by at least.005 absolute. This is
+an explicit operational screen, not a significance test or a profit claim. Failed or insufficient-data
+cases retain F3's defaults and say so. R3 and R2 full-tape tests, plus5/10/20min prefixes of all three real
+tapes, all retain the baseline. No upload or bot change is justified by this work.
+
+Timing: the final nine-arm cold6,000s R3 run takes50.3s. The final cold R2 run takes44.4s; cached5/10/20min
+prefixes roughly2.2/4.3/8.5s. Final guarded runs are recorded in the reports. Five-to10min can estimate a
+rough effective placement law and synthetic immediate impact; at least40min is needed even for six300s
+training blocks. Hidden regimes may require longer. No duration established here identifies real diffusion
+separately from jumps, permanent impact separately from decay, or a universally transferable latent reference.
+Depth6 and eps.01 remain operational defaults, not recovered generator constants.
+
+
+### What the placement measurements identify
+
+All valid G prices in these tapes satisfy bid-price<ask and ask-price>bid before insertion. Boundary mass
+is consistent with `p_bid=min(floor(L)-k, ask-1)` and `p_ask=max(floor(L)+1+k, bid+1)`; this constraint alone
+does not prove how an unconstrained price was drawn. Boundary shares are51.44%/45.63%/38.55% on r1/r2/r3.
+
+The table gives near-F conditional latent-relative core probabilities from the2ms EM model, with normalized
+visible-touch geometric contamination. They are effective fitted probabilities, not established generator
+constants on volatile real tapes. Block intervals condition on the model, reference and EM solution.
+
+| Tape | pi0 (conditional95% interval) | pi1 | pi2 | Contamination weight |
+|---|---:|---:|---:|---:|
+|r1|.6912 [.6785,.7020]|.2835|.0225|.00008|
+|r2|.8584 [.8078,.8742]|.0669|.0704|.5183|
+|r3|.6218 [.5563,.6813]|.0980|.1057|.4430|
+
+Against the visible own touch, the r1 core is .5565/.3918/.0497: much closer to the filter's .55/.39/.06
+than the latent-anchor estimate. Conflating an observable touch-offset histogram with latent-relative
+placement is therefore unsafe. On r2/r3, large contamination weights mean that the simple anchor model
+fails to identify a unique global latent placement law. The mixture/reference comparison narrows model
+hypotheses, but its failed forecast test gives no replacement reference to recommend.
+
+R3 fitted pi0/1/2 by side is bid .6136/.0991/.1048 and ask .6300/.0971/.1066, with the phase prior frozen
+from the joint two-sided training fit. Near-F labelled ladders give .0240/.0547/.1535 and non-ladders
+.6986/.0928/.1018; full k0..12 distributions are in JSON. Ladder labels use full chains and are descriptive,
+not causal filter inputs. Low/high prior5s book-activity proxies give .8173/.1144/.0512 and
+.3415/.1320/.1678. Those are observable activity strata, not recovered hidden regime labels.
+
+Synthetic truth distinguishes these limitations: the configured k law starts .46126/.31666/.10682,
+then explicit warning/state widenings change the effective distribution. The estimator recovers the
+resulting effective law within .007 across all three seeds; it does not infer the warning schedule or
+latent regime from real observations. The logged synthetic jump audit fits clipped lognormal medians
+3.155/2.942/2.964 and log-sds .859/.833/.918 versus3/.85; state-labelled jump rates are
+.00465/.00527/.00507 calm and .385/.429/.384 volatile versus .0046/.3911. These truth-labelled checks
+validate the measurement code, not recovery of a real jump-size law. Real jumps may emerge as shifted,
+unclamped opposite-side placements while the stale book remains, but no validated real latent-onset
+or jump-law estimator was obtained here. Earlier gen_identify onset measurements remain proxy-based.
+
+
+### Impact form comparison
+
+`filter_process_probe --compare-laws --filled-control` fits sqrt(q), q, and the existing r1 impact-table
+shape with a fitted scale, using identical robust fitting, decay profiling and chronological folds. All
+three synthetic seeds select sqrt on training and holdout for both requested/filled size; paired300s-block
+loss intervals exclude zero against both alternatives. This validates observable form selection on the
+known generator, beyond the separate oracle audit.
+
+Real heldout F-anchor-increment MSE (sqrt / linear / table):
+
+| Tape | Requested size | Filled size |
+|---|---:|---:|
+|r1|.15294 / .20275 / .15241|.15093 / .17174 / .15238|
+|r2|6.86303 / 6.85370 / 6.87007|6.85351 / 6.79139 / 6.85971|
+|r3|10.00189 / 9.89413 / 10.02068|9.99936 / 9.85813 / 10.00972|
+
+The real R3 training fit selects linear, as does filled-size R2, but each has only five300s holdout blocks;
+conditional uncertainty intervals are suppressed. This does not establish a causal linear impact law.
+Requested-size R1's table/sqrt difference is inconclusive; filled-size R1 favors sqrt over table by
+.001456 MSE, conditional interval[.001123,.001825]. Immediate fitted coefficients by tape are:
+requested sqrt .022923/.018253/.017628 ticks/sqrt(lot), filled sqrt .025115/.022576/.025030;
+filled linear .000942/.001174/.001330 ticks/lot; filled table scales .968315/.837127/.925387.
+Their long-run/transient decomposition remains unidentifiable on the real tapes.
+
+The forecast tool also tests fitted table scale and an offline linear-impact arm. The latter adds
+`linear_c` to `LatentFilter.trade`: when positive, shift the posterior by sign*linear_c*filled_lots with
+exactly the same fractional-grid interpolation. It is excluded from Rust export because Rust currently
+has no matching knob. A proposed FILTER_LINEAR_C would go in `_lf_trade` only, but a passing gap forecast
+would be required before the main session implements it. The old baseline uses linear_c=0 unchanged.

@@ -22,6 +22,8 @@ their tail rates are NOT identified jump intensities, and their variance mixes
 diffusion, jumps, impact misspecification and anchor error. A 1/6 tick-squared
 rounding correction is explicitly heuristic. With truth, compare these measured
 quantities to the corresponding exogenous logged path before interpreting them.
+--compare-laws adds sqrt, linear and scaled fixed-R1-table shape comparisons;
+all use identical transient/robust fitting and the same temporal holdout.
 """
 from __future__ import annotations
 
@@ -39,6 +41,11 @@ from scipy.stats import chi2
 
 from experiments.day.gen_inventory import integer_us
 from experiments.day.tape_book import Book
+from experiments.day.tape_gen import IMPACT
+
+IMPACT_LAWS = ('sqrt', 'linear', 'r1_table')
+IMPACT_UNITS = dict(sqrt='ticks per sqrt(lot)', linear='ticks per lot',
+                    r1_table='dimensionless multiple of fixed R1 table impact')
 
 
 def read_events(path, cache=None):
@@ -84,8 +91,21 @@ def read_events(path, cache=None):
     return out
 
 
-def impulses(events, filled=False):
-    x = events['sign'] * np.sqrt(events['filled' if filled else 'qty'])
+def size_basis(q, law='sqrt'):
+    q = np.asarray(q)
+    if law == 'sqrt':
+        return np.sqrt(q)
+    if law == 'linear':
+        return q.astype(float)
+    if law == 'r1_table':
+        thresholds, values = np.asarray(IMPACT).T
+        index = np.minimum(np.searchsorted(thresholds, q), len(values) - 1)
+        return np.where(q > 0, values[index], 0.)
+    raise ValueError(f'unknown impact law: {law}')
+
+
+def impulses(events, filled=False, law='sqrt'):
+    x = events['sign'] * size_basis(events['filled' if filled else 'qty'], law)
     return x * events['ordinary'], x * ~events['ordinary']
 
 
@@ -197,12 +217,12 @@ def profile_fit(design, y, train, robust=False):
     return tau, X, beta, loss, profile
 
 
-def observable_fit(events, filled=False):
+def observable_fit(events, filled=False, law='sqrt'):
     """No truth labels, latent values, configured parameters, or future fitting."""
     t = events['t']
     anchor = events['price'] - events['sign']
     y = np.diff(anchor)
-    x, xi = impulses(events, filled)
+    x, xi = impulses(events, filled, law)
     dt = np.diff(t)
     split = .75 * float(events['duration'])
     train, test = t[1:] < split, t[:-1] >= split
@@ -218,6 +238,7 @@ def observable_fit(events, filled=False):
     c_near = [z['coefficients'][0] for z in near]
     return dict(method='observable Huber F-anchor increment fit; delta=1 tick; conditional 300s cluster CIs',
                 size='filled' if filled else 'requested', split_s=split, coefficients=beta.tolist(),
+                impact_law=law, impact_coefficient_units=IMPACT_UNITS[law],
                 coefficient_names=['permanent_c', 'transient_b', 'injected_c', 'drift_ticks_per_s'],
                 active_parameters=active.tolist(),
                 conditional_ci95=[ci if enabled else None for ci, enabled in zip(intervals, active)],
@@ -235,6 +256,51 @@ def observable_fit(events, filled=False):
                              'Tau and permanent/transient split can be weakly identified; CIs condition on chosen tau.',
                              'Injected classification uses complete same-time group and generator structure.',
                              'Increment endpoint is next F anchor, not future mid or trading PnL.'])
+
+
+def fitted_prediction(events, fit):
+    x, xi = impulses(events, fit['size'] == 'filled', fit.get('impact_law', 'sqrt'))
+    pre, _ = transient(events['t'], x, fit['tau_s'])
+    design = np.column_stack((x[:-1], np.diff(pre), xi[:-1], np.diff(events['t'])))
+    return design @ np.asarray(fit['coefficients'])
+
+
+def compare_impact_laws(events, requested, filled=None):
+    """Train-only choice; paired heldout loss is diagnostic, never refits shape."""
+    t = events['t']
+    y = np.diff(events['price'] - events['sign'])
+    result = dict(sizes={}, qualifications=[
+        'Table shape is fixed to tape_gen.IMPACT; its overall scale is fitted.',
+        'Each law uses the same transient profile, Huber delta, split and requested/filled impulses.',
+        'Paired MSE intervals condition on fitted parameters; fewer than6 holdout300s blocks is insufficient.',
+        'F-anchor increment loss is not latent-truth loss or a bot profitability comparison.'])
+    for size, initial in [('requested', requested)] + ([('filled', filled)] if filled is not None else []):
+        fits = {'sqrt': initial}
+        for law in IMPACT_LAWS[1:]:
+            fits[law] = observable_fit(events, size == 'filled', law)
+        train_choice = min(fits, key=lambda law: fits[law]['train_huber_loss'])
+        holdout = t[:-1] >= initial['split_s']
+        errors = {law: (y - fitted_prediction(events, fit))[holdout] ** 2 for law, fit in fits.items()}
+        block = (t[:-1][holdout] // 300).astype(int)
+        ids = np.unique(block)
+        comparisons = {}
+        for law in IMPACT_LAWS[1:]:
+            delta = errors[law] - errors['sqrt']
+            out = dict(mean_mse_difference=float(delta.mean()), holdout_blocks_300s=len(ids),
+                       sign='positive means sqrt has lower heldout MSE', ci95=None,
+                       informative=False, reason='fewer than6 holdout blocks')
+            if len(ids) >= 6:
+                sums = np.asarray([[delta[block == b].sum(), np.count_nonzero(block == b)] for b in ids])
+                rng = np.random.default_rng(417)
+                sampled = sums[rng.integers(len(ids), size=(1000, len(ids)))].sum(axis=1)
+                interval = np.quantile(sampled[:, 0] / sampled[:, 1], [.025, .975]).tolist()
+                out.update(ci95=interval, informative=bool(interval[0] > 0 or interval[1] < 0),
+                           reason='paired conditional block interval excludes zero' if interval[0] > 0 or interval[1] < 0 else 'paired interval includes zero')
+            comparisons[law + '_minus_sqrt'] = out
+        result['sizes'][size] = dict(selected_by_training_huber=train_choice,
+                                    holdout_mse_winner=min(fits, key=lambda law: fits[law]['holdout']['mse']),
+                                    fits=fits, paired_holdout_vs_sqrt=comparisons)
+    return result
 
 
 def moment_summary(t, increments, changed, horizon, bootstrap=True):
@@ -275,12 +341,12 @@ def moment_summary(t, increments, changed, horizon, bootstrap=True):
 
 def noise_diagnostics(events, fit):
     """Observable exogenous-proxy path; coefficients already frozen at75% time."""
-    x, xi = impulses(events)
+    x, xi = impulses(events, fit.get('size', 'requested') == 'filled', fit.get('impact_law', 'sqrt'))
     pre, _ = transient(events['t'], x, fit['tau_s'])
     stocks = np.column_stack((np.cumsum(x) - x, pre, np.cumsum(xi) - xi))
     anchor = events['price'] - events['sign']
     adjusted = anchor - stocks @ np.asarray(fit['coefficients'][:3])
-    result = dict(horizons={}, qualifications=[
+    result = dict(horizons={}, impact_law=fit.get('impact_law', 'sqrt'), size=fit.get('size', 'requested'), qualifications=[
         'Previous-F anchor is causal and may be stale; no future anchor interpolation.',
         'Effective variance includes diffusion, jumps, anchor error and impact-model misspecification.',
         '1/6 rounding variance per changed anchor pair assumes independent uniform errors; heuristic only.',
@@ -479,6 +545,7 @@ def main(argv=None):
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--filled-control', action='store_true')
     p.add_argument('--minutes', type=float, help='fit only observations through this elapsed-time prefix')
+    p.add_argument('--compare-laws', action='store_true', help='compare sqrt, linear and scaled fixed R1 table shapes')
     args = p.parse_args(argv)
     if bool(args.latent) != bool(args.params):
         p.error('--latent and --params must be used together')
@@ -491,6 +558,8 @@ def main(argv=None):
     result['observable_noise'] = noise_diagnostics(e, result['observable'])
     if args.filled_control:
         result['observable_filled_control'] = observable_fit(e, filled=True)
+    if args.compare_laws:
+        result['impact_law_comparison'] = compare_impact_laws(e, result['observable'], result.get('observable_filled_control'))
     if args.latent:
         result['truth_audit'] = truth_audit(e, args.latent, json.loads(args.params.read_text()), result['observable_noise'])
     result['elapsed_s'] = time.monotonic() - started
