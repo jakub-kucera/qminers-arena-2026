@@ -246,6 +246,15 @@
 //! for a position with the jump, -1 only against. `WS_STATS` (an environment variable, a path) appends a line a run:
 //! takes, take lots, reversal takes, raised-bar vetoes, wide takes, position flips and flips within 1 s of the
 //! position's start. All lose or rest on one episode (IDEAS.md, "R4-X1").
+//! R4-T1 (8 Nov; Rust only, off by default: F5 1029443.00 on round4_public and 515670.00 on round3_public unchanged),
+//! the forecast take's completion: `FT_DEPTH_K` (0: off) sends the take's IOC up to that many ticks past FT_THRU while
+//! the marginal price p keeps d * (mid + signal - p) above `FT_DEPTH_E` (0.5) ticks; `FT_DEPTH_MODE` (0) 1 deepens only
+//! retries. `FT_RETRY` (0: off) arms a retry when a take comes back incomplete (1: partly filled, 2: partly or not
+//! filled): at the next book (`FT_RETRY_MS` 0), or any book within that many ms, the take may go before FT_GAP_MS, only
+//! its way and only when the fresh signal clears the bar; the room counts the live orders as before. `TAKE_STATS` (an
+//! environment variable, a path) appends a line a run: takes, lots sent and filled, partial and zero fills, the next
+//! take the same way within 100 ms after an incomplete one (and at a worse price), retries, deepened takes. The depth's
+//! small r4 gain sits in the fastest tercile; the retry loses (IDEAS.md, "R4-T1").
 //!
 //! The audit's quote knobs (8 Nov), off by default: `QS_PULL` (0) 1 withdraws both quotes, so the resting ones are
 //! cancelled, while QS_RATE's switch is off; `QUOTE_GAP` (99.0: off) withdraws the quote on the side the latent filter's
@@ -617,6 +626,27 @@ pub struct RidgeMaker {
     ws_inv_start: i64,
     ws_zero_t: i64,
     ws_flat: bool,
+    /// R4-T1 (8 Nov, off by default): the take's signal-conditioned depth (FT_DEPTH_K extra ticks while
+    /// d * (mid + signal - p) > FT_DEPTH_E at the marginal price p; FT_DEPTH_MODE 1: on retries only) and the retry
+    /// after an incomplete take (FT_RETRY 1: a partial fill, 2: a partial or zero fill; at the next book, past
+    /// FT_GAP_MS, when the fresh signal clears the bar the same way)
+    ft_depth_k: i64,
+    ft_depth_e: f64,
+    ft_depth_mode: i64,
+    ft_retry: i64,
+    /// FT_RETRY_MS (0: the next book only): how long an armed retry waits for a book where it may go
+    ft_retry_ms: i64,
+    ft_retry_until: i64,
+    /// the take IOCs in flight: (id, sign, quantity sent, price)
+    ft_takes: Vec<(u64, i64, i64, i64)>,
+    ft_retry_sign: i64,
+    /// TAKE_STATS (env var, a path, appended on drop): takes, lots sent, lots filled, partial, zero, the next take the
+    /// same way within 100 ms after an incomplete one, of those at a worse price, retries, deepened takes
+    take_stats: Option<String>,
+    ts_count: [i64; 9],
+    /// the last take: (time, sign, price, incomplete: -1 unknown, 0 no, 1 yes) and its id
+    ts_last: (i64, i64, i64, i64),
+    ts_last_id: u64,
     liq: i64,
     /// LIQ: the last recompute's time and mid, each market order's first-seen time, the young imbalance, the dispersion
     liq_time: Option<i64>,
@@ -964,6 +994,18 @@ impl Drop for RidgeMaker {
                 let _ = f.write_all(line.as_bytes());
             }
         }
+        if let Some(path) = &self.take_stats {
+            use std::io::Write;
+            let c = self.ts_count;
+            let line = format!(
+                "FT_DEPTH_K={} FT_DEPTH_E={} FT_DEPTH_MODE={} FT_RETRY={} FT_RETRY_MS={}\ttakes={}\tsent={}\tfilled={}\tpartial={}\tzero={}\tsame_way_100ms={}\tworse={}\tretries={}\tdeepened={}\tend_us={}\n",
+                self.ft_depth_k, self.ft_depth_e, self.ft_depth_mode, self.ft_retry, self.ft_retry_ms, c[0], c[1], c[2], c[3], c[4], c[5], c[6],
+                c[7], c[8], self.cached.map_or(0, |x| x.2)
+            );
+            if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+                let _ = f.write_all(line.as_bytes());
+            }
+        }
         let Some(path) = &self.stats else { return };
         use std::io::Write;
         let total: i64 = self.stat_lots.iter().sum();
@@ -1023,6 +1065,9 @@ pub const X1_KEYS: [&str; 10] = [
     "FT_WS_FLAT", "FT_WS_DIR",
 ];
 
+/// R4-T1's knobs (the take's signal-conditioned depth and the retry after an incomplete take), all off by default
+pub const T1_KEYS: [&str; 5] = ["FT_DEPTH_K", "FT_DEPTH_E", "FT_DEPTH_MODE", "FT_RETRY", "FT_RETRY_MS"];
+
 fn side_index(sign: i64) -> usize {
     if sign > 0 {
         0
@@ -1033,7 +1078,7 @@ fn side_index(sign: i64) -> usize {
 
 impl RidgeMaker {
     pub fn new(params: &Params) -> Result<RidgeMaker, String> {
-        params.check_keys(&[&KEYS[..], &MOE_KEYS[..], &crate::strategies::profit_gate::KEYS[..], &crate::strategies::calib::KEYS[..], &X1_KEYS[..]].concat())?;
+        params.check_keys(&[&KEYS[..], &MOE_KEYS[..], &crate::strategies::profit_gate::KEYS[..], &crate::strategies::calib::KEYS[..], &X1_KEYS[..], &T1_KEYS[..]].concat())?;
         let n_base = N + if params.int("PLACE", 0)? > 0 { 2 } else { 0 }
                 + if params.int("DEPTH5", 0)? > 0 { 1 } else { 0 }
                 + if params.int("FLOW2", 0)? > 0 { 2 } else { 0 }
@@ -1363,6 +1408,18 @@ impl RidgeMaker {
             ws_inv_start: 0,
             ws_zero_t: -(1i64 << 60),
             ws_flat: true,
+            ft_depth_k: params.int("FT_DEPTH_K", 0)?,
+            ft_depth_e: params.float("FT_DEPTH_E", 0.5)?,
+            ft_depth_mode: params.int("FT_DEPTH_MODE", 0)?,
+            ft_retry: params.int("FT_RETRY", 0)?,
+            ft_retry_ms: params.int("FT_RETRY_MS", 0)?,
+            ft_retry_until: 0,
+            ft_takes: Vec::new(),
+            ft_retry_sign: 0,
+            take_stats: std::env::var("TAKE_STATS").ok(),
+            ts_count: [0; 9],
+            ts_last: (i64::MIN / 2, 0, 0, -1),
+            ts_last_id: u64::MAX,
             liq: params.int("LIQ", 0)?,
             liq_time: None,
             liq_mid: 0.0,
@@ -3679,9 +3736,17 @@ impl Strategy for RidgeMaker {
         }
         // FT_WIDE_SPREAD (R4-X1): takes also at spreads up to it, at the bar FT_WIDE_EDGE from 2 ticks
         let wide = self.ft_wide_spread > 0 && spread >= 2 && spread <= self.ft_wide_spread;
+        // FT_RETRY (R4-T1): an incomplete take armed a retry its way; at this book it may go before FT_GAP_MS
+        let gap_ok = now - self.ft_last >= self.ft_gap_ms * 1000 || burst_new;
+        // FT_RETRY_MS 0: the next book only; else armed until then, or until a take goes
+        let armed = self.ft_retry_sign != 0 && (self.ft_retry_ms == 0 || now <= self.ft_retry_until);
+        let retry_sign = if armed { self.ft_retry_sign } else { 0 };
+        if self.ft_retry_ms == 0 || !armed {
+            self.ft_retry_sign = 0;
+        }
         if self.ft_sz > 0
             && self.m1.labels >= self.min_labels
-            && (now - self.ft_last >= self.ft_gap_ms * 1000 || burst_new)
+            && (gap_ok || retry_sign != 0)
             && (ft_maxspread <= 0 || spread <= ft_maxspread || wide)
         {
             let take_pred = take_wide.unwrap_or(prediction);
@@ -3814,6 +3879,9 @@ impl Strategy for RidgeMaker {
             } else {
                 sign
             };
+            // FT_RETRY: before FT_GAP_MS only the armed retry's way
+            let retrying = !gap_ok;
+            let sign = if retrying && sign != retry_sign { 0 } else { sign };
             if sign != 0 {
                 let pos = sign * self.inventory;
                 // a burst on this side: BURST_EXP is the exposure and the limit, BURST_SZ (0: BURST_EXP) the take's lots
@@ -3871,7 +3939,16 @@ impl Strategy for RidgeMaker {
                     if big {
                         self.burst_lots += quantity;
                     }
-                    let price = if sign > 0 { ask + thru } else { 1i64.max(bid - thru) };
+                    // FT_DEPTH_K (R4-T1): up to that many extra ticks while the marginal price p keeps
+                    // d * (mid + signal - p) above FT_DEPTH_E
+                    let mut extra = 0i64;
+                    if self.ft_depth_k > 0 && !big && (self.ft_depth_mode == 0 || retrying) {
+                        let left = signal * sign as f64 - 0.5 * spread_f - thru as f64;
+                        while extra < self.ft_depth_k && left - (extra + 1) as f64 > self.ft_depth_e {
+                            extra += 1;
+                        }
+                    }
+                    let price = if sign > 0 { ask + thru + extra } else { 1i64.max(bid - thru - extra) };
                     let id = ctx.send_order(if sign > 0 { Side::Buy } else { Side::Sell }, price, quantity, true);
                     self.orders.push(Record {
                         id,
@@ -3885,8 +3962,28 @@ impl Strategy for RidgeMaker {
                         kept: false,
                     });
                     self.ft_last = now;
+                    self.ft_takes.push((id, sign, quantity, price));
+                    self.ft_retry_sign = 0;
+                    let c = &mut self.ts_count;
+                    c[0] += 1;
+                    c[1] += quantity;
+                    let (lt, ls, lp, li) = self.ts_last;
+                    if li == 1 && ls == sign && now - lt <= 100_000 {
+                        c[5] += 1;
+                        if sign * (price - lp) > 0 {
+                            c[6] += 1;
+                        }
+                    }
+                    if retrying {
+                        c[7] += 1;
+                    }
+                    if extra > 0 {
+                        c[8] += 1;
+                    }
+                    self.ts_last = (now, sign, price, -1);
+                    self.ts_last_id = id;
                 }
-            } else if self.ft_exit < 99.0 && self.inventory != 0 {
+            } else if self.ft_exit < 99.0 && self.inventory != 0 && !retrying {
                 // FT_EXIT (R3-G1): the signal against the position past FT_EXIT + half the spread, flatten (reduce only)
                 let s = if self.inventory > 0 { -1 } else { 1 };
                 if signal * (s as f64) > self.ft_exit + 0.5 * spread_f {
@@ -3958,6 +4055,34 @@ impl Strategy for RidgeMaker {
     }
 
     fn on_private(&mut self, event: &PrivateEvent, ctx: &mut Ctx) {
+        // R4-T1: a take IOC's outcome (TAKE_STATS; FT_RETRY arms a retry its way when it comes back incomplete)
+        if let Some(k) = self.ft_takes.iter().position(|t| t.0 == event.order_id) {
+            let (_, sign, sent, _) = self.ft_takes[k];
+            match event.status {
+                Status::PartiallyFilled => {}
+                Status::Filled => {
+                    self.ts_count[2] += sent;
+                    self.ft_takes.swap_remove(k);
+                    if self.ts_last_id == event.order_id {
+                        self.ts_last.3 = 0;
+                    }
+                }
+                Status::Canceled | Status::Rejected => {
+                    let filled = if event.status == Status::Canceled { sent - event.remaining_quantity } else { 0 };
+                    self.ts_count[2] += filled;
+                    self.ts_count[if filled > 0 { 3 } else { 4 }] += 1;
+                    self.ft_takes.swap_remove(k);
+                    if self.ts_last_id == event.order_id {
+                        self.ts_last.3 = 1;
+                    }
+                    if event.status == Status::Canceled && (self.ft_retry == 2 || (self.ft_retry == 1 && filled > 0)) {
+                        self.ft_retry_sign = sign;
+                        self.ft_retry_until = event.timestamp_us + self.ft_retry_ms * 1000;
+                    }
+                }
+                _ => {}
+            }
+        }
         let Some(index) = self.orders.iter().position(|r| r.id == event.order_id) else { return };
         match event.status {
             Status::Accepted => self.orders[index].accepted = true,
