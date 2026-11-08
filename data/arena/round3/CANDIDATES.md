@@ -64,4 +64,4 @@ Trials so far: 0 experiments, 0 cells.
 - **R3-S3**, `r3_S3_jump_catch.py`: a jump-catch taker. After the mid's first 0.2-s move of 3+ ticks with the gap 1+ the same way, it takes 100 lots and flattens 3 s later. 76,797 / 153,702 / 231,212 / 190,800 / -290 (round2_public +1,803). Correlation 0.23 at 1 s, 0.50 at 60 s.
 - **R3-S4**, `r3_S4_taker_gap_quote.py`: R3-F1 plus S1's quote. Dropped: both sides 341,739 against F1's 480,469; as an exit only 474,024 (a tie in 500-s segments).
 - None of them beats the taker, and none adds to it on one inventory. S3 is the strongest standalone (17-25% of R2-L8 on round 3's tapes). S1 is the only one that never pays the spread.
-- Synthetic seed 101 / 102 (secondary; makers unvalidated there): S1 -117,637 / -17,770; S2 -5,496 / +4,292; S3 (GAP_MIN 2) 18,723 / 11,075; R2-L8 850,972 / 1,140,765.
+- Synthetic seed 101 / 102 (secondary; makers unvalidated there): S1 -117,637 / -17,770; S2 -5,496 / +4,292; S3 GAP_MIN 2 18,723 / 11,075, GAP_MIN 1 13,424 / 57,669; R2-L8 850,972 / 1,140,765.
