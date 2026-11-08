@@ -375,6 +375,18 @@ def section_c(cx: Ctx) -> dict:
                 row[f"Q{Q}_h{h:g}_per_s"] = r((x[s_] * lots[s_]).sum() / dur, 2)
         cond[name] = row
     out["front_touch_online_conditions"] = cond
+    # where the quote sits, by the gap: a one-lot fill's markout (ticks a lot, 1 / 5 s)
+    place = {}
+    for lab, price, b in (("touch_spread1", touch, spr == 1), ("touch_spread2", touch, spr == 2),
+                          ("level2_spread1", p2, (spr == 1) & lvl2), ("back_spread1", touch, (spr == 1) & back)):
+        for fl, sel in (("fav>0.6", fav > 0.6), ("fav>0", fav > 0), ("all", np.ones(len(t), bool))):
+            row = {"n": int((b & sel).sum())}
+            for h in (1.0, 5.0):
+                x = (cx.mid_at(t + h) - price) * msign
+                x = x[b & sel & ~np.isnan(x)]
+                row[f"{h:g}s"] = r(x.mean(), 3) if len(x) else None
+            place[f"{lab}_{fl}"] = row
+    out["by_queue_place_and_gap"] = place
     return out
 
 
