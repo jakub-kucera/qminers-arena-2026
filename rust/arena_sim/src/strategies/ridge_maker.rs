@@ -235,6 +235,17 @@
 //! Hedge average with weights exp(`ENS_ETA` (0.001) x paper PnL) (2), or the first model's with the take's side set by
 //! a majority of the forecasters clearing the bar (3). The quoting keeps the first model's. `ENS_DEBUG` (an
 //! environment variable, a path) appends a line a run: the switches, the leaders' time shares and the paper trades.
+//! R4-X1 (8 Nov; Rust only, off by default: F5 1029443.00 on round4_public and 515670.00 on round3_public unchanged):
+//! `FT_WIDE_SPREAD` (0: off) lets the take fire at spreads up to that many ticks, past FT_MAXSPREAD, with the bar
+//! `FT_WIDE_EDGE` (1.0) at spreads of 2 ticks or more (in place of every other bar); `FT_CLAMP` (2.0) is the take's own
+//! clamp on the first model's forecast (the stored forecast, the Huber fit and the quoting keep +-2). `FT_WS_EDGE`
+//! (-1.0: off): for `FT_WS_MS` (2000) after the mid moved `FT_WS_JUMP` (3.0; 0: always) ticks from the oldest mid within
+//! `FT_WS_JUMP_MS` (200), a take against the held position needs at least FT_WS_EDGE (adding or opening from flat keeps
+//! its bar); `FT_WS_FLIP_MS` (0: off) applies it only while the forecast changed sign within that many ms; `FT_WS_FLAT`
+//! (0) 1 sends a reversal under the raised bar but over its own to flat only; `FT_WS_DIR` (0: either) 1 raises it only
+//! for a position with the jump, -1 only against. `WS_STATS` (an environment variable, a path) appends a line a run:
+//! takes, take lots, reversal takes, raised-bar vetoes, wide takes, position flips and flips within 1 s of the
+//! position's start. All lose or rest on one episode (IDEAS.md, "R4-X1").
 //!
 //! The audit's quote knobs (8 Nov), off by default: `QS_PULL` (0) 1 withdraws both quotes, so the resting ones are
 //! cancelled, while QS_RATE's switch is off; `QUOTE_GAP` (99.0: off) withdraws the quote on the side the latent filter's
@@ -581,6 +592,31 @@ pub struct RidgeMaker {
     ft_edge_flip: f64,
     ft_sd: f64,
     ft_sd_edge: f64,
+    /// R4-X1 (8 Nov, off by default): wide-spread takes (FT_WIDE_SPREAD, FT_WIDE_EDGE, the take's clamp FT_CLAMP) and
+    /// the post-jump whipsaw bar on reversals (FT_WS_EDGE, FT_WS_MS, FT_WS_JUMP, FT_WS_JUMP_MS, FT_WS_FLIP_MS)
+    ft_wide_spread: i64,
+    ft_wide_edge: f64,
+    ft_clamp: f64,
+    ft_ws_edge: f64,
+    ft_ws_ms: i64,
+    ft_ws_jump: f64,
+    ft_ws_jump_ms: i64,
+    ft_ws_flip_ms: i64,
+    ft_ws_flat: bool,
+    ft_ws_dir: i64,
+    ws_sign: i64,
+    ws_mids: VecDeque<(i64, f64)>,
+    ws_until: i64,
+    ws_pred_sign: i64,
+    ws_flip_t: i64,
+    /// WS_STATS (env var, a path, appended on drop): takes, take lots, reversal takes, raised-bar vetoes, wide takes,
+    /// position flips and those within 1 s of the position's start
+    ws_stats: Option<String>,
+    ws_count: [i64; 7],
+    ws_inv_sign: i64,
+    ws_inv_start: i64,
+    ws_zero_t: i64,
+    ws_flat: bool,
     liq: i64,
     /// LIQ: the last recompute's time and mid, each market order's first-seen time, the young imbalance, the dispersion
     liq_time: Option<i64>,
@@ -916,6 +952,18 @@ impl RidgeMaker {
 impl Drop for RidgeMaker {
     fn drop(&mut self) {
         self.dump_on_drop();
+        if let Some(path) = &self.ws_stats {
+            use std::io::Write;
+            let c = self.ws_count;
+            let line = format!(
+                "FT_WIDE_SPREAD={} FT_WIDE_EDGE={} FT_CLAMP={} FT_WS_EDGE={} FT_WS_MS={} FT_WS_JUMP={} FT_WS_JUMP_MS={} FT_WS_FLIP_MS={} FT_WS_FLAT={} FT_WS_DIR={}\ttakes={}\ttake_lots={}\treversals={}\tvetoes={}\twide_takes={}\tflips={}\tfast_flips={}\n",
+                self.ft_wide_spread, self.ft_wide_edge, self.ft_clamp, self.ft_ws_edge, self.ft_ws_ms, self.ft_ws_jump,
+                self.ft_ws_jump_ms, self.ft_ws_flip_ms, self.ft_ws_flat as i64, self.ft_ws_dir, c[0], c[1], c[2], c[3], c[4], c[5], c[6]
+            );
+            if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+                let _ = f.write_all(line.as_bytes());
+            }
+        }
         let Some(path) = &self.stats else { return };
         use std::io::Write;
         let total: i64 = self.stat_lots.iter().sum();
@@ -969,6 +1017,12 @@ pub const KEYS: [&str; 196] = [
     "GASYM_US", "GAPMEAN_US",
 ];
 
+/// R4-X1's knobs (wide-spread takes, the post-jump whipsaw bar), all off by default
+pub const X1_KEYS: [&str; 10] = [
+    "FT_WIDE_SPREAD", "FT_WIDE_EDGE", "FT_CLAMP", "FT_WS_EDGE", "FT_WS_MS", "FT_WS_JUMP", "FT_WS_JUMP_MS", "FT_WS_FLIP_MS",
+    "FT_WS_FLAT", "FT_WS_DIR",
+];
+
 fn side_index(sign: i64) -> usize {
     if sign > 0 {
         0
@@ -979,7 +1033,7 @@ fn side_index(sign: i64) -> usize {
 
 impl RidgeMaker {
     pub fn new(params: &Params) -> Result<RidgeMaker, String> {
-        params.check_keys(&[&KEYS[..], &MOE_KEYS[..], &crate::strategies::profit_gate::KEYS[..], &crate::strategies::calib::KEYS[..]].concat())?;
+        params.check_keys(&[&KEYS[..], &MOE_KEYS[..], &crate::strategies::profit_gate::KEYS[..], &crate::strategies::calib::KEYS[..], &X1_KEYS[..]].concat())?;
         let n_base = N + if params.int("PLACE", 0)? > 0 { 2 } else { 0 }
                 + if params.int("DEPTH5", 0)? > 0 { 1 } else { 0 }
                 + if params.int("FLOW2", 0)? > 0 { 2 } else { 0 }
@@ -1288,6 +1342,27 @@ impl RidgeMaker {
             ft_edge_flip: params.float("FT_EDGE_FLIP", -1.0)?,
             ft_sd: params.float("FT_SD", 99.0)?,
             ft_sd_edge: params.float("FT_SD_EDGE", 0.15)?,
+            ft_wide_spread: params.int("FT_WIDE_SPREAD", 0)?,
+            ft_wide_edge: params.float("FT_WIDE_EDGE", 1.0)?,
+            ft_clamp: params.float("FT_CLAMP", 2.0)?,
+            ft_ws_edge: params.float("FT_WS_EDGE", -1.0)?,
+            ft_ws_ms: params.int("FT_WS_MS", 2000)?,
+            ft_ws_jump: params.float("FT_WS_JUMP", 3.0)?,
+            ft_ws_jump_ms: params.int("FT_WS_JUMP_MS", 200)?,
+            ft_ws_flip_ms: params.int("FT_WS_FLIP_MS", 0)?,
+            ft_ws_flat: params.int("FT_WS_FLAT", 0)? != 0,
+            ft_ws_dir: params.int("FT_WS_DIR", 0)?,
+            ws_sign: 0,
+            ws_mids: VecDeque::new(),
+            ws_until: i64::MIN,
+            ws_pred_sign: 0,
+            ws_flip_t: -(1i64 << 60),
+            ws_stats: std::env::var("WS_STATS").ok(),
+            ws_count: [0; 7],
+            ws_inv_sign: 0,
+            ws_inv_start: 0,
+            ws_zero_t: -(1i64 << 60),
+            ws_flat: true,
             liq: params.int("LIQ", 0)?,
             liq_time: None,
             liq_mid: 0.0,
@@ -2631,6 +2706,24 @@ impl Strategy for RidgeMaker {
                 }
             }
         }
+        if self.ft_ws_edge >= 0.0 && self.ft_ws_jump > 0.0 {
+            // R4-X1: the mid at least FT_WS_JUMP ticks from the oldest mid within FT_WS_JUMP_MS opens FT_WS_MS of the
+            // reversal bar
+            self.ws_mids.push_back((now, mid));
+            while let Some(&(t, _)) = self.ws_mids.front() {
+                if t < now - self.ft_ws_jump_ms * 1000 {
+                    self.ws_mids.pop_front();
+                } else {
+                    break;
+                }
+            }
+            if let Some(&(_, m)) = self.ws_mids.front() {
+                if (mid - m).abs() >= self.ft_ws_jump {
+                    self.ws_until = now + self.ft_ws_ms * 1000;
+                    self.ws_sign = if mid > m { 1 } else { -1 };
+                }
+            }
+        }
         let spread = ask - bid;
         let flow = self.net / (1.0 + self.volume);
         let imbalance = (bq - aq) as f64 / (bq + aq) as f64;
@@ -3080,9 +3173,14 @@ impl Strategy for RidgeMaker {
             self.dump_snap = Some(self.stats_text());
         }
         let mut prediction = 0.25 * spread_f * imbalance;
+        // FT_CLAMP (R4-X1): the take's own clamp of the first model's forecast (the stored forecast stays at +-2)
+        let mut take_wide: Option<f64> = None;
         if self.m1.labels >= self.min_labels {
             let raw = py_sum(self.m1.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x));
             prediction = clamp(if self.pred_scale != 1.0 { raw * self.pred_scale } else { raw }, -2.0, 2.0);
+            if self.ft_clamp != 2.0 && self.blend_w <= 0.0 && self.moe.is_none() {
+                take_wide = Some(clamp(if self.pred_scale != 1.0 { raw * self.pred_scale } else { raw }, -self.ft_clamp, self.ft_clamp));
+            }
             if self.blend_w > 0.0 && self.m2.labels >= self.min_labels {
                 let p2 =
                     clamp(py_sum(self.m2.weights[..n].iter().zip(features[..n].iter()).map(|(w, x)| w * x)), -2.0, 2.0);
@@ -3569,12 +3667,25 @@ impl Strategy for RidgeMaker {
         }
         let bursting = now < self.burst_until;
         let ft_maxspread = if bursting && self.burst_maxspread > 0 { self.burst_maxspread } else { self.ft_maxspread };
+        // R4-X1: the forecast's sign changes (FT_WS_FLIP_MS), at every book
+        if self.ft_ws_edge >= 0.0 && self.ft_ws_flip_ms > 0 {
+            let s = if prediction > 0.0 { 1 } else if prediction < 0.0 { -1 } else { 0 };
+            if s != 0 {
+                if self.ws_pred_sign != 0 && s != self.ws_pred_sign {
+                    self.ws_flip_t = now;
+                }
+                self.ws_pred_sign = s;
+            }
+        }
+        // FT_WIDE_SPREAD (R4-X1): takes also at spreads up to it, at the bar FT_WIDE_EDGE from 2 ticks
+        let wide = self.ft_wide_spread > 0 && spread >= 2 && spread <= self.ft_wide_spread;
         if self.ft_sz > 0
             && self.m1.labels >= self.min_labels
             && (now - self.ft_last >= self.ft_gap_ms * 1000 || burst_new)
-            && (ft_maxspread <= 0 || spread <= ft_maxspread)
+            && (ft_maxspread <= 0 || spread <= ft_maxspread || wide)
         {
-            let source = if let Some(src) = ens_src { src } else if self.ft_src == 1 { p2_only } else { prediction };
+            let take_pred = take_wide.unwrap_or(prediction);
+            let source = if let Some(src) = ens_src { src } else if self.ft_src == 1 { p2_only } else { take_pred };
             let source = if self.cal.mode > 0 { self.cal.apply(cal_x, self.qs_rate) } else { source };
             let signal = if self.ft_net > 0 { source - skew } else { source };
             // R3-F5 (off by default): each side's bar is the lowest of FT_EDGE, FT_JUMP_EDGE within FT_JUMP_HOLD_MS of
@@ -3623,6 +3734,26 @@ impl Strategy for RidgeMaker {
                 edge_up = (edge_up - self.pg.k * (up - self.pg.g)).max(0.0);
                 edge_dn = (edge_dn - self.pg.k * (dn - self.pg.g)).max(0.0);
             }
+            if wide {
+                edge_up = self.ft_wide_edge;
+                edge_dn = self.ft_wide_edge;
+            }
+            // FT_WS_EDGE (R4-X1): within FT_WS_MS of a FT_WS_JUMP-tick move (FT_WS_JUMP 0: always), and while the
+            // forecast changed sign within FT_WS_FLIP_MS (0: always), a take against the held position needs at least
+            // FT_WS_EDGE; adding or opening from flat keeps its bar
+            let (base_up, base_dn) = (edge_up, edge_dn);
+            if self.ft_ws_edge >= 0.0
+                && self.inventory != 0
+                && (self.ft_ws_jump <= 0.0 || now < self.ws_until)
+                && (self.ft_ws_flip_ms <= 0 || now - self.ws_flip_t <= self.ft_ws_flip_ms * 1000)
+                && (self.ft_ws_dir == 0 || self.ft_ws_dir * self.ws_sign * self.inventory.signum() > 0)
+            {
+                if self.inventory < 0 {
+                    edge_up = edge_up.max(self.ft_ws_edge);
+                } else {
+                    edge_dn = edge_dn.max(self.ft_ws_edge);
+                }
+            }
             let need_up = edge_up + 0.5 * spread_f;
             let need_dn = edge_dn + 0.5 * spread_f;
             let sign = if signal > need_up {
@@ -3632,6 +3763,19 @@ impl Strategy for RidgeMaker {
             } else {
                 0
             };
+            // FT_WS_FLAT 1: a reversal under the raised bar but over its own goes to flat only
+            let base_sign = if signal > base_up + 0.5 * spread_f {
+                1
+            } else if signal < -(base_dn + 0.5 * spread_f) {
+                -1
+            } else {
+                0
+            };
+            let ws_flat_only = sign == 0 && base_sign != 0 && self.ft_ws_flat;
+            let sign = if ws_flat_only { base_sign } else { sign };
+            if self.ws_stats.is_some() && sign == 0 && base_sign != 0 {
+                self.ws_count[3] += 1;
+            }
             // ENS 3 (R4-E1): a take only when most forecasters clear the bar its way
             let sign = if self.ens == 3 {
                 let (mut up, mut dn) = (0usize, 0usize);
@@ -3706,11 +3850,24 @@ impl Strategy for RidgeMaker {
                 if self.ft_flip_m < 99.0 && pos < 0 && signal * (sign as f64) < need + self.ft_flip_m {
                     quantity = quantity.min(-pos - reserved);
                 }
+                if ws_flat_only {
+                    quantity = quantity.min(-pos - reserved);
+                }
                 if quantity > 0 {
                     self.pg.takes += 1;
                     self.pg.lots += quantity;
                     self.cal.takes += 1;
                     self.cal.lots += quantity;
+                    if self.ws_stats.is_some() {
+                        self.ws_count[0] += 1;
+                        self.ws_count[1] += quantity;
+                        if pos < 0 {
+                            self.ws_count[2] += 1;
+                        }
+                        if wide {
+                            self.ws_count[4] += 1;
+                        }
+                    }
                     if big {
                         self.burst_lots += quantity;
                     }
@@ -3841,6 +3998,26 @@ impl Strategy for RidgeMaker {
                     self.dbg_cash -= (record.sign * price * event.filled_quantity) as f64;
                 }
                 self.inventory += record.sign * event.filled_quantity;
+                if self.ws_stats.is_some() {
+                    // WS_STATS: a flip is a position's sign reversed, through flat only within the same timestamp
+                    let (s, t) = (self.inventory.signum(), event.timestamp_us);
+                    if s == 0 {
+                        self.ws_flat = true;
+                        self.ws_zero_t = t;
+                    } else if s != self.ws_inv_sign || self.ws_flat {
+                        if self.ws_inv_sign == -s && (!self.ws_flat || self.ws_zero_t == t) {
+                            self.ws_count[5] += 1;
+                            if t - self.ws_inv_start < 1_000_000 {
+                                self.ws_count[6] += 1;
+                            }
+                        }
+                        if s != self.ws_inv_sign || self.ws_zero_t != t {
+                            self.ws_inv_sign = s;
+                            self.ws_inv_start = t;
+                        }
+                        self.ws_flat = false;
+                    }
+                }
                 record.quantity = event.remaining_quantity;
                 if event.status == Status::Filled {
                     self.orders.remove(index);
