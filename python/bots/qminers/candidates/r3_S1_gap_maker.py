@@ -14,10 +14,10 @@ from math import isfinite
 from simulator.models import OrderRequest, OrderStatus, OrderType, Side
 from simulator.strategy import BaseStrategy
 
-QUOTE = 50  # lots a quote
+QUOTE = 100  # lots a quote (round3_public, GAP_ON 0.6, GAP_OFF -0.3: QUOTE 20 / 50 / 100 22.4k / 41.4k / 48.7k)
 LIMIT = 100  # |position + live lots on the side| at most this (the penalty starts above 100)
-GAP_ON = 0.0  # quote the bid when gap > GAP_ON, the ask when gap < -GAP_ON
-GAP_OFF = -0.1  # keep a resting bid while gap > GAP_OFF (an ask while gap < -GAP_OFF)
+GAP_ON = 0.6  # quote the bid when gap > GAP_ON, the ask when gap < -GAP_ON (QUOTE 50: 0 / 0.3 / 0.6 / 1.0 21.6k / 31.5k / 41.4k / 39.5k)
+GAP_OFF = -0.3  # keep a resting bid while gap > GAP_OFF (an ask while gap < -GAP_OFF); GAP_ON 0.6: -0.6 44.5k
 MAX_SPREAD = 1  # quote only while the market's spread is at most this many ticks
 UNWIND = 0.0  # > 0: also quote the reducing side while |gap| < UNWIND ...
 UNWIND_POS = 50  # ... and |position| >= UNWIND_POS
