@@ -35,6 +35,11 @@ the server (F3 - B1), and F5's higher take bar away from jumps only +4.6k (a tie
    keeps round 3's filter settings unless an alternative wins its held-out forecast gate; on round 3 all eight alternatives
    lost, the placement mixture included. Add any keys it exports to F5's line and compare in step 2's grid; use them
    only if they win both halves.
+4b. **The warm start (R4-W1, round 3's private curves: our first 1,000 s was the weakest of the top 17):** save the base's
+   ridge statistics on the public tape, `RIDGE_DUMP=data/arena/round4/r4_stats.txt uv run python -m arena.qsim_rust ridge_maker
+   $T ${=F5} --threads 1`, and embed them in the upload file at PRIOR_MASS 1000 (`experiments.day.warm_embed`, being ported
+   at 07:00). In Rust on r3b seeds 201-204 with round 3's statistics: +3.4k / +4.9k / +1.4k / +7.5k against F5, all in the first
+   ~1,000 s (PRIOR_MASS 10000 about the same, 100000 loses).
 5. **First upload by ~07:45:**
    - The base unchanged (F5, or F3 on a calm tape) as the paired reference.
    - Then step 2's winner as a Python file: copy the base and change only its constants. Check it against Rust: one
