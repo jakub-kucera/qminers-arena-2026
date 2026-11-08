@@ -54,6 +54,10 @@ and `{"law": "uniform", "low": 20, "high": 40}` (inclusive integer bounds).
 The F law also supplies informed orders, conditioned on `jx_lead_min`; G's law
 applies at every offset. Round 3's G sizes/lifetimes are a mixture: do not replace
 them with a single fitted lognormal. Absent these options, every v2 draw is unchanged.
+`latent.impact_traded` (default false) bases an IOC's impact on its filled lots,
+including zero impact when nothing trades. Phase 1's impact regression uses filled
+lots; the v2 implementation uses requested lots. This option permits an explicit
+comparison without silently changing calibrated presets.
 
     uv run python -m experiments.day.tape_gen --fit data/arena/round1/round1.csv --params-out P.json
     uv run python -m experiments.day.tape_gen --params P.json --seed N --seconds 12000 --out tape.csv [--opts JSON] \
@@ -325,6 +329,7 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
     place_noise = latent.get("place_noise", 0.0)  # each insert centred on the latent + N(0, place_noise) ticks
     jump_stale = latent.get("jump_stale_s")  # the stale cancels after the latent's own jumps within Exp(jump_stale_s), not stale_s: how fast the book shows them
     impact_c = latent.get("impact_sqrt", 0.0)  # > 0: a trade of q lots moves the latent impact_c sqrt(q) ticks (Phase 1), not the table
+    impact_traded = latent.get("impact_traded", False)
     f_lim = latent.get("f_limit_latent", 0.0)  # > 0: an IOC's limit is the latent mid +- f_lim ticks, not the touch + an offset
     # scheduled jumps (Phase 1, round 2): lognormal sizes (median jx_median, log-sd jx_logsd, clipped to [jx_min, jx_max]),
     # a random sign, at jx_rate_off / jx_rate_on a second in a hidden two-state intensity chain (mean stays jx_dwell_off /
@@ -401,10 +406,12 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
         price = opp + e if side == 0 else opp - e
         if f_lim:
             price = math.floor(level + f_lim + 0.5) if side == 0 else math.ceil(level - f_lim - 0.5)
-        book.insert(oid, side, price, q, True)
+        traded = book.insert(oid, side, price, q, True)
         lines.append(f"{now:.6f},Insert,{oid},{'B' if side == 0 else 'A'},{q},{price},F\n")
         oid += 1
-        prob = impact_c * math.sqrt(q) if impact_c else impact_probs[min(len(impact_probs) - 1, np.searchsorted(impact_sizes, q))]
+        impact_q = traded if impact_traded else q
+        prob = (impact_c * math.sqrt(impact_q) if impact_c else
+                impact_probs[min(len(impact_probs) - 1, np.searchsorted(impact_sizes, impact_q))]) if impact_q else 0.0
         imp = prob * impact_scale * (mult if vol_impact else 1.0)
         shift(imp if side == 0 else -imp, now)
 
@@ -550,9 +557,11 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
                 price = opp + e if side == 0 else opp - e
                 if f_lim:  # the limit at the latent mid +- f_lim (it may not reach a lagging touch: no trade, impact all the same)
                     price = math.floor(level + f_lim + 0.5) if side == 0 else math.ceil(level - f_lim - 0.5)
-                book.insert(oid, side, price, q, True)
+                traded = book.insert(oid, side, price, q, True)
                 lines.append(f"{t:.6f},Insert,{oid},{'B' if side == 0 else 'A'},{q},{price},F\n")
-                prob = impact_c * math.sqrt(q) if impact_c else impact_probs[min(len(impact_probs) - 1, np.searchsorted(impact_sizes, q))]
+                impact_q = traded if impact_traded else q
+                prob = (impact_c * math.sqrt(impact_q) if impact_c else
+                        impact_probs[min(len(impact_probs) - 1, np.searchsorted(impact_sizes, impact_q))]) if impact_q else 0.0
                 if continuous:  # the latent mid moves by the bin's mean impact; the reference bid is its floor
                     imp = prob * impact_scale * (mult if vol_impact else 1.0)
                     if delay:  # part of it released later, by the timed update

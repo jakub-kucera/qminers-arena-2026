@@ -215,10 +215,12 @@ def measure_impact(tp: Tape) -> dict:
     through = (tp.pf - opp) * tp.sign
     split = {}
     for name, sel in (("limit_at_touch", through == 0), ("limit_through", through >= 1), ("filled", tp.trf >= tp.qf),
-                      ("partial", tp.trf < tp.qf)):
+                      ("partial", tp.trf < tp.qf), ("zero_filled", tp.trf == 0)):
         mm = m & sel
         Xs = tp.trf[mm] ** 0.5
-        split[name] = {"n": int(mm.sum()), "c": r(Xs @ j[mm] / (Xs @ Xs)) if mm.sum() else None}
+        split[name] = {"n": int(mm.sum()), "c": r(Xs @ j[mm] / (Xs @ Xs)) if Xs @ Xs > 0 else None,
+                       "observed_move_mean": r(j[mm].mean()) if mm.any() else None,
+                       "observed_move_se": r(j[mm].std(ddof=1) / np.sqrt(mm.sum())) if mm.sum() > 1 else None}
     cum = tp.impact_path(c05, 0.5)
     imp = tp.sign * c05 * tp.trf ** 0.5
     pre = tp.centre(tf - W, tf)

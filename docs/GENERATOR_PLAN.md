@@ -393,3 +393,45 @@ The JSON includes 60-s proxy trajectories and counts of large proxy steps. These
 jump counts or exact volatility parameters. On the public checks, the squared proxy underestimates true squared
 mid moves by about 2.4 (r2) / 3.4 (r3) ticks²/s; do not apply one universal correction across bots or regimes.
 Use the same proxy computed from generated bot runs to fit the validation curves directly.
+
+## Filled-volume impact ablation (8 Nov, gen-v3)
+
+Phase 1 regresses impact on filled lots, while v2 applies it to requested lots. `tape_gen` now exposes
+`latent.impact_traded` (off by default) for this distinction, including zero impact for unfilled IOC orders.
+Both ordinary and informed IOC orders use it. The original default draws remain byte-identical.
+`gen_identify` also reports observed moves and standard errors for zero-filled isolated orders: r3 has 228,
+mean -0.120 ticks their way (SE 0.0403). This is conditional evidence, not a causal estimate of their own impact.
+On the 6,598 isolated orders the sqrt regression residual variance is 0.3522 using fills versus 0.3690 using
+requested size, enough to warrant testing the distinction.
+
+**The replacement preset fails.** All six Rust public scores reproduced to the unit before the comparison.
+Three fresh 6,000-s seeds (301-303), same seed set for both arms, gave:
+
+| Measure | Existing r3_public_after | Add impact_traded=true | Real r3 public |
+|---|---:|---:|---:|
+| L8 mean PnL | 457,399 | 803,328 | 427,819 |
+| L9 mean PnL | 490,045 | 823,200 | 424,730 |
+| B1F mean PnL | 560,290 | 886,413 | 505,212 |
+| Six-bot Spearman | 0.60 | 0.60 | — |
+| Asinh score error | 0.108 | 0.620 | 0 |
+| FILTER gain on L8 / B1 | 20.3% / 15.8% | 9.3% / 7.8% | 13.1% / 16.4% |
+
+Yet the first seed's big-order move curve improves markedly: at 0.5 / 5 s it changes from 2.78 / 3.03 ticks to
+1.87 / 1.94, versus real 1.90 / 2.05. Its 1-tick spread share worsens from 0.901 to 0.912 (real 0.818), and
+mid changes/s from 6.283 to 6.510 (real 5.774). These structural checks are one seed only. This is why matching
+one impact curve is insufficient: the joint trading opportunities remain wrong. Keep the option for model
+experiments; do not promote this arm or label its tapes r3c.
+
+Reproduce from the root (build `arena-sim` first if absent). `PRESET:JSON` is now supported by
+`gen_calibrate --opts` and `--around`, so an ablation can be specified without copying or editing a preset:
+
+```sh
+cargo build --release -p arena_sim --manifest-path rust/Cargo.toml
+uv run python -m experiments.day.tape_gen --fit data/arena/round3/round3_public.csv --params-out data/arena/gen/v3_r3_params.json
+uv run python -m experiments.day.gen_calibrate rank --params data/arena/gen/v3_r3_params.json --opts r3_public_after --bots L8,L3,L9,B1,L8F,B1F --seeds 301-303 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_check/baseline --out data/arena/gen/v3_check/baseline_scores.json
+uv run python -m experiments.day.gen_calibrate rank --params data/arena/gen/v3_r3_params.json --opts 'r3_public_after:{"impact_traded":true}' --bots L8,L3,L9,B1,L8F,B1F --seeds 301-303 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_check/traded --out data/arena/gen/v3_check/traded_scores.json
+uv run python -m experiments.day.gen_calibrate stats data/arena/round3/round3_public.csv data/arena/gen/v3_check/baseline/rank_6000s_301.csv data/arena/gen/v3_check/traded/rank_6000s_301.csv --jobs 2
+```
+
+The existing generated files and score JSONs are in `data/arena/gen/v3_check/`. Use a fresh output directory for
+a changed parameter set: `gen_calibrate` reuses existing tape paths without validating their parameters.

@@ -22,6 +22,8 @@ Subcommands:
   '{"jump_rate": 1, "jump_size": 1.5}', or a PRESETS name: `r2_validation`, `r2_validation_after`, `r3_public_stats`,
   `r3_public_after`), `--seeds`, `--seconds`; generates the draws in `--dir` and scores them. docs/GENERATOR_PLAN.md,
   "Phase 2 results" and "Using the generator in round 4", say which preset is checked how well.
+  `--opts 'r3_public_after:{"impact_traded":true}'` overlays JSON on a named preset without editing it;
+  the same notation works anywhere --opts/--around is accepted.
 - `search`: a random search over SPACE (the latent options added for v2, PRIOR for the ranges; `--trials N`, `--seeds`,
   `--seconds`, `--jobs`), each trial its own process (generate, run, score, delete the tapes), one JSON line per
   trial appended to `--out`; the best trials are printed, ranked by OBJECTIVE (asinh error + 0.5 x (1 - Spearman)).
@@ -141,9 +143,15 @@ PUBLIC_R3 = {"L8": 427_819, "L3": 425_321, "L9": 424_730, "B1": 433_922, "L8F": 
 
 
 def parse_opts(text) -> dict:
-    """`--opts`: a PRESETS name or a JSON object."""
+    """`--opts`: a PRESETS name, a JSON object, or PRESET:JSON overrides."""
     if not text:
         return {}
+    name, separator, suffix = text.partition(":")
+    if separator and name in PRESETS:
+        overrides = json.loads(suffix)
+        if not isinstance(overrides, dict):
+            raise ValueError("preset overrides must be a JSON object")
+        return {**PRESETS[name], **overrides}
     return dict(PRESETS[text]) if text in PRESETS else json.loads(text)
 ASINH_SCALE = 50_000.0
 

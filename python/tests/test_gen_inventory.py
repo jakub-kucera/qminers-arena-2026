@@ -7,7 +7,7 @@ import hashlib
 import numpy as np
 import pytest
 
-from experiments.day.gen_calibrate import PRESETS
+from experiments.day.gen_calibrate import PRESETS, parse_opts
 from experiments.day.gen_inventory import fit_sizes, integer_us, inventory, lognormal_mass
 from experiments.day.tape_gen import SizeLawSampler, generate
 
@@ -19,6 +19,17 @@ def params():
             "lifetime_quantiles": [.05, .3, 1., 2.],
             "latent": {"continuous": True, "stale_s": .2, "jump_rate": 0., "jump_size": .5, "informed": 0.,
                        "k_pmf": [[0, 6], [1, 3], [2, 1]], "impact": [[100, .2], [100000, .5]], "start_bid": 9999}}
+
+
+def test_preset_overlay_preserves_named_baseline():
+    original = copy.deepcopy(PRESETS["r3_public_after"])
+    opts = parse_opts('r3_public_after:{"impact_traded":true,"impact_sqrt":0.05}')
+    assert opts["impact_traded"] is True and opts["impact_sqrt"] == .05
+    assert opts["jx_after_extra"] == original["jx_after_extra"]
+    assert PRESETS["r3_public_after"] == original
+    assert parse_opts('{"impact_traded":true}') == {"impact_traded": True}
+    with pytest.raises(ValueError, match="JSON object"):
+        parse_opts("r3_public_after:[]")
 
 
 @pytest.mark.parametrize("preset,digest", [
@@ -81,6 +92,21 @@ def test_law_draws_are_reproducible_with_latent_logging(tmp_path):
     assert p == untouched
     g = [int(line.split(",")[4]) for line in a.read_text().splitlines()[1:] if line.endswith(",G")]
     assert min(g) == 20 and max(g) == 40
+
+
+@pytest.mark.parametrize("sqrt_c", [0., .05])
+def test_unfilled_iocs_have_no_traded_impact(tmp_path, sqrt_c):
+    p = params()
+    p["f_offsets"] = [[-1000, 1]]  # Every IOC limit is behind the opposite touch.
+    p["latent"].update(impact_sqrt=sqrt_c, impact_traded=True)
+    target, latent = tmp_path / "tape.csv", tmp_path / "latent.csv"
+    generate(p, 71, 40, target, latent)
+    path = np.loadtxt(latent, delimiter=",", skiprows=1)
+    assert np.all(path[:, 1] == 9999.5)
+    assert ",F\n" in target.read_text()
+    p["latent"]["impact_traded"] = False
+    generate(p, 71, 40, target, latent)
+    assert np.std(np.loadtxt(latent, delimiter=",", skiprows=1)[:, 1]) > 0
 
 
 def test_raw_inventory_keeps_censoring_ids_and_microseconds(tmp_path):
