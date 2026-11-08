@@ -805,3 +805,69 @@ The forecast tool also tests fitted table scale and an offline linear-impact arm
 exactly the same fractional-grid interpolation. It is excluded from Rust export because Rust currently
 has no matching knob. A proposed FILTER_LINEAR_C would go in `_lf_trade` only, but a passing gap forecast
 would be required before the main session implements it. The old baseline uses linear_c=0 unchanged.
+
+
+## Round 4 calibration (8 Nov, 07:28 checkpoint)
+
+The user's priority is R4, with a common R3/R4 parameter switch if the evidence supports one.
+R4 public is 6,000s, SHA256
+`61c0b6d149e5e50806f1b09ba17fa69ac3e5d8d2cf884d6f11ce17b833af8a56`.
+`tape_gen --fit` gives G195.013/s and raw F9.741/s (58,445 F inserts; filled-only counts differ).
+New marginal fit: `data/arena/gen/r4_params.json`. No candidate bots or Rust strategies changed.
+
+### Observable change shared across blocks
+
+`gen_round_fit --flow-only` measures F-side dependence, with the full-tape buy imbalance removed
+from the iid same-side expectation. Its second diagnostic uses only Gs in [t-100ms,t), at least
+three per side: c=(mean bid-G price + mean ask-G price)/2, compared with the pre-F visible mid.
+This proxy does not use the F's price, same-time Gs, or any future messages, and is not true latent.
+
+| Measurement | R3 | R4 |
+|---|---:|---:|
+| Raw F buy share | .50043 | .49833 |
+| Consecutive same-side share | .50120 | .53941 |
+| Same-side excess above iid | .00120 | .03940 |
+| F follows sign(c-mid), absolute gap >.5tick | .49424 | .59682 |
+| Same, gap >1tick | .49159 | .65444 |
+| >.5tick follow-share range over six1000s blocks | .486-.504 | .575-.613 |
+
+Thus the new directional relationship is stable across the tape, not just an unconditional trend.
+A positive `informed` fraction is a plausible model switch from R3's near-independent F signs.
+It is not recovered uniquely from these probabilities: stale book, proxy noise and impact feedback
+all affect them. R4 moments and strategy ordering must qualify the resulting model.
+
+### Controlled transfer so far
+
+The same measurement code on real and simulated tapes gives R4 sd1/10/60/300=
+6.19/27.44/56.70/111.65, one-tick spread .813, changes/s6.646, small-F5s markout2.43,
+large-F0.1s/5s markouts1.47/3.71 and 3+tick/50ms moves100/ks. These overlapping-return
+statistics differ from tape_character's nonoverlapping60s variance definition.
+
+Seed501, R4 marginals, old `r3_public_after`: sd1/10/60=3.65/12.69/29.61,
+small-F5s .27, six-bot scores L8/L3/L9/B1/F3/F5=
+489992/494766/502068/499431/576080/575365.
+Real scores=901311/851547/892246/907100/1025404/1029443.
+The quote benefits have the wrong sign. Archived R3 seeds304-306 have the same issue;
+rescaling their PnL cannot repair it.
+
+Changing only informed=.5 gives sd1/10/60=4.31/14.47/32.42, small-F5s1.39,
+same-side .6141 and G-alignment .6678, both too high; F3 PnL1189821 overshoots and quotes
+still lose. Adding informed=.3, drift_sd=3, drift_tau=3 improves the augmented moment
+log-RMSE .771→.310 on seed501, but fresh seeds and scores are not yet qualified.
+The augmented distance includes small-order markouts and the complement of one-tick share;
+negative simulated markouts are penalized rather than silently omitted.
+
+Reproduce from the main checkout after merging the source (single worker per command):
+
+```sh
+uv run python -m experiments.day.tape_gen --fit data/arena/round4/round4_public.csv --params-out data/arena/gen/r4_params.json
+uv run python -m experiments.day.gen_round_fit data/arena/round4/round4_public.csv --flow-only --dir data/arena/gen/r4_fit --out data/arena/gen/r4_fit/r4_flow.json
+uv run python -m experiments.day.gen_round_fit data/arena/round3/round3_public.csv --flow-only --dir data/arena/gen/r4_fit_r3 --out data/arena/gen/r4_fit/r3_flow.json
+uv run python -m experiments.day.gen_round_fit data/arena/round4/round4_public.csv --params data/arena/gen/r4_params.json --dir data/arena/gen/r4_fit --case 'base={"informed":0.0}' --case 'informed50={"informed":0.5}' --case 'drift3={"informed":0.3,"drift_sd":3.0,"drift_tau":3.0}' --seeds 501 --family data/arena/round4/family_rust.txt --binary rust/target/release/arena-sim --score --check-real
+```
+
+`--check-real` requires the executable/parameter sets to reproduce all six real family scores
+within one unit before synthetic score comparisons. Cached generation binds source, parameters,
+seed, duration and file hash. Each case's seed summary is persistent; invocation reports use
+distinct names or explicit `--out`. This is public-tape calibration, not a validation-PnL gain.
+Further tuning and fresh-seed checks remain active; no R4 preset is promoted at this checkpoint.
