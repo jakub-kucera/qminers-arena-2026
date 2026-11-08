@@ -15,13 +15,17 @@ each tape's PnL, the objective); the best point's `--set` line and the paired_ru
 printed at the end. Deterministic: the same seed and tapes give the same search.
 
 Round 4's recipe (IDEAS.md, "R3-P1"): the new public tape's first 75% plus three of the generator's look-alike draws
-cut to a third, the rest held out:
+cut to a third, the rest held out; the quote knobs fixed (the generator's makers are unvalidated: on round 3 a lower
+QS_RATE with a longer QS_US halved the fills on the draws and raised them on the real tape) and FT_FLIP_M off (its
+active band lost on every tape and took most of a free search's samples):
 
     uv run python -m experiments.day.policy_search --train data/round4.csv:0.75 --train GEN/seed401.csv:0.34
         --train GEN/seed402.csv:0.34 --train GEN/seed403.csv:0.34 --hold data/round4.csv --hold GEN/seed404.csv
-        --hold GEN/seed405.csv --base F5 --evals 200 --threads 6 --out results/policy_r4
+        --hold GEN/seed405.csv --base F5 --fix FT_FLIP_M=99.0 --fix QS_RATE=2.5 --fix QS_US=5000000
+        --fix DEAD_ZONE=0.18 --fix KEEP_TH=0.3 --evals 132 --threads 8 --out results/policy_r4
 
-numpy only beyond the standard library.
+About 90 s a generation of 11 on 8 threads (four 4,000-4,500-s tapes). `ARENA_SIM_BIN=path` runs another arena-sim
+build instead of building this checkout's. numpy only beyond the standard library.
 """
 
 from __future__ import annotations
