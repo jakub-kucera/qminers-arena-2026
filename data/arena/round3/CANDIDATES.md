@@ -50,3 +50,9 @@ Trials so far: 0 experiments, 0 cells.
 - R2-L9 (the Huber-robust pure taker, +873,719 on round 2's validation) plus R2-L8's one-lot quotes switched on only while the 5-s |mid change| rate is below QS_RATE 2.5 ticks/s; QS_RATE 0 is L9 exactly. validate OK, 29.9 KB.
 - L9 / B1 (pnl; breach 0 everywhere; local run time): round2_public 317,057 / 318,954 (150 / 179 s); the mirror the same; round1 134,626 / **206,648** (+72k); hi_vol_fast1.25 1,020,848 / **999,473** (-21k); hi_vol 867,369 / 876,974 (+10k).
 - The quotes pay on calm tapes and cost on the fastest one, more than they did on L1/L8: on a fast round-3 tape start from L9; on a calmer one from B1; grid QS_RATE (1.0-3.0) on the new tape first.
+
+### R3-F1 (8 Nov 01:25): the latent-price filter in L9's ridge (`python/bots/qminers/candidates/r3_F1_latent_filter.py`)
+- R2-L9 plus three ridge features from a hidden-Markov filter of the generator's latent reference bid: gap = E[lb] + 0.5 - mid, gap*|gap|/3, and the posterior sd. New market orders say where lb is (bids at lb - k, asks at lb + 1 + k, k 0/1/2, clamped one tick off the other touch), and market takers' fills move it by 3x tape_gen's impact table. FEATURE_COUNT 39. FILTER = 0 is L9 to the unit. validate OK, ~36 KB. The offline copy is `python/experiments/day/latent_filter.py`; the measurements are in IDEAS.md's R3-F1 row.
+- F1 / L9 (pnl; breach 0 everywhere): **round3_public 480,469 / 424,730** (+55.7k; 500-s segments won 7/11, t +1.57; first 75% +46.2k, last 25% +9.5k); round2_public 303,720 / 317,057 (-4.2%); round 2's hi_vol_fast1.25 1,012,787 / 1,020,848 (-0.8%); round1 152,188 / 134,626 (+13%).
+- Local run time on r3 205 s vs 187 s (+10%), about 360 s on the server. It trades more: 572k lots vs 460k on r3.
+- Next: round 3's stitched tapes (running), TAKE_EDGE 0.3 on F1 and L9 (running), the Rust port behind a FILTER knob, then the sqrt-impact variant.
