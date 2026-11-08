@@ -13,7 +13,7 @@ from collections import deque
 from simulator.models import OrderRequest, OrderStatus, OrderType, Side
 from simulator.strategy import BaseStrategy
 
-QUOTE = 20  # lots a quote
+QUOTE = 50  # lots a quote (round3_public: 20 / 50 19,400 / 31,843)
 LIMIT = 100  # |position + live lots on the side| at most this (the penalty starts above 100)
 SKEW = 60  # past this many lots, quote only the reducing side
 MAX_SPREAD = 1  # quote only while the market's spread is at most this many ticks
