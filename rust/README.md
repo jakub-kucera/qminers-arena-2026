@@ -180,13 +180,34 @@ the Python file's numbers: round3_public 480469.00 (volume 571,820; FILTER 0 is 
 303720.00 with pnl.csv and result.json byte for byte (`test_ridge_maker_round2_takers`); R3-F3 (B1's line and
 `--set FILTER=1`) 505212.00 on round3_public, byte for byte too. FILTER needs `QUOTEFEAT` 1. `FILTER_JUMP` (with
 `FILTER_JUMP_MED`, `FILTER_JUMP_SD`, off by default) is Rust only: it adds lognormal jumps to the latent's walk and
-loses on round3_public.
+loses on round3_public. R3-F4's bank (8 Nov, `r3_F4_filter_bank.py`, byte for byte on round3_public, 512175.00):
+`FILTER_IMP2` / `FILTER_IMP3` (0: off) run more copies of the filter at those impact scales and take the features from
+the copy whose inserts' log-likelihood (decayed over `FILTER_LL_N` inserts, 100000) is highest, ahead of F3's own by
+`FILTER_LL_MARGIN` nats (0). `FILTER_XGAP` 1 / 2 (0: off) adds the first copy's gap as features instead; `FILTER_CLIP`
+(5.0) is the gap's clip. `FILTER_VRATE` / `FILTER_VIMPACT` (0: off) are the walk's rate and the impact scale while
+FILTER_VQS's speed switch is on. All off by default (F3 505212.00 unchanged); none beat F3 on round 3 (IDEAS.md, "A better
+state for R3-F3's latent-price filter").
 
 R3-G1's early exit (8 Nov, Rust only, off by default: `FT_EXIT` 99.0, `FT_EXIT_SZ` 0, `FT_EXIT_WIDE` 0, `FT_EXIT_KEEP`
 99.0): a reduce-only IOC at the touch when the forecast is against the position by more than FT_EXIT plus half the
 spread and the forecast take does not fire, or at a spread of FT_EXIT_WIDE+ unless the forecast is with the position by
 FT_EXIT_KEEP. On R3-F3 (`$B1 --set FILTER=1`, 505212.00 on round3_public, unchanged with the knob off) every setting tied or
 lost, so no Python file was written (IDEAS.md, "R3-F3's loss anatomy").
+
+R3-F5's state-dependent take bar and flip size (8 Nov, Rust only, off by default: `FT_JUMP` 0.0 with `FT_JUMP_MS` 200,
+`FT_JUMP_HOLD_MS` 5000, `FT_JUMP_EDGE` 0.15; `FT_LGAP` 99.0 with `FT_LGAP_EDGE` 0.15; `FT_FLIP_M` 99.0): each side's take
+bar is the lowest of FT_EDGE, FT_JUMP_EDGE for FT_JUMP_HOLD_MS after a move of FT_JUMP+ ticks within FT_JUMP_MS, and
+FT_LGAP_EDGE while the filter's gap that way is FT_LGAP+; FT_FLIP_M stops a flip at flat unless the signal clears its
+bar by that much. F3 unchanged with them off (505212.00); results in IDEAS.md, "R3-F5". R3-F5
+(`r3_F5_jump_bar.py`) is `$B1 --set FILTER=1 --set FT_EDGE=0.25 --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set
+FT_JUMP_EDGE=0.15`: round3_public 515670.00 and round2_public 330980.00, the Python file's result.json and pnl.csv byte
+for byte on round3_public (`test_ridge_maker_round2_takers` keeps F3 and F5 on round2_public). Grids with
+`uv run python -m experiments.day.paired_rust TAPE ... --bot F3=B1:'--set FILTER=1' --bot X=B1:'--set FILTER=1 --set ...'`.
+
+The round-3 audit's quote knobs (8 Nov, Rust only, off by default: `QS_PULL` 0, `QUOTE_GAP` 99.0) withdraw the
+quotes while QS_RATE's switch is off, or on the side the latent filter's gap is against; both lose on R3-F3 (IDEAS.md,
+"Round 3 audit"). `RIDGE_PRED_EXTRA` (an environment variable, with `RIDGE_PRED_LOG`) adds the filter's gap and
+QS_RATE's speed to the prediction log, for `experiments.day.quote_audit`.
 
 **Speed** (the sample, 53,758 rows, one core, measured 7 Nov): trend_follower 151 ms a run in Python, 1.7 ms in
 Rust (90x); F1 274 ms, 3.9 ms (70x); parsing the CSV once is 5 ms more. On 4 threads, F1's 16-cell grid

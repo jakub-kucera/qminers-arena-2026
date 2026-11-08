@@ -90,7 +90,8 @@
 //! `FT_GAP_MS` (100), exempt from the re-quote's cancels for 1 s; the room is EXPOSURE minus the position its way
 //! (`FT_MODE` 0), only the position against it (1: reduce, if at least `FT_INV` 0 lots) or only when not against it
 //! (2: open). `RIDGE_PRED_LOG` (an environment variable, a path) writes each book event's time, mid, prediction,
-//! skew, spread and inventory, for measuring the forecast.
+//! skew, spread and inventory, for measuring the forecast; with `RIDGE_PRED_EXTRA` set too, the latent filter's gap
+//! and QS_RATE's speed as two more columns (experiments/day/quote_audit.py).
 //!   FT1 (r2_FT1_forecast_take.py, 688311.10, 23,522): C12's and --set FT_EDGE=0.25 --set FT_SZ=200 --set FT_GAP_MS=50
 //! Queue preservation (R2-Q, 7 Nov), off by default: an accepted order resting at the market's touch that the
 //! quoting would cancel (its price no longer the desired one) keeps its queue place: whole while the market lots
@@ -187,6 +188,14 @@
 //! `FILTER_VQS` (0.0: off; needs QS_RATE): while L8's |mid change| rate is at least FILTER_VQS ticks a second, the
 //! inserts' k weights are FILTER_VPI0/1/2 (0.45/0.40/0.15, normalised) instead of FILTER_PI*. Rust only. On B1F it
 //! gains 3-6k out of sample on round3_public but loses 1-6k in the first 75%, and loses 35-41k on hi_vol_fast1.25.)
+//! `FILTER_IMP2` / `FILTER_IMP3` (0.0: off; R3-F4, `r3_F4_filter_bank.py`, 8 Nov): more copies of the filter at those
+//! impact scales, fed the same events; each keeps its inserts' predictive log-likelihood (log of the likelihood's sum
+//! before normalising), decayed by 1 - 1/`FILTER_LL_N` (100000) per insert, and the three features come from the copy
+//! with the highest (ties: FILTER_IMPACT's own): the impact scale chosen online by likelihood. `FILTER_LL_MARGIN` (0.0):
+//! a copy is chosen only while it beats FILTER_IMPACT's by that many nats. `FILTER_XGAP` 1 / 2 (0: off) instead adds
+//! the first copy's gap (and gap |gap| / 3) as features after F3's three, with no choice. `FILTER_CLIP` (5.0) is the
+//! gap's clip; `FILTER_VRATE` / `FILTER_VIMPACT` (0.0: off) the walk's rate and the impact scale while FILTER_VQS's
+//! switch is on. None beat F3 on round3_public.
 //!   F1  (r3_F1_latent_filter.py, round3_public 480469.00, round2_public 303720.00): L9's and --set FILTER=1
 //! The forecast take's early exit (R3-G1, 8 Nov), off by default: `FT_EXIT` (99.0: off). When the forecast take does
 //! not fire (the signal within its need) and the signal against the position is more than FT_EXIT plus half the
@@ -197,6 +206,20 @@
 //! at a spread of at least that many ticks, the same reduce-only IOC at the touch, unless the signal is with the
 //! position by at least `FT_EXIT_KEEP` (99.0: never kept), at most once a FT_GAP_MS (loss_anatomy: the position's
 //! next 5-s mark-to-market -260 ticks at a 3+ spread).
+//! The forecast take's state-dependent bar and flip size (R3-F5, 8 Nov; Rust only, off by default: F3's 505212.00
+//! unchanged): each side's bar is the lowest of FT_EDGE, `FT_JUMP_EDGE` (0.15) for `FT_JUMP_HOLD_MS` (5000) after the mid
+//! moved `FT_JUMP` (0.0: off) ticks or more from the oldest mid within `FT_JUMP_MS` (200), and `FT_LGAP_EDGE` (0.15)
+//! while the latent filter's gap that way is at least `FT_LGAP` (99.0: off; needs FILTER); `FT_FLIP_M` (99.0: off): a
+//! take from a position against it goes past flat only when the signal clears its bar by FT_FLIP_M, else it stops at
+//! flat (loss_anatomy: the worst 1% of takes are 200-lot flips from a full opposite position). `FT_EDGE_CALM` (-1.0:
+//! off): the base bar while L8's |mid change| rate is below `FT_CALM_RATE` (0.0: QS_RATE; needs QS_RATE).
+//!   F5  (r3_F5_jump_bar.py, round3_public 515670.00, round2_public 330980.00): F3's and --set FT_EDGE=0.25
+//!       --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set FT_JUMP_EDGE=0.15
+//!
+//! The audit's quote knobs (8 Nov), off by default: `QS_PULL` (0) 1 withdraws both quotes, so the resting ones are
+//! cancelled, while QS_RATE's switch is off; `QUOTE_GAP` (99.0: off) withdraws the quote on the side the latent filter's
+//! gap is against by more than that many ticks. Both lose on R3-F3 (round3_public: QS_PULL 1 495,475, QUOTE_GAP
+//! 0-1.0 497,848-501,145, against 505,212; IDEAS.md, "Round 3 audit").
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
@@ -515,6 +538,19 @@ pub struct RidgeMaker {
     ft_exit_sz: i64,
     ft_exit_wide: i64,
     ft_exit_keep: f64,
+    /// R3-F5's state-dependent take bar and flip size (8 Nov, all off by default): FT_LGAP / FT_LGAP_EDGE, FT_JUMP /
+    /// FT_JUMP_MS / FT_JUMP_HOLD_MS / FT_JUMP_EDGE, FT_FLIP_M
+    ft_lgap: f64,
+    ft_lgap_edge: f64,
+    ft_jump: f64,
+    ft_jump_ms: i64,
+    ft_jump_hold_ms: i64,
+    ft_jump_edge: f64,
+    ft_jump_mids: VecDeque<(i64, f64)>,
+    ft_jump_until: i64,
+    ft_flip_m: f64,
+    ft_edge_calm: f64,
+    ft_calm_rate: f64,
     liq: i64,
     /// LIQ: the last recompute's time and mid, each market order's first-seen time, the young imbalance, the dispersion
     liq_time: Option<i64>,
@@ -531,6 +567,11 @@ pub struct RidgeMaker {
     qs_us: i64,
     qs_last: Option<(i64, f64)>,
     qs_rate: f64,
+    /// the audit's quote knobs (8 Nov, off by default): QS_PULL 1 cancels the resting quotes while QS_RATE's switch is
+    /// off; QUOTE_GAP (99.0: off) withdraws the side the filter's gap is against by more than this many ticks
+    qs_pull: bool,
+    quote_gap: f64,
+    lf_gap_now: f64,
     /// round 3's burst sizing (R3-J1, 8 Nov, off by default): BURST_TH ... BURST_HOLD
     burst_th: f64,
     burst_exp: i64,
@@ -587,6 +628,33 @@ pub struct RidgeMaker {
     lf_vqs: f64,
     lf_vpi: [f64; 3],
     lf_vcum: [f64; 3],
+    /// FILTER_IMP2 / FILTER_IMP3 (0: off): more copies of the filter at those impact scales, fed the same events; each
+    /// keeps its inserts' predictive log-likelihood decayed by FILTER_LL_KEEP (1 - 1/FILTER_LL_N) per insert, and the
+    /// features come from the copy with the highest (ties: the first, FILTER_IMPACT's)
+    lf_bank: Vec<LfMember>,
+    lf_ll: f64,
+    lf_ll_keep: f64,
+    /// FILTER_XGAP (0: off; needs FILTER_IMP2): no choice; F3's three features plus the first bank copy's gap (1), and
+    /// its gap |gap| / 3 (2), at the end of the base features
+    lf_xgap: i64,
+    /// FILTER_LL_MARGIN (0.0): a bank copy is chosen only while its log-likelihood beats FILTER_IMPACT's by this many nats
+    lf_ll_margin: f64,
+    /// FILTER_CLIP (5.0): the gap feature's clip, +-ticks
+    lf_clip: f64,
+    /// FILTER_VRATE / FILTER_VIMPACT (0.0: FILTER_RATE's / FILTER_IMPACT's): the walk's rate and the impact scale while
+    /// FILTER_VQS's switch is on (QS_RATE's |mid change| rate at least FILTER_VQS)
+    lf_vrate: f64,
+    lf_vimpact: f64,
+}
+
+/// one more copy of R3-F1's filter (FILTER_IMP2 / FILTER_IMP3): its state, swapped into the RidgeMaker's lf_* fields
+/// while it is updated, so the same code runs on it
+struct LfMember {
+    p: Vec<f64>,
+    base: i64,
+    t: Option<f64>,
+    impact: f64,
+    ll: f64,
 }
 
 extern "C" {
@@ -783,7 +851,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 161] = [
+pub const KEYS: [&str; 180] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -807,8 +875,10 @@ pub const KEYS: [&str; 161] = [
     "BURST_JUMP_MS",
     "FILTER", "FILTER_W", "FILTER_RATE", "FILTER_EPS", "FILTER_PI0", "FILTER_PI1", "FILTER_PI2", "FILTER_IMPACT",
     "FILTER_SQRT_C", "FILTER_DEPTH", "FILTER_JUMP", "FILTER_JUMP_MED", "FILTER_JUMP_SD",
-    "FILTER_VQS", "FILTER_VPI0", "FILTER_VPI1", "FILTER_VPI2",
-    "FT_EXIT", "FT_EXIT_SZ", "FT_EXIT_WIDE", "FT_EXIT_KEEP",
+    "FILTER_VQS", "FILTER_VPI0", "FILTER_VPI1", "FILTER_VPI2", "FILTER_IMP2", "FILTER_IMP3", "FILTER_LL_N", "FILTER_XGAP", "FILTER_LL_MARGIN", "FILTER_CLIP", "FILTER_VRATE", "FILTER_VIMPACT",
+    "FT_EXIT", "FT_EXIT_SZ", "FT_EXIT_WIDE", "FT_EXIT_KEEP", "QS_PULL", "QUOTE_GAP",
+    "FT_LGAP", "FT_LGAP_EDGE", "FT_JUMP", "FT_JUMP_MS", "FT_JUMP_HOLD_MS", "FT_JUMP_EDGE", "FT_FLIP_M",
+    "FT_EDGE_CALM", "FT_CALM_RATE",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -832,7 +902,10 @@ impl RidgeMaker {
                 + if params.int("LIQ", 0)? > 0 { 4 } else { 0 }
                 + if params.int("IMPACT_US", 0)? > 0 { 3 } else { 0 }
                 + if params.int("TREND", 0)? > 0 { 2 } else { 0 }
-                + if params.int("FILTER", 0)? > 0 { 3 } else { 0 };
+                + if params.int("FILTER", 0)? > 0 { 3 + params.int("FILTER_XGAP", 0)? as usize } else { 0 };
+        if params.int("FILTER_XGAP", 0)? > 0 && params.float("FILTER_IMP2", 0.0)? <= 0.0 {
+            return Err("FILTER_XGAP reads the bank's first copy: set FILTER_IMP2".to_string());
+        }
         if params.int("FILTER", 0)? > 0 && params.int("QUOTEFEAT", 0)? == 0 {
             return Err("FILTER reads the new market orders QUOTEFEAT tracks: set QUOTEFEAT=1".to_string());
         }
@@ -1084,6 +1157,17 @@ impl RidgeMaker {
             ft_exit_sz: params.int("FT_EXIT_SZ", 0)?,
             ft_exit_wide: params.int("FT_EXIT_WIDE", 0)?,
             ft_exit_keep: params.float("FT_EXIT_KEEP", 99.0)?,
+            ft_lgap: params.float("FT_LGAP", 99.0)?,
+            ft_lgap_edge: params.float("FT_LGAP_EDGE", 0.15)?,
+            ft_jump: params.float("FT_JUMP", 0.0)?,
+            ft_jump_ms: params.int("FT_JUMP_MS", 200)?,
+            ft_jump_hold_ms: params.int("FT_JUMP_HOLD_MS", 5000)?,
+            ft_jump_edge: params.float("FT_JUMP_EDGE", 0.15)?,
+            ft_jump_mids: VecDeque::new(),
+            ft_jump_until: i64::MIN,
+            ft_flip_m: params.float("FT_FLIP_M", 99.0)?,
+            ft_edge_calm: params.float("FT_EDGE_CALM", -1.0)?,
+            ft_calm_rate: params.float("FT_CALM_RATE", 0.0)?,
             liq: params.int("LIQ", 0)?,
             liq_time: None,
             liq_mid: 0.0,
@@ -1099,6 +1183,9 @@ impl RidgeMaker {
             qs_us: params.int("QS_US", 5_000_000)?,
             qs_last: None,
             qs_rate: 0.0,
+            qs_pull: params.int("QS_PULL", 0)? > 0,
+            quote_gap: params.float("QUOTE_GAP", 99.0)?,
+            lf_gap_now: 0.0,
             burst_th: params.float("BURST_TH", 0.0)?,
             burst_exp: params.int("BURST_EXP", 100)?,
             burst_sz: params.int("BURST_SZ", 0)?,
@@ -1144,6 +1231,18 @@ impl RidgeMaker {
             lf_vqs: params.float("FILTER_VQS", 0.0)?,
             lf_vpi,
             lf_vcum: [lf_vpi[0], lf_vpi[0] + lf_vpi[1], 1.0],
+            lf_bank: [params.float("FILTER_IMP2", 0.0)?, params.float("FILTER_IMP3", 0.0)?]
+                .into_iter()
+                .filter(|&x| x > 0.0)
+                .map(|impact| LfMember { p: Vec::new(), base: 0, t: None, impact, ll: 0.0 })
+                .collect(),
+            lf_ll: 0.0,
+            lf_ll_keep: 1.0 - 1.0 / params.float("FILTER_LL_N", 100000.0)?,
+            lf_xgap: params.int("FILTER_XGAP", 0)?,
+            lf_ll_margin: params.float("FILTER_LL_MARGIN", 0.0)?,
+            lf_clip: params.float("FILTER_CLIP", 5.0)?,
+            lf_vrate: params.float("FILTER_VRATE", 0.0)?,
+            lf_vimpact: params.float("FILTER_VIMPACT", 0.0)?,
         })
     }
 
@@ -1516,7 +1615,8 @@ impl RidgeMaker {
             return;
         }
         self.lf_t = Some(t);
-        let mut a = self.lf_rate * dt;
+        let vol = self.lf_vqs > 0.0 && self.qs_rate >= self.lf_vqs;
+        let mut a = if vol && self.lf_vrate > 0.0 { self.lf_vrate } else { self.lf_rate } * dt;
         if a < 1e-9 {
             return;
         }
@@ -1588,7 +1688,8 @@ impl RidgeMaker {
         let m = if self.lf_sqrt_c > 0.0 {
             self.lf_sqrt_c * (lots as f64).powf(0.5)
         } else {
-            let mut m = self.lf_impact;
+            let vol = self.lf_vqs > 0.0 && self.qs_rate >= self.lf_vqs;
+            let mut m = if vol && self.lf_vimpact > 0.0 { self.lf_vimpact } else { self.lf_impact };
             for (top, value) in TABLE {
                 if lots <= top {
                     m *= value;
@@ -1675,11 +1776,33 @@ impl RidgeMaker {
         for v in p.iter_mut() {
             *v *= inv;
         }
+        if !self.lf_bank.is_empty() {
+            self.lf_ll = self.lf_ll * self.lf_ll_keep + total.ln();
+        }
     }
 
     /// `_lf_observe`: the book's market taker fills, then its new market orders within FILTER_DEPTH of the previous
     /// valid book's touch (the cached one), in the feed's order; before quote_centres moves `known_ids` on.
     fn lf_observe(&mut self, snapshot: &Snapshot, trades: &[Trade], now: i64) {
+        self.lf_observe_one(snapshot, trades, now);
+        for i in 0..self.lf_bank.len() {
+            self.lf_swap(i);
+            self.lf_observe_one(snapshot, trades, now);
+            self.lf_swap(i);
+        }
+    }
+
+    /// FILTER_IMP2 / 3: swap bank member i's state with the lf_* fields (twice restores both)
+    fn lf_swap(&mut self, i: usize) {
+        let m = &mut self.lf_bank[i];
+        std::mem::swap(&mut self.lf_p, &mut m.p);
+        std::mem::swap(&mut self.lf_base, &mut m.base);
+        std::mem::swap(&mut self.lf_t, &mut m.t);
+        std::mem::swap(&mut self.lf_impact, &mut m.impact);
+        std::mem::swap(&mut self.lf_ll, &mut m.ll);
+    }
+
+    fn lf_observe_one(&mut self, snapshot: &Snapshot, trades: &[Trade], now: i64) {
         let Some((bid, ask, _)) = self.cached else { return };
         if bid >= ask {
             return;
@@ -1734,19 +1857,25 @@ impl RidgeMaker {
 
     /// `_lf_features`: gap = E[lb] + 0.5 - mid (clipped +-5), gap |gap| / 3 and min(3, the posterior sd).
     fn lf_features(&self, mid: f64) -> [f64; 3] {
-        if self.lf_p.is_empty() {
+        let (mut p, mut base, mut best) = (&self.lf_p, self.lf_base, self.lf_ll + self.lf_ll_margin);
+        for m in &self.lf_bank {
+            if self.lf_xgap == 0 && m.ll > best {
+                (p, base, best) = (&m.p, m.base, m.ll);
+            }
+        }
+        if p.is_empty() {
             return [0.0; 3];
         }
         let (mut m, mut s2) = (0.0f64, 0.0f64);
-        for (i, &v) in self.lf_p.iter().enumerate() {
+        for (i, &v) in p.iter().enumerate() {
             let fi = i as f64;
             m += v * fi;
             s2 += v * fi * fi;
         }
-        let mean = self.lf_base as f64 + m;
+        let mean = base as f64 + m;
         let var = s2 - m * m;
         let sd = (if var > 0.0 { var } else { 0.0 }).powf(0.5);
-        let gap = clamp(mean + 0.5 - mid, -5.0, 5.0);
+        let gap = clamp(mean + 0.5 - mid, -self.lf_clip, self.lf_clip);
         [gap, gap * gap.abs() / 3.0, if sd < 3.0 { sd } else { 3.0 }]
     }
 
@@ -2193,6 +2322,23 @@ impl Strategy for RidgeMaker {
             }
             self.burst_rate_last = Some((now, mid));
         }
+        if self.ft_jump > 0.0 {
+            // FT_JUMP (R3-F5): the mid at least FT_JUMP ticks from the oldest mid within FT_JUMP_MS opens FT_JUMP_HOLD_MS
+            // of the take bar FT_JUMP_EDGE
+            self.ft_jump_mids.push_back((now, mid));
+            while let Some(&(t, _)) = self.ft_jump_mids.front() {
+                if t < now - self.ft_jump_ms * 1000 {
+                    self.ft_jump_mids.pop_front();
+                } else {
+                    break;
+                }
+            }
+            if let Some(&(_, m)) = self.ft_jump_mids.front() {
+                if (mid - m).abs() >= self.ft_jump {
+                    self.ft_jump_until = now + self.ft_jump_hold_ms * 1000;
+                }
+            }
+        }
         let spread = ask - bid;
         let flow = self.net / (1.0 + self.volume);
         let imbalance = (bq - aq) as f64 / (bq + aq) as f64;
@@ -2462,7 +2608,7 @@ impl Strategy for RidgeMaker {
             }
         }
         // LIQ's four and IMPACT_US's three sit just before TREND's two, then FILTER's three end the base features
-        let filter_n = if self.filter > 0 { 3 } else { 0 };
+        let filter_n = if self.filter > 0 { 3 + self.lf_xgap as usize } else { 0 };
         let trend_n = filter_n + if self.trend > 0 { 2 } else { 0 };
         let tail = trend_n + if self.impact_us > 0 { 3 } else { 0 };
         if self.liq > 0 {
@@ -2487,11 +2633,27 @@ impl Strategy for RidgeMaker {
             features[k + 1] = clamp(mid - self.trend_e[1], -20.0, 20.0);
         }
         if self.filter > 0 {
-            let k = self.n_base - 3;
+            let k = self.n_base - filter_n;
             let f = self.lf_features(mid);
+            self.lf_gap_now = f[0];
             features[k] = f[0];
             features[k + 1] = f[1];
             features[k + 2] = f[2];
+            if self.lf_xgap > 0 {
+                let m = &self.lf_bank[0];
+                let mut gap = 0.0;
+                if !m.p.is_empty() {
+                    let mut e = 0.0f64;
+                    for (i, &v) in m.p.iter().enumerate() {
+                        e += v * i as f64;
+                    }
+                    gap = clamp(m.base as f64 + e + 0.5 - mid, -5.0, 5.0);
+                }
+                features[k + 3] = gap;
+                if self.lf_xgap > 1 {
+                    features[k + 4] = gap * gap.abs() / 3.0;
+                }
+            }
         }
         let n = self.n_base;
         if self.std_on > 0 {
@@ -2738,6 +2900,18 @@ impl Strategy for RidgeMaker {
         if flow > self.flow_cut || self.inventory <= -cap_sell {
             sell = None;
         }
+        if self.qs_pull && self.qs_th > 0.0 && !(self.qs_rate < self.qs_th) {
+            buy = None;
+            sell = None;
+        }
+        if self.quote_gap < 99.0 {
+            if self.lf_gap_now < -self.quote_gap {
+                buy = None;
+            }
+            if self.lf_gap_now > self.quote_gap {
+                sell = None;
+            }
+        }
         self.dbg[5] += 1.0;
         if let Some(t) = self.dbg_inv_t {
             let dt = (now - t).max(0) as f64;
@@ -2846,7 +3020,13 @@ impl Strategy for RidgeMaker {
         if self.m1.labels >= self.min_labels {
             if let Some(w) = self.pred_log.as_mut() {
                 use std::io::Write;
-                let _ = writeln!(w, "{},{},{},{},{},{}", now, mid, prediction, skew, spread, self.inventory);
+                if std::env::var("RIDGE_PRED_EXTRA").is_ok() {
+                    // the audit (8 Nov): the filter's gap and QS_RATE's speed as two more columns
+                    let _ = writeln!(w, "{},{},{},{},{},{},{},{}", now, mid, prediction, skew, spread, self.inventory,
+                                     self.lf_gap_now, self.qs_rate);
+                } else {
+                    let _ = writeln!(w, "{},{},{},{},{},{}", now, mid, prediction, skew, spread, self.inventory);
+                }
             }
         }
         // BURST (R3-J1): a forecast of BURST_TH or more starts a burst of BURST_MS on its side, the take's room there
@@ -2953,14 +3133,35 @@ impl Strategy for RidgeMaker {
         {
             let source = if self.ft_src == 1 { p2_only } else { prediction };
             let signal = if self.ft_net > 0 { source - skew } else { source };
-            let need = self.ft_edge + 0.5 * spread_f;
-            let sign = if signal > need {
+            // R3-F5 (off by default): each side's bar is the lowest of FT_EDGE, FT_JUMP_EDGE within FT_JUMP_HOLD_MS of
+            // a jump, and FT_LGAP_EDGE while the filter's gap that way is at least FT_LGAP
+            // FT_EDGE_CALM: the bar in its place while L8's |mid change| rate is below FT_CALM_RATE (0: QS_RATE)
+            let calm_rate = if self.ft_calm_rate > 0.0 { self.ft_calm_rate } else { self.qs_th };
+            let base_edge = if self.ft_edge_calm >= 0.0 && self.qs_rate < calm_rate { self.ft_edge_calm } else { self.ft_edge };
+            let (mut edge_up, mut edge_dn) = (base_edge, base_edge);
+            if self.ft_jump > 0.0 && now < self.ft_jump_until {
+                edge_up = edge_up.min(self.ft_jump_edge);
+                edge_dn = edge_dn.min(self.ft_jump_edge);
+            }
+            if self.ft_lgap < 99.0 && self.filter > 0 {
+                let gap = self.lf_features(mid)[0];
+                if gap >= self.ft_lgap {
+                    edge_up = edge_up.min(self.ft_lgap_edge);
+                }
+                if -gap >= self.ft_lgap {
+                    edge_dn = edge_dn.min(self.ft_lgap_edge);
+                }
+            }
+            let need_up = edge_up + 0.5 * spread_f;
+            let need_dn = edge_dn + 0.5 * spread_f;
+            let sign = if signal > need_up {
                 1
-            } else if signal < -need {
+            } else if signal < -need_dn {
                 -1
             } else {
                 0
             };
+            let need = if sign < 0 { need_dn } else { need_up };
             if sign != 0 {
                 let pos = sign * self.inventory;
                 // a burst on this side: BURST_EXP is the exposure and the limit, BURST_SZ (0: BURST_EXP) the take's lots
@@ -2991,7 +3192,12 @@ impl Strategy for RidgeMaker {
                 } else {
                     (self.ft_sz, self.position_limit, self.ft_thru)
                 };
-                let quantity = size.min(room).min(limit - pos - reserved);
+                let mut quantity = size.min(room).min(limit - pos - reserved);
+                // FT_FLIP_M (R3-F5): from a position against the take, past flat only when the signal clears its bar
+                // by FT_FLIP_M
+                if self.ft_flip_m < 99.0 && pos < 0 && signal * (sign as f64) < need + self.ft_flip_m {
+                    quantity = quantity.min(-pos - reserved);
+                }
                 if quantity > 0 {
                     if big {
                         self.burst_lots += quantity;

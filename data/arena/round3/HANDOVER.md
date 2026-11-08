@@ -33,6 +33,7 @@ Check it is marked final on the portal before 06:00.
 |---|---|---|---|---|---|
 | 1 | 01:24 | `r3_F1_latent_filter.py` (L9 + filter) | +862,764 | 480,469 | 563 s server time |
 | 2 | 01:46 | `r3_F3_latent_filter_b1.py` (B1 + filter) | **+883,559** | 505,212 | +20.8k over F1, all in the calmer segments where the quotes switch on |
+| 3 | 02:57 | `r3_B1_huber_quote_switch.py` (F3 without the filter) | +733,790 | 433,922 | the filter on the server: F3 - B1 = **+149,769 (+20.4%)**, against ~+124k expected from the local +71,290 (+16.4%); round 4 starts from the filter bots |
 
 ### What round 3 established (details and commands in the IDEAS.md rows named)
 - **The tape:** round 2's generator again, a bit more volatile (68% of 60-s blocks volatile; 389 jumps of 3+ ticks in
@@ -60,7 +61,7 @@ Check it is marked final on the portal before 06:00.
   F3 10% faster with identical PnL (R3-P2's file with `PRE = 0`); `experiments.day.family_rust`.
 
 ### Next (in order)
-1. Keep F3 final. A spare upload: plain R3-B1 (`r3_B1_huber_quote_switch.py`) measures the filter's real gain on the
+1. Keep F3 final. (Done 02:57: plain R3-B1 made +733,790, so the filter earns +149,769 on validation.) Plain R3-B1 (`r3_B1_huber_quote_switch.py`) measures the filter's real gain on the
    server (F3 - B1), worth knowing for round 4.
 2. The untested direction the statistics agent left: more size or a lower take bar just after jumps or while inserts
    land wide (where takes earn most); burst sizing lost, so it is a weak lead.
@@ -115,7 +116,8 @@ Round 2's L-family re-ranked on round 3's own tapes ("Round 3's first look"); L9
 ## Leaderboard
 Round 3's live percentiles from the organisers' dashboard (01:49): p25 176k, median 503k, p75 785k; overall 12th.
 At 02:38 (the dashboard's data, 40 teams, 84 submissions, 3 failed): the best validation PnL a team, p25 289k, median
-546k, p75 848k (868k at 02:33); the field is rising, F3's +883,559 is 35k over p75. Our private results so far
+546k, p75 848k (868k at 02:33); the field is rising, F3's +883,559 is 35k over p75. At 03:26 (47 teams, 137
+submissions, 8 failed): p25 391k, median 606k, p75 876k, so F3 is 7k over p75. Our private results so far
 (team ThatsMyQuant): round 1 602,527 (8th of 61), round 2 742,470 (22nd of 59; 10th had 1,017,551, 5th 1,195,019);
 overall 12th, z1 1.212 + z2 0.398 = 1.368 (total = 0.8 z1 + 1.0 z2, z over the round's profitable teams).
 
@@ -173,3 +175,59 @@ Round 2's whole story is in `data/arena/round2/HANDOVER.md`, "Round 2 results, m
 - Switch the final only for a clear validation margin (~25k+) backed by the local tapes; with near-identical bots, the higher validation score is fine.
 - **Mark the final before the deadline** (round 2's was 00:14/00:15 Prague, not 24:00): check the dashboard.
 
+## Audit (8 Nov)
+
+An independent check of round 3's record against main at 659515d, 02:50-03:30; every command and number is in
+IDEAS.md's row "Round 3 audit".
+
+**The record reproduces.** In Rust on round3_public: L3 425,321, L8 427,819, L9 424,730, B1 433,922, F3 (B1F) 505,212,
+F1 (L9F) 480,469, L3F 490,181, L8F 484,057, each to the unit; the Python F3 full-logs run 505212.00. The hand-merged
+`ridge_maker.rs` (98e6d54) changed no default: BURST_*, FILTER_JUMP, FILTER_VQS and FT_EXIT* are inert at their
+defaults, every round-3 experiment's base line reads 505,212, and `test_arena_rust.py` passes.
+
+**Experiments whose conclusion could flip on the right base** (largest plausible PnL first; `$F3` is
+`family_rust.B1` and `--set FILTER=1`):
+1. **FT_EDGE on F3.** R3-F1's row kept 0.15 on a 0.7k holdout difference on the stitched hvf tape, which this handover
+   says overstates. On F3, 0.25 wins on r3 public (+6.2k) and on r3b seeds 201-203 (+16.3k / +14.8k / +3.8k), both
+   halves (in 75% +30.4k, out 25% +10.7k); 0.35 loses on two seeds. Over the four tapes 0.15 / 0.2 / 0.25 / 0.3 /
+   0.35 make 3.499M / 3.526M / 3.540M / 3.516M / 3.465M (0.2 and 0.25 ahead on all four), but on r3 public alone the
+   paired 500-s segments give t +0.60 (5 of 12 won), seed 202's 1,000-s ones t +1.48 (8 of 12): consistent in
+   sign, not significant on any one tape. Plausibly
+   +5-15k on a 12,000-s validation tape. The fix is one constant, F3 with `TAKE_EDGE = 0.25`; that needs a new
+   candidate file, so the audit did not write one. Re-test: `uv run python -m arena.qsim_rust ridge_maker data/arena/round3/round3_public.csv data/arena/gen/r3b/seed20{1,2,3}.csv $F3 --grid FT_EDGE=0.15,0.2,0.25,0.3 --holdout 0.25`.
+2. **QS_RATE on F3.** Only gridded on L8 without the filter (the "QS_RATE x FT_EDGE grid on L8 (flat)" above, whose
+   numbers were nowhere: now in the audit row). On F3: 3.5 +3.2k (both halves), 3.0 +1.3k, 5.0 +2.3k, 2.0 -9.0k,
+   always on -16.6k. On r3b seeds 201-203 3.5 loses 22-25k a seed (381k fills against 122k: the draws quote far more
+   at 3.5, and makers are unvalidated there). Keep 2.5. Re-test: `... $F3 --grid QS_RATE=2.5,3.0,3.5,5.0` on the same tapes.
+3. **S3 (jump catch) with the taker**, dropped above as unable to share the 100 lots, never run. As a jump take inside
+   F3 within the limit (BURST_JUMP 5 in 200 ms, BURST_EXP 100): +3.0k (first 75% +5.1k, last 25% -2.1k), max drawdown
+   15.0k to 7.7k; 3 ticks -5k to -12k. A tie. Re-test: `... $F3 --set BURST_EXP=100 --set BURST_JUMP_MS=200 --set BURST_GAP_MS=2000 --set BURST_THRU=1 --set BURST_MS=0 --grid BURST_JUMP=4,5,6`.
+4. **The quiet-trade take within the limit** (the burst row's control on B1F, +5.6k on r3 public, all in the last 25%):
+   on r3b seeds 201-203 -325 in total. A tie.
+5. **The FILTER base.** B1F was "the best FILTER base" on the whole public tape but is third on its last 25% (126,880
+   against L3F 132,240, L8F 130,021). On r3b seeds 201-203 B1F leads L3F by 10-20k and L8F by 16-34k: F3 stays.
+6. **Burst sizing over the limit**: grids 1, 2 and 4 ran on L9 without the filter, only the quiet trigger on B1F. The
+   penalty's arithmetic does not depend on the base, so a flip is unlikely (no re-test).
+7. **S4** (taker plus the gap quote) ran on F1, not F3; S1-S3's correlations are against R2-L8. Descriptive only.
+
+On the right base already: the FILTER settings, FILTER_JUMP, FILTER_VQS, FT_EXIT / FT_EXIT_WIDE and R3-P2 (each on
+B1F at 505,212).
+
+**F3's order handling** (r3 public, the Python full-logs run and the Rust twin's prediction log,
+`experiments.day.quote_audit`): nothing worth fixing.
+- 0 orders refused, breach 0; |position| at 100 54% of the time, 90-99 28%. 243,871 orders, 191,323 cancels, 512
+  cancels too late: 510 one-lot fills after our cancel was sent, -1.0k at 5 s.
+- Quotes: 47,795 one-lot fills, +0.41 a lot at the fill and +0.35 / +0.55 at 5 / 30 s (+16.7k / +26.3k). 199 filled
+  while QS_RATE's switch was off (resting from before): -1.1k; cancelling them at the switch (Rust `QS_PULL` 1) costs
+  9.7k. 3,872 filled with the filter's gap 0.5+ against them: -0.62 a lot at 1 s but +0.47 at 5 s; withdrawing that
+  side (`QUOTE_GAP` 0-1.0) costs 4-7k. DEAD_ZONE and KEEP_TH are at their top (others -6k to -10k).
+- Takes: 563,769 lots, +0.90 a lot at 5 s. The quotes' reserve costs at most a lot a take (8,051 lots fewer than F1,
+  -1.4%), and the limit's bound binds anyway at POSITION_LIMIT = EXPOSURE = 100. Fills arrive synchronously and an IOC
+  in flight is reserved, so no take is sized on a stale position. FT_THRU 1 -95.5k, FT_GAP_MS 20 -11.0k.
+- On validation the quotes made about 111k extra fills for +20.8k (0.19 a fill) against 48.7k for +24.7k locally
+  (0.51): their edge a fill there was ~40% of the local one. The results folders hold only pnl.csv, so the cause is
+  not visible; the run's full logs on the portal, if offered, would show it.
+
+**Record fixes.** CANDIDATES.md's Rust FILTER bullet (01:40) moved from the R3-S section to R3-F1's. The QS_RATE x
+FT_EDGE grid's numbers are in the audit row. "Dropped here" above lists S1-S3, whose IDEAS.md rows say `measured`:
+only S1 was combined with the taker (as S4); S3 inside F3 is a tie (item 3); S2 was never combined.
