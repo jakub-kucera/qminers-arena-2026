@@ -92,7 +92,10 @@ BOTS = {
     "M2": ("py", CAND / "r2_M2_flow_trend.py"), "M3": ("py", CAND / "r2_M3_flow_stop_gated.py"),
     "M4": ("py", CAND / "r2_M4_flow_window.py"), "RA": ("py", CAND / "r2_RA_flow_window.py"),
     "H1": ("py", CAND / "r2_H1_flow_bias.py"), "L6": ("py", CAND / "r2_L6_pure_flowbias.py"),
+    "F1": ("py", CAND / "r3_F1_latent_filter.py"),  # R3-F1: L9 + the latent filter's features (+862,764 on r3 validation)
 }
+# Round 3's validation tape (12,000 s): the server's scores so far
+SCOREBOARD_R3 = {"F1": 862_764}
 # Round 2's validation tape (12,000 s), the server's scores (data/arena/round2/HANDOVER.md, CANDIDATES.md)
 SCOREBOARD = {"E2": -41_499, "V2": 71_864, "M3": 366_342, "M2": 376_082, "M4": 441_088, "RA": 467_703, "T1": 485_667,
               "T2": 490_359, "H1": 567_740, "L1": 771_770, "L6": 798_269, "L3": 804_018, "L8": 826_778, "L9": 873_719}
@@ -621,8 +624,16 @@ def cmd_fitstats(args) -> int:
     return 0
 
 
+def add_extra_bots(specs) -> None:
+    """`--extra NAME=FILE`: a Python bot file run by simulator.main under NAME."""
+    for spec in specs or []:
+        name, _, file = spec.partition("=")
+        BOTS[name] = ("py", Path(file).resolve())
+
+
 def cmd_rank(args) -> int:
     """Bots ranked on a parameter set's draws: mean, sd, 5th percentile, min, and pairwise wins over the seeds."""
+    add_extra_bots(args.extra)
     params = with_opts(json.loads(args.params.read_text()), parse_opts(args.opts))
     bots = args.bots.split(",")
     sim = {b: [] for b in bots}
@@ -776,6 +787,7 @@ def main(argv=None) -> int:
     rk.add_argument("--tag", default="rank")
     rk.add_argument("--jobs", type=int, default=5)
     rk.add_argument("--real", type=Path, help="a real tape to run the bots on too")
+    rk.add_argument("--extra", action="append", help="NAME=FILE: another Python bot (repeatable)")
     rk.add_argument("--keep", action="store_true")
     rk.add_argument("--out", type=Path)
     se = sub.add_parser("search", help="random search over the generator's v2 options")
