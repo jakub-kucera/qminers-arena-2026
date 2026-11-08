@@ -202,7 +202,10 @@
 //! moved `FT_JUMP` (0.0: off) ticks or more from the oldest mid within `FT_JUMP_MS` (200), and `FT_LGAP_EDGE` (0.15)
 //! while the latent filter's gap that way is at least `FT_LGAP` (99.0: off; needs FILTER); `FT_FLIP_M` (99.0: off): a
 //! take from a position against it goes past flat only when the signal clears its bar by FT_FLIP_M, else it stops at
-//! flat (loss_anatomy: the worst 1% of takes are 200-lot flips from a full opposite position).
+//! flat (loss_anatomy: the worst 1% of takes are 200-lot flips from a full opposite position). `FT_EDGE_CALM` (-1.0:
+//! off): the base bar while L8's |mid change| rate is below `FT_CALM_RATE` (0.0: QS_RATE; needs QS_RATE).
+//!   F5  (r3_F5_jump_bar.py, round3_public 515670.00, round2_public 330980.00): F3's and --set FT_EDGE=0.25
+//!       --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set FT_JUMP_EDGE=0.15
 
 use std::collections::{HashMap, HashSet, VecDeque};
 
