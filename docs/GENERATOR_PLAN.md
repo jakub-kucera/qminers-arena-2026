@@ -313,3 +313,46 @@ draws with its gain on the real public tape before reading it.
 
 From round 3 on, the generator work moves to its own Claude session; its prompt is `docs/GENERATOR_SESSION_PROMPT.md`
 (the data inventory, what is known, the open discrepancies, the method, the deliverables and the round-4 playbook).
+
+## Raw-stream identification (8 Nov, gen-v3)
+
+`gen_inventory` measures raw CSV fields without assuming a latent/book model. The compact table is
+`docs/GENERATOR_COMPONENTS.json`; it records input SHA256s, candidate-law likelihoods, conditional 95% intervals,
+half-tape fits, and observed lifetime/size dependence. Reproduce the table from the repository root:
+
+```sh
+uv run python -m experiments.day.gen_inventory r1=data/arena/round1/round1.csv r2=data/arena/round2/round2_public.csv r3=data/arena/round3/round3_public.csv sample1=data/sample.csv sample2=data/arena/playground/sample_v2.csv r1_private=data/arena/round1/private_reconstructed.csv --reconstructed r1_private --out data/arena/gen/gen_v3_inventory.json --summary-out docs/GENERATOR_COMPONENTS.json
+```
+
+- Public rounds 1-3: every insert increments the shared OrderId by exactly one, across both G and F orders.
+  Every timestamp has six decimals and is strictly increasing, with a minimum gap of 1 microsecond. This supports
+  one shared ID allocator and a serialization rule; it does not identify how many agents produced the orders.
+- **IOC sizes fit a rounded lognormal**, clipped at one: `max(1, round(exp(N(mu,sigma))))`.
+  The (mu, sigma) estimates are r1 (4.10576, 1.39594), r2 (4.10438, 1.40237), r3 (4.09358, 1.39656).
+  CDF distances are 0.00186, 0.00224, 0.00181. Flooring loses 101.5 / 65.5 / 56.2 AIC units; the rounded
+  Lomax (a genuine power-law tail) loses 2706.7 / 1519.1 / 1591.2. The earlier Hill estimate alone did not identify
+  a Pareto law. The three estimates are compatible with shared settings; the original code's exact constants
+  remain unproved. Confidence intervals condition on the fitted law and iid observations.
+- **Base limit sizes also fit a rounded lognormal**: r1 (2.65811, 1.79913), r2 (2.65686, 1.80280), with CDF
+  distances 0.00039 / 0.00105. Flooring loses 9074 / 4583 AIC units. This replaces a large empirical table with
+  two parameters and an explicit rounding rule, and permits tail values beyond the observed maximum.
+- **Round 3's G population is different.** Its rate is 196.39/s versus 178.31/s on r2. A single lognormal's best
+  CDF distance is 0.01117 (roughly ten times the r2 discrepancy), and its apparent preference for flooring should
+  not be interpreted as a changed rounding rule. There are 3,755 observed G lifetimes above 10 s, all with sizes
+  53-406, median 153; r1/r2 have none. The size law and cancellation clock need a joint population model before
+  a new round-3 preset is justified. Simply enlarging the base G law loses this distinction.
+- Samples are structurally different: the original sample has G rate 7.38/s and sizes uniform 10-40; sample_v2
+  has G rate 179.66/s and sizes uniform 20-40, F rate 6.00/s with lognormal (3.71155, 1.39968). sample_v2 has
+  100,561 G inserts without observed cancels, so its lifetime censoring needs separate investigation. Neither
+  sample is used to choose bots. The private reconstruction has missing IOC quantities and imputed cancels;
+  its fitted IOC/cancel laws cannot identify the original generator's parameters.
+
+`tape_gen` now accepts optional `latent.f_size_law` and `latent.g_size_law` objects: a `lognormal` with
+`mu`, `sigma`, and `rounding`, or an inclusive integer `uniform` with `low`, `high`. F's law also supplies
+post-jump informed orders **conditioned** on `jx_lead_min` (not clamped to it). All existing presets retain their
+empirical tables and their byte-identical draws; a base draw and `r3_public_after` are pinned by SHA256 tests.
+For a component experiment, add `--opts '{"f_size_law":{"law":"lognormal","mu":4.09358,"sigma":1.39656,"rounding":"round"}}'`
+to `tape_gen` with an existing full params file. This is a size-law correction, not a claim of improved bot ranking.
+
+Next: identify the extra round-3 populations jointly by size, lifetime and placement; test PnL-only recovery
+against an existing public full-logs run before treating server PnL curves as recovered market prices.
