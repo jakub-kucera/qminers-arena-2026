@@ -279,6 +279,12 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
     # jump's way in the 0.1 s before the flagged bin and 110 / 9 in it, 43 / 30 from 0.5 to 0.2 s before: they follow
     # the latent's jump, they do not lead it)
     jx_after_s, jx_after_extra = latent.get("jx_after_s", 0.2), latent.get("jx_after_extra", 0.0)
+    # the volatile state's own texture (Phase 1: wider placement throughout it, a warning of varying lead, widenings
+    # with no jump after them): jx_on_k ticks a side wider inserts while in it; each warning lasts jx_warn_s x
+    # exp(jx_warn_sd N(0,1)); jx_false_rate widenings a second with no jump in it; jx_diff_sd ticks per sqrt(s) of
+    # Gaussian diffusion of the latent in it
+    jx_on_k, jx_warn_sd = latent.get("jx_on_k", 0.0), latent.get("jx_warn_sd", 0.0)
+    jx_false_rate, jx_diff_sd = latent.get("jx_false_rate", 0.0), latent.get("jx_diff_sd", 0.0)
     jx = jx_rates[0] > 0 or jx_rates[1] > 0
     timed = delay > 0 or drift_sd > 0 or len(vol_states) > 1 or vol_logsd > 0 or jx
     if (timed or impact_scale != 1.0 or jump_df or k_vol or place_noise or impact_c or f_lim) and not continuous:
@@ -293,6 +299,9 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
     jx_state = 0
     jx_switch = rng2.exponential(jx_dwell[0]) if jx and jx_rates[0] != jx_rates[1] else math.inf
     jx_next, jx_sign, lead = math.inf, 1, []
+    warn_len = jx_warn_s
+    false_until = -1.0
+    false_next = rng2.exponential(1.0 / jx_false_rate) if jx and jx_false_rate > 0 else math.inf
     after = []  # (time, side) of the informed orders after the last jumps, latest first
     warn = False
     f_sizes2 = Sampler([row for row in params["f_sizes"] if row[0] >= jx_lead_min] or params["f_sizes"], rng2)
@@ -300,10 +309,12 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
 
     def schedule(now: float) -> None:
         # the next jump at the current intensity, its sign, and the informed orders before it (times, latest first)
-        nonlocal jx_next, jx_sign, lead
+        nonlocal jx_next, jx_sign, lead, warn_len
         r = jx_rates[jx_state]
         jx_next = now + rng2.exponential(1.0 / r) if r > 0 else math.inf
         jx_sign = 1 if rng2.random() < 0.5 else -1
+        if jx_warn_sd:
+            warn_len = jx_warn_s * math.exp(jx_warn_sd * rng2.standard_normal())
         lead = []
         if jx_lead_extra and jx_next < math.inf:
             lo = max(now, jx_next - jx_lead_s)
@@ -449,7 +460,13 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
                             new = rng2.uniform(t, t + jx_after_s, rng2.poisson(jx_after_extra * jx_after_s)).tolist()
                             after = sorted(after + [(x, side_j) for x in new], reverse=True)
                         schedule(t)
-                    warn = jx_next - t <= jx_warn_s
+                    if jx_diff_sd and jx_state == 1:
+                        shift(jx_diff_sd * math.sqrt(dt) * normal(), t)
+                    if t >= false_next:  # a widening with no jump after it (acted on only in the volatile state)
+                        if jx_state == 1:
+                            false_until = t + (jx_warn_s * math.exp(jx_warn_sd * normal()) if jx_warn_sd else jx_warn_s)
+                        false_next = t + rng2.exponential(1.0 / jx_false_rate)
+                    warn = jx_next - t <= warn_len or t < false_until
             u = us.pop()
             bb, ba = book.best
             if u < p_f:
@@ -521,6 +538,9 @@ def generate(params: dict, seed: int, seconds: float, out: Path, latent_out: Pat
                 if warn:  # a jump is coming: the inserts widen
                     w = int(jx_warn_k)
                     k += w + (1 if unif() < jx_warn_k - w else 0)
+                if jx_on_k and jx_state == 1:  # the volatile state's wider placement
+                    w = int(jx_on_k)
+                    k += w + (1 if unif() < jx_on_k - w else 0)
                 if side == 0:
                     price = lo_b - k
                     if ba is not None:
