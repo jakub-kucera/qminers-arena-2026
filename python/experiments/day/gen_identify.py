@@ -423,6 +423,25 @@ def measure_jumps(tp: Tape, R: np.ndarray, J: float) -> tuple[dict, np.ndarray, 
                              "p_jump": r(fut[sig].mean(), 3), "base": r(base, 4), "lift": r(fut[sig].mean() / max(base, 1e-9), 1),
                              "share_of_jumps_flagged": r((fut & sig).sum() / max(1, (fut & clean).sum()), 3)})
     out["hit_rates"] = hits
+    # episodes: each upward crossing of a threshold 10+ s after the last jump, and the time to the next jump onset
+    episodes = []
+    for name, X, thrs in (("spread", tp.spread_g, (2.0, 3.0)), ("insert_width", width, tuple(np.nanquantile(width, [0.9, 0.97])))):
+        for thr in thrs:
+            on = X >= thr
+            ts = g[np.flatnonzero(on[1:] & ~on[:-1]) + 1]
+            lastj = np.searchsorted(t0, ts, "right") - 1
+            clean = np.where(lastj >= 0, ts - t0[np.clip(lastj, 0, None)], np.inf) > 10
+            nxt = np.searchsorted(t0, ts)
+            lead = np.where(nxt < len(t0), t0[np.clip(nxt, 0, len(t0) - 1)] - ts, np.inf)[clean]
+            near = lead[lead <= 10]
+            episodes.append({"feature": name, "threshold": r(thr, 3), "episodes": int(clean.sum()), "per_1000s": r(1000 * clean.sum() / tp.dur, 1),
+                             "p_jump_within_1_2_5_10s": [r(np.mean(lead <= x), 3) for x in (1, 2, 5, 10)],
+                             "lead_q10_q25_q50_q75_q90": [r(v, 2) for v in np.quantile(near, [0.1, 0.25, 0.5, 0.75, 0.9])] if len(near) else None})
+    out["widening_episodes"] = episodes
+    sp_pre = tp.at(tp.spread_g, t0 - 0.2)
+    w_pre = tp.at(width, t0 - 0.2)
+    ok = ~np.isnan(sp_pre) & ~np.isnan(w_pre)
+    out["abs_size_corr_with_spread_width_at_-0.2s"] = [r(np.corrcoef(np.abs(size[ok]), sp_pre[ok])[0, 1], 3), r(np.corrcoef(np.abs(size[ok]), w_pre[ok])[0, 1], 3)]
     # direction
     ss = np.sign(size)
     feats = {}
