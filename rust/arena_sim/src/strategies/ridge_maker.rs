@@ -224,6 +224,17 @@
 //! against the position, a reduce or a flip; `FT_SD` (99.0: off; needs FILTER) with `FT_SD_EDGE` (0.15), the bar at
 //! most FT_SD_EDGE while the latent filter's posterior sd is at least FT_SD (loss_anatomy: takes at sd 0.5-1 earn
 //! +1.34-1.39 a lot at 5 s, under 0.3 +0.41). The jump and gap rules lower either further.
+//! The online ensemble selector (R4-E1, 8 Nov; Rust only, off by default: F5 515670.00 unchanged): `ENS` (0: off) runs
+//! up to five more ridges beside the first model, on its features and its HUBER: `ENS_H1` / `ENS_H2` / `ENS_H3` (0:
+//! off) at those horizons (us), `ENS_NOFILT` (0: off) at that horizon with the filter's three features zeroed,
+//! `ENS_FIMP` (0: off) at that horizon with the filter's three from FILTER_IMP2's copy (set FILTER_LL_MARGIN=1e18 so the
+//! first model keeps FILTER_IMPACT's). Each forecaster, the first model included, holds a paper position under the
+//! take rule (+-EXPOSURE once its forecast net of its own paper skew clears the take's bars, at a spread within
+//! FT_MAXSPREAD), marked to the mid and charged half the spread a paper trade, its PnL decayed over `ENS_W_S` (600)
+//! seconds. The take's forecast is then the leader's, switching only past `ENS_MARGIN` (0.0) tick-lots (ENS 1), the
+//! Hedge average with weights exp(`ENS_ETA` (0.001) x paper PnL) (2), or the first model's with the take's side set by
+//! a majority of the forecasters clearing the bar (3). The quoting keeps the first model's. `ENS_DEBUG` (an
+//! environment variable, a path) appends a line a run: the switches, the leaders' time shares and the paper trades.
 //!
 //! The audit's quote knobs (8 Nov), off by default: `QS_PULL` (0) 1 withdraws both quotes, so the resting ones are
 //! cancelled, while QS_RATE's switch is off; `QUOTE_GAP` (99.0: off) withdraws the quote on the side the latent filter's
@@ -671,6 +682,22 @@ pub struct RidgeMaker {
     lf_skip: HashSet<u64>,
     /// R4-PG's profit gate (profit_gate.rs; PG 0: off)
     pg: ProfitGate,
+    /// R4-E1's online ensemble selector (ENS, 0: off): more ridges beside the first model, each with a paper
+    /// position under the take rule, chosen by decayed paper PnL
+    ens: i64,
+    ens_models: Vec<Model>,
+    /// per extra: 0 the same features, 1 the filter's three zeroed, 2 the filter's three from FILTER_IMP2's copy
+    ens_kind: Vec<u8>,
+    ens_pos: [i64; 8],
+    ens_score: [f64; 8],
+    ens_last: Option<(i64, f64)>,
+    ens_w_us: f64,
+    ens_margin: f64,
+    ens_eta: f64,
+    ens_leader: usize,
+    ens_switches: i64,
+    ens_lead_t: [f64; 8],
+    ens_paper_trades: [i64; 8],
 }
 
 /// one more copy of R3-F1's filter (FILTER_IMP2 / FILTER_IMP3): its state, swapped into the RidgeMaker's lf_* fields
@@ -829,6 +856,22 @@ impl FeatExtras {
 impl RidgeMaker {
     /// RIDGE_DUMP: the models' sufficient statistics (at DUMP_US, else at the end) to that file, for a warm start
     fn dump_on_drop(&mut self) {
+        if self.ens > 0 {
+            if let Ok(path) = std::env::var("ENS_DEBUG") {
+                use std::io::Write;
+                let n = 1 + self.ens_models.len();
+                let tot: f64 = self.ens_lead_t[..n].iter().sum();
+                let share: Vec<String> = self.ens_lead_t[..n].iter().map(|t| format!("{:.3}", t / tot.max(1.0))).collect();
+                let line = format!(
+                    "ENS mode={} n={} w_s={} margin={} eta={} secs={:.0} switches={} lead_share=[{}] paper_trades={:?}\n",
+                    self.ens, n, self.ens_w_us / 1e6, self.ens_margin, self.ens_eta, tot / 1e6, self.ens_switches,
+                    share.join(","), &self.ens_paper_trades[..n]
+                );
+                if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(path) {
+                    let _ = f.write_all(line.as_bytes());
+                }
+            }
+        }
         if std::env::var("RIDGE_DEBUG").is_ok() {
             eprintln!(
                 "RIDGE_DEBUG maker_lots={} maker_edge={:.1} ioc_lots={} ioc_edge={:.1} at_limit_share={:.3} final_inv={}",
@@ -877,7 +920,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 185] = [
+pub const KEYS: [&str; 194] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -906,6 +949,7 @@ pub const KEYS: [&str; 185] = [
     "FT_LGAP", "FT_LGAP_EDGE", "FT_JUMP", "FT_JUMP_MS", "FT_JUMP_HOLD_MS", "FT_JUMP_EDGE", "FT_FLIP_M",
     "FT_EDGE_CALM", "FT_CALM_RATE", "FT_JUMP_DIR",
     "FT_EDGE_FLIP", "FT_SD", "FT_SD_EDGE",
+    "ENS", "ENS_H1", "ENS_H2", "ENS_H3", "ENS_NOFILT", "ENS_FIMP", "ENS_W_S", "ENS_MARGIN", "ENS_ETA",
 ];
 
 fn side_index(sign: i64) -> usize {
@@ -947,6 +991,21 @@ impl RidgeMaker {
             Model::new(params.int("MH_US2", 1_000_000)?, n_base),
         ];
         rm.mh = mh;
+        if rm.ens > 0 {
+            for (key, kind) in [("ENS_H1", 0u8), ("ENS_H2", 0), ("ENS_H3", 0), ("ENS_NOFILT", 1), ("ENS_FIMP", 2)] {
+                let h = params.int(key, 0)?;
+                if h > 0 {
+                    if kind > 0 && rm.filter == 0 {
+                        return Err(format!("{key} changes the filter's features: set FILTER=1"));
+                    }
+                    if kind == 2 && (rm.lf_bank.is_empty() || rm.lf_xgap > 0) {
+                        return Err("ENS_FIMP reads FILTER_IMP2's copy: set FILTER_IMP2 (and FILTER_LL_MARGIN=1e18)".to_string());
+                    }
+                    rm.ens_models.push(Model::new(h, n));
+                    rm.ens_kind.push(kind);
+                }
+            }
+        }
         if rm.side2 == 2 {
             rm.ex[0].label = 1;
             rm.ex[1].label = 2;
@@ -1280,6 +1339,19 @@ impl RidgeMaker {
             lf_recent: [VecDeque::new(), VecDeque::new()],
             lf_skip: HashSet::new(),
             pg: ProfitGate::new(params)?,
+            ens: params.int("ENS", 0)?,
+            ens_models: Vec::new(),
+            ens_kind: Vec::new(),
+            ens_pos: [0; 8],
+            ens_score: [0.0; 8],
+            ens_last: None,
+            ens_w_us: params.float("ENS_W_S", 600.0)? * 1e6,
+            ens_margin: params.float("ENS_MARGIN", 0.0)?,
+            ens_eta: params.float("ENS_ETA", 0.001)?,
+            ens_leader: 0,
+            ens_switches: 0,
+            ens_lead_t: [0.0; 8],
+            ens_paper_trades: [0; 8],
         })
     }
 
@@ -1348,10 +1420,11 @@ impl RidgeMaker {
         let (label_mode, label_k, label_cap_us, changes) =
             (if which == 0 { self.label_mode } else { 0 }, self.label_k, self.label_cap_us, self.mid_changes);
         // HUBER: the first model's labels down-weighted by their residual against the forecast stored with them
-        let huber = if which == 0 { self.huber } else { 0.0 };
+        let huber = if which == 0 || which >= 100 { self.huber } else { 0.0 };
         let m = match which {
             0 => &mut self.m1,
             1 => &mut self.m2,
+            k if k >= 100 => &mut self.ens_models[k - 100],
             k => &mut self.ex[k - 2],
         };
         let n = m.n;
@@ -1951,6 +2024,80 @@ impl RidgeMaker {
         let sd = (if var > 0.0 { var } else { 0.0 }).powf(0.5);
         let gap = clamp(mean + 0.5 - mid, -self.lf_clip, self.lf_clip);
         [gap, gap * gap.abs() / 3.0, if sd < 3.0 { sd } else { 3.0 }]
+    }
+
+    /// ENS (R4-E1): extra `j`'s features: the first model's, with the filter's three zeroed (kind 1) or taken from
+    /// FILTER_IMP2's copy (kind 2)
+    fn ens_features(&self, j: usize, features: &[f64; NM], mid: f64) -> [f64; NM] {
+        let mut f = *features;
+        let kind = self.ens_kind[j];
+        if kind == 0 {
+            return f;
+        }
+        let k = self.n_base - (3 + self.lf_xgap as usize);
+        if kind == 1 {
+            f[k] = 0.0;
+            f[k + 1] = 0.0;
+            f[k + 2] = 0.0;
+            return f;
+        }
+        let m = &self.lf_bank[0];
+        if m.p.is_empty() {
+            f[k] = 0.0;
+            f[k + 1] = 0.0;
+            f[k + 2] = 0.0;
+            return f;
+        }
+        let (mut e, mut s2) = (0.0f64, 0.0f64);
+        for (i, &v) in m.p.iter().enumerate() {
+            let fi = i as f64;
+            e += v * fi;
+            s2 += v * fi * fi;
+        }
+        let var = s2 - e * e;
+        let sd = (if var > 0.0 { var } else { 0.0 }).powf(0.5);
+        let gap = clamp(m.base as f64 + e + 0.5 - mid, -self.lf_clip, self.lf_clip);
+        f[k] = gap;
+        f[k + 1] = gap * gap.abs() / 3.0;
+        f[k + 2] = if sd < 3.0 { sd } else { 3.0 };
+        f
+    }
+
+    /// ENS (R4-E1): the forecast take's two bars (up, down) as the take computes them, for a position `inventory`
+    fn ens_bars(&self, mid: f64, now: i64, inventory: i64) -> (f64, f64) {
+        let calm_rate = if self.ft_calm_rate > 0.0 { self.ft_calm_rate } else { self.qs_th };
+        let base_edge = if self.ft_edge_calm >= 0.0 && self.qs_rate < calm_rate { self.ft_edge_calm } else { self.ft_edge };
+        let (mut edge_up, mut edge_dn) = (base_edge, base_edge);
+        if self.ft_edge_flip >= 0.0 {
+            if inventory < 0 {
+                edge_up = self.ft_edge_flip;
+            }
+            if inventory > 0 {
+                edge_dn = self.ft_edge_flip;
+            }
+        }
+        if self.ft_sd < 99.0 && self.filter > 0 && self.lf_features(mid)[2] >= self.ft_sd {
+            edge_up = edge_up.min(self.ft_sd_edge);
+            edge_dn = edge_dn.min(self.ft_sd_edge);
+        }
+        if self.ft_jump > 0.0 && now < self.ft_jump_until {
+            if self.ft_jump_dir == 0 || self.ft_jump_dir * self.ft_jump_sign > 0 {
+                edge_up = edge_up.min(self.ft_jump_edge);
+            }
+            if self.ft_jump_dir == 0 || self.ft_jump_dir * self.ft_jump_sign < 0 {
+                edge_dn = edge_dn.min(self.ft_jump_edge);
+            }
+        }
+        if self.ft_lgap < 99.0 && self.filter > 0 {
+            let gap = self.lf_features(mid)[0];
+            if gap >= self.ft_lgap {
+                edge_up = edge_up.min(self.ft_lgap_edge);
+            }
+            if -gap >= self.ft_lgap {
+                edge_dn = edge_dn.min(self.ft_lgap_edge);
+            }
+        }
+        (edge_up, edge_dn)
     }
 
     /// R1-C11's new market orders within 3 ticks of the touch (counts and price sums, bids / asks, all and those of
@@ -2784,7 +2931,26 @@ impl Strategy for RidgeMaker {
                 moe.observe(k, now, mid, &features, n, moe_base);
             }
         }
+        for j in 0..self.ens_models.len() {
+            self.learn(100 + j, now, mid);
+        }
         if now - self.last_observation_us >= self.observation_interval_us {
+            for j in 0..self.ens_models.len() {
+                let fj = self.ens_features(j, &features, mid);
+                let huber = self.huber;
+                let cap = self.obs_cap;
+                let changes = self.mid_changes;
+                let m = &mut self.ens_models[j];
+                if m.observations.len() >= cap {
+                    m.observations.pop_front();
+                }
+                let stored = if huber > 0.0 {
+                    clamp(py_sum(m.weights[..n].iter().zip(fj[..n].iter()).map(|(w, x)| w * x)), -2.0, 2.0)
+                } else {
+                    0.0
+                };
+                m.observations.push_back((now, mid, fj, changes, stored));
+            }
             if self.label_mode == 0 && self.m1.observations.len() >= self.obs_cap {
                 self.m1.observations.pop_front();
             }
@@ -2845,6 +3011,77 @@ impl Strategy for RidgeMaker {
         } else {
             0.0
         };
+        // ENS (R4-E1): each forecaster's paper position under the take rule, marked to the mid net of half the spread
+        // a paper trade, its PnL decayed over ENS_W_S; the take follows the leader (1), the Hedge weights (2) or a vote (3)
+        let ens_n = 1 + self.ens_models.len();
+        let mut ens_preds = [0.0f64; 8];
+        let mut ens_src: Option<f64> = None;
+        if self.ens > 0 {
+            ens_preds[0] = prediction;
+            for j in 0..self.ens_models.len() {
+                let m = &self.ens_models[j];
+                ens_preds[1 + j] = if self.m1.labels >= self.min_labels && m.labels >= self.min_labels {
+                    let fj = self.ens_features(j, &features, mid);
+                    clamp(py_sum(m.weights[..n].iter().zip(fj[..n].iter()).map(|(w, x)| w * x)), -2.0, 2.0)
+                } else {
+                    prediction
+                };
+            }
+            if let Some((t, m0)) = self.ens_last {
+                let dt = (now - t).max(0) as f64;
+                let d = (-dt / self.ens_w_us).exp();
+                let dmid = mid - m0;
+                for k in 0..ens_n {
+                    self.ens_score[k] = self.ens_score[k] * d + self.ens_pos[k] as f64 * dmid;
+                }
+                self.ens_lead_t[self.ens_leader] += dt;
+            }
+            self.ens_last = Some((now, mid));
+            if self.m1.labels >= self.min_labels && (self.ft_maxspread <= 0 || spread <= self.ft_maxspread) {
+                let e = self.exposure;
+                for k in 0..ens_n {
+                    let pos = self.ens_pos[k];
+                    let (eu, ed) = self.ens_bars(mid, now, pos);
+                    let pskew = self.skew_k * pos as f64 / e as f64 * spread_f.max(1.0);
+                    let sig = ens_preds[k] - pskew;
+                    let target = if sig > eu + 0.5 * spread_f {
+                        e
+                    } else if sig < -(ed + 0.5 * spread_f) {
+                        -e
+                    } else {
+                        pos
+                    };
+                    if target != pos {
+                        self.ens_score[k] -= 0.5 * spread_f * (target - pos).abs() as f64;
+                        self.ens_pos[k] = target;
+                        self.ens_paper_trades[k] += 1;
+                    }
+                }
+            }
+            // the leader: switches only past ENS_MARGIN
+            let mut best = self.ens_leader;
+            for k in 0..ens_n {
+                if self.ens_score[k] > self.ens_score[best] {
+                    best = k;
+                }
+            }
+            if best != self.ens_leader && self.ens_score[best] > self.ens_score[self.ens_leader] + self.ens_margin {
+                self.ens_leader = best;
+                self.ens_switches += 1;
+            }
+            if self.ens == 1 {
+                ens_src = Some(ens_preds[self.ens_leader]);
+            } else if self.ens == 2 {
+                let top = self.ens_score[..ens_n].iter().cloned().fold(f64::MIN, f64::max);
+                let (mut wsum, mut psum) = (0.0f64, 0.0f64);
+                for k in 0..ens_n {
+                    let w = (self.ens_eta * (self.ens_score[k] - top)).exp();
+                    wsum += w;
+                    psum += w * ens_preds[k];
+                }
+                ens_src = Some(psum / wsum);
+            }
+        }
         // LEAN_K: the skew aims at an inventory target that follows the slow forecast instead of at 0
         let skew = if self.lean_k != 0.0 {
             let src = match self.lean_src {
@@ -3234,7 +3471,7 @@ impl Strategy for RidgeMaker {
             && (now - self.ft_last >= self.ft_gap_ms * 1000 || burst_new)
             && (ft_maxspread <= 0 || spread <= ft_maxspread)
         {
-            let source = if self.ft_src == 1 { p2_only } else { prediction };
+            let source = if let Some(src) = ens_src { src } else if self.ft_src == 1 { p2_only } else { prediction };
             let signal = if self.ft_net > 0 { source - skew } else { source };
             // R3-F5 (off by default): each side's bar is the lowest of FT_EDGE, FT_JUMP_EDGE within FT_JUMP_HOLD_MS of
             // a jump, and FT_LGAP_EDGE while the filter's gap that way is at least FT_LGAP
@@ -3290,6 +3527,27 @@ impl Strategy for RidgeMaker {
                 -1
             } else {
                 0
+            };
+            // ENS 3 (R4-E1): a take only when most forecasters clear the bar its way
+            let sign = if self.ens == 3 {
+                let (mut up, mut dn) = (0usize, 0usize);
+                for k in 0..ens_n {
+                    let s = if self.ft_net > 0 { ens_preds[k] - skew } else { ens_preds[k] };
+                    if s > need_up {
+                        up += 1;
+                    } else if s < -need_dn {
+                        dn += 1;
+                    }
+                }
+                if 2 * up > ens_n {
+                    1
+                } else if 2 * dn > ens_n {
+                    -1
+                } else {
+                    0
+                }
+            } else {
+                sign
             };
             let need = if sign < 0 { need_dn } else { need_up };
             // R4-PG: a take signal closes PG_HOLD's observations the other way; the gate (PG 1) vetoes a take whose

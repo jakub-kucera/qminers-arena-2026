@@ -212,6 +212,13 @@ R3-P1's two more take-bar states (8 Nov, Rust only, off by default: `FT_EDGE_FLI
 latent filter's posterior sd is FT_SD+; the jump and gap rules lower either further. F3 505212.00 and F5 515670.00
 unchanged with them off. `experiments.day.policy_search` tunes them with the rest of the policy (IDEAS.md, "R3-P1").
 
+R4-E1's online ensemble selector (8 Nov, Rust only, off by default: `ENS` 0; F5 515670.00 unchanged with it off) runs
+up to five more ridges beside the first model (`ENS_H1` / `ENS_H2` / `ENS_H3` at other horizons, `ENS_NOFILT` without the
+filter's features, `ENS_FIMP` on FILTER_IMP2's copy), gives each a paper position under the take rule marked to the
+mid net of half the spread a paper trade, decays each paper PnL over `ENS_W_S` seconds, and takes on the leader's
+forecast (ENS 1, past `ENS_MARGIN`), the Hedge average (2, `ENS_ETA`) or a majority vote (3). `ENS_DEBUG=path` appends
+each run's switches and leaders' time shares. Results in IDEAS.md, "R4-E1".
+
 The round-3 audit's quote knobs (8 Nov, Rust only, off by default: `QS_PULL` 0, `QUOTE_GAP` 99.0) withdraw the
 quotes while QS_RATE's switch is off, or on the side the latent filter's gap is against; both lose on R3-F3 (IDEAS.md,
 "Round 3 audit"). `RIDGE_PRED_EXTRA` (an environment variable, with `RIDGE_PRED_LOG`) adds the filter's gap and
