@@ -428,6 +428,8 @@ pub struct RidgeMaker {
     place_us2: i64,
     depth5: i64,
     flow2: i64,
+    /// FLOW2's two decay times in microseconds (FLOW2_US1 100000, FLOW2_US2 2000000: R1-C1's)
+    flow2_us: [f64; 2],
     last_agg: i64,
     std_on: i64,
     std_us: i64,
@@ -802,6 +804,11 @@ pub struct RidgeMaker {
     gapmean_us: i64,
     gapmean: f64,
     gapmean_last: Option<i64>,
+    /// LVEL_US (R4-LV1, 0: off; needs FILTER): two more features after GAPMEAN_US's, the filter's latent estimate
+    /// (mid + gap) minus its exponential average over LVEL_US, and the gap minus its own, each clipped to +-5 ticks
+    lvel_us: i64,
+    lvel: [f64; 2],
+    lvel_last: Option<i64>,
     /// the features GASYM_US and GAPMEAN_US add at the end (0-2)
     xf_n: usize,
     /// FILTER_CLIP (5.0): the gap feature's clip, +-ticks
@@ -1082,12 +1089,12 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 196] = [
+pub const KEYS: [&str; 199] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
     "DEPLETE_LOTS", "DEPL_FRAC", "TAKE_LOTS", "TAKE_OWN", "TAKE_DEPLETE", "TAKE_MAX", "TAKE_MS",
-    "PLACE", "PLACE_US1", "PLACE_US2", "DEPTH5", "FLOW2", "LAST_AGG", "STD", "STD_US", "BLEND_W", "H2_US",
+    "PLACE", "PLACE_US1", "PLACE_US2", "DEPTH5", "FLOW2", "FLOW2_US1", "FLOW2_US2", "LAST_AGG", "STD", "STD_US", "BLEND_W", "H2_US",
     "EXPOSURE", "CANCEL_FREE", "HEDGE", "HEDGE_TICKS", "HEDGE_STALE_US",
     "FILL_LEARN", "FILL_H_US", "FILL_MIN", "FILL_WARM", "FILL_MEM_US", "FILL_BIN", "FILL_Q",
     "LABEL_MODE", "LABEL_K", "LABEL_CAP_US", "PRED_SCALE",
@@ -1112,7 +1119,7 @@ pub const KEYS: [&str; 196] = [
     "FT_EDGE_CALM", "FT_CALM_RATE", "FT_JUMP_DIR",
     "FT_EDGE_FLIP", "FT_SD", "FT_SD_EDGE",
     "ENS", "ENS_H1", "ENS_H2", "ENS_H3", "ENS_NOFILT", "ENS_FIMP", "ENS_W_S", "ENS_MARGIN", "ENS_ETA",
-    "GASYM_US", "GAPMEAN_US",
+    "GASYM_US", "GAPMEAN_US", "LVEL_US",
 ];
 
 /// R4-X1's knobs (wide-spread takes, the post-jump whipsaw bar), all off by default
@@ -1155,7 +1162,8 @@ impl RidgeMaker {
                 + if params.int("TREND", 0)? > 0 { 2 } else { 0 }
                 + if params.int("FILTER", 0)? > 0 { 3 + params.int("FILTER_XGAP", 0)? as usize } else { 0 }
                 + if params.int("GASYM_US", 0)? > 0 { 1 } else { 0 }
-                + if params.int("GAPMEAN_US", 0)? > 0 { 1 } else { 0 };
+                + if params.int("GAPMEAN_US", 0)? > 0 { 1 } else { 0 }
+                + if params.int("LVEL_US", 0)? > 0 { 2 } else { 0 };
         if params.int("GASYM_US", 0)? > 0 && params.int("QUOTEFEAT", 0)? == 0 {
             return Err("GASYM_US reads the new market orders QUOTEFEAT tracks: set QUOTEFEAT=1".to_string());
         }
@@ -1294,6 +1302,7 @@ impl RidgeMaker {
             place_us2: params.int("PLACE_US2", 300_000)?,
             depth5: params.int("DEPTH5", 0)?,
             flow2: params.int("FLOW2", 0)?,
+            flow2_us: [params.float("FLOW2_US1", 100_000.0)?, params.float("FLOW2_US2", 2_000_000.0)?],
             last_agg: params.int("LAST_AGG", 0)?,
             std_on: params.int("STD", 0)?,
             std_us: params.int("STD_US", 60_000_000)?,
@@ -1607,7 +1616,11 @@ impl RidgeMaker {
             gapmean_us: params.int("GAPMEAN_US", 0)?,
             gapmean: 0.0,
             gapmean_last: None,
-            xf_n: (params.int("GASYM_US", 0)? > 0) as usize + (params.int("GAPMEAN_US", 0)? > 0) as usize,
+            lvel_us: params.int("LVEL_US", 0)?,
+            lvel: [0.0; 2],
+            lvel_last: None,
+            xf_n: (params.int("GASYM_US", 0)? > 0) as usize + (params.int("GAPMEAN_US", 0)? > 0) as usize
+                + 2 * (params.int("LVEL_US", 0)? > 0) as usize,
             lf_clip: params.float("FILTER_CLIP", 5.0)?,
             lf_vrate: params.float("FILTER_VRATE", 0.0)?,
             lf_vimpact: params.float("FILTER_VIMPACT", 0.0)?,
@@ -2805,8 +2818,8 @@ impl Strategy for RidgeMaker {
             }
         }
         if self.flow2 > 0 {
-            let df = ((-elapsed) as f64 / 100_000.0).exp();
-            let ds = ((-elapsed) as f64 / 2_000_000.0).exp();
+            let df = ((-elapsed) as f64 / self.flow2_us[0]).exp();
+            let ds = ((-elapsed) as f64 / self.flow2_us[1]).exp();
             self.flow_fast.0 *= df;
             self.flow_fast.1 *= df;
             self.flow_slow.0 *= ds;
@@ -3155,6 +3168,8 @@ impl Strategy for RidgeMaker {
                 features[k + 4 + i] = clamp((p[i] - mid * v[i]) / (1.0 + v[i]), -5.0, 5.0);
             }
             features[k + 7] = self.rest_net / (1.0 + self.rest_cnt);
+            // past FLOWGRP's eight, so BUCKET's 17 no longer overwrite them (before 8 Nov 11:10 they did)
+            k += 8;
         }
         if self.bucket > 0 {
             let edges = [-0.6, -0.25, 0.0, 0.25, 0.6];
@@ -3248,6 +3263,22 @@ impl Strategy for RidgeMaker {
                 self.gapmean_last = Some(now);
                 self.gapmean = self.gapmean * d + (1.0 - d) * self.lf_gap_now;
                 features[k] = self.gapmean;
+                k += 1;
+            }
+            if self.lvel_us > 0 {
+                let latent = mid + self.lf_gap_now;
+                let d = match self.lvel_last {
+                    Some(t) => ((-((now - t).max(0))) as f64 / self.lvel_us as f64).exp(),
+                    None => {
+                        self.lvel = [latent, self.lf_gap_now];
+                        1.0
+                    }
+                };
+                self.lvel_last = Some(now);
+                self.lvel[0] = self.lvel[0] * d + (1.0 - d) * latent;
+                self.lvel[1] = self.lvel[1] * d + (1.0 - d) * self.lf_gap_now;
+                features[k] = clamp(latent - self.lvel[0], -5.0, 5.0);
+                features[k + 1] = clamp(self.lf_gap_now - self.lvel[1], -5.0, 5.0);
             }
         }
         let n = self.n_base;
