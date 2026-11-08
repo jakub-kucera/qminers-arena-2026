@@ -14,7 +14,9 @@ is a discrete hidden-Markov filter over integer `lb` (2W+1 states around the boo
   jumps at that rate a second, `jump_med` / `jump_sd`, mixed in around the mode: Rust's FILTER_JUMP); `sweep` (a market
   buy that filled up to P truncates lb < P - 1 - sweep, a sell lb > P + sweep, by `sweep_eps`); `mix` (8 Nov, R3-F4
   work: a calm/volatile mixture, `MixFilter`); `maxsz` (inserts of that many lots or more not observed); `cancel_h` /
-  `cancel_l0` (stale cancels and their survival term); `--extra K=V,...` runs another filter on the same events and
+  `cancel_l0` (stale cancels and their survival term); `ladder` 1 / 2 (round 3's 2-ms ladders' children left out; 2
+  also holds every 2-7 tick insert 2 ms to drop the chain's first order) and `--skip IDS.npy` (an oracle set of order
+  ids never observed); `--extra K=V,...` runs another filter on the same events and
   `ridge` (`ridge_check`) reports the 0.4-s / 1-s R² with its gap added. All lost on round3_public (IDEAS.md, "A better
   state for R3-F3's latent-price filter").
 
@@ -56,6 +58,11 @@ DEFAULTS["maxsz"] = 0  # > 0: inserts of at least this many lots are not observe
 # states where a cancelled order is stale by cancel_h (a bid above lb, an ask below lb + 1); cancel_l0 > 0 adds the
 # survival term, exp(-(cancel_h - 1) cancel_l0 N_stale(lb) dt) between events, N_stale the resting orders stale at lb
 DEFAULTS["cancel_h"] = 0.0
+# round 3's scheduled ladders (experiments/day/gen_ladders.py: chains of same-side G orders exactly 2 ms apart, 2-7
+# ticks from their own touch): ladder 1 leaves out an insert 2-7 ticks from its own touch that comes exactly 2 ms after
+# a same-side insert that was 2-7 ticks from its touch (the children); ladder 2 also holds every 2-7 tick insert 2 ms
+# and drops it if a child follows (the chain's first order too)
+DEFAULTS["ladder"] = 0
 DEFAULTS["cancel_l0"] = 0.0
 HORIZONS = (0.1, 0.4, 1.0, 5.0)
 STEP = 0.05
@@ -448,6 +455,7 @@ def make_filter(params: dict):
     params = dict(params)
     maxsz = params.pop("maxsz", 0)
     ch, cl = params.pop("cancel_h", 0.0), params.pop("cancel_l0", 0.0)
+    params.pop("ladder", 0)
     filt = _make_filter(params)
     filt.maxsz = maxsz
     filt.cancel_h, filt.cancel_l0 = ch, cl
@@ -509,7 +517,7 @@ def _make_filter(params: dict):
     return LatentFilter(**params)
 
 
-def replay(path: Path, params: dict, offsets: bool = False, extra: tuple = ()):
+def replay(path: Path, params: dict, offsets: bool = False, extra: tuple = (), skip: frozenset = frozenset()):
     """Replay the tape; return the 50-ms samples (t, mid, signal, sd, imbalance, spread) and, with offsets, the
     inserts' offsets k to a confident MAP (bid: lb - p, ask: p - 1 - lb) at a 1- and 2-tick spread."""
     book = Book()
@@ -522,6 +530,27 @@ def replay(path: Path, params: dict, offsets: bool = False, extra: tuple = ()):
     fchk = []
     last_bb = last_ba = None
     last_ev = 0.0
+    ladder = int(params.get("ladder", 0))
+    recent = ({}, {})  # side -> time_us -> (in band, pending index or None) of the last inserts
+    pending = []  # ladder 2: held 2-7 tick inserts [t_us, side, price, bb, ba, alive, size]
+    skipped = [0, 0]
+
+    def observe(sd_, p_, bb, ba, q):
+        for o in others:
+            if abs(p_ - (bb if sd_ == 0 else ba)) <= o.depth and not (0 < o.maxsz <= q):
+                o.insert(sd_, p_, bb, ba)
+        if abs(p_ - (bb if sd_ == 0 else ba)) <= filt.depth and not (0 < filt.maxsz <= q):
+            filt.insert(sd_, p_, bb, ba)
+
+    def flush(t_us):
+        # ladder 2: apply the held inserts whose 2 ms passed without a child
+        while pending and pending[0][0] + 2000 < t_us:
+            h = pending.pop(0)
+            if h[5] and filt.p is not None:
+                filt.recenter(h[3])
+                for o in others:
+                    o.recenter(h[3])
+                observe(h[1], h[2], h[3], h[4], h[6])
     with path.open() as fh:
         next(fh)
         for line in fh:
@@ -564,21 +593,44 @@ def replay(path: Path, params: dict, offsets: bool = False, extra: tuple = ()):
                             filt.reset(bb)
                             for o in others:
                                 o.reset(bb)
+                        t_us = int(round(t * 1e6))
+                        if ladder == 2:
+                            flush(t_us)
                         filt.advance(t)
                         filt.recenter(bb)
                         for o in others:
                             o.advance(t)
                             o.recenter(bb)
-                            if abs(p_ - (bb if sd_ == 0 else ba)) <= o.depth and not (0 < o.maxsz <= q_):
-                                o.insert(sd_, p_, bb, ba)
+                        off_ = (bb - p_) if sd_ == 0 else (p_ - ba)
+                        band = 2 <= off_ <= 7
+                        rec = recent[sd_]
+                        parent = rec.get(t_us - 2000)
+                        child = band and parent is not None and parent[0]
+                        if len(rec) > 64:
+                            for key in sorted(rec)[:32]:
+                                del rec[key]
+                        rec[t_us] = (band,)
+                        hold = None
+                        if child and ladder == 2:
+                            for h in pending:
+                                if h[0] == t_us - 2000 and h[1] == sd_:
+                                    if h[5]:
+                                        skipped[1] += 1
+                                    h[5] = False
+                        drop = oid in skip or (ladder >= 1 and child)
+                        if drop:
+                            skipped[0] += 1
+                        elif ladder == 2 and band:
+                            pending.append([t_us, sd_, p_, bb, ba, True, q_])
+                            hold = True
                         if offsets and abs(p_ - (bb if sd_ == 0 else ba)) <= 4:
                             lb, conf = filt.map()
                             if conf > 0.9:
                                 k = lb - p_ if sd_ == 0 else p_ - 1 - lb
                                 key = (min(ba - bb, 3), sd_ == 0 and p_ >= ba - 1 or sd_ == 1 and p_ <= bb + 1, k)
                                 ks[key] = ks.get(key, 0) + 1
-                        if abs(p_ - (bb if sd_ == 0 else ba)) <= filt.depth and not (0 < filt.maxsz <= q_):
-                            filt.insert(sd_, p_, bb, ba)
+                        if not drop and not hold:
+                            observe(sd_, p_, bb, ba, q_)
                     book.insert(oid, sd_, p_, q_, False)
             else:
                 if filt.cancel_h > 0 and filt.p is not None and bb is not None and ba is not None and bb < ba:
@@ -590,6 +642,7 @@ def replay(path: Path, params: dict, offsets: bool = False, extra: tuple = ()):
                 book.cancel(oid)
             last_bb, last_ba = book.best
     replay.last_loglik = (filt.loglik, filt.n_obs)
+    replay.skipped = skipped
     return np.array(rows), ks, np.array(fchk)
 
 
@@ -737,6 +790,7 @@ def main(argv=None) -> int:
     ap.add_argument("--set", action="append", default=[], help="a filter parameter, NAME=VALUE (see DEFAULTS)")
     ap.add_argument("--offsets", action="store_true", help="also tabulate the inserts' offsets to a confident MAP")
     ap.add_argument("--out", type=Path, help="write the result as JSON")
+    ap.add_argument("--skip", type=Path, help="a .npy of order ids never observed (the oracle ladder labels)")
     ap.add_argument("--extra", action="append", default=[], help="an extra filter's settings, NAME=VALUE,NAME=VALUE (its gap joins ridge_check)")
     ap.add_argument("--latent", type=Path, help="a generated tape's true latent (tape_gen --latent-out): the oracle check")
     args = ap.parse_args(argv)
@@ -747,9 +801,10 @@ def main(argv=None) -> int:
             ap.error(f"unknown parameter {k}")
         params[k] = float(v)
     extra = tuple({k: float(v) for k, v in (kv.split("=", 1) for kv in e.split(","))} for e in args.extra)
-    rows, ks, fchk = replay(args.tape, params, args.offsets, extra)
+    skip = frozenset(str(x) for x in np.load(args.skip).tolist()) if args.skip else frozenset()
+    rows, ks, fchk = replay(args.tape, params, args.offsets, extra, skip)
     ll, n_obs = replay.last_loglik
-    result = {"tape": str(args.tape), "params": params, "samples": len(rows), "loglik_per_insert": round(ll / max(1, n_obs), 5),
+    result = {"tape": str(args.tape), "params": params, "samples": len(rows), "skipped": replay.skipped, "loglik_per_insert": round(ll / max(1, n_obs), 5),
               **evaluate(rows), "f_check": f_check(fchk)}
     if args.latent:
         result["oracle"] = oracle(rows, args.latent)

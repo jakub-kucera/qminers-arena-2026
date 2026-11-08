@@ -195,7 +195,10 @@
 //! a copy is chosen only while it beats FILTER_IMPACT's by that many nats. `FILTER_XGAP` 1 / 2 (0: off) instead adds
 //! the first copy's gap (and gap |gap| / 3) as features after F3's three, with no choice. `FILTER_CLIP` (5.0) is the
 //! gap's clip; `FILTER_VRATE` / `FILTER_VIMPACT` (0.0: off) the walk's rate and the impact scale while FILTER_VQS's
-//! switch is on. None beat F3 on round3_public.
+//! switch is on. None beat F3 on round3_public. `FILTER_LADDER` (0: off): a new market order 2-7 ticks behind its
+//! cached touch that comes 2 ms (+-1 us) after a same-side one that was 2-7 ticks behind is not observed (round 3's
+//! scheduled ladders' children, experiments/day/gen_ladders.py); on R3-F5 +2.5k on round3_public but -3.4k in its
+//! first 75%, so no file.
 //!   F1  (r3_F1_latent_filter.py, round3_public 480469.00, round2_public 303720.00): L9's and --set FILTER=1
 //! The forecast take's early exit (R3-G1, 8 Nov), off by default: `FT_EXIT` (99.0: off). When the forecast take does
 //! not fire (the signal within its need) and the signal against the position is more than FT_EXIT plus half the
@@ -648,6 +651,12 @@ pub struct RidgeMaker {
     /// FILTER_VQS's switch is on (QS_RATE's |mid change| rate at least FILTER_VQS)
     lf_vrate: f64,
     lf_vimpact: f64,
+    /// FILTER_LADDER (0: off; R3-F7): a new market order 2-7 ticks behind its own (cached) touch that comes 2 ms
+    /// (+-1 us) after a same-side one that was 2-7 ticks behind its touch is not observed (round 3's scheduled ladders,
+    /// experiments/day/gen_ladders.py); lf_recent holds each side's recent new orders (time, in the band)
+    lf_ladder: i64,
+    lf_recent: [VecDeque<(i64, bool)>; 2],
+    lf_skip: HashSet<u64>,
 }
 
 /// one more copy of R3-F1's filter (FILTER_IMP2 / FILTER_IMP3): its state, swapped into the RidgeMaker's lf_* fields
@@ -854,7 +863,7 @@ impl Drop for RidgeMaker {
     }
 }
 
-pub const KEYS: [&str; 181] = [
+pub const KEYS: [&str; 182] = [
     "HORIZON_US", "OBSERVATION_INTERVAL_US", "MIN_LABELS", "MODEL_MEMORY_US", "POSITION_LIMIT", "QUOTE_SIZE",
     "REQUOTE_US", "INSIDE_TH", "FLOW_CUT", "SKEW_K", "DEAD_ZONE", "MAX_ORDERS", "FAST_US", "SLOW_US", "FLOW_US",
     "OFI_US", "RIDGE_MIN", "RIDGE_FRAC", "FIT_US", "REPLENISH_US", "PRED_MIX",
@@ -878,7 +887,7 @@ pub const KEYS: [&str; 181] = [
     "BURST_JUMP_MS",
     "FILTER", "FILTER_W", "FILTER_RATE", "FILTER_EPS", "FILTER_PI0", "FILTER_PI1", "FILTER_PI2", "FILTER_IMPACT",
     "FILTER_SQRT_C", "FILTER_DEPTH", "FILTER_JUMP", "FILTER_JUMP_MED", "FILTER_JUMP_SD",
-    "FILTER_VQS", "FILTER_VPI0", "FILTER_VPI1", "FILTER_VPI2", "FILTER_IMP2", "FILTER_IMP3", "FILTER_LL_N", "FILTER_XGAP", "FILTER_LL_MARGIN", "FILTER_CLIP", "FILTER_VRATE", "FILTER_VIMPACT",
+    "FILTER_VQS", "FILTER_VPI0", "FILTER_VPI1", "FILTER_VPI2", "FILTER_IMP2", "FILTER_IMP3", "FILTER_LL_N", "FILTER_XGAP", "FILTER_LL_MARGIN", "FILTER_CLIP", "FILTER_VRATE", "FILTER_VIMPACT", "FILTER_LADDER",
     "FT_EXIT", "FT_EXIT_SZ", "FT_EXIT_WIDE", "FT_EXIT_KEEP", "QS_PULL", "QUOTE_GAP",
     "FT_LGAP", "FT_LGAP_EDGE", "FT_JUMP", "FT_JUMP_MS", "FT_JUMP_HOLD_MS", "FT_JUMP_EDGE", "FT_FLIP_M",
     "FT_EDGE_CALM", "FT_CALM_RATE", "FT_JUMP_DIR",
@@ -1248,6 +1257,9 @@ impl RidgeMaker {
             lf_clip: params.float("FILTER_CLIP", 5.0)?,
             lf_vrate: params.float("FILTER_VRATE", 0.0)?,
             lf_vimpact: params.float("FILTER_VIMPACT", 0.0)?,
+            lf_ladder: params.int("FILTER_LADDER", 0)?,
+            lf_recent: [VecDeque::new(), VecDeque::new()],
+            lf_skip: HashSet::new(),
         })
     }
 
@@ -1789,11 +1801,45 @@ impl RidgeMaker {
     /// `_lf_observe`: the book's market taker fills, then its new market orders within FILTER_DEPTH of the previous
     /// valid book's touch (the cached one), in the feed's order; before quote_centres moves `known_ids` on.
     fn lf_observe(&mut self, snapshot: &Snapshot, trades: &[Trade], now: i64) {
+        if self.lf_ladder > 0 {
+            self.lf_ladders(snapshot, now);
+        }
         self.lf_observe_one(snapshot, trades, now);
         for i in 0..self.lf_bank.len() {
             self.lf_swap(i);
             self.lf_observe_one(snapshot, trades, now);
             self.lf_swap(i);
+        }
+    }
+
+    /// FILTER_LADDER: mark the snapshot's new market orders that are a ladder's children (lf_skip), and remember each
+    /// new order's time and whether it sits 2-7 ticks behind the cached touch
+    fn lf_ladders(&mut self, snapshot: &Snapshot, now: i64) {
+        self.lf_skip.clear();
+        let Some((bid, ask, _)) = self.cached else { return };
+        if bid >= ask {
+            return;
+        }
+        for r in self.lf_recent.iter_mut() {
+            while r.front().is_some_and(|x| x.0 < now - 3000) {
+                r.pop_front();
+            }
+        }
+        let mut seen: HashSet<u64> = HashSet::new();
+        for side in [Side::Buy, Side::Sell] {
+            for order in snapshot.side(side) {
+                if order.owner != Owner::Market || !seen.insert(order.order_id) || self.known_ids.contains(&order.order_id) {
+                    continue;
+                }
+                let buy = order.side == Side::Buy;
+                let off = if buy { bid - order.price } else { order.price - ask };
+                let band = (2..=7).contains(&off);
+                let r = &mut self.lf_recent[if buy { 0 } else { 1 }];
+                if band && r.iter().any(|&(t, b)| b && (now - t - 2000).abs() <= 1) {
+                    self.lf_skip.insert(order.order_id);
+                }
+                r.push_back((now, band));
+            }
         }
     }
 
@@ -1845,6 +1891,9 @@ impl RidgeMaker {
                 }
                 let buy = order.side == Side::Buy;
                 if (order.price - if buy { bid } else { ask }).abs() > self.lf_depth {
+                    continue;
+                }
+                if self.lf_ladder > 0 && self.lf_skip.contains(&order.order_id) {
                     continue;
                 }
                 if !centred {
