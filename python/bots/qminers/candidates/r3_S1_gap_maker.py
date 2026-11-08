@@ -6,7 +6,9 @@ the bot quotes the touch only on the favoured side: a bid at the best market bid
 gap > GAP_OFF, the queue place), an ask at the best market ask while gap < -GAP_ON. No take, ever. The position
 moves with the gap and comes back when it turns; |position + every live order on a side| stays within LIMIT (orders
 being cancelled count until the cancel lands), so the 100-lot penalty never starts. Quotes come off when the
-market's spread is above MAX_SPREAD. UNWIND > 0 also quotes the reducing side, at the touch, while |gap| < UNWIND
+market's spread is above MAX_SPREAD. KEEP2 keeps a quote the touch moved away from by a tick; LEVEL2 also posts
+lots a tick behind the favoured touch (a level-2 fill with the gap 0.6+ the maker's way earns +0.72 a lot at 1 s on
+round 3, against +0.35 for one at the back of the touch's queue: `experiments.day.r3_edges`). UNWIND > 0 also quotes the reducing side, at the touch, while |gap| < UNWIND
 and |position| >= UNWIND_POS. The filter is R3-F1's (candidates/r3_F1_latent_filter.py, experiments/day/latent_filter.py).
 """
 from math import isfinite
@@ -19,6 +21,8 @@ LIMIT = 100  # |position + live lots on the side| at most this (the penalty star
 GAP_ON = 0.6  # quote the bid when gap > GAP_ON, the ask when gap < -GAP_ON (QUOTE 50: 0 / 0.3 / 0.6 / 1.0 21.6k / 31.5k / 41.4k / 39.5k)
 GAP_OFF = -0.3  # keep a resting bid while gap > GAP_OFF (an ask while gap < -GAP_OFF); GAP_ON 0.6: -0.6 44.5k
 MAX_SPREAD = 1  # quote only while the market's spread is at most this many ticks
+KEEP2 = 0  # 1: a quote the touch moved away from by one tick stays (its queue place on the new second level)
+LEVEL2 = 0  # > 0: also post this many lots one tick behind the favoured touch (r3_edges: +0.72 a lot at 1 s, gap 0.6+)
 UNWIND = 0.0  # > 0: also quote the reducing side while |gap| < UNWIND ...
 UNWIND_POS = 50  # ... and |position| >= UNWIND_POS
 FILTER_W = 8  # the filter's grid: lb within bid - W .. bid + W
@@ -222,24 +226,31 @@ class GapMakerStrategy(BaseStrategy):
         self.cancel_order(oid)
 
     def _sync(self, sign, price):
-        """Keep one quote on this side at `price` (None: none); cancel the rest; post if room allows."""
-        have = False
+        """Keep one quote on this side at `price` (None: none) and, with KEEP2, one a tick behind it (a quote the touch
+        moved away from keeps its queue place there); with LEVEL2 > 0 post LEVEL2 lots a tick behind too; cancel the
+        rest; post only within LIMIT."""
+        behind = None if price is None or not (KEEP2 or LEVEL2) else price - sign
+        have = have2 = False
         for oid, rec in list(self._orders.items()):
             if rec[0] != sign or rec[4]:
                 continue
             if price is not None and rec[1] == price and not have:
                 have = True
+            elif behind is not None and rec[1] == behind and not have2:
+                have2 = True
             else:
                 self._cancel(oid)
-        if price is None or have:
+        if price is None:
             return
-        live = sum(rec[2] for rec in self._orders.values() if rec[0] == sign)
-        room = LIMIT - sign*self.inventory - live
-        qty = min(QUOTE, room)
-        if qty <= 0:
-            return
-        oid = self.send_order(OrderRequest(side=Side.BUY if sign > 0 else Side.SELL, price=price, quantity=qty, order_type=OrderType.LIMIT))
-        self._orders[oid] = [sign, price, qty, False, False]
+        for want, at, lots in ((not have, price, QUOTE), (LEVEL2 > 0 and not have2, behind, LEVEL2)):
+            if not want:
+                continue
+            live = sum(rec[2] for rec in self._orders.values() if rec[0] == sign)
+            qty = min(lots, LIMIT - sign*self.inventory - live)
+            if qty <= 0:
+                return
+            oid = self.send_order(OrderRequest(side=Side.BUY if sign > 0 else Side.SELL, price=at, quantity=qty, order_type=OrderType.LIMIT))
+            self._orders[oid] = [sign, at, qty, False, False]
 
     def _resting(self, sign, price):
         return any(rec[0] == sign and rec[1] == price and not rec[4] for rec in self._orders.values())
@@ -265,8 +276,8 @@ class GapMakerStrategy(BaseStrategy):
             return
         mid = (bid+ask)*0.5
         gap = self._lf_features(mid)[0]
-        want_bid = gap > GAP_ON or (gap > GAP_OFF and self._resting(1, bid))
-        want_ask = gap < -GAP_ON or (gap < -GAP_OFF and self._resting(-1, ask))
+        want_bid = gap > GAP_ON or (gap > GAP_OFF and (self._resting(1, bid) or (KEEP2 and self._resting(1, bid-1))))
+        want_ask = gap < -GAP_ON or (gap < -GAP_OFF and (self._resting(-1, ask) or (KEEP2 and self._resting(-1, ask+1))))
         if UNWIND > 0 and abs(gap) < UNWIND and abs(self.inventory) >= UNWIND_POS:
             if self.inventory > 0:
                 want_ask = True
