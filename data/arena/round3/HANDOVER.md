@@ -114,6 +114,10 @@ Round 2's L-family re-ranked on round 3's own tapes ("Round 3's first look"); L9
 
 ## Leaderboard
 Round 3's live percentiles from the organisers' dashboard (01:49): p25 176k, median 503k, p75 785k; overall 12th.
+At 02:38 (the dashboard's data, 40 teams, 84 submissions, 3 failed): the best validation PnL a team, p25 289k, median
+546k, p75 848k (868k at 02:33); the field is rising, F3's +883,559 is 35k over p75. Our private results so far
+(team ThatsMyQuant): round 1 602,527 (8th of 61), round 2 742,470 (22nd of 59; 10th had 1,017,551, 5th 1,195,019);
+overall 12th, z1 1.212 + z2 0.398 = 1.368 (total = 0.8 z1 + 1.0 z2, z over the round's profitable teams).
 
 ## Next round
 First candidate R3-F3; its three first actions are in "Start here", "Next" item 3.
