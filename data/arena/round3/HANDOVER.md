@@ -4,6 +4,29 @@ The template (`docs/HANDOVER_TEMPLATE.md`): copy it to `data/arena/round<N>/HAND
 fill it in during the round and finish it by deadline − 0:10; the template itself stays as it is. Committed and pushed so the other laptop has it (ON_THE_DAY.md, "Handover note"); the private
 run's results and `leaderboard.json` go in this folder too.
 
+## Status 8 Nov 02:45 (round 3 runs to 06:00): read this first
+- **Upload now / the final: R3-F3** (`python/bots/qminers/candidates/r3_F3_latent_filter_b1.py`, R3-B1 + the latent-price
+  filter): **+883,559 on validation** (590 s of server time), 505,212 on r3 public. Upload 1 was R3-F1 (L9 + filter)
+  +862,764. Both result folders are in this folder; CANDIDATES.md, "Uploads", reads them (validation plays like the
+  public tape, 0.87-0.90x its PnL a second: **rank on r3 public first**, its last 25% as the holdout).
+- **The dashboard (01:49):** round 3's 75th percentile is ~785-812k, median ~503k, so F3 is top ~15-20%; we are 12th
+  overall after two rounds (1.368; 5th is 2.847).
+- **In Rust:** `uv run python -m experiments.day.family_rust data/arena/round3/round3_public.csv --bot B1F=B1:'--set FILTER=1'`
+  gives F3's 505,212 to the unit (Python and Rust byte-identical). Grid any knob with `arena.qsim_rust ridge_maker`.
+- **Tried after F3, none beat it (IDEAS rows, all `dropped here` or `measured`):** the filter's own settings (every
+  grid has the defaults on top; FILTER_JUMP -10 to -30k, FILTER_VQS loses in the first 75%); burst sizing over the
+  100-lot limit (never pays: the far side is thin after a jump); a pretrained MLP / HGB forecaster (no held-out gain,
+  +94 on the last 25%; synthetic training data hurts); S1/S2 makers alone (+48k / +32k) and the S4 hybrid (-139k:
+  maker and taker fight for the 100 lots); the QS_RATE x FT_EDGE grid on L8 (flat).
+- **Running (one agent, the statistics one):** FT_EXIT, a reduce-only early exit when the forecast turns against a
+  full position (the loss anatomy: every kind of take earns; the losses are 100 lots held ~550 s while the forecast is
+  0.3-0.65 against). A file R3-G1 only if both halves of r3 public gain.
+- **The generator:** tape_gen v2 + gen_calibrate (Spearman 0.974 on round 2's 14 validation scores; 0.60 on round 3's
+  six public scores with `r3_public_after`); synthetic tapes in data/arena/gen/r3b/ (use these, not r3/). A dedicated
+  session's prompt is `docs/GENERATOR_SESSION_PROMPT.md` (the round-4 playbook is its main deliverable).
+- **Next, if time:** FT_EXIT's verdict; then one upload of plain R3-B1 (`r3_B1_huber_quote_switch.py`) would measure
+  the filter's real gain on the server (F3 - B1), useful for round 4. Mark the best upload final before 06:00.
+
 ## Update 8 Nov 00:25: R2-L9 is the new base
 - R2-L9 (`python/bots/qminers/candidates/r2_L9_taker_huber.py`, the stats session's last taker) made **+873,719 on round 2's validation tape** (submission bc0a2c50-d4bd-46ae-bc23-ee556d21ffe5, uploaded at the 00:14 deadline): +46.9k over R2-L8, +69.7k over R2-L3. It is L3's pure taker with a **Huber-robust fit** (HUBER_DELTA 6) and impact features at 500 ms (36 features).
 - So round 3 starts from L9 (and L8's regime-switched quotes on top of it is the first combination to try), and a better learner (robust losses, then non-linear models) ranks above execution tweaks: every execution tweak tried on L3 lost or tied, while the robust fit gained +70k on validation.
