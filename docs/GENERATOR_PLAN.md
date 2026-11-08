@@ -356,3 +356,40 @@ to `tape_gen` with an existing full params file. This is a size-law correction, 
 
 Next: identify the extra round-3 populations jointly by size, lifetime and placement; test PnL-only recovery
 against an existing public full-logs run before treating server PnL curves as recovered market prices.
+
+## The PnL inversion check (8 Nov, gen-v3)
+
+The proposed direct recovery of a signed 1-s mid path from PnL alone does **not** pass the local check.
+`gen_pnl_probe` reuses the public F1/r3 and L3/r2 full logs, reproduces every recorded PnL sample with **zero
+accounting error**, and measures the approximation against the actual market book from that run:
+
+```sh
+uv run python -m experiments.day.gen_pnl_probe logs/r3_F1_full logs/r2_L3_full --curves data/arena/round3/r3_F1_latent_filter_res data/arena/round3/r3_F3_latent_filter_b1_res data/arena/round2/r2_L3_taker_pure_res --out data/arena/gen/gen_v3_pnl_probe.json
+```
+
+If the local logs are absent, generate them with `exchange-simulator` and the corresponding committed candidate
+on its public tape (the probe's docstring gives F1's exact command). No fresh bot runs are needed when they exist.
+
+| Local test | F1 on r3 public | L3 on r2 public |
+|---|---:|---:|
+| Correlation, signed dPnL/100 versus signed mid change | -0.171 | 0.050 |
+| Correlation, absolute dPnL/100 versus absolute mid change | 0.925 | 0.864 |
+| Signed RMSE using **oracle** starting inventory, abs(position) >= 95 | 2.85 ticks | 2.64 ticks |
+| Same oracle, also requiring no user fill in the second | 0.48 ticks | 0.95 ticks |
+| Correlation of squared PnL/100 with squared mid moves in 60-s blocks | 0.957 | 0.802 |
+
+The missing position sign, intrasecond trades and liquidation-depth marking prevent the simple inversion.
+`result.json.mark_price` is an inventory-dependent liquidation VWAP (or last trade when flat), **not an end mid**:
+F1's public mark is 9872 versus mid 9872.5, L3's 9690 versus mid 9689.5. These checks reject this shortcut, not every
+possible inverse model using deterministic bot policies and multiple runs.
+
+What survives is a **PnL-derived volatility proxy**, to compare the same bot across tapes and to add to the
+simulation-based calibration objective. The one-second RMS of dPnL/100 is:
+- L3: r2 public **3.471**, validation **4.789**, a **1.380x** ratio;
+- F1: r3 public **4.082**, validation **4.280**, a **1.048x** ratio;
+- F3: r3 validation **4.156** (no matching F3 public full-log check here).
+
+The JSON includes 60-s proxy trajectories and counts of large proxy steps. These are not recovered prices,
+jump counts or exact volatility parameters. On the public checks, the squared proxy underestimates true squared
+mid moves by about 2.4 (r2) / 3.4 (r3) ticks²/s; do not apply one universal correction across bots or regimes.
+Use the same proxy computed from generated bot runs to fit the validation curves directly.
