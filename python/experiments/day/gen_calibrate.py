@@ -31,6 +31,8 @@ Subcommands:
   (and the real tape's score with `--real`), and the pairwise wins over the draws; the draws made `--jobs` at a time
   and deleted once run.
 - `stats TAPE...`: a tape's price statistics (tape_stats, impact_curve), to match a generator to a real tape.
+- `write --opts PRESET --seeds 1-30 --dir DIR`: a shared set of draws, DIR/seed<N>.csv (existing ones kept), with a
+  README.txt giving the model, the options and the command.
 - `jumpflow TAPE...`: the aggressive flow around 3+ tick jumps timed by the latent (the 0.1-s insert centre) and by
   the mid (jump_flow): whether the big IOC orders the jump's way come before the latent moves or after it.
 - `fitstats --around JSON --real TAPE`: a local search without bots for the options whose draw's statistics are
@@ -85,10 +87,13 @@ L3 = {**L1, "QUOTE_SIZE": 0}
 L8 = {**L1, "QS_RATE": 2.5}
 L9 = {**L3, "POSITION_LIMIT": 100, "IMPACT_US": 500_000, "HUBER": 6.0, "RIDGE_MIN": 30, "RIDGE_FRAC": 0.003}
 B1 = {**L9, "QUOTE_SIZE": 1, "QS_RATE": 2.5}  # R3-B1 (r3_B1_huber_quote_switch.py): L9 with L8's quote switch
+FILTER = {"FILTER": 1}  # round 3's latent-price filter's three features (ridge_maker.rs; L9 + FILTER is R3-F1)
 # name -> ("rust", params) or ("py", candidate file)
 BOTS = {
     "E2": ("rust", E2), "V2": ("rust", V2), "T1": ("rust", T1), "T2": ("rust", T2), "L1": ("rust", L1),
     "L3": ("rust", L3), "L8": ("rust", L8), "L9": ("rust", L9), "B1": ("rust", B1),
+    "L3F": ("rust", {**L3, **FILTER}), "L8F": ("rust", {**L8, **FILTER}), "L9F": ("rust", {**L9, **FILTER}),
+    "B1F": ("rust", {**B1, **FILTER}),
     "M2": ("py", CAND / "r2_M2_flow_trend.py"), "M3": ("py", CAND / "r2_M3_flow_stop_gated.py"),
     "M4": ("py", CAND / "r2_M4_flow_window.py"), "RA": ("py", CAND / "r2_RA_flow_window.py"),
     "H1": ("py", CAND / "r2_H1_flow_bias.py"), "L6": ("py", CAND / "r2_L6_pure_flowbias.py"),
@@ -631,6 +636,30 @@ def add_extra_bots(specs) -> None:
         BOTS[name] = ("py", Path(file).resolve())
 
 
+def cmd_write(args) -> int:
+    """A shared set of draws: DIR/seed<N>.csv for each seed (existing files kept), and DIR/README.txt saying how."""
+    opts = parse_opts(args.opts)
+    params = with_opts(json.loads(args.params.read_text()), opts)
+    args.dir.mkdir(parents=True, exist_ok=True)
+    seeds = parse_seeds(args.seeds)
+    readme = args.dir / "README.txt"
+    note = (f"Synthetic tapes from experiments.day.tape_gen v2 (8 Nov), one per seed: seed<N>.csv, {args.seconds:.0f} s each,"
+            f" the starter's CSV format.\nThe model: {args.params} (tape_gen --fit of the round's public tape) with the"
+            f" latent options {args.opts!r}:\n{json.dumps(opts)}\nMade by:\n  uv run python -m experiments.day."
+            f"gen_calibrate write --params {args.params} --opts {args.opts} --seeds {args.seeds} --seconds "
+            f"{args.seconds:.0f} --dir {args.dir}\nThe calibration: IDEAS.md, \"Calibrating the generator to round 2's"
+            f" validation scoreboard\"; gen_calibrate.PRESETS.\n")
+    readme.write_text(note + "params.json here is the fitted model with those options merged in (tape_gen --params"
+                      " params.json --seed N --seconds S --out X.csv draws one more).\n")
+    (args.dir / "params.json").write_text(json.dumps(params))
+    t0 = time.time()
+    jobs = [(params, sd, args.seconds, str(args.dir / f"seed{sd}.csv")) for sd in seeds]
+    with ProcessPoolExecutor(min(args.jobs, len(jobs))) as ex:
+        for i, out in enumerate(ex.map(_gen, jobs), 1):
+            print(f"  {i}/{len(jobs)} {out} ({time.time() - t0:.0f} s)", flush=True)
+    return 0
+
+
 def cmd_rank(args) -> int:
     """Bots ranked on a parameter set's draws: mean, sd, 5th percentile, min, and pairwise wins over the seeds."""
     add_extra_bots(args.extra)
@@ -654,6 +683,11 @@ def cmd_rank(args) -> int:
     if args.real:
         real = {b: v[0] for b, v in run_bots([args.real], bots, args.jobs, args.dir / "logs").items()}
     print(f"{args.tag}: {len(seeds)} draws of {args.seconds:.0f} s, opts {args.opts or '{}'}")
+    if real:
+        cmp = compare(sim, real)
+        print(f"  against the real tape: Spearman {cmp['spearman']:.3f}, the draws' mean / real per bot "
+              + ", ".join(f"{b} {m / t:.2f}" for b, m, t in zip(cmp["bots"], cmp["sim"], cmp["target"]))
+              + f"; the common factor {cmp['scale_c']:.2f}, |log ratio| after it {cmp['logratio_after_c']:.3f}")
     print(f"  {'bot':4s} {'mean':>10s} {'sd':>9s} {'p5':>10s} {'min':>10s}" + (f" {'real':>10s}" if real else ""))
     for b in sorted(bots, key=lambda b: -np.mean(sim[b])):
         v = np.array(sim[b])
@@ -777,6 +811,13 @@ def main(argv=None) -> int:
     fs.add_argument("--top", type=int, default=5)
     jf = sub.add_parser("jumpflow", help="the aggressive flow around jumps, timed by the latent and by the mid")
     jf.add_argument("tapes", nargs="+")
+    wr = sub.add_parser("write", help="a shared set of draws, DIR/seed<N>.csv, with a README.txt")
+    wr.add_argument("--params", type=Path, required=True)
+    wr.add_argument("--opts", required=True, help="a PRESETS name or JSON")
+    wr.add_argument("--seeds", default="1-30")
+    wr.add_argument("--seconds", type=float, default=12000.0)
+    wr.add_argument("--dir", type=Path, required=True)
+    wr.add_argument("--jobs", type=int, default=4)
     rk = sub.add_parser("rank", help="bots ranked on a parameter set's draws (no scoreboard)")
     rk.add_argument("--params", type=Path, required=True)
     rk.add_argument("--opts", help="JSON latent options merged into the params")
@@ -823,7 +864,8 @@ def main(argv=None) -> int:
     args = ap.parse_args(argv)
     sys.stdout.reconfigure(line_buffering=True)
     return {"score": cmd_score, "draw": cmd_draw, "search": cmd_search, "best": cmd_best, "stats": cmd_stats,
-            "rank": cmd_rank, "fitstats": cmd_fitstats, "jumpflow": cmd_jumpflow}[args.cmd](args)
+            "rank": cmd_rank, "fitstats": cmd_fitstats, "jumpflow": cmd_jumpflow,
+            "write": cmd_write}[args.cmd](args)
 
 
 if __name__ == "__main__":
