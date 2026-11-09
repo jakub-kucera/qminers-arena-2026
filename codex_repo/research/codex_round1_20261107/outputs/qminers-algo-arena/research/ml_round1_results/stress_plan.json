@@ -1,0 +1,16 @@
+[
+  [
+    "ml_delay20",
+    "outputs\\qminers-algo-arena\\strategies\\round1_ml_candidate.py",
+    "outputs\\qminers-algo-arena\\data\\round1.csv",
+    {},
+    20
+  ],
+  [
+    "ml_delay50",
+    "outputs\\qminers-algo-arena\\strategies\\round1_ml_candidate.py",
+    "outputs\\qminers-algo-arena\\data\\round1.csv",
+    {},
+    50
+  ]
+]

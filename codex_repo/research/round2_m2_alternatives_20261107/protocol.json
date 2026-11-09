@@ -1,0 +1,28 @@
+{
+  "goal": 150000,
+  "sources": {
+    "cross1": {
+      "file": "logs\\round2_m2_alternatives\\sources\\cross1.py",
+      "sha256": "ce43d34fb60d5b2aaa0804249c116d348f384e9ec19eb53a31b648f296e9a144"
+    },
+    "hold5s": {
+      "file": "logs\\round2_m2_alternatives\\sources\\hold5s.py",
+      "sha256": "7db3637615007fc2b35ad8065f8b0c2d6c9df598d27b95d53c41af75510dbed6"
+    },
+    "executed_plus_rest": {
+      "file": "logs\\round2_m2_alternatives\\sources\\executed_plus_rest.py",
+      "sha256": "ebdc9fc99baf2a6a090ec77f2c49e4d341b4bb35f418d8961f5e416ac1c819ec"
+    },
+    "resting_only": {
+      "file": "logs\\round2_m2_alternatives\\sources\\resting_only.py",
+      "sha256": "560cd415d9bb981032f49703709c504a65a69b018a11691e208d8a0030160a87"
+    },
+    "nonresting_only": {
+      "file": "logs\\round2_m2_alternatives\\sources\\nonresting_only.py",
+      "sha256": "04ecec43bb31f46c4f838435452c3750bda92bab9e9d28deef601ea8c1946d8b"
+    }
+  },
+  "scope": "Consumed first80%; no new independent holdout.",
+  "selection": "Require positive 30-60m and 60-80m increments; compare their combined gain before freezing a full replay.",
+  "caveat": "Resting visibility is observable, not a reliable identification of participant or original order type."
+}

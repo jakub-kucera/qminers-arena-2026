@@ -1,0 +1,7 @@
+{
+  "file": "strategies\\round1_penalty_experimental.py",
+  "sha256": "b775bd14d6ce7a82e0ca8d2b0ab74cadceb8185833fc88955da11a68375f0bec",
+  "candidate": "active_1000_hold100_edge0p3",
+  "frozen_source_sha256": "0f320ecde635145c133e4fb6a0f2c8fc9f50a30f1bfb7b52d6aa583ba6af7222",
+  "executable_ast_equal": true
+}

@@ -1,0 +1,49 @@
+{
+  "name": "F2_original_sample",
+  "source": "work\\jakub-arena\\python\\bots\\qminers\\candidates\\r0_F2_maker_v2.py",
+  "source_sha256": "81d7877e0185b8ead59c3f458a2e16fd5fa9f0eb640af1f37601ea9cc6512b54",
+  "data": "sample.csv",
+  "params": {
+    "SESSION_S": 3599.000003
+  },
+  "delay_ms": 5,
+  "result": {
+    "fills": 294,
+    "traded_volume": 5321,
+    "inventory": -51,
+    "cash": 483509.0,
+    "mark_price": 10038.0,
+    "breach_penalty": 0.0,
+    "pnl": -28429.0,
+    "pnl_se": 8379.311509849691,
+    "abs_inventory_q50": 46,
+    "abs_inventory_q68": 59,
+    "abs_inventory_q95": 95,
+    "abs_inventory_q997": 97
+  },
+  "wall_seconds": 0.7983822000678629,
+  "cpu_seconds": 0.78125,
+  "max_abs_inventory": 100,
+  "max_reserved_exposure": 100,
+  "final_tracked_inventory": -51,
+  "quarter_pnl": [
+    -8683.0,
+    -5472.0,
+    -9998.0,
+    -4276.0
+  ],
+  "first_half_pnl": -14155.0,
+  "third_quarter_pnl": -9998.0,
+  "last_quarter_pnl": -4276.0,
+  "max_drawdown": 29925.0,
+  "event_counts": {
+    "sent": 15891,
+    "accepted": 15891,
+    "cancel_requested": 15852,
+    "canceled": 15841,
+    "partially_filled": 287,
+    "filled": 49,
+    "rejected": 11,
+    "reject:cancel rejected: no resting order with this id": 11
+  }
+}

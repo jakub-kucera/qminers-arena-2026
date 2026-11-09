@@ -1,0 +1,328 @@
+{
+  "frozen_utc": "2026-11-07T12:07:57.277300+00:00",
+  "entries": [
+    {
+      "name": "pasted_passive",
+      "source": "outputs\\qminers-algo-arena\\strategies\\pasted_passive_v2.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\pasted_passive.py",
+      "original_sha256": "4792badcfc708524441f40e381b479f8b8ba03de39909c203b3f27be9790dfd6",
+      "frozen_sha256": "4792badcfc708524441f40e381b479f8b8ba03de39909c203b3f27be9790dfd6",
+      "role": "primary",
+      "session_adjustment": null,
+      "params": {},
+      "case": [
+        "pasted_passive",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\pasted_passive.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "pasted_flow06",
+      "source": "work\\pasted-review\\illustrative_flow06.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\pasted_flow06.py",
+      "original_sha256": "3c9ec9c0fcb9d55965179922c2289919624df25d9a7948afc1e2e6853d626e41",
+      "frozen_sha256": "3c9ec9c0fcb9d55965179922c2289919624df25d9a7948afc1e2e6853d626e41",
+      "role": "primary",
+      "session_adjustment": null,
+      "params": {},
+      "case": [
+        "pasted_flow06",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\pasted_flow06.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "composite_linear",
+      "source": "outputs\\qminers-algo-arena\\strategies\\composite_max_pnl_v2.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\composite_linear.py",
+      "original_sha256": "8b33a9a7fd8679fde915e1832c0e576461a990a788e466ac673978a4d3e7d11c",
+      "frozen_sha256": "318c25d8dc0dd8540593173ef1ed0be6a7aa0ce15a6329870c0e2685aa1780d3",
+      "role": "primary",
+      "session_adjustment": 12000.0,
+      "params": {},
+      "case": [
+        "composite_linear",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\composite_linear.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "composite_ensemble",
+      "source": "outputs\\qminers-algo-arena\\strategies\\composite_best_v2.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\composite_ensemble.py",
+      "original_sha256": "daa1ab2670601bf9264432f127ee386117d3fdfd9031dd8d72b10ef15e05046b",
+      "frozen_sha256": "d1b3dd6fd0ac5afcf01c816c187f4f9193c4fa1449ad8ba4fc5cbfaacba26dfa",
+      "role": "primary",
+      "session_adjustment": 12000.0,
+      "params": {},
+      "case": [
+        "composite_ensemble",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\composite_ensemble.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "team_F4",
+      "source": "outputs\\qminers-algo-arena\\research\\reference_strategies\\r0_F4_depletion_guard.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\team_F4.py",
+      "original_sha256": "a24eac9873969053aeeb8c769fac8c47aefa3ddbb07680a47c68009bc784059e",
+      "frozen_sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+      "role": "primary",
+      "session_adjustment": 12000.0,
+      "params": {},
+      "case": [
+        "team_F4",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\team_F4.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "team_F2",
+      "source": "outputs\\qminers-algo-arena\\strategies\\team_f2_v2.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\team_F2.py",
+      "original_sha256": "d34d146df7c7ff458002445c5ea163de5081badc532b2542c3efd3c58f283ffe",
+      "frozen_sha256": "e93b4baa3d8772205724de84c27ecb3eac18e9e593d39a4c0ebf04248d28b66d",
+      "role": "primary",
+      "session_adjustment": 12000.0,
+      "params": {},
+      "case": [
+        "team_F2",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\team_F2.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "team_F2_cap80",
+      "source": "outputs\\qminers-algo-arena\\strategies\\team_f2_cap80_v2.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\team_F2_cap80.py",
+      "original_sha256": "6a64fb178c672159b664a0ae7b8055baba13865dd704b4e882ea1bfe539a4a4e",
+      "frozen_sha256": "6d829941fdf1b9d4c9c11c133f727e65af045b01033d95846e92ce39533a764b",
+      "role": "primary",
+      "session_adjustment": 12000.0,
+      "params": {},
+      "case": [
+        "team_F2_cap80",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\team_F2_cap80.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "ridge_maker",
+      "source": "outputs\\qminers-algo-arena\\strategies\\ridge_maker_v2.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\ridge_maker.py",
+      "original_sha256": "591a07dbde0ea755510972285e8add2e15308a5f27f5dc9e5026e5cc35b3fb42",
+      "frozen_sha256": "76609b4674335d8bcefbbb84c6f8a532680a48be4abfbee5c000e9416a5cc6f6",
+      "role": "primary",
+      "session_adjustment": 12000.0,
+      "params": {},
+      "case": [
+        "ridge_maker",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\ridge_maker.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "microprice_maker",
+      "source": "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\microprice_maker.py",
+      "original_sha256": "9bb1252b81ba44d0ab239228872af626b9f612095ac6b085876def66ee2359ac",
+      "frozen_sha256": "4f358a48be378128c3938d1720e4b6aa4d486773ec48349b931af1b34eaf87dd",
+      "role": "primary",
+      "session_adjustment": 12000.0,
+      "params": {
+        "MODE": "maker"
+      },
+      "case": [
+        "microprice_maker",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\microprice_maker.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {
+          "MODE": "maker"
+        },
+        5
+      ]
+    },
+    {
+      "name": "team_M2",
+      "source": "outputs\\qminers-algo-arena\\research\\reference_strategies\\r0_M2_runner_safe.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\team_M2.py",
+      "original_sha256": "2d40fa14b5d7bbbb37644c39d88e46c8f7848199ea1fba71f1407f64e171b806",
+      "frozen_sha256": "3cfc322d895f73fda66dd8868494b0c068e56d78ef9d8963f6df941d30dfa407",
+      "role": "primary",
+      "session_adjustment": 12000.0,
+      "params": {},
+      "case": [
+        "team_M2",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\team_M2.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "fixed_trend",
+      "source": "outputs\\qminers-algo-arena\\strategies\\trend_follower_fixed.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\fixed_trend.py",
+      "original_sha256": "75ed10c2a7e9bf3088aae4e20e98915a40b3d76ff0adc0e0b691eb933a0e7a80",
+      "frozen_sha256": "75ed10c2a7e9bf3088aae4e20e98915a40b3d76ff0adc0e0b691eb933a0e7a80",
+      "role": "primary",
+      "session_adjustment": null,
+      "params": {},
+      "case": [
+        "fixed_trend",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\fixed_trend.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "mean_reversion",
+      "source": "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\mean_reversion.py",
+      "original_sha256": "9bb1252b81ba44d0ab239228872af626b9f612095ac6b085876def66ee2359ac",
+      "frozen_sha256": "4f358a48be378128c3938d1720e4b6aa4d486773ec48349b931af1b34eaf87dd",
+      "role": "primary",
+      "session_adjustment": 12000.0,
+      "params": {
+        "MODE": "revert"
+      },
+      "case": [
+        "mean_reversion",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\mean_reversion.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {
+          "MODE": "revert"
+        },
+        5
+      ]
+    },
+    {
+      "name": "record",
+      "source": "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\record.py",
+      "original_sha256": "9bb1252b81ba44d0ab239228872af626b9f612095ac6b085876def66ee2359ac",
+      "frozen_sha256": "4f358a48be378128c3938d1720e4b6aa4d486773ec48349b931af1b34eaf87dd",
+      "role": "no_trade_control",
+      "session_adjustment": 12000.0,
+      "params": {
+        "MODE": "record"
+      },
+      "case": [
+        "record",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\record.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {
+          "MODE": "record"
+        },
+        5
+      ]
+    },
+    {
+      "name": "old_clock_composite",
+      "source": "outputs\\qminers-algo-arena\\strategies\\composite_max_pnl_v2.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\old_clock_composite.py",
+      "original_sha256": "8b33a9a7fd8679fde915e1832c0e576461a990a788e466ac673978a4d3e7d11c",
+      "frozen_sha256": "8b33a9a7fd8679fde915e1832c0e576461a990a788e466ac673978a4d3e7d11c",
+      "role": "clock_diagnostic",
+      "session_adjustment": null,
+      "params": {},
+      "case": [
+        "old_clock_composite",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\old_clock_composite.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "old_clock_F4",
+      "source": "outputs\\qminers-algo-arena\\research\\reference_strategies\\r0_F4_depletion_guard.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\old_clock_F4.py",
+      "original_sha256": "a24eac9873969053aeeb8c769fac8c47aefa3ddbb07680a47c68009bc784059e",
+      "frozen_sha256": "a24eac9873969053aeeb8c769fac8c47aefa3ddbb07680a47c68009bc784059e",
+      "role": "clock_diagnostic",
+      "session_adjustment": null,
+      "params": {},
+      "case": [
+        "old_clock_F4",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\old_clock_F4.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "old_clock_F2",
+      "source": "outputs\\qminers-algo-arena\\strategies\\team_f2_v2.py",
+      "frozen_source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\old_clock_F2.py",
+      "original_sha256": "d34d146df7c7ff458002445c5ea163de5081badc532b2542c3efd3c58f283ffe",
+      "frozen_sha256": "d34d146df7c7ff458002445c5ea163de5081badc532b2542c3efd3c58f283ffe",
+      "role": "clock_diagnostic",
+      "session_adjustment": null,
+      "params": {},
+      "case": [
+        "old_clock_F2",
+        "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\old_clock_F2.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    }
+  ],
+  "dataset": {
+    "path": "data/round1.csv",
+    "bytes": 161219988,
+    "sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+    "columns": [
+      "Time",
+      "Operation",
+      "OrderId",
+      "Side",
+      "Volume",
+      "Price",
+      "Lifespan"
+    ],
+    "rows": 4411336,
+    "first_s": 0.008661,
+    "last_s": 11999.999025,
+    "duration_s": 11999.990364,
+    "backward_timestamps": 0,
+    "operations": {
+      "Insert": 2253745,
+      "Cancel": 2157591
+    },
+    "insert_sides": {
+      "B": 1126743,
+      "A": 1127002
+    },
+    "lifespans": {
+      "G": 2157657,
+      "F": 96088
+    },
+    "insert_price_range": [
+      9988,
+      10098
+    ],
+    "scan_seconds": 9.62144730007276
+  },
+  "session_seconds": 12000.0,
+  "note": "No model fitting or strategy parameter search on round1. Session-aware primary candidates change only SESSION_S to the nominal 12,000-second round. Unchanged old-clock controls are separate. Pasted strategies and corrected trend are unchanged.",
+  "selection": "Rank primary cases by full official PnL after penalties; report chronological segments, risk and execution diagnostics. Results are descriptive comparisons on this supplied tape, not a new unseen evaluation after selecting the winner."
+}

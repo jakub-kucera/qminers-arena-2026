@@ -1,0 +1,54 @@
+{
+  "goal": 306715,
+  "candidates": [
+    {
+      "name": "net_only",
+      "file": "logs\\round2_t2_impact_ablation\\sources\\net_only.py",
+      "source_sha256": "a9de018d674717f0fa39d6aa7c81e7a7661d85df90d53e28596d21400d7a7dcb",
+      "risk": "strict100"
+    },
+    {
+      "name": "sqrt_only",
+      "file": "logs\\round2_t2_impact_ablation\\sources\\sqrt_only.py",
+      "source_sha256": "01a13113b43b363e0e4a6af18605c2a63bd440a954978eb5f6a7bc8d0be31d7e",
+      "risk": "strict100"
+    },
+    {
+      "name": "depth_only",
+      "file": "logs\\round2_t2_impact_ablation\\sources\\depth_only.py",
+      "source_sha256": "7cb395127a71bf3392d311a2788231dfe5352ceb5dc5e1e25c1ce8bbcba295ea",
+      "risk": "strict100"
+    },
+    {
+      "name": "magnitude_and_depth",
+      "file": "logs\\round2_t2_impact_ablation\\sources\\magnitude_and_depth.py",
+      "source_sha256": "650f3ed7910f33c2e3f38ac81bd49a32744a310f30b1ce51d78e0721156aae25",
+      "risk": "strict100"
+    }
+  ],
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "scope": "Consumed public first80%; no new holdout and no server access.",
+  "hypothesis": "New user goal main plus>=10k, main36a041a audited bestactive-6116/control0. Stronger fixed local-cycle guard306715=296715+10000. Ablate500ms net vs sqrt magnitude; or net/opposite touch depth, alone or with both. Four cases, no crash-time gates or directional bias. Current304476 later30-80=196983, full gain7761.",
+  "selection": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "reference": "Frozen 167412 composite remains unchanged; no automatic promotion from prefix alone."
+}

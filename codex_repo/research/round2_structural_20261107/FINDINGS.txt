@@ -1,0 +1,21 @@
+Development-only outcome; 100,000 target not achieved.
+
+All six structural probes finished under unchanged native scoring, with zero
+penalty and strict reservation audits. No later public segments were replayed.
+
+Strict baseline: -37,267; 11,596 fills; 653,160 lots.
+Clipped labels +/-1: -7,916; 12,698 fills; 717,216 lots.
+Clipped labels +/-3: -6,838; 12,241 fills; 688,520 lots.
+Replenish 25: -38,123; 29,385 fills; 650,934 lots.
+Replenish 10: -12,285; 46,499 fills; 449,038 lots.
+Selective IOC 2s: -37,131; 1,784 fills; 103,432 lots.
+Selective IOC 5s: -99,825; 3,235 fills; 212,846 lots.
+
+Higher fill count alone did not establish profitability. The 10-lot probe also
+changes exposure because of the eight-live-order bound; this is a confound.
+Clipped labels improved PnL materially at similar volume but remain negative.
+Next: compare the prior short-horizon 15-feature architecture and bounded
+short-horizon robust-label variants on development only, before validation.
+No candidate is promoted. The merged repository suite passed 98 tests after
+fixing an obsolete mutable-source test reference and preserving frozen LF bytes
+on Windows. Source/data hashes and native results are in the JSON artifacts.

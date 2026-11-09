@@ -1,0 +1,311 @@
+{
+  "wide_weight0.0": {
+    "result": {
+      "fills": 1966,
+      "traded_volume": 213638,
+      "inventory": -100,
+      "cash": 1170558.0,
+      "mark_price": 9480.0,
+      "breach_penalty": 0.0,
+      "pnl": 222558.0,
+      "pnl_se": 22204.231815246625,
+      "abs_inventory_q50": 100,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 155.46036510006525,
+    "max_abs_inventory": 100,
+    "max_potential_inventory_at_submission": 100,
+    "max_drawdown_1s": 6130.0,
+    "submissions": 2008,
+    "order_status_counts": {
+      "accepted": 2008,
+      "partially_filled": 2991,
+      "canceled": 910,
+      "filled": 1098
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 600.0,
+        "pnl_increment": 14487.0
+      },
+      {
+        "start_s": 600.0,
+        "end_s": 1200.0,
+        "pnl_increment": 4402.0
+      },
+      {
+        "start_s": 1200.0,
+        "end_s": 1800.0,
+        "pnl_increment": 11080.0
+      },
+      {
+        "start_s": 1800.0,
+        "end_s": 2400.0,
+        "pnl_increment": 41205.0
+      },
+      {
+        "start_s": 2400.0,
+        "end_s": 3000.0,
+        "pnl_increment": 24046.0
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 3600.0,
+        "pnl_increment": 20523.0
+      },
+      {
+        "start_s": 3600.0,
+        "end_s": 4200.0,
+        "pnl_increment": 82439.0
+      },
+      {
+        "start_s": 4200.0,
+        "end_s": 4799.99478,
+        "pnl_increment": 24376.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "boundary_pnl": {
+      "1800000067": 29969.0,
+      "3599997635": 115743.0,
+      "4799996824": 222558.0
+    },
+    "source": "logs\\round2_t2_training_spread\\sources\\wide_weight0.0.py",
+    "source_sha256": "b12a01e0413132dfdd3c6698eefe113a20ae1eb3cfcdbe8b352a05c73b19b5bc",
+    "data_sha256": "7736799c3b91285fff72e28558e60fa930532cee91342ada939fc0e40a901484",
+    "strategy_state": {
+      "_labels": 171414,
+      "_mass": 167248.68464477573
+    },
+    "rates": {
+      "observed_duration_seconds": 4799.99478,
+      "net_pnl_per_minute": 2781.9780254011025,
+      "volume_per_minute": 2670.477904144721,
+      "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+    },
+    "later30": 85774.0,
+    "last20": 106815.0
+  },
+  "wide_weight0.25": {
+    "result": {
+      "fills": 1958,
+      "traded_volume": 218368,
+      "inventory": -100,
+      "cash": 1172023.0,
+      "mark_price": 9480.0,
+      "breach_penalty": 0.0,
+      "pnl": 224023.0,
+      "pnl_se": 22225.16563991258,
+      "abs_inventory_q50": 100,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 158.0153591001872,
+    "max_abs_inventory": 100,
+    "max_potential_inventory_at_submission": 100,
+    "max_drawdown_1s": 6112.0,
+    "submissions": 1995,
+    "order_status_counts": {
+      "accepted": 1995,
+      "filled": 1117,
+      "partially_filled": 2957,
+      "canceled": 878
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 600.0,
+        "pnl_increment": 17131.0
+      },
+      {
+        "start_s": 600.0,
+        "end_s": 1200.0,
+        "pnl_increment": 6581.0
+      },
+      {
+        "start_s": 1200.0,
+        "end_s": 1800.0,
+        "pnl_increment": 9296.0
+      },
+      {
+        "start_s": 1800.0,
+        "end_s": 2400.0,
+        "pnl_increment": 41275.0
+      },
+      {
+        "start_s": 2400.0,
+        "end_s": 3000.0,
+        "pnl_increment": 24324.0
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 3600.0,
+        "pnl_increment": 21135.0
+      },
+      {
+        "start_s": 3600.0,
+        "end_s": 4200.0,
+        "pnl_increment": 80208.0
+      },
+      {
+        "start_s": 4200.0,
+        "end_s": 4799.99478,
+        "pnl_increment": 24073.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "boundary_pnl": {
+      "1800000067": 33008.0,
+      "3599997635": 119742.0,
+      "4799996824": 224023.0
+    },
+    "source": "logs\\round2_t2_training_spread\\sources\\wide_weight0.25.py",
+    "source_sha256": "e1a51d99095c3822d75a9d96a4ad05604e820423393076c26b3e72dae03a5e9b",
+    "data_sha256": "7736799c3b91285fff72e28558e60fa930532cee91342ada939fc0e40a901484",
+    "strategy_state": {
+      "_labels": 208476,
+      "_mass": 176340.47452159197
+    },
+    "rates": {
+      "observed_duration_seconds": 4799.99478,
+      "net_pnl_per_minute": 2800.290545315968,
+      "volume_per_minute": 2729.6029684432283,
+      "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+    },
+    "later30": 86734.0,
+    "last20": 104281.0
+  },
+  "wide_weight0.5": {
+    "result": {
+      "fills": 2014,
+      "traded_volume": 227256,
+      "inventory": -100,
+      "cash": 1166595.0,
+      "mark_price": 9480.0,
+      "breach_penalty": 0.0,
+      "pnl": 218595.0,
+      "pnl_se": 22100.19888495307,
+      "abs_inventory_q50": 100,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 158.0579320001416,
+    "max_abs_inventory": 100,
+    "max_potential_inventory_at_submission": 100,
+    "max_drawdown_1s": 6112.0,
+    "submissions": 2054,
+    "order_status_counts": {
+      "accepted": 2054,
+      "filled": 1161,
+      "partially_filled": 3095,
+      "canceled": 893
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 600.0,
+        "pnl_increment": 17286.0
+      },
+      {
+        "start_s": 600.0,
+        "end_s": 1200.0,
+        "pnl_increment": 8324.0
+      },
+      {
+        "start_s": 1200.0,
+        "end_s": 1800.0,
+        "pnl_increment": 8902.0
+      },
+      {
+        "start_s": 1800.0,
+        "end_s": 2400.0,
+        "pnl_increment": 39656.0
+      },
+      {
+        "start_s": 2400.0,
+        "end_s": 3000.0,
+        "pnl_increment": 23964.0
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 3600.0,
+        "pnl_increment": 16984.0
+      },
+      {
+        "start_s": 3600.0,
+        "end_s": 4200.0,
+        "pnl_increment": 79939.0
+      },
+      {
+        "start_s": 4200.0,
+        "end_s": 4799.99478,
+        "pnl_increment": 23540.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "boundary_pnl": {
+      "1800000067": 34512.0,
+      "3599997635": 115116.0,
+      "4799996824": 218595.0
+    },
+    "source": "logs\\round2_t2_training_spread\\sources\\wide_weight0.5.py",
+    "source_sha256": "24b7ae9284a53c53c08f9a695466e062bc12099d75a17c9ab169f4e6825e7b41",
+    "data_sha256": "7736799c3b91285fff72e28558e60fa930532cee91342ada939fc0e40a901484",
+    "strategy_state": {
+      "_labels": 208477,
+      "_mass": 185375.43123180384
+    },
+    "rates": {
+      "observed_duration_seconds": 4799.99478,
+      "net_pnl_per_minute": 2732.440471529013,
+      "volume_per_minute": 2840.7030892646094,
+      "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+    },
+    "later30": 80604.0,
+    "last20": 103479.0
+  }
+}

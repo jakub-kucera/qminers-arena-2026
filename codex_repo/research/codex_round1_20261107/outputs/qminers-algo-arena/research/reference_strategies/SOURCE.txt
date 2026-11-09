@@ -1,0 +1,4 @@
+Local research snapshots from the authorized team repository
+https://github.com/jakub-kucera/qminers-arena-hachathon
+Commit 6ca459e966bb1f9e767258ef5ae0ef0bce979c3f
+These files have not been published or pushed by this research task.

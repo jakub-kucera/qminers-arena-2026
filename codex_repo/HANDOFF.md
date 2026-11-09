@@ -1,3 +1,22 @@
+
+Improvement concentration: +998 within the largest100s decline, only +28 outside, versus316031. Retain316031 as conservative reference;317057 is an experimental candidate, not a robust promotion.
+
+# Latest seven-minute follow-up
+
+Seven-minute local study, 8 Nov 2026 Prague
+main unchanged at 36a041af7da57060f5cafe5bcc4f4772c23cd31b.
+Selected robust_depth: net PnL 317,057; improvement +1,026. Requested +10,000 NOT achieved.
+Audit and independent native CLI match every result field.
+Fees 0.0; max actual 100; max potential 100.
+Sampled max drawdown 10880.0; final20 PnL 63148.0.
+Largest100s market decline3936-4036: strategy PnL 21221.0; outside 295836.0.
+Rebound5398-5400: strategy PnL -10880.0.
+Architecture: previous Huber6/ridge3x pure taker plus signed500ms flow normalized by current opposing top depth, clipped +/-3 (36 features).
+Three frozen variants; selected using30-80percent gain, then full comparison. Repeatedly consumed public data; no fresh holdout or private validation. Small improvement is not proof of generalization.
+Source SHA256 4df2b5c12142242fcff6be80e8765833f3d7c54d97893b5707589929e67aa622.
+No competition server accessed or submission made.
+
+
 # Handoff for the next session
 
 Latest: **round-3 intake completed; Python work is paused at the user's request**.
@@ -221,6 +240,113 @@ The user emphasized round 2 could differ substantially. The round-1 chart
 analysis is a prior only; the new public tape confirmed a different regime.
 No raw leaderboard curves/private user log have been supplied here.
 
+---
+
+*The notes below are from PÅ™emysl's research branch (`research/codex-round1-ml-metric-optimization`, last commit 8 Nov 00:07), merged here on 9 Nov; main's notes above run to 8 Nov 01:13.*
+
+## Latest goal: evolving main plus at least10k, with price-crash diagnostics
+
+The user superseded319920 with improving main models by at least10000 as main
+improves, and confirmed that "drop" means sharp price decline. Fresh fetches
+still show origin/main36a041af7da57060f5cafe5bcc4f4772c23cd31b in the same repo.
+All6 active-registry references were audited on full native round2: no-trade0,
+guarded trend-6116 (independent CLI parity), others-229801 to-267529.75.
+There are no newer T2 models in current remote main. Preserve exact snapshots.
+
+Current-cycle criterion met at **316,031**: +19,316 over the stronger local
+reference296,715, exceeding the conservative306,715 guard. This does not
+claim future main commits have already been evaluated. Before further work,
+fetch main, inspect new commit diffs/README/HANDOFF and new models (not only
+registry entries); benchmark any newer relevant baseline on the same tape.
+
+Exact source strategies/round2/round2_local_316031.py; SHA256
+088c20f7cf726b9e1e5047e2adc8c305e5c2a9ed0f1064aced4b097042f608f6.
+Native audit/CLI agree all fields. Fees0, actual/potential100, first80=253707,
+final20=62324, drawdown10880, fills2352, volume284784. Output copy is under
+outputs/round2-local-316031 with verified_result/current_goal_result/analysis.
+
+Architecture: no-passive35feature ridge3x,400ms labels,50ms IOC pace, spread1
+execution; adds500ms signed flow magnitude and sqrt intensity to liquidityT2.
+Huber6 residual weighting uses forecasts stored at observation and matured
+labels, weighting all sufficient statistics equally. No crash-time gates.
+It does not include the depth feature from the separate310978 alternative.
+
+Price-crash diagnostics: largest1s-sampled100s decline156.5ticks at3936–4036s.
+New/reference gain inside20223/20131, outside295808/276584 (+19224 outside).
+The worst drawdown10880 is at5398–5400s, during a113.5tick upward midpoint
+rebound. Risk is higher than old296715's6012 despite better PnL; disclose it.
+Mirror price20000-p, sideB/A swap produced identical316031 and all6001 PnL
+samples, zero fee and strict100. This is synthetic consumed data, not holdout.
+
+Latest studies: flow_magnitude500ms full304476; dual_head_v2 blend50% full297209;
+impact_ablation magnitude+depth full310978; robust_shocks Huber6 full316031.
+All were selected by positive30–60 and60–80 and maximum combined gain before
+full replay. Early studies retain historical319920 goal in frozen protocols;
+later studies use306715. See docs/ROUND2_MAIN_PLUS10K.md and research archives.
+All146 tests passed. Every replay is terminal; no live process remains.
+
+Do not access competition server or send emails/submissions. Earlier167412
+email was explicitly one-time. Research-branch Git pushes remain authorized.
+Do not alter original simulator/rules or immutable historical source files.
+All public data consumed; no guaranteed unseen superiority or private score.
+
+## Historical checkpoint: 167,412 local result, no server access
+
+The user prohibits all competition website/server access, including read-only
+checks. Continue locally. Read [the current results](docs/ROUND2_LOCAL_PROGRESS.md)
+before the historical sections below. Best audited full public replay is
+167,412 net PnL from a causal maker/M2 switch; supplied M2 scores 116,620 and
+the adaptive maker 105,829. All have zero penalties and maximum 100-lot exposure.
+The target is now 150,000, not the earlier 100,000. The local replay exceeds it.
+All public segments have been consumed. Do not claim an untouched holdout.
+The frozen candidate uses a 60-second window and 20-tick shadow-profit hurdle.
+Check the archived verified_result.json for native CLI parity and sensitivity.
+Historical statements
+below about reserved segments, pending tests, and server access are superseded.
+
+## Research branch update: composite model failed reserved validation
+
+Read [ROUND2_COMPOSITE_FINDINGS.md](docs/ROUND2_COMPOSITE_FINDINGS.md) first for
+the latest research-branch state. Main's initial investigation is preserved
+below as history. The new public goal is at least 100,000 net PnL. It is not
+achieved. Thirty-four additional development variants were evaluated; a
+fill-conditioned boosted-tree gate made 85,435 in the first hour, including
+training-period profit, but lost 21,593 on minutes 60-80 after being frozen.
+The no-trade control won that validation comparison; it is not a solution to
+the user's profit goal. No model was promoted. First 80% is now consumed;
+last 20% remains unreplayed. Do not run public-check on the flat selection and
+declare success. All local replay processes for this study have finished.
+
+Next investigate why the static conditional gate failed, including causal
+online calibration/adaptation and inventory reduction when the gate withdraws
+quotes. Keep the final public segment reserved for a genuinely frozen next
+candidate. Do not relabel minutes 60-80 as fresh validation after using them
+for development. Server validation remains a separate possible evidence source.
+The benchmark, matching engine, latency and penalties were unchanged. All 98
+merged repository tests passed, and exported tree predictions matched sklearn.
+Exact sources, protocols and results are archived under research/round2_*.
+
+Prepared 7 November 2026 after round 1. Team: **ThatsMyQuant**. The user expects
+the next session about an hour after round 1. Round-2 public data has now arrived
+and is at `data/round2_public.csv`. Read
+[ROUND2_INITIAL_FINDINGS.md](docs/ROUND2_INITIAL_FINDINGS.md) before doing more work.
+Only the first public 60% has been replayed; all six active/control references
+and four development diagnostics have completed. Every active policy lost on
+that prefix. Four further inventory/entry prototypes also lost; their naive
+resizing caused large queue churn and does not isolate the effect of smaller
+positions. See the findings and source hashes before reusing these prototypes.
+No round-2 winner or server score is established. The provisional
+deadline is Sunday **00:15 CET** with a planned ready-by time of **23:45 CET**.
+The organizer has announced three separate datasets: downloadable public,
+server validation with PnL-only feedback, and private scoring after the deadline.
+Public is roughly half the size of either hidden dataset; the size metric is
+unspecified. Internal public splits are not those organizer datasets.
+The user emphasized that round 2 could differ substantially. The later
+[round-1 chart summary](docs/ROUND1_CHART_EVIDENCE.md) strengthens steady-making
+hypotheses for round 1, but does not establish the next regime or a target
+inventory size. Preserve the maker and trend/taker alternatives and let new
+public evidence decide. Raw leaderboard curves/private log are not in this repo.
+
 ## Start here
 
 1. Check `git status` and read this file plus [the round-2 plan](docs/ROUND2_PLAN.md).
@@ -426,3 +552,6 @@ for this session only. Other repositories/sessions are explicitly out of scope.
 Account subscription and dollar pricing are unknown. No organizer invitation
 status has been verified. Keep committing concrete progress and update this
 handoff and the scoped usage estimate as work continues.
+
+L8 independently reproduced296181, zero penalty,75762 fills,356731 volume on identical round2_public native engine. Other-tape header scores unverified. No strict potential-exposure audit run for L8. Compared to317057: +20876 for experimental candidate.
+All seven-minute experiment processes completed.

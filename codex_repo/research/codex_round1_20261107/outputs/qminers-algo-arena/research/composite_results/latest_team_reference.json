@@ -1,0 +1,7 @@
+{
+  "commit": "5003a35",
+  "source": "outputs\\qminers-algo-arena\\research\\reference_strategies\\r0_F4_depletion_guard.py",
+  "source_sha256": "a24eac9873969053aeeb8c769fac8c47aefa3ddbb07680a47c68009bc784059e",
+  "reported_full_pnl": 264616,
+  "note": "New team source discovered after initial screen. Reported full/tail results are prior research, not independent test evidence. Local comparison still selects policies on the 50-75% segment only."
+}

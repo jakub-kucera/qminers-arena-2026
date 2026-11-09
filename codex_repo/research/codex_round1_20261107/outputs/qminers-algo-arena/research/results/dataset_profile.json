@@ -1,0 +1,25 @@
+{
+  "path": "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+  "sha256": "dd4e00e281abe50c9a19e16c147ccbc0b5b69835fee567f00136402ef1e01d08",
+  "bytes": 72508697,
+  "rows": 2000000,
+  "first_s": 0.027441,
+  "last_s": 5749.896405,
+  "duration_s": 5749.868964,
+  "backward_timestamps": 0,
+  "operations": {
+    "Insert": 1067532,
+    "Cancel": 932468
+  },
+  "insert_sides": {
+    "A": 533692,
+    "B": 533840
+  },
+  "lifespans": {
+    "G": 1033029,
+    "F": 34503
+  },
+  "price_min": 9963,
+  "price_max": 10026,
+  "inserted_volume": 34746269
+}

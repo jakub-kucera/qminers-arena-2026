@@ -1,0 +1,11 @@
+{
+  "candidate": {
+    "name": "calibrate_fast_escape",
+    "file": "logs\\round2_adaptation\\sources\\calibrate_fast_escape.py",
+    "source_sha256": "2542b6667c854323c44c9e1f69cfdd664fe313d086ba9bfe7d27d3564ac7529e",
+    "risk": "strict100"
+  },
+  "criterion": "Require positive 30-60m and 60-80m increments, then prefer highest minimum per-minute gain across those windows. No final20% tuning.",
+  "exposure": "First80% used for development. Final20% not yet replayed for this family; supplied M2 header disclosed a result on that same segment.",
+  "candidate_first80": 99039.0
+}

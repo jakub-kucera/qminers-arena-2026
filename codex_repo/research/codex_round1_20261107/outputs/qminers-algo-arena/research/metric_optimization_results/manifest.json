@@ -1,0 +1,19 @@
+{
+  "files": [
+    {
+      "path": "outputs\\qminers-algo-arena\\strategies\\round1_max_metric.py",
+      "bytes": 12202,
+      "sha256": "10b65baeb38b81bd2b60e2ad00b352bcf88c392a887113771326a01443cf9b43"
+    },
+    {
+      "path": "outputs\\Qminers-metric-optimization.html",
+      "bytes": 4886950,
+      "sha256": "e591793a7fbb9aa0ce65c44220a9a194a2547f1f7baf5c8e449f96662a3081d5"
+    },
+    {
+      "path": "outputs\\Qminers-metric-optimization.txt",
+      "bytes": 1324,
+      "sha256": "4861bf8634f381d58f0ccc3dca3ae9c9caf378128c2b4b4d7688a98eca7edbd5"
+    }
+  ]
+}

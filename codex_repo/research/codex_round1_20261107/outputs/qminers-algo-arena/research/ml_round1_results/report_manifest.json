@@ -1,0 +1,17 @@
+{
+  "models": 7,
+  "prefix_replays": 18,
+  "full_diagnostic_replays": 1,
+  "exact_export_replays": 1,
+  "latency_replays": 2,
+  "later_period_gain": 461.0,
+  "later_period_gain_percent": 0.22051929663433611,
+  "full_gain": 3977.0,
+  "training_share_of_gain_percent": 88.40834800100578,
+  "files": {
+    "qminers-algo-arena\\strategies\\round1_ml_candidate.py": "afcd83d1a5e77cfbdb7db8d6953cd33b51686b3639c0149dee1be58cddbafc35",
+    "Qminers-round1-ML-results.txt": "c43566fddfb4462995eee437cf20159996f01de91ffd0f43ad4fcbe792682c8b",
+    "Qminers-round1-ML-results.html": "804965b681d8da28533435274e4b93f28c0ad40429eab45482494ec0b8ca9cc2",
+    "qminers-algo-arena\\research\\ml_round1_results\\outcome.json": "c46f02ce1872519c2002740e1a7a2012af17fff61994aab1346b3d1d69d57321"
+  }
+}

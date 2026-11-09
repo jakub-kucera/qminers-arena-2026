@@ -1,0 +1,62 @@
+{
+  "name": "fixed_trend",
+  "source": "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\fixed_trend.py",
+  "source_sha256": "75ed10c2a7e9bf3088aae4e20e98915a40b3d76ff0adc0e0b691eb933a0e7a80",
+  "data": "round1.csv",
+  "params": {},
+  "delay_ms": 5,
+  "result": {
+    "fills": 45619,
+    "traded_volume": 45619,
+    "inventory": -1,
+    "cash": -13821.0,
+    "mark_price": 10030.0,
+    "breach_penalty": 0.0,
+    "pnl": -23851.0,
+    "pnl_se": 167.6678783177324,
+    "abs_inventory_q50": 1,
+    "abs_inventory_q68": 1,
+    "abs_inventory_q95": 1,
+    "abs_inventory_q997": 1
+  },
+  "wall_seconds": 75.27907030005008,
+  "cpu_seconds": 72.671875,
+  "max_abs_inventory": 1,
+  "max_reserved_exposure": 1,
+  "final_tracked_inventory": -1,
+  "quarter_pnl": [
+    -6019.0,
+    -5903.0,
+    -5951.0,
+    -5978.0
+  ],
+  "first_half_pnl": -11922.0,
+  "third_quarter_pnl": -5951.0,
+  "last_quarter_pnl": -5978.0,
+  "max_drawdown": 23851.0,
+  "event_counts": {
+    "sent": 45716,
+    "accepted": 45716,
+    "filled": 45619,
+    "canceled": 97
+  },
+  "twelve_segment_pnl": [
+    -1956.0,
+    -2002.0,
+    -2061.0,
+    -1936.0,
+    -1972.0,
+    -1995.0,
+    -1955.0,
+    -1994.0,
+    -2002.0,
+    -1947.0,
+    -2049.0,
+    -1982.0
+  ],
+  "positive_segments": 0,
+  "maker_volume": 0.0,
+  "taker_volume": 45619.0,
+  "pnl_per_traded_lot": -0.5228303996141959,
+  "last_fill_s": 11999.747915
+}

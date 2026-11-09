@@ -1,0 +1,120 @@
+[
+  {
+    "name": "final_elastic250_d5",
+    "model": "elastic250",
+    "case": [
+      "final_elastic250_d5",
+      "outputs\\qminers-algo-arena\\strategies\\round1_robust_candidate.py",
+      "outputs\\qminers-algo-arena\\data\\round1.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "final_elastic250_d20",
+    "model": "elastic250",
+    "case": [
+      "final_elastic250_d20",
+      "outputs\\qminers-algo-arena\\strategies\\round1_robust_candidate.py",
+      "outputs\\qminers-algo-arena\\data\\round1.csv",
+      {},
+      20
+    ]
+  },
+  {
+    "name": "final_elastic250_d50",
+    "model": "elastic250",
+    "case": [
+      "final_elastic250_d50",
+      "outputs\\qminers-algo-arena\\strategies\\round1_robust_candidate.py",
+      "outputs\\qminers-algo-arena\\data\\round1.csv",
+      {},
+      50
+    ]
+  },
+  {
+    "name": "final_diverse_composite_d5",
+    "model": "diverse_composite",
+    "case": [
+      "final_diverse_composite_d5",
+      "outputs\\qminers-algo-arena\\strategies\\round1_robust_alternative.py",
+      "outputs\\qminers-algo-arena\\data\\round1.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "final_diverse_composite_d20",
+    "model": "diverse_composite",
+    "case": [
+      "final_diverse_composite_d20",
+      "outputs\\qminers-algo-arena\\strategies\\round1_robust_alternative.py",
+      "outputs\\qminers-algo-arena\\data\\round1.csv",
+      {},
+      20
+    ]
+  },
+  {
+    "name": "final_diverse_composite_d50",
+    "model": "diverse_composite",
+    "case": [
+      "final_diverse_composite_d50",
+      "outputs\\qminers-algo-arena\\strategies\\round1_robust_alternative.py",
+      "outputs\\qminers-algo-arena\\data\\round1.csv",
+      {},
+      50
+    ]
+  },
+  {
+    "name": "v2_elastic250",
+    "model": "elastic250",
+    "case": [
+      "v2_elastic250",
+      "outputs\\qminers-algo-arena\\strategies\\round1_robust_candidate.py",
+      "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+      {
+        "SESSION_S": 5750.0
+      },
+      5
+    ]
+  },
+  {
+    "name": "v2_diverse_composite",
+    "model": "diverse_composite",
+    "case": [
+      "v2_diverse_composite",
+      "outputs\\qminers-algo-arena\\strategies\\round1_robust_alternative.py",
+      "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+      {
+        "SESSION_S": 5750.0
+      },
+      5
+    ]
+  },
+  {
+    "name": "v2_f4",
+    "model": "f4",
+    "case": [
+      "v2_f4",
+      "outputs\\qminers-algo-arena\\strategies\\round1_best.py",
+      "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+      {
+        "SESSION_S": 5750.0
+      },
+      5
+    ]
+  },
+  {
+    "name": "v2_prior_cat",
+    "model": "prior_cat",
+    "case": [
+      "v2_prior_cat",
+      "outputs\\qminers-algo-arena\\strategies\\round1_ml_candidate.py",
+      "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+      {
+        "SESSION_S": 5750.0
+      },
+      5
+    ]
+  }
+]

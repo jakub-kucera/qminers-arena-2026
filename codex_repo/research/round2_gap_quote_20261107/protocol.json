@@ -1,0 +1,51 @@
+{
+  "scope": "Development first 60% only; no final selection.",
+  "hypotheses": [
+    "Quote closer to estimated fair value in spread >=3 instead of only one tick inside the touch",
+    "Two fixed widths plus a robust whole-book median center",
+    "No position increase: strict100 and all native execution costs retained"
+  ],
+  "candidates": [
+    {
+      "name": "gap_center_0p5",
+      "file": "logs\\round2_gap_quote_batch\\sources\\gap_center_0p5.py",
+      "source_sha256": "f1818539941944443f70779a2bda0daa4be5f600b40d76042a1fcb22d28901e6",
+      "risk": "strict100"
+    },
+    {
+      "name": "gap_center_1p5",
+      "file": "logs\\round2_gap_quote_batch\\sources\\gap_center_1p5.py",
+      "source_sha256": "d9a1d0d7f876b579e1113a418d728a0a9005c04f5f9f1a6972ab49e18b234d01",
+      "risk": "strict100"
+    },
+    {
+      "name": "gap_book_median",
+      "file": "logs\\round2_gap_quote_batch\\sources\\gap_book_median.py",
+      "source_sha256": "3edc4f5cd0746b669bcddf587c3f6d4f0e0df57ae32b658e9a4b04c14b5d9c2e",
+      "risk": "strict100"
+    }
+  ],
+  "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "target_full_public_net": 100000
+}

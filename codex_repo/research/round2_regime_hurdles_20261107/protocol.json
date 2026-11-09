@@ -1,0 +1,55 @@
+{
+  "goal": 150000,
+  "scope": "First80% previously consumed development; no fresh holdout remains for public claims.",
+  "candidates": [
+    {
+      "name": "mix_60s_gate20",
+      "file": "logs\\round2_regime_hurdles\\sources\\mix_60s_gate20.py",
+      "source_sha256": "c96141d18a50b9280539a90b160f2a1b13acb00ef96cd099a8484e12b4292877",
+      "risk": "strict100"
+    },
+    {
+      "name": "mix_60s_gate40",
+      "file": "logs\\round2_regime_hurdles\\sources\\mix_60s_gate40.py",
+      "source_sha256": "cfa714bbdd639ac7629bb056e22f0fc5542ed877a74c1910d7fc67ea76fe5262",
+      "risk": "strict100"
+    },
+    {
+      "name": "mix_300s_gate50",
+      "file": "logs\\round2_regime_hurdles\\sources\\mix_300s_gate50.py",
+      "source_sha256": "84df9313eb06058410e2fdd6aa2a4b00de635ab17262aee18ba1d120455755b1",
+      "risk": "strict100"
+    },
+    {
+      "name": "mix_300s_gate100",
+      "file": "logs\\round2_regime_hurdles\\sources\\mix_300s_gate100.py",
+      "source_sha256": "343895c72c5fb1113c7bbef8d92337b2a847adc8aff0627f5ef6586e9d2a65f5",
+      "risk": "strict100"
+    }
+  ],
+  "data_sha256": "7736799c3b91285fff72e28558e60fa930532cee91342ada939fc0e40a901484",
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "hypothesis": "Choose maker or large-aggressor IOC policy from causal recent one-lot shadow profitability, using one shared 100-lot budget.",
+  "selection": "Require positive 30-60m and 60-80m increments. Prefer larger combined net gain in those windows; freeze one before full replay.",
+  "safeguards": "Retain pending cancellations; exclude IOC fills from maker calibration; shadow is a no-latency proxy, actual trades use native costs."
+}

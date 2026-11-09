@@ -1,0 +1,54 @@
+{
+  "created_utc": "2026-11-07T14:46:36Z",
+  "original_protocol_sha256": "4b58802736f50ecc1369a45890d76f31bcab4d4c5242b5776a98ed6290647d1d",
+  "sources": {
+    "active_500_hold0_edge0p0": {
+      "kind": "burst_active",
+      "cap": 500,
+      "hold_us": 0,
+      "edge": 0.0,
+      "minimum_aligned_inventory": 0,
+      "source": "logs\\penalty_tradeoff\\sources\\active_500_hold0_edge0p0.py",
+      "sha256": "2c54c51d6beeb8e9f513e1f9f26f875c22cc554ce3c2fabd75d99eb73084842b"
+    },
+    "active_1000_hold0_edge0p0": {
+      "kind": "burst_active",
+      "cap": 1000,
+      "hold_us": 0,
+      "edge": 0.0,
+      "minimum_aligned_inventory": 0,
+      "source": "logs\\penalty_tradeoff\\sources\\active_1000_hold0_edge0p0.py",
+      "sha256": "d3f3575c57a1a95727c99e5e3897d09da6c4e8eefcc7c48a8a371e27847d0f6b"
+    },
+    "active_500_hold20_edge0p0": {
+      "kind": "burst_active",
+      "cap": 500,
+      "hold_us": 20000,
+      "edge": 0.0,
+      "minimum_aligned_inventory": 0,
+      "source": "logs\\penalty_tradeoff\\sources\\active_500_hold20_edge0p0.py",
+      "sha256": "9d6fc6a91c729e6fa3e6e3794aaa2eb646c391ec53e4ff61e106d8afbe2a711a"
+    },
+    "active_1000_hold20_edge0p0": {
+      "kind": "burst_active",
+      "cap": 1000,
+      "hold_us": 20000,
+      "edge": 0.0,
+      "minimum_aligned_inventory": 0,
+      "source": "logs\\penalty_tradeoff\\sources\\active_1000_hold20_edge0p0.py",
+      "sha256": "1d1fb9f26dcd24d52ef2f2c1a0b314227657cf661c867a15f5ef0f1be73de6af"
+    },
+    "active_1000_hold100_edge0p3": {
+      "kind": "burst_active",
+      "cap": 1000,
+      "hold_us": 100000,
+      "edge": 0.3,
+      "minimum_aligned_inventory": 0,
+      "source": "logs\\penalty_tradeoff\\sources\\active_1000_hold100_edge0p3.py",
+      "sha256": "0f320ecde635145c133e4fb6a0f2c8fc9f50a30f1bfb7b52d6aa583ba6af7222"
+    }
+  },
+  "reason": "Initial guarded variants posted only a few extra orders and incurred no breaches in the first completed screens. Their unchanged PnL cannot evaluate the economics of paying a fee. Add five activation probes, lowering the admission threshold and allowing aligned inventory from zero; also include a 100ms hold aligned with the forecasting horizon.",
+  "selection_amendment": "Keep all original numerical gates, but correct over all fourteen candidates together. Freeze this extra cohort before its replays. No further additions. If no model passes, choose the best-lower-bound guarded variant with realized breaches for diagnostic confirmation only; inactive variants are not evidence for a profitable penalty tradeoff.",
+  "limitation": "Adaptive exploratory extension on already consumed data; no fresh holdout."
+}

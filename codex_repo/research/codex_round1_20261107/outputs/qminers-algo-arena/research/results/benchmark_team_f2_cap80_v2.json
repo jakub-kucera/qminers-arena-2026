@@ -1,0 +1,21 @@
+{
+  "file": "team_f2_cap80_v2.py",
+  "wall_seconds": 51.26507189986296,
+  "cpu_seconds": 50.625,
+  "peak_working_set_bytes": 53723136,
+  "result": {
+    "fills": 6366,
+    "traded_volume": 337820,
+    "inventory": 0,
+    "cash": 187588.0,
+    "mark_price": 10003.0,
+    "breach_penalty": 0.0,
+    "pnl": 187588.0,
+    "pnl_se": 3909.4297620458938,
+    "abs_inventory_q50": 45,
+    "abs_inventory_q68": 67,
+    "abs_inventory_q95": 80,
+    "abs_inventory_q997": 80
+  },
+  "note": "Windows process measurement, includes Python and local harness imports; not the remote Linux sandbox."
+}

@@ -1,0 +1,53 @@
+{
+  "created_utc": "2026-11-07T11:30:23.794006+00:00",
+  "python_version": "3.13.18 (main, Oct 26 2026, 14:10:48) [MSC v.1944 64 bit (AMD64)]",
+  "research_dependencies": {
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "scikit-learn": "1.9.1",
+    "pandas": "3.0.6",
+    "plotly": "6.9.0"
+  },
+  "official_commit": "3f5bea730d5f341c6988b1fe2722998b66270ea0",
+  "team_commit": "5003a3553c32335e6c0d2acde9b9dce8deb92ea4",
+  "data_sha256": "dd4e00e281abe50c9a19e16c147ccbc0b5b69835fee567f00136402ef1e01d08",
+  "candidate_sha256": "8b33a9a7fd8679fde915e1832c0e576461a990a788e466ac673978a4d3e7d11c",
+  "candidate": "outputs\\qminers-algo-arena\\strategies\\composite_max_pnl_v2.py",
+  "selection_type": "Highest observed public full-tape PnL; original validation selection remains the ensemble.",
+  "new_research_runs": 47,
+  "policy_trials": 37,
+  "exact_file_benchmark": {
+    "file": "composite_max_pnl_v2.py",
+    "wall_seconds": 40.30484340013936,
+    "cpu_seconds": 39.546875,
+    "peak_working_set_bytes": 54824960,
+    "result": {
+      "fills": 6191,
+      "traded_volume": 476980,
+      "inventory": -36,
+      "cash": 632232.0,
+      "mark_price": 10004.0,
+      "breach_penalty": 0.0,
+      "pnl": 272088.0,
+      "pnl_se": 5696.158290065651,
+      "abs_inventory_q50": 100,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "note": "Windows process measurement, includes Python and local harness imports; not the remote Linux sandbox."
+  },
+  "limitations": [
+    "Previously inspected public tail; full tape used to select maximum-PnL alternative.",
+    "No private data or website result. Negative PnL on the older original sample.",
+    "Inventory often at the 100-lot boundary. Runtime measured on Windows locally."
+  ],
+  "files": {
+    "qminers-algo-arena\\strategies\\composite_max_pnl_v2.py": "8b33a9a7fd8679fde915e1832c0e576461a990a788e466ac673978a4d3e7d11c",
+    "Qminers-composite-results.txt": "760bd434e1b6f852f802d07b441a7d879406eaa4a018fc35d46c6b6930f86d77",
+    "Qminers-composite-results.html": "9ce3e2dec659aaeec304a7338d842a4ca8a80a82cba0d3d499e2c834164d2912",
+    "qminers-algo-arena\\research\\composite_results\\all_composite_runs.csv": "5d74ee3becbb3d8eba89922ab96ad92dbb368ec26e4923c2ddc95a3646065f32",
+    "qminers-algo-arena\\research\\composite_results\\selection.json": "1e470f942b638fe05108712811d6ddd16b911750c115e71a3207f6743cabb9e6",
+    "qminers-algo-arena\\research\\composite_results\\model_fit.json": "2755f5f660e685062feddc442d3db8fa6803533184c81bf73619bc9920485822"
+  }
+}

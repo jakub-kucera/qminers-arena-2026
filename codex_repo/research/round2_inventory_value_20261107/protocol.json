@@ -1,0 +1,57 @@
+{
+  "scope": "Development first 60% only; no final selection.",
+  "hypotheses": [
+    "Inventory skew changes reservation prices without repeated quantity cancel/replace",
+    "Bounded aggressive reduction at flat for old positions with contrary forecast",
+    "All original native costs, latency, reservations and 100-lot hard strategy budget remain"
+  ],
+  "candidates": [
+    {
+      "name": "skew_0p25",
+      "file": "logs\\round2_inventory_value_batch\\sources\\skew_0p25.py",
+      "source_sha256": "16b1bbe1a0aa18f9015c73d33bf026c262b87655dc27f17a9c60b673749275f6",
+      "risk": "strict100"
+    },
+    {
+      "name": "skew_1p0",
+      "file": "logs\\round2_inventory_value_batch\\sources\\skew_1p0.py",
+      "source_sha256": "482747ba43dba4c1d9bc4543e095438a22e81ba5c76db3507fc6547bb16f1e24",
+      "risk": "strict100"
+    },
+    {
+      "name": "contrary_exit_200ms",
+      "file": "logs\\round2_inventory_value_batch\\sources\\contrary_exit_200ms.py",
+      "source_sha256": "5024d0e3db0db642f615765f54d963f288c98ac270768b95b00a0a47b2d48eab",
+      "risk": "strict100"
+    },
+    {
+      "name": "contrary_exit_1000ms",
+      "file": "logs\\round2_inventory_value_batch\\sources\\contrary_exit_1000ms.py",
+      "source_sha256": "c3e0a66e0be30e17477bf1777e3f80d441e142373d9dd6f606bbd23f29d3e4dc",
+      "risk": "strict100"
+    }
+  ],
+  "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "target_full_public_net": 100000
+}

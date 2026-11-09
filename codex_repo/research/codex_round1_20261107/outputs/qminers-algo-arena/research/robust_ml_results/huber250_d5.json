@@ -1,0 +1,56 @@
+{
+  "name": "huber250_d5",
+  "source": "outputs\\qminers-algo-arena\\research\\robust_ml_results\\sources\\huber250.py",
+  "source_sha256": "8a55cace9f2242611578f121bb001495c83d54cc56fc5b01bb7d832e9bdbea3a",
+  "data": "round1_first75.csv",
+  "params": {},
+  "delay_ms": 5,
+  "result": {
+    "fills": 19485,
+    "traded_volume": 1793796,
+    "inventory": 60,
+    "cash": -305338.0,
+    "mark_price": 10036.0,
+    "breach_penalty": 0.0,
+    "pnl": 296822.0,
+    "pnl_se": 9843.170989609787,
+    "abs_inventory_q50": 98,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "wall_seconds": 112.69276669993997,
+  "cpu_seconds": 111.1875,
+  "max_abs_inventory": 100,
+  "max_reserved_exposure": 100,
+  "final_tracked_inventory": 60,
+  "quarter_pnl": [
+    69573.0,
+    71318.0,
+    77485.0,
+    78446.0
+  ],
+  "first_half_pnl": 140891.0,
+  "third_quarter_pnl": 77485.0,
+  "last_quarter_pnl": 78446.0,
+  "max_drawdown": 1045.0,
+  "event_counts": {
+    "sent": 38852,
+    "accepted": 38852,
+    "cancel_requested": 22738,
+    "canceled": 22616,
+    "filled": 16234,
+    "partially_filled": 15714,
+    "rejected": 122,
+    "reject:cancel rejected: no resting order with this id": 122
+  },
+  "validation_blocks": [
+    35498.0,
+    34269.0,
+    37042.0
+  ],
+  "validation_pnl": 106809.0,
+  "training_pnl": 190013.0,
+  "tail_pnl": null,
+  "outside_fit_pnl": 106809.0
+}

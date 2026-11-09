@@ -1,0 +1,78 @@
+{
+  "data": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\data\\round2_public.csv",
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "first_us": 67,
+  "last_us": 5999996013,
+  "rows": 2193064,
+  "dataset_role": "public",
+  "competition_protocol": {
+    "source": "Organizer announcement supplied by the user on 2026-11-07",
+    "public": {
+      "downloadable": true,
+      "purpose": "training and local diagnostics",
+      "relative_size_approx": 0.5
+    },
+    "server_validation": {
+      "feedback": [
+        "pnl"
+      ],
+      "full_logs_available": false,
+      "purpose": "submission feedback and selection"
+    },
+    "private": {
+      "score_released": "after submission deadline",
+      "purpose": "competition scoring"
+    },
+    "validation_and_private_same_size": true,
+    "size_metric": "Unspecified; half size does not establish half elapsed duration or doubled expected PnL."
+  },
+  "development_cutoff_us": 3599997635,
+  "validation_cutoff_us": 4799996824,
+  "development": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\logs\\round2_fill_value_validation\\development.csv",
+  "development_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+  "development_rows": 1313720,
+  "validation_prefix": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\logs\\round2_fill_value_validation\\validation_prefix.csv",
+  "validation_prefix_sha256": "7736799c3b91285fff72e28558e60fa930532cee91342ada939fc0e40a901484",
+  "validation_prefix_rows": 1754407,
+  "candidates": [
+    {
+      "name": "fill_value_0p1",
+      "file": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\logs\\round2_fill_value_validation\\sources\\fill_value_0p1.py",
+      "original_file": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\logs\\round2_conditional_fill\\sources\\fill_value_0p1.py",
+      "source_sha256": "021c7b60773339ba7242abb5a50bad323fa6b2da432e43cde735ddc85fcefd93",
+      "risk": "native",
+      "intent": "Explicit custom candidate"
+    },
+    {
+      "name": "round2_flat",
+      "file": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\logs\\round2_fill_value_validation\\sources\\round2_flat.py",
+      "original_file": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\strategies\\round2\\round2_flat.py",
+      "source_sha256": "2e386e9f37b28e88f664fccd614f71b1f84bc11ea39be4dfe0f3a045ac00612d",
+      "risk": "strict100",
+      "intent": "No-trade control"
+    }
+  ],
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "protocol": "Local PUBLIC 60/20/20 diagnostic; organizer server validation and private backtests are distinct datasets.",
+  "limitation": "The last public 20% is only a local chronological check, never the organizer private backtest. Freshness requires no earlier inspection."
+}

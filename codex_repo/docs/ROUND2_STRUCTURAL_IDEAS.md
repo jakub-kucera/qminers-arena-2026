@@ -139,3 +139,34 @@ of server-validation submissions. Log every server query against exact source
 bytes. Validation feedback used for selection is consumed evidence. Only the
 organizer's private post-deadline backtest determines the final score. Public
 being smaller does not establish a linear PnL multiplier or identical regimes.
+
+## Additional reported fill-count evidence
+
+The user reports that Team 2 made approximately 426,000 fills on the
+private tape, over 12 times the average fill count of the other top-five teams.
+This is user-reported evidence; the underlying leaderboard/export and exact
+meaning of a fill have not been independently checked in this workspace.
+Do not assume it describes the new round-2 tape or identifies their algorithm.
+
+This strengthens the case for testing execution frequency and replenishment,
+while distinguishing fills from orders, completed cycles and traded lots.
+Partial-fill fragmentation or smaller orders can inflate the count without
+improving profitability. Compare net PnL per fill, per traded lot and per unit
+of inventory-time, plus fill-size distributions, spread capture, mark-outs,
+queue churn, penalties and drawdown. Check definitions and tape duration before
+comparing counts between teams or projecting the reported ratio.
+
+Add a bounded priority-preserving replenishment/order-size experiment alongside
+jump-resistant prediction and selective taker policies. Do not optimize raw
+fill count as a substitute for competition net PnL or copy a round-1 regime
+assumption into round 2. This evidence does not justify increasing exposure
+without measured incremental net profit.
+
+The local scorer was subsequently inspected: `SimulationResult.fills` is
+`len(self._filled_order_ids)`, the number of distinct user orders that received
+a fill. It is not the number of individual executions or private callbacks.
+On the robust round-2 development replay, 12,241 native filled orders generated
+more private fill callbacks because orders could fill partially. Confirm that
+the reported leaderboard statistic uses this same definition before inferring
+execution-event frequency. Smaller child orders can increase this metric at
+unchanged traded volume.

@@ -1,0 +1,39 @@
+Elastic Net is the preferred round1 challenger: 406,325 total PnL, +3,804 (1.82%) over F4 in the later half excluded from fitting. Its older-sample result is -2,243 versus F4, so it is not a universal replacement. Keep F4 as the reference and use the composite as a frozen alternative.
+
+FULL ROUND1 / 5ms
+Model | Full PnL | Fitting half | Validation | Final quarter | Later half | Sampled DD
+F4 baseline | 399,096 | 190,044 | 106,753 | 102,299 | 209,052 | 1,045
+Previous CatBoost | 403,073 | 193,560 | 106,896 | 102,617 | 209,513 | 956
+Elastic Net | 406,325 | 193,469 | 107,965 | 104,891 | 212,856 | 894
+Diverse composite | 403,093 | 191,478 | 107,699 | 103,916 | 211,615 | 868
+
+LATER-HALF LATENCY STRESS
+Model | 5ms | 20ms | 50ms | Excess vs F4 5ms | 20ms | 50ms
+F4 baseline | 209,052 | 176,685 | 119,129 | +0 | +0 | +0
+Previous CatBoost | 209,513 | 177,384 | 122,345 | +461 | +699 | +3,216
+Elastic Net | 212,856 | 181,662 | 124,246 | +3,804 | +4,977 | +5,117
+Diverse composite | 211,615 | 179,258 | 121,312 | +2,563 | +2,573 | +2,183
+
+OLDER SAMPLE / NO RETRAINING
+Model | Full PnL | Excess vs F4 | Sampled DD
+F4 baseline | 264,616 | +0 | 200
+Previous CatBoost | 263,542 | -1,074 | 220
+Elastic Net | 262,373 | -2,243 | 220
+Diverse composite | 264,673 | +57 | 220
+
+EIGHT-MODEL VALIDATION
+Model | 5ms | Excess F4 | 20ms | Excess F4 | Positive blocks | Gate
+Elastic Net | 108,096 | +1,289 | 91,660 | +2,144 | 5/6 | Pass
+Diverse composite | 107,753 | +946 | 91,433 | +1,917 | 4/6 | Pass
+Ridge | 107,694 | +887 | 91,358 | +1,842 | 5/6 | Pass
+ExtraTrees | 107,437 | +630 | 89,941 | +425 | 4/6 | Pass
+Disagreement guard | 106,997 | +190 | 90,163 | +647 | 4/6 | Pass
+Previous CatBoost | 106,950 | +143 | 89,860 | +344 | 3/6 | Fail
+Window ensemble | 106,932 | +125 | 89,918 | +402 | 3/6 | Fail
+Huber | 106,809 | +2 | 89,509 | -7 | 1/6 | Fail
+Calibrated logistic | 104,983 | -1,824 | 89,705 | +189 | 3/6 | Fail
+
+Exact export: CPU 121.0s; memory 56.0MiB; zero penalties.
+29 new replays; two GPU CatBoost fits; up to 18 CPU replay workers.
+Caveats: reused tapes, no independent winning guarantee, no server evaluation, round1 session horizon 12000s.
+See HTML and research/robust_ml_results/outcome.json for complete results, methodology and references.

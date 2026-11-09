@@ -1,0 +1,58 @@
+{
+  "goal": {
+    "reference_audit": "logs/round2_t2_liquidity_supplied/full_audit.json",
+    "reference_source_sha256": "54658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4",
+    "increment": 50000
+  },
+  "candidates": [
+    {
+      "name": "memory300_blend0.5",
+      "file": "logs\\round2_t2_forecast_calibration\\sources\\memory300_blend0.5.py",
+      "source_sha256": "47af431ba16cc81cd909d850979f684449046e125691ca902fd92fc15443eb04",
+      "risk": "strict100"
+    },
+    {
+      "name": "memory300_blend1.0",
+      "file": "logs\\round2_t2_forecast_calibration\\sources\\memory300_blend1.0.py",
+      "source_sha256": "02cbc797ba899567df0e3819bac495c64436915c1e4f185d22e8313a1abb5f66",
+      "risk": "strict100"
+    },
+    {
+      "name": "memory1800_blend0.5",
+      "file": "logs\\round2_t2_forecast_calibration\\sources\\memory1800_blend0.5.py",
+      "source_sha256": "af4829a6d57a7dff806f94839bfcf2f36714b5607546aa9c6295158ac6b4138d",
+      "risk": "strict100"
+    },
+    {
+      "name": "memory1800_blend1.0",
+      "file": "logs\\round2_t2_forecast_calibration\\sources\\memory1800_blend1.0.py",
+      "source_sha256": "bba8e83bdad70dad220d62bd9176c108f284528873d81e4bba6904f9d4e82018",
+      "risk": "strict100"
+    }
+  ],
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "scope": "Consumed public first80%; no new holdout and no server access.",
+  "hypothesis": "No-passive reference294098, causal stored raw forecasts and400ms outcomes. Narrow-spread absforecast>=0.1 calibration only, responseclip3, identity prior20, slopeclip0.5..1.5. Memory300/1800s and blend50/100percent; four frozen cases. No in-sample reconstructed forecasts. Reference later30-80=185349.",
+  "selection": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "reference": "Frozen 167412 composite remains unchanged; no automatic promotion from prefix alone."
+}

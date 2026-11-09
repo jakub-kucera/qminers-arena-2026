@@ -1,0 +1,58 @@
+{
+  "goal": {
+    "reference_audit": "logs/round2_t2_liquidity_supplied/full_audit.json",
+    "reference_source_sha256": "54658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4",
+    "increment": 50000
+  },
+  "candidates": [
+    {
+      "name": "skew0.1",
+      "file": "logs\\round2_t2_inventory_response\\sources\\skew0.1.py",
+      "source_sha256": "e5ff41f09fdab2179e4f5e16315b216bd40071e9d122185d2320a039cc618b22",
+      "risk": "strict100"
+    },
+    {
+      "name": "skew0.25",
+      "file": "logs\\round2_t2_inventory_response\\sources\\skew0.25.py",
+      "source_sha256": "1fe8e0bd0ba7d55597433fd6eb3d548c455f5a586a4c8edec8b54301e4e3c879",
+      "risk": "strict100"
+    },
+    {
+      "name": "skew0.5",
+      "file": "logs\\round2_t2_inventory_response\\sources\\skew0.5.py",
+      "source_sha256": "d3009f6d3067a2408e74c0d1dc6a14b681b8fbce271a4f0c7b06aae1f2b00aae",
+      "risk": "strict100"
+    },
+    {
+      "name": "skew0.75",
+      "file": "logs\\round2_t2_inventory_response\\sources\\skew0.75.py",
+      "source_sha256": "42c1534086abf6032ff43a71d92ae6d0367a944ef2c88b3a4ed2a863f79efb95",
+      "risk": "strict100"
+    }
+  ],
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "scope": "Consumed public first80%; no new holdout and no server access.",
+  "hypothesis": "Four coarse inventory skew strengths0.1/0.25/0.5/0.75 from no-passive294098, versus0.025. Same model/execution pace/spread gate and hard100. Stronger skew makes reducing/reversing exposure easier; no independent time exits or larger limits. Reference later30-80=185349.",
+  "selection": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "reference": "Frozen 167412 composite remains unchanged; no automatic promotion from prefix alone."
+}

@@ -1,0 +1,81 @@
+[
+  [
+    "ridge_maker_size80",
+    "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {
+      "COEFFICIENTS": [
+        -0.002125057500729188,
+        0.13765623156788026,
+        0.09935151729287892,
+        -0.12532670810745913,
+        0.2731004180741459,
+        -0.03654012754727239,
+        0.00550194914885027,
+        -0.014808658483958402,
+        0.3627563070679183
+      ],
+      "INTERCEPT": 0.050059130871324055,
+      "SESSION_S": 5749.868964,
+      "MODE": "ridge_maker",
+      "SIZE": 80
+    },
+    5
+  ],
+  [
+    "microprice_maker_size80",
+    "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {
+      "MODE": "maker",
+      "SIZE": 80,
+      "SESSION_S": 5749.868964
+    },
+    5
+  ],
+  [
+    "ridge_ioc_edge0",
+    "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {
+      "COEFFICIENTS": [
+        -0.002125057500729188,
+        0.13765623156788026,
+        0.09935151729287892,
+        -0.12532670810745913,
+        0.2731004180741459,
+        -0.03654012754727239,
+        0.00550194914885027,
+        -0.014808658483958402,
+        0.3627563070679183
+      ],
+      "INTERCEPT": 0.050059130871324055,
+      "SESSION_S": 5749.868964,
+      "MODE": "ridge_ioc",
+      "EDGE": 0.0
+    },
+    5
+  ],
+  [
+    "ridge_maker_original_sample",
+    "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+    "outputs\\qminers-algo-arena\\data\\sample.csv",
+    {
+      "COEFFICIENTS": [
+        -0.002125057500729188,
+        0.13765623156788026,
+        0.09935151729287892,
+        -0.12532670810745913,
+        0.2731004180741459,
+        -0.03654012754727239,
+        0.00550194914885027,
+        -0.014808658483958402,
+        0.3627563070679183
+      ],
+      "INTERCEPT": 0.050059130871324055,
+      "SESSION_S": 3599.000003,
+      "MODE": "ridge_maker"
+    },
+    5
+  ]
+]

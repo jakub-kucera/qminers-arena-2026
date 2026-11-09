@@ -1,0 +1,11 @@
+{
+  "native_cli_parity": true,
+  "promoted": false,
+  "net": 199870.1,
+  "gross": 200641.0,
+  "fee": 770.9,
+  "actual_peak": 183,
+  "potential_peak": 1000,
+  "bursts_reaching900": 0,
+  "reason": "Only181.10 above199689 reference and below penalty-free205350; no near900-lot burst occurred."
+}

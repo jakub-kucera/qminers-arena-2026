@@ -1,0 +1,69 @@
+{
+  "scope": "Development first 60% only; no final selection.",
+  "hypotheses": [
+    "Earlier 15-feature short-horizon maker may adapt better to the new regime",
+    "Shorter robust forecast reduces jump contamination",
+    "Compare five-minute adaptation and one-second prediction with controls"
+  ],
+  "candidates": [
+    {
+      "name": "prior_15_features",
+      "file": "logs\\round2_horizon_batch\\sources\\prior_15_features.py",
+      "source_sha256": "21d9d8693bdd8c90cb21bf0bfdbb6923b1949a0d3b89c30306e68305287f4357",
+      "risk": "strict100"
+    },
+    {
+      "name": "prior_15_clip3",
+      "file": "logs\\round2_horizon_batch\\sources\\prior_15_clip3.py",
+      "source_sha256": "951656838aa7a86c1650a8dc72dfd627f5d024f24f12bace2a142011e4eec244",
+      "risk": "strict100"
+    },
+    {
+      "name": "short100_clip1",
+      "file": "logs\\round2_horizon_batch\\sources\\short100_clip1.py",
+      "source_sha256": "cc4354387b98fe3d62570929887dd67927c5206e73cbc31b2f5f62fa105f25ec",
+      "risk": "strict100"
+    },
+    {
+      "name": "short100_clip3",
+      "file": "logs\\round2_horizon_batch\\sources\\short100_clip3.py",
+      "source_sha256": "d2bfdaf5bcd589630045a9ced25428859b982744dc6f13a7a23b05b23ca96911",
+      "risk": "strict100"
+    },
+    {
+      "name": "short100_clip3_adapt",
+      "file": "logs\\round2_horizon_batch\\sources\\short100_clip3_adapt.py",
+      "source_sha256": "43842ed54ee6f4b6f6bdf4fb2ac36652aec4b7b8101e09fbeca519fd709c0d0b",
+      "risk": "strict100"
+    },
+    {
+      "name": "horizon1s_clip3",
+      "file": "logs\\round2_horizon_batch\\sources\\horizon1s_clip3.py",
+      "source_sha256": "d740122b7559dfd1dec1ff45a441a7774114c7e896ac0e5303c39971fed5aaeb",
+      "risk": "strict100"
+    }
+  ],
+  "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "target_full_public_net": 100000
+}

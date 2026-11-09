@@ -1,0 +1,21 @@
+{
+  "file": "ridge_maker_v2.py",
+  "wall_seconds": 24.471401300048456,
+  "cpu_seconds": 24.171875,
+  "peak_working_set_bytes": 54329344,
+  "result": {
+    "fills": 6314,
+    "traded_volume": 120706,
+    "inventory": 0,
+    "cash": 73797.0,
+    "mark_price": 10003.0,
+    "breach_penalty": 0.0,
+    "pnl": 73797.0,
+    "pnl_se": 1070.7257919945284,
+    "abs_inventory_q50": 9,
+    "abs_inventory_q68": 12,
+    "abs_inventory_q95": 25,
+    "abs_inventory_q997": 36
+  },
+  "note": "Windows process measurement, includes Python and local harness imports; not the remote Linux sandbox."
+}

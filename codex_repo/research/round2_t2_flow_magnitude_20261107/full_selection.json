@@ -1,0 +1,15 @@
+{
+  "candidate": {
+    "name": "horizon500ms",
+    "file": "logs\\round2_t2_flow_magnitude\\sources\\horizon500ms.py",
+    "source_sha256": "bbf2558137756bc7ce1f0daf332c4438fa1ef3afb74f1cd1bcd8f5dfac5f1780",
+    "risk": "strict100"
+  },
+  "selection_rule": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "goal": {
+    "reference_audit": "logs/round2_t2_liquidity_supplied/full_audit.json",
+    "reference_source_sha256": "54658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4",
+    "increment": 50000
+  },
+  "scope": "Consumed public first80%; no new holdout and no server access."
+}

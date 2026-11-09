@@ -1,0 +1,21 @@
+{
+  "file": "composite_max_pnl_v2.py",
+  "wall_seconds": 40.30484340013936,
+  "cpu_seconds": 39.546875,
+  "peak_working_set_bytes": 54824960,
+  "result": {
+    "fills": 6191,
+    "traded_volume": 476980,
+    "inventory": -36,
+    "cash": 632232.0,
+    "mark_price": 10004.0,
+    "breach_penalty": 0.0,
+    "pnl": 272088.0,
+    "pnl_se": 5696.158290065651,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "note": "Windows process measurement, includes Python and local harness imports; not the remote Linux sandbox."
+}

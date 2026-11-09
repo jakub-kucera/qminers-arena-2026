@@ -1,0 +1,23 @@
+[
+  [
+    "final_selected",
+    "outputs\\qminers-algo-arena\\strategies\\composite_best_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {},
+    5
+  ],
+  [
+    "final_F4",
+    "outputs\\qminers-algo-arena\\research\\reference_strategies\\r0_F4_depletion_guard.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {},
+    5
+  ],
+  [
+    "final_alternative",
+    "outputs\\qminers-algo-arena\\strategies\\composite_alternative_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {},
+    5
+  ]
+]

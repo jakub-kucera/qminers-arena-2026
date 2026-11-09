@@ -1,0 +1,111 @@
+{
+  "old_forecasts_on_same_validation": {
+    "old_ridge": {
+      "mse": 0.7569823721933219,
+      "correlation": 0.18623677035743547
+    },
+    "old_ensemble": {
+      "mse": 0.7517620791593675,
+      "correlation": 0.1953420750851162
+    }
+  },
+  "selected_model_feature_importance": [
+    [
+      "touch imbalance",
+      38.4712989194408
+    ],
+    [
+      "one-second signed flow",
+      18.038127259324913
+    ],
+    [
+      "microprice minus mid",
+      13.962167141095303
+    ],
+    [
+      "signed flow change over 250ms",
+      12.760225583634552
+    ],
+    [
+      "signed flow change over 1s",
+      5.381963335813674
+    ],
+    [
+      "mid change over 1s",
+      2.644384352077409
+    ],
+    [
+      "mid minus one-second EMA",
+      2.0151379528091558
+    ],
+    [
+      "five-tick depth imbalance",
+      1.8916093037070985
+    ],
+    [
+      "log touch volume",
+      1.3602956953638563
+    ],
+    [
+      "log flow volume",
+      1.1278277238243393
+    ],
+    [
+      "mid change over 250ms",
+      0.556638032375873
+    ],
+    [
+      "mid minus five-second EMA",
+      0.44981579465289767
+    ],
+    [
+      "depth imbalance change over 5s",
+      0.27625510211642235
+    ],
+    [
+      "spread",
+      0.26945183202964607
+    ],
+    [
+      "signed flow change over 5s",
+      0.18946604995625863
+    ],
+    [
+      "microprice displacement change over 250ms",
+      0.14589589768542824
+    ],
+    [
+      "depth imbalance change over 250ms",
+      0.11595762129740911
+    ],
+    [
+      "depth imbalance change over 1s",
+      0.11170251800147227
+    ],
+    [
+      "touch imbalance change over 250ms",
+      0.07609326672310003
+    ],
+    [
+      "touch imbalance change over 5s",
+      0.058925192717842044
+    ],
+    [
+      "touch imbalance change over 1s",
+      0.05381432093015112
+    ],
+    [
+      "mid change over 5s",
+      0.04294710442241007
+    ],
+    [
+      "microprice displacement change over 1s",
+      0.0
+    ],
+    [
+      "microprice displacement change over 5s",
+      0.0
+    ]
+  ],
+  "importance_note": "CatBoost prediction-value-change importance on training data, not causal attribution."
+}

@@ -1,0 +1,10 @@
+{
+  "candidate": {
+    "name": "t2_liquidity_supplied",
+    "file": "research\\round2_t2_liquidity_supplied_20261107\\original_submission.py",
+    "source_sha256": "54658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4",
+    "risk": "native"
+  },
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "scope": "Unmodified supplied reference; target is full native net plus50000; public only"
+}

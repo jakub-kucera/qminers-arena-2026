@@ -1,0 +1,38 @@
+{
+  "result": {
+    "fills": 1940,
+    "traded_volume": 276900,
+    "inventory": 100,
+    "cash": -852280.0,
+    "mark_price": 9689.0,
+    "breach_penalty": 0.0,
+    "pnl": 116620.0,
+    "pnl_se": 30564.797843031698,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "cpu_seconds": 14.59375,
+  "wall_seconds": 14.801516399951652,
+  "peak_working_set_bytes": 40865792,
+  "source_bytes": 7739,
+  "source_sha256": "c969089d0f140f73ba60fbb7ddbca97847c443d68a69bf8a2b058110837ce4ab",
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "curve_sha256": "e831f51f470bf06135ba0d34d7292f0bbeab04e6c3a3bb27357b84709d698145",
+  "engine_sha256": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+  "config": {
+    "order_accept_delay_ms": 5,
+    "public_depth": 20,
+    "run_log_path": null,
+    "book_delta_log_path": null,
+    "event_log_path": null,
+    "trade_log_path": null,
+    "max_position": 100,
+    "max_potential_position": 1000,
+    "position_breach_penalty_per_second": 10000.0,
+    "min_log_level": "INFO",
+    "show_progress": false,
+    "progress_fd": 2
+  }
+}

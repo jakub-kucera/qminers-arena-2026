@@ -1,0 +1,57 @@
+{
+  "attachment_sha256": "1ac0647ec387da3ae856aefacc6f9da2ecf98085e48bc6391e549ae52d2e14db",
+  "round1_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+  "prefix_sha256": "62c77f074eafb168f27e177f2ce9886f71675f53b9672d791827667eafc2f12f",
+  "sources": {
+    "supplied_13": {
+      "source": "logs\\depth_advantage\\sources\\supplied_13.py",
+      "sha256": "1ac0647ec387da3ae856aefacc6f9da2ecf98085e48bc6391e549ae52d2e14db"
+    },
+    "clean_13": {
+      "source": "logs\\depth_advantage\\sources\\clean_13.py",
+      "sha256": "00e6df6275ba25d20a7de5e854f5fe1378c6771cb6b755b1d8075320f1cf0ee2"
+    },
+    "core_5": {
+      "source": "logs\\depth_advantage\\sources\\core_5.py",
+      "sha256": "b4ead4008a4ed881d230a4539d4af6ba1b291eef19296dc03bedc806250df2fd"
+    },
+    "nonlinear_8": {
+      "source": "logs\\depth_advantage\\sources\\nonlinear_8.py",
+      "sha256": "da2e496804a3860ea34602a75b4119ef6f034aac5a661ef4a7342ae5b1216788"
+    },
+    "depth_linear_10": {
+      "source": "logs\\depth_advantage\\sources\\depth_linear_10.py",
+      "sha256": "5242f16ce371c30f8107ff94d45a24de64df8bced7a9e2d04126f283dcca9c59"
+    },
+    "depth_nonlinear_16": {
+      "source": "logs\\depth_advantage\\sources\\depth_nonlinear_16.py",
+      "sha256": "126d8f119a91fa5f8685025cd30ec0ef3266a481b48a45a0a76db2db24e020dc"
+    },
+    "memory_blend": {
+      "source": "logs\\depth_advantage\\sources\\memory_blend.py",
+      "sha256": "79f58c09777d8b9dc78f103a2bb80060de7048e4d275c5bdeaf57cfd2cb4d92f"
+    },
+    "horizon_blend": {
+      "source": "logs\\depth_advantage\\sources\\horizon_blend.py",
+      "sha256": "3d5b5dafa2af4142fb67b233815d98b23d74c311a0c49d0dee7084af130706a0"
+    },
+    "depth_changes_15": {
+      "source": "logs\\depth_advantage\\sources\\depth_changes_15.py",
+      "sha256": "fb100f727456a7f2c1f7bd5a3b6d355a80248231537fc03864fcacc8c56c7dbf"
+    }
+  },
+  "ablation_only": [
+    "core_5",
+    "nonlinear_8",
+    "depth_linear_10"
+  ],
+  "extensions": [
+    "depth_nonlinear_16",
+    "memory_blend",
+    "horizon_blend",
+    "depth_changes_15"
+  ],
+  "selection": "Run every variant through the existing 6000-second prefix from an empty book. Use exact pre-terminal marks at 3000 and 5990 seconds. Clean baseline must exactly match supplied baseline. Extensions must improve both halves, gain at least 1% through 5990 seconds, win at least 6/10 chronological blocks, incur zero penalty and keep actual/submitted potential exposure <=100. Rank eligible by total gain. Freeze best and second eligible (if any) before running full round1 and sample_v2. Require gains in both 5990-9000 and 9000-end, and no more than 2% sample_v2 loss. Run baseline and selected extension at 20 and 50 ms latency. If none pass, retain the supplied model with runtime-only cleanup. No automatic stacking of changes.",
+  "limit": "Previously consumed public tapes; no fresh holdout or private leaderboard claim.",
+  "created_utc": "2026-11-07T13:45:01Z"
+}

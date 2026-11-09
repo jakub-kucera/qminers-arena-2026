@@ -1,0 +1,62 @@
+QMINERS ROUND-ONE DIAGNOSTICS — 7 NOVEMBER 2026
+
+F4 with the round-one session clock achieved +399,096, ahead of the pasted passive strategy by 8,808 (2.26%). Both were profitable in all 12 time segments. F4 won 9 of the 12 paired segments. The pasted strategy led over the first half of the round; F4 earned its overall advantage in the second half. This is an observed result on the supplied tape, not proof that a 2.26% advantage persists on another round.
+
+TESTED EXPORT
+qminers-algo-arena/strategies/round1_best.py
+Only F4 SESSION_S changes to 12000.0.
+
+RANKING
+Strategy | PnL | Drawdown (1s) | Peak inventory | Positive segments | Lots | PnL / lot
+F4, round-one clock | +399,096 | 1,045 | 100 | 12/12 | 2,387,642 | 0.167
+Pasted passive strategy | +390,288 | 1,003 | 100 | 12/12 | 1,639,822 | 0.238
+Composite + ensemble | +379,055 | 1,074 | 100 | 12/12 | 2,303,238 | 0.165
+Composite + linear forecast | +367,658 | 1,074 | 100 | 12/12 | 2,242,152 | 0.164
+Pasted strategy, flow guard 0.6 | +353,035 | 1,053 | 100 | 12/12 | 1,471,412 | 0.240
+F2, 100-lot limit | +273,245 | 824 | 100 | 12/12 | 1,893,068 | 0.144
+F2, 80-lot configuration | +247,424 | 604 | 80 | 12/12 | 1,592,144 | 0.155
+Small microprice maker | +73,658 | 257 | 66 | 12/12 | 292,012 | 0.252
+Small Ridge maker | +72,021 | 190 | 69 | 12/12 | 310,834 | 0.232
+Corrected trend example | -23,851 | 23,851 | 1 | 0/12 | 45,619 | -0.523
+Mean reversion | -101,703 | 101,709 | 20 | 0/12 | 189,542 | -0.537
+M2 directional runner | -924,325 | 924,525 | 100 | 0/12 | 2,040,706 | -0.453
+
+CLOCK DIAGNOSTICS
+This tape lasts 12,000 seconds (200 minutes), compared with about 5,750 seconds in sample v2. Several earlier files would start winding down halfway through the new round. Primary comparisons change only SESSION_S to 12000.0 where that setting exists. The pasted strategy, its previously tested 0.6 flow-guard variant, and the corrected trend example are unchanged. Model coefficients, forecast weights, inventory caps and all other policy parameters remain frozen. Separate unchanged-clock controls show the effect directly; their last two quarters contribute zero PnL.
+F4, round-one clock | +180,241 | +399,096 | +218,855
+Composite + linear forecast | +166,594 | +367,658 | +201,064
+F2, 100-lot limit | +122,283 | +273,245 | +150,962
+
+LATENCY
+Strategy | 5 ms | 20 ms | 50 ms
+F4, round-one clock | +399,096 | +333,616 | +223,163
+Pasted passive strategy | +390,288 | +325,328 | +227,720
+
+At the official 5 ms delay, F4 leads. It also leads at hypothetical 20 ms, while the pasted strategy leads by 4,557 at 50 ms. Both remain profitable in all four quarters in these stress replays, without penalties. Higher latency materially reduces both scores, so the small normal-delay lead should not be treated as universal. The 0.6 flow guard also reduced normal-delay round-one PnL, from +390,288 to +353,035.
+
+MARKET AND MODEL DIAGNOSTICS
+Round one has tighter spreads and faster short-horizon price movements than the earlier sample. The v2-trained linear and ensemble composites underperformed F4 here. On sampled round-one data, raw microprice had higher correlation with the next one-second mid move than either frozen composite forecast. Boosted trees alone had the lowest prediction MSE among the displayed forecasts, but this is not a tested standalone trading policy. Forecast accuracy and executable trading profit are separate measures; no model was retrained on round one.
+
+One-tick spread share: 41.3% -> 93.0%. Mean absolute one-second mid move: 0.355 -> 0.639 ticks.
+
+RISK
+All 20 research runs had zero inventory penalties and reserved exposure at most 100. F4 reached 100 lots and had time-weighted median absolute inventory of 99. Its sampled maximum drawdown was 1,045, versus 1,003 for the pasted strategy. F4 traded 2,387,642 lots versus 1,639,822 for the pasted strategy. The latter earned more per traded lot (0.238 versus 0.167), but F4 earned more in total under the official zero-fee rules. The 80-lot F2 configuration earned +247,424 with peak inventory 80 and sampled drawdown 604; its quote size and skew also differ, so this is not a pure cap-only comparison.
+
+VERIFICATION
+The exported file reproduced +399,096 in 63.2 seconds wall time and 62.7 seconds CPU, using 55.6 MiB peak Windows working set. This benchmark used the official loader/engine without research callback instrumentation; other stress jobs ran concurrently. The 13,499-byte export passed the local team source validator. It has one strategy class and imports only __future__ and simulator modules. The original simulator files were unchanged. Remote Linux sandbox execution and a website score have not been measured.
+
+METHOD
+Twelve predeclared trading candidates, one no-trade control, and three old-clock controls were replayed on all 4,411,336 events. Each run started at the beginning with an intact order book; no shuffling or reset within time segments. The top two then received four higher-delay checks, followed by verification of the exact export (21 total replays including that benchmark). Official settings: depth 20 ticks, 5 ms acceptance delay, soft inventory limit 100, hard potential-exposure limit 1,000, and penalty 10,000 per second beyond the soft limit. Ranking uses final official PnL after penalties and executable terminal inventory valuation. Segment results are diagnostics on this same round, not separate independent holdouts. The winner finished flat.
+
+Comparison phase: 16 independent worker processes on an Intel i7-12700H with 20 logical processors; observed aggregate CPU utilization reached 100%. An RTX 3070 Ti Laptop GPU with 8 GB was detected. The event-driven Python engine and frozen policies have no GPU execution path, so no GPU acceleration or additional model training was used.
+
+¹ Drawdown is calculated from the official one-second PnL curve and can miss faster excursions. Market statistics are sampled no faster than every 100 ms and are sample-weighted.
+
+REPRODUCE
+.venv/Scripts/exchange-simulator.exe --strategy strategies/round1_best.py --backtest data/round1.csv --log-dir logs/round1-best --no-logs
+
+DATA SHA256
+362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940
+
+EXPORT SHA256
+4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04

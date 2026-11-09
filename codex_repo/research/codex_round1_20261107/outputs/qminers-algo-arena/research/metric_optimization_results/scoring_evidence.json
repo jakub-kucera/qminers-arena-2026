@@ -1,0 +1,8 @@
+{
+  "source": "Team-saved official technical page, snapshot from 2026-11-07",
+  "official_url": "https://arena.qminers.com/dashboard/info",
+  "summary": "Final ranking combines private-backtest PnL standardized by round against other teams. Non-positive teams are excluded from the mean and standard deviation and score as if their PnL were zero. Local objective: executable cash plus inventory liquidation value minus breach penalty.",
+  "caveat": "Live general rules were inspected; the technical page requested login in the available browser. Exact cross-team score cannot be computed locally.",
+  "engine_commit": "3f5bea730d5f341c6988b1fe2722998b66270ea0",
+  "engine_formula": "cash + market-only executable liquidation value - position breach penalty"
+}

@@ -1,0 +1,10 @@
+{
+  "candidate": {
+    "name": "robust_depth",
+    "file": "logs\\round2_seven_minute_20261108\\sources\\robust_depth.py",
+    "source_sha256": "4df2b5c12142242fcff6be80e8765833f3d7c54d97893b5707589929e67aa622",
+    "risk": "strict100"
+  },
+  "criterion": "Positive30-60 and60-80; maximize combined30-80 gain. Rank before inspecting final20.",
+  "goal": 326031
+}

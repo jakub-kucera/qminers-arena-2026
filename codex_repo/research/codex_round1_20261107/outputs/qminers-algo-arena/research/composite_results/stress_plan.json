@@ -1,0 +1,34 @@
+[
+  [
+    "stress_20ms",
+    "outputs\\qminers-algo-arena\\strategies\\composite_best_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {},
+    20
+  ],
+  [
+    "stress_50ms",
+    "outputs\\qminers-algo-arena\\strategies\\composite_best_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {},
+    50
+  ],
+  [
+    "cross_original_selected",
+    "outputs\\qminers-algo-arena\\strategies\\composite_best_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample.csv",
+    {
+      "SESSION_S": 3599.000003
+    },
+    5
+  ],
+  [
+    "cross_original_F4",
+    "outputs\\qminers-algo-arena\\research\\reference_strategies\\r0_F4_depletion_guard.py",
+    "outputs\\qminers-algo-arena\\data\\sample.csv",
+    {
+      "SESSION_S": 3599.000003
+    },
+    5
+  ]
+]

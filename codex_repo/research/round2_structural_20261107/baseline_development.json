@@ -1,0 +1,546 @@
+{
+  "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+  "results": {
+    "round2_flat": {
+      "result": {
+        "fills": 0,
+        "traded_volume": 0,
+        "inventory": 0,
+        "cash": 0.0,
+        "mark_price": 9945.0,
+        "breach_penalty": 0.0,
+        "pnl": 0.0,
+        "pnl_se": 0.0,
+        "abs_inventory_q50": 0,
+        "abs_inventory_q68": 0,
+        "abs_inventory_q95": 0,
+        "abs_inventory_q997": 0
+      },
+      "runtime_seconds": 14.619900400051847,
+      "max_abs_inventory": 0,
+      "max_potential_inventory_at_submission": 0,
+      "max_drawdown_1s": 0.0,
+      "submissions": 0,
+      "order_status_counts": {},
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 600.0,
+          "pnl_increment": 0.0
+        },
+        {
+          "start_s": 600.0,
+          "end_s": 1200.0,
+          "pnl_increment": 0.0
+        },
+        {
+          "start_s": 1200.0,
+          "end_s": 1800.0,
+          "pnl_increment": 0.0
+        },
+        {
+          "start_s": 1800.0,
+          "end_s": 2400.0,
+          "pnl_increment": 0.0
+        },
+        {
+          "start_s": 2400.0,
+          "end_s": 3000.0,
+          "pnl_increment": 0.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3599.997465,
+          "pnl_increment": 0.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997635": 0.0
+      },
+      "source": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\logs\\round2_local_intake\\sources\\round2_flat.py",
+      "source_sha256": "2e386e9f37b28e88f664fccd614f71b1f84bc11ea39be4dfe0f3a045ac00612d",
+      "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+      "strategy_state": {},
+      "rates": {
+        "observed_duration_seconds": 3599.997465,
+        "net_pnl_per_minute": 0.0,
+        "volume_per_minute": 0.0,
+        "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+      },
+      "development_window_pnl": 0.0
+    },
+    "round2_guarded_trend": {
+      "result": {
+        "fills": 332,
+        "traded_volume": 2802,
+        "inventory": 0,
+        "cash": -3019.0,
+        "mark_price": 9945.0,
+        "breach_penalty": 0.0,
+        "pnl": -3019.0,
+        "pnl_se": 1361.476979967585,
+        "abs_inventory_q50": 0,
+        "abs_inventory_q68": 0,
+        "abs_inventory_q95": 0,
+        "abs_inventory_q997": 29
+      },
+      "runtime_seconds": 26.642753599910066,
+      "max_abs_inventory": 80,
+      "max_potential_inventory_at_submission": 80,
+      "max_drawdown_1s": 3266.0,
+      "submissions": 341,
+      "order_status_counts": {
+        "accepted": 341,
+        "filled": 331,
+        "partially_filled": 63,
+        "canceled": 10
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 600.0,
+          "pnl_increment": -1403.0
+        },
+        {
+          "start_s": 600.0,
+          "end_s": 1200.0,
+          "pnl_increment": 0.0
+        },
+        {
+          "start_s": 1200.0,
+          "end_s": 1800.0,
+          "pnl_increment": -1141.0
+        },
+        {
+          "start_s": 1800.0,
+          "end_s": 2400.0,
+          "pnl_increment": -475.0
+        },
+        {
+          "start_s": 2400.0,
+          "end_s": 3000.0,
+          "pnl_increment": 0.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3599.997465,
+          "pnl_increment": 0.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997635": -3019.0
+      },
+      "source": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\logs\\round2_local_intake\\sources\\round2_guarded_trend.py",
+      "source_sha256": "e75344f2c049e3f30141dcca0751b1809eb15288e4fd11ad258a0ae5c2744e41",
+      "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+      "strategy_state": {
+        "_labels": 34928,
+        "_mass": 2913.0467861701886,
+        "_guard_scale": 0.0,
+        "_guard_score": -5.108696892906421
+      },
+      "rates": {
+        "observed_duration_seconds": 3599.997465,
+        "net_pnl_per_minute": -50.31670209801106,
+        "volume_per_minute": 46.70003288460649,
+        "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+      },
+      "development_window_pnl": -3019.0
+    },
+    "round2_transfer": {
+      "result": {
+        "fills": 6797,
+        "traded_volume": 677654,
+        "inventory": 100,
+        "cash": -1031641.0,
+        "mark_price": 9945.0,
+        "breach_penalty": 1063.33,
+        "pnl": -38204.33,
+        "pnl_se": 16283.372219536323,
+        "abs_inventory_q50": 100,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 126.93380420003086,
+      "max_abs_inventory": 280,
+      "max_potential_inventory_at_submission": 300,
+      "max_drawdown_1s": 74334.33,
+      "submissions": 35397,
+      "order_status_counts": {
+        "accepted": 35397,
+        "canceled": 31075,
+        "filled": 4321,
+        "partially_filled": 6041,
+        "rejected": 102
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 600.0,
+          "pnl_increment": -15349.0
+        },
+        {
+          "start_s": 600.0,
+          "end_s": 1200.0,
+          "pnl_increment": 21062.0
+        },
+        {
+          "start_s": 1200.0,
+          "end_s": 1800.0,
+          "pnl_increment": 4050.67
+        },
+        {
+          "start_s": 1800.0,
+          "end_s": 2400.0,
+          "pnl_increment": -40727.0
+        },
+        {
+          "start_s": 2400.0,
+          "end_s": 3000.0,
+          "pnl_increment": -16894.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3599.997465,
+          "pnl_increment": 9653.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997635": -38204.33
+      },
+      "source": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\logs\\round2_local_intake\\sources\\round2_transfer.py",
+      "source_sha256": "c87f92f1de5c4cab5e18f0aff1c4112a3f4cee808343ce696aea5535435527e7",
+      "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+      "strategy_state": {
+        "_labels": 156342,
+        "_mass": 153561.91710819412
+      },
+      "rates": {
+        "observed_duration_seconds": 3599.997465,
+        "net_pnl_per_minute": -636.7392817039109,
+        "volume_per_minute": 11294.241286361572,
+        "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+      },
+      "development_window_pnl": -38204.33
+    },
+    "round2_fast_adapt": {
+      "result": {
+        "fills": 6876,
+        "traded_volume": 675098,
+        "inventory": 100,
+        "cash": -1024796.0,
+        "mark_price": 9945.0,
+        "breach_penalty": 1449.9999999999995,
+        "pnl": -31746.0,
+        "pnl_se": 16600.45340648028,
+        "abs_inventory_q50": 100,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 127.31277339998633,
+      "max_abs_inventory": 239,
+      "max_potential_inventory_at_submission": 300,
+      "max_drawdown_1s": 72075.0,
+      "submissions": 33879,
+      "order_status_counts": {
+        "accepted": 33879,
+        "canceled": 29431,
+        "filled": 4447,
+        "partially_filled": 5897,
+        "rejected": 84
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 600.0,
+          "pnl_increment": -14814.0
+        },
+        {
+          "start_s": 600.0,
+          "end_s": 1200.0,
+          "pnl_increment": 22361.0
+        },
+        {
+          "start_s": 1200.0,
+          "end_s": 1800.0,
+          "pnl_increment": 3616.0
+        },
+        {
+          "start_s": 1800.0,
+          "end_s": 2400.0,
+          "pnl_increment": -39360.0
+        },
+        {
+          "start_s": 2400.0,
+          "end_s": 3000.0,
+          "pnl_increment": -14948.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3599.997465,
+          "pnl_increment": 11399.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997635": -31746.0
+      },
+      "source": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\logs\\round2_local_intake\\sources\\round2_fast_adapt.py",
+      "source_sha256": "8149296827f682c3c7a939bb9e747c30522553601be18a0564daa8fb01367819",
+      "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+      "strategy_state": {
+        "_labels": 156351,
+        "_mass": 38389.1216713487
+      },
+      "rates": {
+        "observed_duration_seconds": 3599.997465,
+        "net_pnl_per_minute": -529.1003725748457,
+        "volume_per_minute": 11251.641256364052,
+        "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+      },
+      "development_window_pnl": -31746.0
+    },
+    "round2_strict100": {
+      "result": {
+        "fills": 11596,
+        "traded_volume": 653160,
+        "inventory": 100,
+        "cash": -1031767.0,
+        "mark_price": 9945.0,
+        "breach_penalty": 0.0,
+        "pnl": -37267.0,
+        "pnl_se": 17030.30535631064,
+        "abs_inventory_q50": 100,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 127.44016760005616,
+      "max_abs_inventory": 100,
+      "max_potential_inventory_at_submission": 100,
+      "max_drawdown_1s": 78840.0,
+      "submissions": 60433,
+      "order_status_counts": {
+        "accepted": 60433,
+        "canceled": 51169,
+        "filled": 9263,
+        "partially_filled": 5750,
+        "rejected": 169
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 600.0,
+          "pnl_increment": -15740.0
+        },
+        {
+          "start_s": 600.0,
+          "end_s": 1200.0,
+          "pnl_increment": 18902.0
+        },
+        {
+          "start_s": 1200.0,
+          "end_s": 1800.0,
+          "pnl_increment": 285.0
+        },
+        {
+          "start_s": 1800.0,
+          "end_s": 2400.0,
+          "pnl_increment": -40586.0
+        },
+        {
+          "start_s": 2400.0,
+          "end_s": 3000.0,
+          "pnl_increment": -20070.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3599.997465,
+          "pnl_increment": 19942.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997635": -37267.0
+      },
+      "source": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\logs\\round2_local_intake\\sources\\round2_strict100.py",
+      "source_sha256": "877df4848527e64a6d21e5fb9bf23dc0c5b81d3e5fc28cba71cc7e883a33255c",
+      "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+      "strategy_state": {
+        "_labels": 156343,
+        "_mass": 153562.8942640477
+      },
+      "rates": {
+        "observed_duration_seconds": 3599.997465,
+        "net_pnl_per_minute": -621.1171040366274,
+        "volume_per_minute": 10886.007665563731,
+        "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+      },
+      "development_window_pnl": -37267.0
+    },
+    "round2_dual_memory": {
+      "result": {
+        "fills": 6816,
+        "traded_volume": 672774,
+        "inventory": 100,
+        "cash": -1033715.0,
+        "mark_price": 9945.0,
+        "breach_penalty": 1350.0000000000002,
+        "pnl": -40565.0,
+        "pnl_se": 16136.883418971815,
+        "abs_inventory_q50": 100,
+        "abs_inventory_q68": 100,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 140.99584070011042,
+      "max_abs_inventory": 280,
+      "max_potential_inventory_at_submission": 395,
+      "max_drawdown_1s": 72666.0,
+      "submissions": 35575,
+      "order_status_counts": {
+        "accepted": 35575,
+        "canceled": 31294,
+        "filled": 4280,
+        "partially_filled": 6026,
+        "rejected": 100
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 600.0,
+          "pnl_increment": -16519.0
+        },
+        {
+          "start_s": 600.0,
+          "end_s": 1200.0,
+          "pnl_increment": 19894.0
+        },
+        {
+          "start_s": 1200.0,
+          "end_s": 1800.0,
+          "pnl_increment": 2508.0
+        },
+        {
+          "start_s": 1800.0,
+          "end_s": 2400.0,
+          "pnl_increment": -42143.0
+        },
+        {
+          "start_s": 2400.0,
+          "end_s": 3000.0,
+          "pnl_increment": -13613.0
+        },
+        {
+          "start_s": 3000.0,
+          "end_s": 3599.997465,
+          "pnl_increment": 9308.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {
+        "3599997635": -40565.0
+      },
+      "source": "C:\\Users\\Mebillot\\Documents\\Codex\\2026-11-07\\find-x20\\work\\qminers-final-v2.9\\logs\\round2_local_intake\\sources\\round2_dual_memory.py",
+      "source_sha256": "9da7815ffdd95ee07f2af0768f9e2565784a910f3a2205e2d0e88bd03a6ad371",
+      "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+      "strategy_state": {
+        "_labels": 156341,
+        "_mass": 153560.94428506127,
+        "_fast_mix": 0.2612215887129339,
+        "_fast_loss": 0.3576387156522793,
+        "_long_loss": 0.36194145448659754
+      },
+      "rates": {
+        "observed_duration_seconds": 3599.997465,
+        "net_pnl_per_minute": -676.0838094090158,
+        "volume_per_minute": 11212.907895755978,
+        "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+      },
+      "development_window_pnl": -40565.0
+    }
+  }
+}

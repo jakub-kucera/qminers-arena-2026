@@ -1,0 +1,11 @@
+{
+  "candidate": {
+    "name": "magnitude_and_depth",
+    "file": "logs\\round2_t2_impact_ablation\\sources\\magnitude_and_depth.py",
+    "source_sha256": "650f3ed7910f33c2e3f38ac81bd49a32744a310f30b1ce51d78e0721156aae25",
+    "risk": "strict100"
+  },
+  "selection_rule": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "goal": 306715,
+  "scope": "Consumed public first80%; no new holdout and no server access."
+}

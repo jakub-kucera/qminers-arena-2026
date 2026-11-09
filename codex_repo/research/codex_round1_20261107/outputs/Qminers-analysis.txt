@@ -1,0 +1,95 @@
+QMINERS ALGO TRADE ARENA — REPOSITORY ANALYSIS
+Prepared 7 November 2026
+
+Repository: https://github.com/QminersOrg/qminers-algo-arena
+Reviewed commit: 3f5bea730d5f341c6988b1fe2722998b66270ea0 (main)
+Local clone: outputs\qminers-algo-arena
+
+1. WHAT THIS REPOSITORY PROVIDES
+
+This is Qminers' public trading-hackathon starter, not one of the older sports-betting Quant Hackathon repositories. It provides an event-driven exchange simulator, strategy interface, two example strategies, one synthetic sample dataset, and a Dash backtest explorer. Actual competition rounds are downloaded separately from the competition website, https://arena.qminers.com/ . No authenticated round data was accessed in this analysis.
+
+The clone is ready to use. A project-local .venv was installed from uv.lock with Python 3.13.18 and all 42 locked packages. The tracked source files were left unchanged; git status was clean after verification. The compressed sample was preserved and a decompressed data/sample.csv was created in the ignored data directory.
+
+2. CODE MAP AND EVENT FLOW
+
+simulator/main.py: command-line entry point, dynamic strategy loading, competition configuration, and result export. Use the CLI for representative local runs: constructing SimulationConfig directly defaults to no inventory limits and zero breach penalty.
+
+simulator/simulator.py: order book, matching, delayed user actions, replay loop, inventory/cash accounting, liquidation valuation, and logging. ExchangeSimulator.run (lines 745–820) activates pending actions, processes each recorded market event, then invokes the public callback. Remaining pending actions are processed at the end of the file.
+
+simulator/models.py: typed orders, snapshots, trades and private order updates. simulator/strategy.py: BaseStrategy and order submission/cancellation/modification methods.
+
+strategies/template_strategy.py: empty starting point. strategies/trend_follower.py: one-lot aggressive strategy driven by signed trade flow, with one action in flight and a restriction on repeated same-side orders.
+
+explorer/: Dash application and log loading, charts, event tables, and order-book reconstruction. It needs full logs; --no-logs runs are intended for fast metrics-only experiments.
+
+Flow: historical CSV event -> delayed strategy actions -> exchange matching -> public snapshot/trades -> strategy callback -> new queued action. Private notifications update the strategy's own order state during execution.
+
+3. COMPETITION MECHANICS THAT MATTER
+
+The repository README specifies one replayed instrument, integer prices in ticks, integer positive quantities, LIMIT and IOC orders, price-time priority, and fills at the resting maker's price. There are no fees. User orders do not match other user orders. The historical tape does not adapt to your behavior, although your actions change the simulated book.
+
+Submission, cancellation and quantity-reduction requests have 5 ms latency. A cancellation can lose a race to a fill. Public depth is measured in ticks from the best quote, not a fixed number of orders or occupied levels; the default is 20 ticks per side. Snapshots expose individual orders and their market/user ownership.
+
+The hard potential-position bound is 1,000 units, including same-side resting orders at acceptance. This is not a sensible operating target: spending time above an absolute inventory of 100 incurs a penalty of 10,000 per second. Build an internal risk buffer below 100 and include pending orders in exposure estimates.
+
+Score is cash plus liquidation value of inventory minus breach penalty. Inventory is valued by sweeping resting market liquidity, rather than simply multiplying by mid-price. Reported mark_price alone is insufficient to reconstruct score. Residual inventory and shallow exit liquidity can be expensive.
+
+The documented submission is one Python file with a no-argument BaseStrategy subclass. With several subclasses, the loader selects the alphabetically first. The README specifies Python 3.13 and pinned numerical libraries, and describes a restricted import/builtin policy. Successful local execution does not establish that the server's static validator will accept a strategy: the local loader imports it directly. Current portal deadlines, round-specific constraints and server validation were not independently checked.
+
+4. VERIFIED BASELINES AND SAMPLE DATA
+
+The synthetic sample contains 53,758 rows over 0–3599.000003 seconds: 27,182 inserts and 26,576 cancellations. Fields are Time, Operation, OrderId, Side, Volume, Price, Lifespan. Side/Volume/Price/Lifespan each have 26,576 missing values, consistent with cancellation records; do not blindly drop all incomplete rows during analysis.
+
+Untouched trend_follower, complete sample:
+  PnL                 1,878
+  Traded volume       305
+  Fills field         305
+  Final inventory     -1
+  Cash                11,916
+  Breach penalty      0
+  Reported pnl_se     approximately 102.37
+  |inventory| q95     1
+
+Empty template control: zero fills, zero inventory, zero PnL, zero penalty.
+
+Artifacts: qminers-algo-arena/logs/baseline/ and logs/no-trade/ contain result.json, metadata.json and pnl.csv. No full event logs were generated. In the implementation, the fills result counts unique filled order IDs; it is not necessarily the number of individual match events.
+
+These are setup checks, not evidence of an edge on competition data. The README explicitly says the sample is synthetic and trending, and the recorded rounds look nothing like it. The reported pnl_se should not be treated as an independently validated confidence interval for future performance.
+
+5. CONFIRMED STARTER-STRATEGY ISSUE
+
+strategies/trend_follower.py, lines 62–68: FILLED clears _order_in_flight; CANCELED and REJECTED change the attempted side but never clear that flag. The public callback exits immediately while it is true. Consequently, a canceled IOC or rejected order can permanently stop new submissions.
+
+A direct callback reproduction set an outstanding buy, then delivered each terminal status independently. CANCELED and REJECTED left _order_in_flight=True; FILLED set it to False. The complete sample backtest still succeeds, illustrating why that run alone does not cover the cancellation path.
+
+Recommended correction before using this example as a baseline: release the in-flight slot on every terminal status, while retaining appropriate side bookkeeping. For larger orders, separately account for partial fills and remaining exposure. This analysis records the issue; it does not modify the upstream example.
+
+6. PRACTICAL ANALYSIS AND DEVELOPMENT PLAN
+
+First obtain the released round CSVs from the signed-in competition website. Keep their identities, hashes and time ranges alongside every run. Check monotonic timestamps, order lifecycle consistency, duplicate records, price/volume distributions, and missingness by operation.
+
+Replay the book to measure spread, depth, signed aggressive volume, cancellation rates, imbalance and short-horizon price movement. Event rows are actions, not ready-made OHLC price observations. Exclude your own orders when calculating market-only depth features, and avoid interpreting your own executions as independent predictive evidence.
+
+Establish no-trade and corrected-starter baselines. Then compare small, interpretable candidates: imbalance/flow-gated IOC entry, and inventory-skewed passive quoting. These are experiment proposals, not demonstrated profitable strategies. Every candidate needs explicit outstanding-order state, cancellation-race handling, and a conservative exposure budget.
+
+Use chronological train/validation blocks and an untouched final holdout. Evaluate prediction horizons beyond the 5 ms delay. Avoid random row splits and future-book leakage. Compare net PnL, drawdown, inventory quantiles, breach time/penalty, volume, rejection/cancellation rates and end-of-run liquidation cost across multiple blocks. Record parameter sets and commit IDs; reject apparent gains driven by a single interval.
+
+Only after an approach survives held-out data should you increase size or tune more parameters. Run a full-log backtest for selected candidates to inspect adverse fills and stale quotes in the explorer. Verify the final one-file strategy against the actual submission restrictions.
+
+7. READY-TO-RUN POWERSHELL COMMANDS
+
+Set-Location 'outputs\qminers-algo-arena'
+
+# Fast baseline; uses the already installed project environment.
+.\.venv\Scripts\exchange-simulator.exe --strategy strategies/trend_follower.py --backtest data/sample.csv --log-dir logs/baseline --no-logs
+
+# Full logs for visual inspection (larger output).
+.\.venv\Scripts\exchange-simulator.exe --strategy strategies/trend_follower.py --backtest data/sample.csv --log-dir logs/sample-full
+.\.venv\Scripts\backtest-explorer.exe --log-dir logs/sample-full
+
+# Explorer address once launched: http://127.0.0.1:8050
+# To re-sync the locked environment with the locally bootstrapped uv:
+..\..\work\bootstrap\Scripts\uv.exe sync --locked
+
+Sources: the repository README.md and pyproject.toml at the reviewed commit; code inspected through the indexed code graph; local locked-environment baseline runs and terminal-status reproduction. This is a focused architecture/readiness review, not a complete audit of the simulator or a developed competition solution.

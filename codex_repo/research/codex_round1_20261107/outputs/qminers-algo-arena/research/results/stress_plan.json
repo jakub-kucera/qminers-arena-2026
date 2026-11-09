@@ -1,0 +1,55 @@
+[
+  [
+    "F2_delay20ms",
+    "work\\jakub-arena\\python\\bots\\qminers\\candidates\\r0_F2_maker_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {},
+    20
+  ],
+  [
+    "F2_delay50ms",
+    "work\\jakub-arena\\python\\bots\\qminers\\candidates\\r0_F2_maker_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {},
+    50
+  ],
+  [
+    "F2_cap50",
+    "work\\jakub-arena\\python\\bots\\qminers\\candidates\\r0_F2_maker_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {
+      "QUOTE": 50,
+      "LIMIT": 50,
+      "SKEW": 30
+    },
+    5
+  ],
+  [
+    "F2_original_sample",
+    "work\\jakub-arena\\python\\bots\\qminers\\candidates\\r0_F2_maker_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample.csv",
+    {
+      "SESSION_S": 3599.000003
+    },
+    5
+  ],
+  [
+    "M2_original_sample",
+    "work\\jakub-arena\\python\\bots\\qminers\\candidates\\r0_M2_runner_safe.py",
+    "outputs\\qminers-algo-arena\\data\\sample.csv",
+    {
+      "SESSION_S": 3599.000003
+    },
+    5
+  ],
+  [
+    "microprice_original_sample",
+    "outputs\\qminers-algo-arena\\strategies\\research_candidate.py",
+    "outputs\\qminers-algo-arena\\data\\sample.csv",
+    {
+      "MODE": "maker",
+      "SESSION_S": 3599.000003
+    },
+    5
+  ]
+]

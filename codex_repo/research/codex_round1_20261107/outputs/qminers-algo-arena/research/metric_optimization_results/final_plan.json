@@ -1,0 +1,44 @@
+[
+  {
+    "name": "final_deplete0_d5",
+    "case": [
+      "final_deplete0_d5",
+      "outputs\\qminers-algo-arena\\strategies\\round1_metric_deplete0.py",
+      "outputs\\qminers-algo-arena\\data\\round1.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "final_deplete0_d20",
+    "case": [
+      "final_deplete0_d20",
+      "outputs\\qminers-algo-arena\\strategies\\round1_metric_deplete0.py",
+      "outputs\\qminers-algo-arena\\data\\round1.csv",
+      {},
+      20
+    ]
+  },
+  {
+    "name": "final_deplete0_d50",
+    "case": [
+      "final_deplete0_d50",
+      "outputs\\qminers-algo-arena\\strategies\\round1_metric_deplete0.py",
+      "outputs\\qminers-algo-arena\\data\\round1.csv",
+      {},
+      50
+    ]
+  },
+  {
+    "name": "v2_deplete0",
+    "case": [
+      "v2_deplete0",
+      "outputs\\qminers-algo-arena\\strategies\\round1_metric_deplete0.py",
+      "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+      {
+        "SESSION_S": 5750.0
+      },
+      5
+    ]
+  }
+]

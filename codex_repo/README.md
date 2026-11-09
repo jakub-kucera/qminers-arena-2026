@@ -1,5 +1,16 @@
 # ThatsMyQuant: Algo Trade Arena
 
+Current objective: improve evolving **main** models by **at least10,000**, with
+explicit attention to sharp price declines. See
+[current main/+10k research](docs/ROUND2_MAIN_PLUS10K.md).
+Current-cycle result: **316,031**, **+19,316** over the stronger local296,715
+reference. [Exact verified candidate](strategies/round2/round2_local_316031.py).
+The latest fetched main remains36a041a; its active references were audited.
+Native CLI parity, zero fees, actual/potential100; sampled drawdown10,880
+versus6,012 for the prior reference. Synthetic mirror has the same PnL curve.
+No unseen-data superiority is claimed. Competition server access remains off.
+Earlier319920 goal was superseded; future main commits need fresh comparison.
+
 Start with [HANDOFF.md](HANDOFF.md). The next-round workflow is in
 [docs/ROUND2_PLAN.md](docs/ROUND2_PLAN.md); the organizer's original documentation
 is preserved in [docs/ORGANIZER_GUIDE.md](docs/ORGANIZER_GUIDE.md).
@@ -68,6 +79,21 @@ It uses the user's absolute-volatility exposure idea with native queue-preservin
 shrinks. Read [the research report](docs/ROUND2_VOLATILITY_RESEARCH.md) and
 [the result manifest](results/round2_144580.json).
 All public segments have now been inspected. No server or private score exists.
+
+**Current local research:** best full replay **167,412 net PnL**, supplied M2
+**116,620**, adaptive maker **105,829**, all with zero penalties. The updated
+**150,000 local target is exceeded**. All public data has now been consumed.
+Competition website/server access is prohibited by the user. See
+[current progress](docs/ROUND2_LOCAL_PROGRESS.md). The preparation notes below
+describe earlier experiments and are retained as history.
+
+Latest research-branch finding: a composite conditional-fill model reached
+85,435 on the development hour (including its first 30 minutes of training),
+but lost **21,593** on the previously reserved next 20 minutes. It was rejected;
+the **100,000 target remains unmet**. The first 80% of the public tape is now
+consumed; the last 20% remains unreplayed. See
+[the development and validation findings](docs/ROUND2_COMPOSITE_FINDINGS.md).
+No round-2 submission is promoted and no server score is claimed.
 
 Six standalone candidates are prepared under [strategies/round2/](strategies/round2/):
 direct transfer, strict-100 maker, faster adaptation, dual-memory maker,
@@ -144,3 +170,10 @@ git push origin main --follow-tags
 ```
 
 [TEAM.txt](TEAM.txt) covers ThatsMyQuant and this session's Astra/Sol usage only.
+
+## Earlier research branch studies
+
+Preserved [penalty study](research/penalty_tradeoff_20261107/report.html),
+[future-round burst hypothesis](research/penalty_tradeoff_20261107/FUTURE_ROUNDS.md),
+and [bounded augmentation study](research/robust_augmentation_20261107/report.html)
+describe earlier round-1 baselines; they do not supersede the later 624,076 result.

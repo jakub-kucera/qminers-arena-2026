@@ -1,0 +1,519 @@
+{
+  "created_utc": "2026-11-07T14:21:01Z",
+  "promoted": false,
+  "candidate": "spread_pressure",
+  "recommended": "clean_554347",
+  "checks": {
+    "screen_passed": false,
+    "later_period_1_gain": false,
+    "later_period_2_gain": false,
+    "full_gain_at_least_half_percent": false,
+    "transfer_loss_at_most_one_percent": true,
+    "latency20_loss_at_most_one_percent": true,
+    "latency50_loss_at_most_one_percent": true,
+    "normal_latency_drawdown_within_125_percent": true,
+    "all_risk_invariants": true
+  },
+  "baseline_pnl": 554347.0,
+  "candidate_pnl": 555421.0,
+  "gain": 1074.0,
+  "gain_percent": 0.19374146518335988,
+  "periods": [
+    {
+      "period": "Screen, first 50 minutes",
+      "baseline": 130119.0,
+      "candidate": 132070.0,
+      "gain": 1951.0
+    },
+    {
+      "period": "Screen, next 49m 50s",
+      "baseline": 143116.0,
+      "candidate": 143591.0,
+      "gain": 475.0
+    },
+    {
+      "period": "Confirmation, to 150 minutes",
+      "baseline": 144590.0,
+      "candidate": 143894.0,
+      "gain": -696.0
+    },
+    {
+      "period": "Confirmation, final 50 minutes",
+      "baseline": 136522.0,
+      "candidate": 135866.0,
+      "gain": -656.0
+    }
+  ],
+  "baseline_drawdown": 834.0,
+  "candidate_drawdown": 752.0,
+  "sample_v2": {
+    "baseline": 272830.0,
+    "candidate": 272786.0
+  },
+  "stress": [
+    {
+      "delay_ms": 20,
+      "baseline": 462925.0,
+      "candidate": 463168.0,
+      "baseline_drawdown": 988.0,
+      "candidate_drawdown": 988.0
+    },
+    {
+      "delay_ms": 50,
+      "baseline": 326485.0,
+      "candidate": 328214.0,
+      "baseline_drawdown": 1212.0,
+      "candidate_drawdown": 1212.0
+    }
+  ],
+  "recommended_source": {
+    "source": "logs\\robust_augmentation\\sources\\clean_554347.py",
+    "sha256": "c0a453d0160e7ed4ddf0eb364dade1b5509be4c82d839d950b58f0bea97b643d",
+    "feature_count": 15
+  },
+  "limitation": "Previously consumed public tapes; no independent holdout or new website score.",
+  "export_file": "strategies\\round1_robust_candidate.py",
+  "export_sha256": "c0a453d0160e7ed4ddf0eb364dade1b5509be4c82d839d950b58f0bea97b643d",
+  "experimental_export_file": "strategies\\round1_spread_pressure_experimental.py",
+  "experimental_export_sha256": "15e226382630e7280cf30e50be2d6d0434e46062590f777c2f5fb1be54cea2a7",
+  "experimental_frozen_source_sha256": "62cd982f3eb57d4c8d29f9ab934e4700d06941169ad00de2f6b0d0590a98085e",
+  "export_benchmark": {
+    "result": {
+      "fills": 37087,
+      "traded_volume": 2192606,
+      "inventory": 100,
+      "cash": -448553.0,
+      "mark_price": 10029.0,
+      "breach_penalty": 0.0,
+      "pnl": 554347.0,
+      "pnl_se": 11205.466639462247,
+      "abs_inventory_q50": 96,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "cpu_seconds": 196.796875,
+    "wall_seconds": 198.69988229987212,
+    "peak_working_set_bytes": 46792704,
+    "source_bytes": 12313,
+    "source_sha256": "c0a453d0160e7ed4ddf0eb364dade1b5509be4c82d839d950b58f0bea97b643d",
+    "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+    "curve_sha256": "d67936a0dce3cdf883f8f158d78506b41a39179c06077b28238d2195d2dd11b9",
+    "engine_sha256": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    }
+  },
+  "selection": {
+    "selected": null,
+    "confirmation_candidate": "spread_pressure",
+    "diagnostic_only": true,
+    "scores": {
+      "depth_square": {
+        "eligible": false,
+        "gain": -72.0,
+        "gain_percent": -0.02635094332717258,
+        "half_gains": [
+          226.0,
+          -298.0
+        ],
+        "positive_blocks": 8,
+        "block_gains": [
+          306.0,
+          -5.0,
+          145.0,
+          -208.0,
+          -258.0,
+          679.0,
+          -489.0,
+          -17.0,
+          53.0,
+          20.0,
+          -279.0,
+          -4.0,
+          0.0,
+          -3.0,
+          191.0,
+          -115.0,
+          135.0,
+          -12.0,
+          -272.0,
+          61.0
+        ],
+        "simultaneous_lower_bound": -1981.1427980088563,
+        "bootstrap_standard_error": 760.7770027844527,
+        "feature_count": 16
+      },
+      "touch_concentration": {
+        "eligible": false,
+        "gain": -1284.0,
+        "gain_percent": -0.46992515600124435,
+        "half_gains": [
+          -621.0,
+          -663.0
+        ],
+        "positive_blocks": 8,
+        "block_gains": [
+          101.0,
+          -96.0,
+          387.0,
+          -148.0,
+          -91.0,
+          -179.0,
+          -927.0,
+          -130.0,
+          -71.0,
+          533.0,
+          -777.0,
+          -100.0,
+          -330.0,
+          194.0,
+          9.0,
+          152.0,
+          338.0,
+          241.0,
+          -154.0,
+          -236.0
+        ],
+        "simultaneous_lower_bound": -5489.401905533577,
+        "bootstrap_standard_error": 1675.8165290373522,
+        "feature_count": 17
+      },
+      "size_mix": {
+        "eligible": false,
+        "gain": -259.0,
+        "gain_percent": -0.0947901989130236,
+        "half_gains": [
+          -692.0,
+          433.0
+        ],
+        "positive_blocks": 13,
+        "block_gains": [
+          349.0,
+          8.0,
+          -132.0,
+          170.0,
+          -670.0,
+          35.0,
+          -925.0,
+          176.0,
+          123.0,
+          174.0,
+          -138.0,
+          -169.0,
+          -38.0,
+          224.0,
+          208.0,
+          -375.0,
+          304.0,
+          26.0,
+          115.0,
+          276.0
+        ],
+        "simultaneous_lower_bound": -3324.714494370382,
+        "bootstrap_standard_error": 1221.6608872067902,
+        "feature_count": 17
+      },
+      "disagreement": {
+        "eligible": false,
+        "gain": -3930.0,
+        "gain_percent": -1.4383223232748368,
+        "half_gains": [
+          -944.0,
+          -2986.0
+        ],
+        "positive_blocks": 4,
+        "block_gains": [
+          408.0,
+          -59.0,
+          390.0,
+          -175.0,
+          -534.0,
+          -243.0,
+          -609.0,
+          165.0,
+          24.0,
+          -311.0,
+          -215.0,
+          -610.0,
+          -41.0,
+          -429.0,
+          -179.0,
+          -77.0,
+          -616.0,
+          -18.0,
+          -531.0,
+          -270.0
+        ],
+        "simultaneous_lower_bound": -6627.00413997788,
+        "bootstrap_standard_error": 1074.7329787219585,
+        "feature_count": 17
+      },
+      "spread_pressure": {
+        "eligible": false,
+        "gain": 2426.0,
+        "gain_percent": 0.8878803959961206,
+        "half_gains": [
+          1951.0,
+          475.0
+        ],
+        "positive_blocks": 16,
+        "block_gains": [
+          609.0,
+          233.0,
+          158.0,
+          309.0,
+          218.0,
+          807.0,
+          -597.0,
+          93.0,
+          99.0,
+          22.0,
+          188.0,
+          -75.0,
+          137.0,
+          283.0,
+          123.0,
+          -337.0,
+          427.0,
+          65.0,
+          -349.0,
+          13.0
+        ],
+        "simultaneous_lower_bound": -334.7450718152613,
+        "bootstrap_standard_error": 1100.1331924348908,
+        "feature_count": 17
+      },
+      "memory_240s": {
+        "eligible": false,
+        "gain": 165.0,
+        "gain_percent": 0.06038757845810383,
+        "half_gains": [
+          469.0,
+          -304.0
+        ],
+        "positive_blocks": 10,
+        "block_gains": [
+          123.0,
+          -13.0,
+          319.0,
+          166.0,
+          -204.0,
+          176.0,
+          -217.0,
+          58.0,
+          -54.0,
+          115.0,
+          109.0,
+          12.0,
+          -78.0,
+          -79.0,
+          -72.0,
+          -47.0,
+          55.0,
+          -57.0,
+          12.0,
+          -159.0
+        ],
+        "simultaneous_lower_bound": -964.1005498690938,
+        "bootstrap_standard_error": 449.93686856089323,
+        "feature_count": 15
+      },
+      "memory_360s": {
+        "eligible": false,
+        "gain": -564.0,
+        "gain_percent": -0.20641572272951855,
+        "half_gains": [
+          52.0,
+          -616.0
+        ],
+        "positive_blocks": 8,
+        "block_gains": [
+          0.0,
+          108.0,
+          147.0,
+          -76.0,
+          25.0,
+          -77.0,
+          -25.0,
+          39.0,
+          -25.0,
+          -64.0,
+          -370.0,
+          -276.0,
+          60.0,
+          34.0,
+          -94.0,
+          -118.0,
+          -16.0,
+          325.0,
+          -260.0,
+          99.0
+        ],
+        "simultaneous_lower_bound": -2038.9569820844574,
+        "bootstrap_standard_error": 587.7576854054737,
+        "feature_count": 15
+      },
+      "ridge_075": {
+        "eligible": false,
+        "gain": -745.0,
+        "gain_percent": -0.2726590663714385,
+        "half_gains": [
+          -270.0,
+          -475.0
+        ],
+        "positive_blocks": 6,
+        "block_gains": [
+          0.0,
+          0.0,
+          -49.0,
+          -52.0,
+          -111.0,
+          236.0,
+          -368.0,
+          47.0,
+          20.0,
+          7.0,
+          -290.0,
+          1.0,
+          -5.0,
+          -6.0,
+          -158.0,
+          -117.0,
+          -68.0,
+          214.0,
+          -44.0,
+          -2.0
+        ],
+        "simultaneous_lower_bound": -1895.5260877878359,
+        "bootstrap_standard_error": 458.47476134600356,
+        "feature_count": 15
+      },
+      "ridge_150": {
+        "eligible": false,
+        "gain": 192.0,
+        "gain_percent": 0.07026918220579355,
+        "half_gains": [
+          351.0,
+          -159.0
+        ],
+        "positive_blocks": 11,
+        "block_gains": [
+          0.0,
+          25.0,
+          150.0,
+          -30.0,
+          15.0,
+          131.0,
+          -104.0,
+          13.0,
+          46.0,
+          105.0,
+          -110.0,
+          -228.0,
+          -2.0,
+          259.0,
+          71.0,
+          -176.0,
+          43.0,
+          -75.0,
+          -49.0,
+          108.0
+        ],
+        "simultaneous_lower_bound": -988.6497680292359,
+        "bootstrap_standard_error": 470.4787891174156,
+        "feature_count": 15
+      },
+      "horizon_80ms": {
+        "eligible": false,
+        "gain": -10561.0,
+        "gain_percent": -3.8651710066426337,
+        "half_gains": [
+          -4136.0,
+          -6425.0
+        ],
+        "positive_blocks": 4,
+        "block_gains": [
+          84.0,
+          -472.0,
+          -472.0,
+          -724.0,
+          440.0,
+          -89.0,
+          -1241.0,
+          -1219.0,
+          -94.0,
+          -349.0,
+          -1066.0,
+          -1181.0,
+          -763.0,
+          -1870.0,
+          -245.0,
+          -831.0,
+          -574.0,
+          396.0,
+          -367.0,
+          76.0
+        ],
+        "simultaneous_lower_bound": -17129.781826331382,
+        "bootstrap_standard_error": 2617.6031227173776,
+        "feature_count": 15
+      },
+      "horizon_120ms": {
+        "eligible": false,
+        "gain": 2445.0,
+        "gain_percent": 0.8948341171519022,
+        "half_gains": [
+          1837.0,
+          608.0
+        ],
+        "positive_blocks": 11,
+        "block_gains": [
+          -141.0,
+          152.0,
+          607.0,
+          -424.0,
+          -76.0,
+          280.0,
+          -456.0,
+          801.0,
+          885.0,
+          209.0,
+          -729.0,
+          352.0,
+          -464.0,
+          -152.0,
+          92.0,
+          -47.0,
+          703.0,
+          654.0,
+          -29.0,
+          228.0
+        ],
+        "simultaneous_lower_bound": -2242.9270357274345,
+        "bootstrap_standard_error": 1868.0986478500058,
+        "feature_count": 15
+      }
+    },
+    "bootstrap_critical_value": 2.5094643910388608,
+    "bootstrap_draws": 20000,
+    "baseline_pnl_at_5990s": 273235.0,
+    "source": {
+      "source": "logs\\robust_augmentation\\sources\\spread_pressure.py",
+      "sha256": "62cd982f3eb57d4c8d29f9ab934e4700d06941169ad00de2f6b0d0590a98085e",
+      "feature_count": 17
+    },
+    "created_utc": "2026-11-07T14:15:21Z"
+  }
+}

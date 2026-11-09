@@ -1,0 +1,36 @@
+{
+  "path": "data/round1.csv",
+  "bytes": 161219988,
+  "sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+  "columns": [
+    "Time",
+    "Operation",
+    "OrderId",
+    "Side",
+    "Volume",
+    "Price",
+    "Lifespan"
+  ],
+  "rows": 4411336,
+  "first_s": 0.008661,
+  "last_s": 11999.999025,
+  "duration_s": 11999.990364,
+  "backward_timestamps": 0,
+  "operations": {
+    "Insert": 2253745,
+    "Cancel": 2157591
+  },
+  "insert_sides": {
+    "B": 1126743,
+    "A": 1127002
+  },
+  "lifespans": {
+    "G": 2157657,
+    "F": 96088
+  },
+  "insert_price_range": [
+    9988,
+    10098
+  ],
+  "scan_seconds": 9.62144730007276
+}

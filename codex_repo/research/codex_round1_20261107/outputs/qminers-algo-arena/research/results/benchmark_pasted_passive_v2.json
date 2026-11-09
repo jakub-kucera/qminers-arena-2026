@@ -1,0 +1,21 @@
+{
+  "file": "pasted_passive_v2.py",
+  "wall_seconds": 58.68786279996857,
+  "cpu_seconds": 57.546875,
+  "peak_working_set_bytes": 53321728,
+  "result": {
+    "fills": 4300,
+    "traded_volume": 391649,
+    "inventory": 1,
+    "cash": 273956.0,
+    "mark_price": 10003.0,
+    "breach_penalty": 0.0,
+    "pnl": 283959.0,
+    "pnl_se": 5776.732482074121,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "note": "Windows process measurement, includes Python and local harness imports; not the remote Linux sandbox."
+}

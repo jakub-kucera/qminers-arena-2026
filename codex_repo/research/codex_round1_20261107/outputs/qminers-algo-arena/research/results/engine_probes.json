@@ -1,0 +1,209 @@
+{
+  "cancel_race": {
+    "result": {
+      "fills": 1,
+      "traded_volume": 5,
+      "inventory": 5,
+      "cash": -505.0,
+      "mark_price": 100.0,
+      "breach_penalty": 0.0,
+      "pnl": -5.0,
+      "pnl_se": null,
+      "abs_inventory_q50": 0,
+      "abs_inventory_q68": 5,
+      "abs_inventory_q95": 5,
+      "abs_inventory_q997": 5
+    },
+    "events": [
+      {
+        "timestamp_us": 5000,
+        "order_id": "u000000001",
+        "status": "accepted",
+        "filled_quantity": 0,
+        "remaining_quantity": 5,
+        "fill_price": null,
+        "message": null
+      },
+      {
+        "timestamp_us": 6000,
+        "order_id": "u000000001",
+        "status": "partially_filled",
+        "filled_quantity": 2,
+        "remaining_quantity": 3,
+        "fill_price": 101,
+        "message": null
+      },
+      {
+        "timestamp_us": 8000,
+        "order_id": "u000000001",
+        "status": "filled",
+        "filled_quantity": 3,
+        "remaining_quantity": 0,
+        "fill_price": 101,
+        "message": null
+      },
+      {
+        "timestamp_us": 11000,
+        "order_id": "u000000001",
+        "status": "rejected",
+        "filled_quantity": 0,
+        "remaining_quantity": 0,
+        "fill_price": null,
+        "message": "cancel rejected: no resting order with this id"
+      }
+    ]
+  },
+  "penalty": {
+    "result": {
+      "fills": 1,
+      "traded_volume": 101,
+      "inventory": 101,
+      "cash": -10201.0,
+      "mark_price": 100.0,
+      "breach_penalty": 10000.0,
+      "pnl": -10101.0,
+      "pnl_se": null,
+      "abs_inventory_q50": 101,
+      "abs_inventory_q68": 101,
+      "abs_inventory_q95": 101,
+      "abs_inventory_q997": 101
+    },
+    "events": [
+      {
+        "timestamp_us": 5000,
+        "order_id": "u000000001",
+        "status": "accepted",
+        "filled_quantity": 0,
+        "remaining_quantity": 101,
+        "fill_price": null,
+        "message": null
+      },
+      {
+        "timestamp_us": 5000,
+        "order_id": "u000000001",
+        "status": "filled",
+        "filled_quantity": 101,
+        "remaining_quantity": 0,
+        "fill_price": 101,
+        "message": null
+      }
+    ]
+  },
+  "hard_limit": {
+    "result": {
+      "fills": 0,
+      "traded_volume": 0,
+      "inventory": 0,
+      "cash": 0.0,
+      "mark_price": 0.0,
+      "breach_penalty": 0.0,
+      "pnl": 0.0,
+      "pnl_se": null,
+      "abs_inventory_q50": 0,
+      "abs_inventory_q68": 0,
+      "abs_inventory_q95": 0,
+      "abs_inventory_q997": 0
+    },
+    "events": [
+      {
+        "timestamp_us": 5000,
+        "order_id": "u000000001",
+        "status": "rejected",
+        "filled_quantity": 0,
+        "remaining_quantity": 0,
+        "fill_price": null,
+        "message": null
+      }
+    ]
+  },
+  "queue_priority": {
+    "result": {
+      "fills": 1,
+      "traded_volume": 5,
+      "inventory": 5,
+      "cash": -505.0,
+      "mark_price": 101.0,
+      "breach_penalty": 0.0,
+      "pnl": 0.0,
+      "pnl_se": null,
+      "abs_inventory_q50": 0,
+      "abs_inventory_q68": 0,
+      "abs_inventory_q95": 3,
+      "abs_inventory_q997": 3
+    },
+    "events": [
+      {
+        "timestamp_us": 5000,
+        "order_id": "u000000001",
+        "status": "accepted",
+        "filled_quantity": 0,
+        "remaining_quantity": 5,
+        "fill_price": null,
+        "message": null
+      },
+      {
+        "timestamp_us": 6000,
+        "order_id": "u000000001",
+        "status": "partially_filled",
+        "filled_quantity": 3,
+        "remaining_quantity": 2,
+        "fill_price": 101,
+        "message": null
+      },
+      {
+        "timestamp_us": 7000,
+        "order_id": "u000000001",
+        "status": "filled",
+        "filled_quantity": 2,
+        "remaining_quantity": 0,
+        "fill_price": 101,
+        "message": null
+      }
+    ]
+  },
+  "modify_rejection": {
+    "result": {
+      "fills": 1,
+      "traded_volume": 5,
+      "inventory": 5,
+      "cash": -505.0,
+      "mark_price": 100.0,
+      "breach_penalty": 0.0,
+      "pnl": -5.0,
+      "pnl_se": null,
+      "abs_inventory_q50": 0,
+      "abs_inventory_q68": 0,
+      "abs_inventory_q95": 0,
+      "abs_inventory_q997": 0
+    },
+    "events": [
+      {
+        "timestamp_us": 5000,
+        "order_id": "u000000001",
+        "status": "accepted",
+        "filled_quantity": 0,
+        "remaining_quantity": 5,
+        "fill_price": null,
+        "message": null
+      },
+      {
+        "timestamp_us": 11000,
+        "order_id": "u000000001",
+        "status": "rejected",
+        "filled_quantity": 0,
+        "remaining_quantity": 5,
+        "fill_price": null,
+        "message": null
+      },
+      {
+        "timestamp_us": 12000,
+        "order_id": "u000000001",
+        "status": "filled",
+        "filled_quantity": 5,
+        "remaining_quantity": 0,
+        "fill_price": 101,
+        "message": null
+      }
+    ]
+  }
+}

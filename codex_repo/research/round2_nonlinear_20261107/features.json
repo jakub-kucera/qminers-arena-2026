@@ -1,0 +1,13 @@
+{
+  "rows": 156361,
+  "market_events": 1313134,
+  "source_sha256": "877df4848527e64a6d21e5fb9bf23dc0c5b81d3e5fc28cba71cc7e883a33255c",
+  "data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+  "scope": "Public development first 60% only; no orders.",
+  "features": 29,
+  "own_flow_features": [
+    23,
+    27
+  ],
+  "note": "Own-fill features are zero here and excluded from nonlinear fitting/export."
+}

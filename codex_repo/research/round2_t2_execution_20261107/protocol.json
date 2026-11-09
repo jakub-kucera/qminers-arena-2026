@@ -1,0 +1,70 @@
+{
+  "goal": {
+    "reference_audit": "logs/round2_t2_liquidity_supplied/full_audit.json",
+    "reference_source_sha256": "54658482f1be2a9c44e28f13f803caac50ec78da22aedbce1a3d074f9d7489e4",
+    "increment": 50000
+  },
+  "candidates": [
+    {
+      "name": "gap10ms",
+      "file": "logs\\round2_t2_execution\\sources\\gap10ms.py",
+      "source_sha256": "cdafa8ed9fd757998431dcf3f9b752733c0cd9adc524f8e4d1a70e4d79deba3e",
+      "risk": "strict100"
+    },
+    {
+      "name": "gap25ms",
+      "file": "logs\\round2_t2_execution\\sources\\gap25ms.py",
+      "source_sha256": "15eaf22cfbf0e5d7de0ada08a1b141f0e8a32627d986933f35eb656f653ae79c",
+      "risk": "strict100"
+    },
+    {
+      "name": "gap100ms",
+      "file": "logs\\round2_t2_execution\\sources\\gap100ms.py",
+      "source_sha256": "6f5c9741d0249affd17b6da304c8e554fce3a1dcdbbe497de8c8dd237e38c83f",
+      "risk": "strict100"
+    },
+    {
+      "name": "edge0.0",
+      "file": "logs\\round2_t2_execution\\sources\\edge0.0.py",
+      "source_sha256": "4e1cfaa50d579fd9520b6946282ed2fdfcc39b818b9812fa26c68227f4e8d119",
+      "risk": "strict100"
+    },
+    {
+      "name": "edge0.3",
+      "file": "logs\\round2_t2_execution\\sources\\edge0.3.py",
+      "source_sha256": "b5b6b9c3c540c8be02dd7346dbedd9570d1d832a1591b45d071b3f999c7bb22a",
+      "risk": "strict100"
+    },
+    {
+      "name": "no_passive",
+      "file": "logs\\round2_t2_execution\\sources\\no_passive.py",
+      "source_sha256": "06acfa3b209a6a3ccbf7beb08ec0715774c87bf98becdeae07f52465c3380f09",
+      "risk": "strict100"
+    }
+  ],
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "scope": "Consumed public first80%; no new holdout and no server access.",
+  "hypothesis": "Execution sensitivity from supplied liquidity model, no structural-study winner reuse: gap10/25/100ms versus50, edge0/0.3 versus0.15, or disable one-lot passive quotes. Same 33feature causal learner and spread1 gate. Six fixed cases, strict100. Baseline first80=209280,later30-80=174033,full269920. Target319920.",
+  "selection": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "reference": "Frozen 167412 composite remains unchanged; no automatic promotion from prefix alone."
+}

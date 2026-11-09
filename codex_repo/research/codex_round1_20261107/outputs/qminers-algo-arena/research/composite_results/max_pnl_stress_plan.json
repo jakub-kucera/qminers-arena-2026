@@ -1,0 +1,25 @@
+[
+  [
+    "max_pnl_20ms",
+    "outputs\\qminers-algo-arena\\strategies\\composite_max_pnl_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {},
+    20
+  ],
+  [
+    "max_pnl_50ms",
+    "outputs\\qminers-algo-arena\\strategies\\composite_max_pnl_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+    {},
+    50
+  ],
+  [
+    "cross_original_max_pnl",
+    "outputs\\qminers-algo-arena\\strategies\\composite_max_pnl_v2.py",
+    "outputs\\qminers-algo-arena\\data\\sample.csv",
+    {
+      "SESSION_S": 3599.000003
+    },
+    5
+  ]
+]

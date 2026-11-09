@@ -1,0 +1,54 @@
+{
+  "experts": [
+    "ridge_1s",
+    "ridge_5s",
+    "boosted_1s",
+    "microprice",
+    "zero"
+  ],
+  "weights": [
+    0.7626616657914047,
+    3.0051736171623025e-18,
+    0.23733833420859538,
+    0.0,
+    0.0
+  ],
+  "initial_fit_end_s": 2299.9759598,
+  "blend_calibration_end_s": 2874.9623325,
+  "base_refit_end_s": 2874.9623325,
+  "policy_validation_end_s": 4312.42826425,
+  "validation_metrics": {
+    "ridge_1s": {
+      "mse": 0.19388962958362443,
+      "correlation": 0.4035437816822063,
+      "abs_prediction_q95": 0.3669778662550796
+    },
+    "ridge_5s": {
+      "mse": 0.20041345191152646,
+      "correlation": 0.3805037184574752,
+      "abs_prediction_q95": 0.4266261263600465
+    },
+    "boosted_1s": {
+      "mse": 0.19714389398622728,
+      "correlation": 0.3971238863383374,
+      "abs_prediction_q95": 0.2649001460605886
+    },
+    "microprice": {
+      "mse": 0.23581023695017042,
+      "correlation": 0.35921721090175385,
+      "abs_prediction_q95": 0.646624778400852
+    },
+    "zero": {
+      "mse": 0.2315234599884859,
+      "correlation": null,
+      "abs_prediction_q95": 0.0
+    },
+    "ensemble": {
+      "mse": 0.19364886661389485,
+      "correlation": 0.40548279384000113,
+      "abs_prediction_q95": 0.33969806224145166
+    }
+  },
+  "export_max_error": 1.1102230246251565e-16,
+  "notes": "Base fits use first 40%; blend weights use 40-50%; bases refit first 50%. Labels crossing boundaries are purged. No tail observations are used to choose weights."
+}

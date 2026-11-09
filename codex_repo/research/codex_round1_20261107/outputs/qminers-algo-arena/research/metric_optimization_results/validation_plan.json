@@ -1,0 +1,366 @@
+[
+  {
+    "name": "g05_e0_f1",
+    "variant": "g05_e0",
+    "fold": 1,
+    "sha256": "fb64a128c8474c26d7c87954867358326a72159c7acbe425927f320bfd00ee9b",
+    "case": [
+      "g05_e0_f1",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g05_e0_f1.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g05_e015_f1",
+    "variant": "g05_e015",
+    "fold": 1,
+    "sha256": "6a7d9edab8a7f75f8fdcdecdc927da33d9890c96e7bcf60c17d31810ecfaccb2",
+    "case": [
+      "g05_e015_f1",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g05_e015_f1.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g05_e03_f1",
+    "variant": "g05_e03",
+    "fold": 1,
+    "sha256": "7e22f96a85036b01650e42d88faff1844861e6947bd600a735681d04040fcae0",
+    "case": [
+      "g05_e03_f1",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g05_e03_f1.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g1_e0_f1",
+    "variant": "g1_e0",
+    "fold": 1,
+    "sha256": "c9f5d7ebe69be99f9210f42370e499b59fdae6220620249ea7b6d49c1f5689f9",
+    "case": [
+      "g1_e0_f1",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g1_e0_f1.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g1_e015_f1",
+    "variant": "g1_e015",
+    "fold": 1,
+    "sha256": "b2da7e3974ee645123f262e872c20ed231256d773400ddaad0736fdc083abb43",
+    "case": [
+      "g1_e015_f1",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g1_e015_f1.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g1_e03_f1",
+    "variant": "g1_e03",
+    "fold": 1,
+    "sha256": "99db7b7a50ecb2888466ce595a78310e028cb2500243f550c9bf87af4a7d8ce4",
+    "case": [
+      "g1_e03_f1",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g1_e03_f1.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g15_e0_f1",
+    "variant": "g15_e0",
+    "fold": 1,
+    "sha256": "fd57c8c486dd9d539e21ab7af847d68be95c67ba3a78dc60a597e33e308f22a2",
+    "case": [
+      "g15_e0_f1",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g15_e0_f1.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g15_e015_f1",
+    "variant": "g15_e015",
+    "fold": 1,
+    "sha256": "31d37248b6f0bf8130b951cb0c672ec9ccde6aef02fec769c7bbf17e785763c5",
+    "case": [
+      "g15_e015_f1",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g15_e015_f1.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g15_e03_f1",
+    "variant": "g15_e03",
+    "fold": 1,
+    "sha256": "ae63dbd09a4aef8f14ad93970b8d263c903e69998bc800d97cc2a496aeb1e400",
+    "case": [
+      "g15_e03_f1",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g15_e03_f1.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "refill1_f1",
+    "variant": "refill1",
+    "fold": 1,
+    "sha256": "6dbd529c285993531a615418b0697444c2c192561a8f98169bfdb620ee6de17e",
+    "case": [
+      "refill1_f1",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\refill1_f1.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "refill25_f1",
+    "variant": "refill25",
+    "fold": 1,
+    "sha256": "3bfd9d2aa0c05555498697efcee069bdaf0020d6407582b46e4b77bf65eab57b",
+    "case": [
+      "refill25_f1",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\refill25_f1.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "deplete0_f1",
+    "variant": "deplete0",
+    "fold": 1,
+    "sha256": "79302b5b23f62c4b2d1de8f74c1a9bd484bcd49d988199cbcf9ebabd1796a4a4",
+    "case": [
+      "deplete0_f1",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\deplete0_f1.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "deplete40_f1",
+    "variant": "deplete40",
+    "fold": 1,
+    "sha256": "d6d9d346001e446cb7b4bcde4f2aa4d4a1a5898691eca67d2ab547d2ac6177d7",
+    "case": [
+      "deplete40_f1",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\deplete40_f1.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "f4_f1",
+    "variant": "f4",
+    "fold": 1,
+    "sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+    "case": [
+      "f4_f1",
+      "outputs\\qminers-algo-arena\\strategies\\round1_best.py",
+      "work\\metric-optimization\\round1_prefix6000.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g05_e0_f2",
+    "variant": "g05_e0",
+    "fold": 2,
+    "sha256": "470f82049a562203f3f375913a88a6cfd91d4f83bae2f84ee8effc30382427b3",
+    "case": [
+      "g05_e0_f2",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g05_e0_f2.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g05_e015_f2",
+    "variant": "g05_e015",
+    "fold": 2,
+    "sha256": "a029787150e686a8a066d445898217413474abdd84e02e9aec5ee566152bd98f",
+    "case": [
+      "g05_e015_f2",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g05_e015_f2.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g05_e03_f2",
+    "variant": "g05_e03",
+    "fold": 2,
+    "sha256": "ff4a367f02a216408c614ef4f72fd538d6e43b2c1ed65a22d43b09a8bfb5f41b",
+    "case": [
+      "g05_e03_f2",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g05_e03_f2.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g1_e0_f2",
+    "variant": "g1_e0",
+    "fold": 2,
+    "sha256": "44dbcc0ea5a32a3065c16c930db8eda8724bb0fb8ccf1e03ea13a74b82c69725",
+    "case": [
+      "g1_e0_f2",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g1_e0_f2.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g1_e015_f2",
+    "variant": "g1_e015",
+    "fold": 2,
+    "sha256": "9a7259079a5510248f3f1a3e721b29450e417d3b179db7f82b10de66ea3a02ba",
+    "case": [
+      "g1_e015_f2",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g1_e015_f2.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g1_e03_f2",
+    "variant": "g1_e03",
+    "fold": 2,
+    "sha256": "33d4607b68c9b69d1eca0988740c7252ed680d29cf2cdfc44be8390f7c3845f1",
+    "case": [
+      "g1_e03_f2",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g1_e03_f2.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g15_e0_f2",
+    "variant": "g15_e0",
+    "fold": 2,
+    "sha256": "c961c2dd916bcd42ee22d4f74992309a62c9e331fcd8c9a7460c30addb0b52b9",
+    "case": [
+      "g15_e0_f2",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g15_e0_f2.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g15_e015_f2",
+    "variant": "g15_e015",
+    "fold": 2,
+    "sha256": "511d9fefc17e8288e9f74103d1a8694e8e8cbfdc33915a1d49cdce3ca7608619",
+    "case": [
+      "g15_e015_f2",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g15_e015_f2.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "g15_e03_f2",
+    "variant": "g15_e03",
+    "fold": 2,
+    "sha256": "46d5edb99a6c3647fafff707821351af506aafe9b43cb220a9fba3711768fc1a",
+    "case": [
+      "g15_e03_f2",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\g15_e03_f2.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "refill1_f2",
+    "variant": "refill1",
+    "fold": 2,
+    "sha256": "92e290781e7a5f1358b016c4ff8541ac83ebe639d149c587c172b32a848dcf01",
+    "case": [
+      "refill1_f2",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\refill1_f2.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "refill25_f2",
+    "variant": "refill25",
+    "fold": 2,
+    "sha256": "a274889e7c5f11498cd3fd069c4f9b435354eb18297c830efb621712072373c7",
+    "case": [
+      "refill25_f2",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\refill25_f2.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "deplete0_f2",
+    "variant": "deplete0",
+    "fold": 2,
+    "sha256": "f873780053b050c059b763beafb42f8af3b45a4096ef762da92169785ca4b6ef",
+    "case": [
+      "deplete0_f2",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\deplete0_f2.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "deplete40_f2",
+    "variant": "deplete40",
+    "fold": 2,
+    "sha256": "115fee375cfdf305a3c1ec6d3143db549e0f8a22ef20e90c21a08d7c25406b34",
+    "case": [
+      "deplete40_f2",
+      "outputs\\qminers-algo-arena\\research\\metric_optimization_results\\sources\\deplete40_f2.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  },
+  {
+    "name": "f4_f2",
+    "variant": "f4",
+    "fold": 2,
+    "sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+    "case": [
+      "f4_f2",
+      "outputs\\qminers-algo-arena\\strategies\\round1_best.py",
+      "work\\ml-round1\\round1_first75.csv",
+      {},
+      5
+    ]
+  }
+]

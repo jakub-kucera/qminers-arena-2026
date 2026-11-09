@@ -1,0 +1,94 @@
+{
+  "created_utc": "2026-11-07T14:39:51Z",
+  "git_head": "0c5cec49b54c1e4db18d46ccd5f5517bc31c3d93",
+  "engine_sha256": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+  "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+  "prefix_sha256": "62c77f074eafb168f27e177f2ce9886f71675f53b9672d791827667eafc2f12f",
+  "transfer_sha256": "dd4e00e281abe50c9a19e16c147ccbc0b5b69835fee567f00136402ef1e01d08",
+  "sources": {
+    "baseline": {
+      "kind": "control",
+      "cap": 100,
+      "source": "logs\\penalty_tradeoff\\sources\\baseline.py",
+      "sha256": "c0a453d0160e7ed4ddf0eb364dade1b5509be4c82d839d950b58f0bea97b643d"
+    },
+    "guard_disabled": {
+      "kind": "control",
+      "cap": 100,
+      "source": "logs\\penalty_tradeoff\\sources\\guard_disabled.py",
+      "sha256": "7e93de2e27209a95370319d9276425f32b8363167ba340b2e3dbba46c259c25d"
+    },
+    "continuous_101": {
+      "kind": "continuous",
+      "cap": 101,
+      "source": "logs\\penalty_tradeoff\\sources\\continuous_101.py",
+      "sha256": "088fe5bc536f3288ddba260b98a07fffe6560d65f641f424e18a28703eafdd87"
+    },
+    "continuous_250": {
+      "kind": "continuous",
+      "cap": 250,
+      "source": "logs\\penalty_tradeoff\\sources\\continuous_250.py",
+      "sha256": "8178c5effcaae3f774046f918f821543cdf41ae24b7c5b845afd1954d8bbe8a9"
+    },
+    "continuous_1000": {
+      "kind": "continuous",
+      "cap": 1000,
+      "source": "logs\\penalty_tradeoff\\sources\\continuous_1000.py",
+      "sha256": "5900b08fe8b00aaca8ddbfc4b6b43d3e3a60300bc070f7448fdd961e22a5e7be"
+    },
+    "burst_125_hold0_edge0p5": {
+      "kind": "burst",
+      "cap": 125,
+      "hold_us": 0,
+      "edge": 0.5,
+      "source": "logs\\penalty_tradeoff\\sources\\burst_125_hold0_edge0p5.py",
+      "sha256": "06d28ab331ebc5ec3d29be06c835a7ddb8abbfcda073e8b08be5ac45bf4184b4"
+    },
+    "burst_250_hold0_edge0p5": {
+      "kind": "burst",
+      "cap": 250,
+      "hold_us": 0,
+      "edge": 0.5,
+      "source": "logs\\penalty_tradeoff\\sources\\burst_250_hold0_edge0p5.py",
+      "sha256": "2ea7770a8fd30dba71dfe183631feacbfc44a328822e28e160db6a01e19aac78"
+    },
+    "burst_500_hold0_edge0p5": {
+      "kind": "burst",
+      "cap": 500,
+      "hold_us": 0,
+      "edge": 0.5,
+      "source": "logs\\penalty_tradeoff\\sources\\burst_500_hold0_edge0p5.py",
+      "sha256": "06e8468fc929fe19d8bd196795df3defb12a8a6f54c2ca9c885444b295947e0e"
+    },
+    "burst_1000_hold0_edge0p5": {
+      "kind": "burst",
+      "cap": 1000,
+      "hold_us": 0,
+      "edge": 0.5,
+      "source": "logs\\penalty_tradeoff\\sources\\burst_1000_hold0_edge0p5.py",
+      "sha256": "9e5678ed14f412279b262fc054805d1f9871cf3a62563b838a1bce300872e1c3"
+    },
+    "burst_500_hold20_edge0p5": {
+      "kind": "burst",
+      "cap": 500,
+      "hold_us": 20000,
+      "edge": 0.5,
+      "source": "logs\\penalty_tradeoff\\sources\\burst_500_hold20_edge0p5.py",
+      "sha256": "8eeaaeeaff89674f11e6a432f69890935a8e96d92067ad1018e24ae1f4f46b56"
+    },
+    "burst_1000_hold20_edge1p0": {
+      "kind": "burst",
+      "cap": 1000,
+      "hold_us": 20000,
+      "edge": 1.0,
+      "source": "logs\\penalty_tradeoff\\sources\\burst_1000_hold20_edge1p0.py",
+      "sha256": "e9f0b918a4db549caf3cf467b1981a487b8569645c4352e69e1e27b7badaebc0"
+    }
+  },
+  "economics": "Official fee = 10000 per second with abs(inventory)>100, independent of excess size. Hard potential limit=1000. No simulator/rule changes.",
+  "controller": "Guarded extra exposure requires same-direction inventory >=80 and forecast-after-skew >=edge. On breach cancel risk-increasing orders; after hold time cancel normal quotes and IOC excess back toward 100, reserving all pending/canceling orders. IOC price allows two ticks through the last visible market touch. One-second cooldown. No guarantee of instant exit: callbacks, latency and liquidity can delay it.",
+  "selection": "Freeze nine candidates, plus baseline and disabled-controller control. Screen from tape start through prefix; exact 300-second blocks ending at 5990 seconds before EOF drain. Disabled control must match baseline. Require >=1% net-after-penalty improvement, positive gain in both halves, >=12/20 positive blocks and positive simultaneous one-sided 95% max-T bootstrap lower bound across all nine trials, 20000 circular paired draws of two blocks within each half, seed 2026110703. Hard exposure must stay <=1000 with no new-order rejections. Select greatest lower bound, cap as tie-breaker; freeze before later data. No retuning.",
+  "confirmation": "Require positive after-fee gains in both later 5990-9000 and 9000-end segments and >=1% full gain. Net PnL on sample_v2 and 20/50ms stress must each be >=99% of the corresponding penalty-free baseline. Otherwise keep baseline. If no candidate passes screening, run only the best-lower-bound guarded candidate as a diagnostic; it cannot be promoted afterwards.",
+  "baseline_reuse": "Verified baseline full/sample/20/50ms results from logs/robust_augmentation are reused only after matching baseline source, data and engine hashes, and exact prefix parity.",
+  "limitation": "All tapes were previously examined; tests do not create a fresh holdout."
+}

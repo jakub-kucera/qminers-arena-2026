@@ -1,0 +1,14 @@
+{
+  "observed_utc": "2026-11-07T22:39:55.358947+00:00",
+  "upstream_commit": "36a041af7da57060f5cafe5bcc4f4772c23cd31b",
+  "repo": "https://github.com/jakub-kucera/qminers-arena-hachathon-final-v2.9-fr-fr.git",
+  "user_confirmed_main": true,
+  "user_confirmed_drop": "sharp market price decline",
+  "objective": "Improve main models by at least10000 as main evolves",
+  "stronger_local_cycle_reference": 296715,
+  "stronger_local_cycle_target": 306715,
+  "previous_target319920_superseded": true,
+  "scope": "Full consumed round2 public tape; no server access",
+  "native_active_parity": true,
+  "market_profile_scope": "Full public tape; inherited DynamicsProbe development-only label is stale"
+}

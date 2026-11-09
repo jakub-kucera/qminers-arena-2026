@@ -1,0 +1,55 @@
+{
+  "records": [
+    {
+      "name": "ridge250",
+      "unchanged_methods": 6,
+      "export_max_error": 1.1102230246251565e-16
+    },
+    {
+      "name": "huber250",
+      "unchanged_methods": 6,
+      "export_max_error": 2.6020852139652106e-18
+    },
+    {
+      "name": "elastic250",
+      "unchanged_methods": 6,
+      "export_max_error": 1.6653345369377348e-16
+    },
+    {
+      "name": "forest250",
+      "unchanged_methods": 6,
+      "export_max_error": 2.7755575615628914e-16
+    },
+    {
+      "name": "window_ensemble",
+      "unchanged_methods": 6,
+      "export_max_error": 1.1102230246251565e-16
+    },
+    {
+      "name": "guarded_ensemble",
+      "unchanged_methods": 6,
+      "export_max_error": 2.220446049250313e-16
+    },
+    {
+      "name": "diverse_composite",
+      "unchanged_methods": 6,
+      "export_max_error": 1.1102230246251565e-16
+    },
+    {
+      "name": "calibrated_logit",
+      "unchanged_methods": 6,
+      "export_max_error": 5.551115123125783e-16
+    }
+  ],
+  "risk_and_feature_methods_unchanged": true,
+  "guard_invariants_passed": true,
+  "training_label_zero_fraction": 0.7719987644999656,
+  "training_rows": 58276,
+  "label_horizon_ms_quantiles": [
+    200.024,
+    204.803,
+    248.45
+  ],
+  "old_baseline_sha256": "4667d01bfd43e92e75369576ddf777fbfb62ea5923d320ae06849c5059564b04",
+  "old_ml_sha256": "afcd83d1a5e77cfbdb7db8d6953cd33b51686b3639c0149dee1be58cddbafc35"
+}

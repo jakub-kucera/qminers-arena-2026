@@ -1,0 +1,46 @@
+{
+  "name": "M2_original_sample",
+  "source": "work\\jakub-arena\\python\\bots\\qminers\\candidates\\r0_M2_runner_safe.py",
+  "source_sha256": "2d40fa14b5d7bbbb37644c39d88e46c8f7848199ea1fba71f1407f64e171b806",
+  "data": "sample.csv",
+  "params": {
+    "SESSION_S": 3599.000003
+  },
+  "delay_ms": 5,
+  "result": {
+    "fills": 2978,
+    "traded_volume": 63990,
+    "inventory": 0,
+    "cash": 305374.0,
+    "mark_price": 10051.0,
+    "breach_penalty": 0.0,
+    "pnl": 305374.0,
+    "pnl_se": 12488.428811263071,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "wall_seconds": 0.4704010998830199,
+  "cpu_seconds": 0.46875,
+  "max_abs_inventory": 100,
+  "max_reserved_exposure": 100,
+  "final_tracked_inventory": 0,
+  "quarter_pnl": [
+    76692.0,
+    72659.0,
+    84068.0,
+    71955.0
+  ],
+  "first_half_pnl": 149351.0,
+  "third_quarter_pnl": 84068.0,
+  "last_quarter_pnl": 71955.0,
+  "max_drawdown": 987.0,
+  "event_counts": {
+    "sent": 3011,
+    "accepted": 3011,
+    "partially_filled": 2531,
+    "canceled": 2564,
+    "filled": 447
+  }
+}

@@ -1,0 +1,92 @@
+QMINERS COMPOSITE RESULTS — 7 NOVEMBER 2026
+
+Highest observed public-v2 result: +272,088. This is 27.8% above the earlier F2 reference and 2.8% above the latest team F4.
+
+Upload candidate: qminers-algo-arena/strategies/composite_max_pnl_v2.py
+This is a local public-data result, not a website score or proof of a private-round win.
+
+COMPARISON
+Strategy | Full tape | Validation 50–75% | Reused final quarter
+Earlier F2 reference | +212,831 | +56,364 | +48,200
+Latest team F4 | +264,616 | +67,717 | +62,685
+Composite + model ensemble | +267,845 | +69,257 | +63,801
+Composite + linear forecast | +272,088 | +69,053 | +65,457
+
+HOW THE APPROACHES ARE COMBINED
+1. Queue preservation and replenishment: retain live same-price quotes and refill available capacity behind them, instead of losing priority through repeated replacements.
+2. Depletion protection: pull a side when external volume at its best price falls below 20 lots; step the inventory-increasing quote one tick back when inventory error reaches 95 lots.
+3. Causal forecasting: a regularized linear model combines spread, touch/depth imbalance, signed flow, short price trends, displayed depth, flow volume, and microprice displacement. Features update every 100 ms; flow updates on each event.
+4. Forecast-driven inventory: target inventory is 40 times the predicted one-second price change, clipped to ±50 lots. Suppress a quote when its forecast edge is below 0.15 ticks.
+5. Strict reservation: position plus all pending buys stays at or below 100, and position minus all pending sells stays at or above −100. Cancelling orders retain their reservation until acknowledged; buys and sells are never netted against each other.
+6. Session control: stop adding to an existing position in the last 30 seconds of the configured 5,750-second session. This is passive wind-down, not guaranteed flattening; the final position was −36 and the official score includes its liquidation value.
+
+MODEL COMPARISON
+The tested ensemble combined 76.3% one-second Ridge forecast and 23.7% shallow gradient-boosted trees. Five-second Ridge, raw microprice, and the zero forecast received effectively zero blend weight. The blend slightly improved validation forecast correlation (0.4055 versus 0.4035 for Ridge), and policy validation PnL (69,257 versus 69,053), but its full PnL was 4,243 lower. The delivered maximum-PnL file uses the linear forecast only within the composite execution policy. Unused ensemble constants are retained to preserve the exact tested export. Increasing complexity did not win this comparison.
+
+SELECTION AND EVIDENCE LIMITS
+Models were first fitted on 0–40% of the tape; nonnegative blend weights were calibrated on 40–50%; the base models were then refitted on the first 50%. Labels crossing split boundaries were purged. Thirty-seven policy trials used the 50–75% segment for selection, with every replay starting at the beginning to preserve the order book and FIFO queues. The ensemble policy won that validation comparison and was frozen before the full runs. Its matched linear-only alternative was frozen at the same time. The linear version subsequently earned the highest full-tape PnL. Calling it the highest observed public-data candidate therefore uses the full results for selection. The last quarter had already been inspected in earlier work and team research; it is a reused diagnostic segment, not an untouched holdout. Full PnL also includes the model training interval.
+
+LATENCY
+Policy | 5 ms | 20 ms | 50 ms
+Composite + linear | +272,088 | +260,663 | +246,084
+Composite + ensemble | +267,845 | +260,977 | +242,859
+
+Both composites remained profitable at hypothetical 20 ms and 50 ms order delays, with zero penalties and maximum reserved exposure of 100 in each run. The linear version scored −5,965 on the older original sample, versus −7,649 for the ensemble and −8,704 for F4; these cross-tape checks changed only the session length to match that tape. The prior study found that M2 did well on the old tape and very poorly on v2. This is strong evidence of regime dependence, not a reason to switch policies after seeing their future returns.
+
+The best file traded 476,980 lots in 6,191 engine-counted fills, with zero penalties and peak absolute inventory/reserved exposure of 100. Its time-weighted median absolute inventory was also 100: it uses the full allowed inventory budget and leaves no soft-limit headroom. The 203-point maximum drawdown is sampled from the one-second PnL curve and can miss faster excursions. Forty cancel rejections were late-cancel races against orders no longer resting, not inventory-limit rejections. The official simulator charges no fees; an extra hypothetical uniform cost of 0.570 ticks per traded lot would consume the entire measured profit, before any additional fill changes.
+
+The new study contains 37 prefix policy trials, 3 full-tape confirmation comparisons, and 7 stress/cross-tape checks, plus a separate replay of the exact delivered file. All 47 research runs had zero penalties and reserved exposure at most 100. Twelve strategy risk tests and five deterministic engine probes passed earlier in this study, covering pending/cancelling reservations, late fills, side-specific exposure, rejected modifications, delayed acceptance, FIFO, depletion protection, inventory skew, and the soft/hard limits. Controls reproduced F2 and F4 exactly. Exported tree predictions matched the training library to 1.11e−16 on 1,500 checked rows. The team source validator passed the delivered file; the official loader and engine replayed it successfully. These local checks do not replace the website sandbox check.
+
+The exact 20,304-byte file ran locally in 40.3 seconds wall time (39.5 seconds CPU), with 52.3 MiB peak Windows working set, including Python and harness imports. It imports only math and the simulator API, has one BaseStrategy subclass, and performs no file/network/process access. This fits the published 1 MiB source, 1 CPU, 2 GB RAM, and 15-minute limits in the local measurements; the remote Linux runtime has not been measured. Upload only composite_max_pnl_v2.py to the matching public-v2 website test. A successful upload may become the selected final submission. No website upload, Git push, sharing change, or organizer message was made in this work.
+
+NEXT ROUND
+For a new round, first inspect the new tape’s spread, queue depth, flow, session duration, and fill-conditioned markouts. Freeze a small comparison of F4, the linear composite, the ensemble composite, and an appropriate directional baseline. Fit/calibrate on chronological development data, then evaluate once on genuinely unseen data. Check a range of inventory targets and depletion thresholds for a broad plateau, rather than chasing one best point. Test a causal regime gate only with development data; the simple regime guard in this study did not improve the v2 validation result. Add larger sequence models only if they improve executable PnL and meet the complete-run budget. The present 2.8% gain over F4 is not established as statistically robust or as an advantage on private competition data.
+
+REPRODUCE FROM THE LOCAL OFFICIAL CHECKOUT
+.venv/Scripts/exchange-simulator.exe --strategy strategies/composite_max_pnl_v2.py --backtest data/sample_v2.csv --log-dir logs/composite-max --no-logs
+
+PROVENANCE
+Official engine: 3f5bea730d5f341c6988b1fe2722998b66270ea0
+Team F4: 5003a3553c32335e6c0d2acde9b9dce8deb92ea4
+Dataset: sample_v2.csv, 2,000,000 rows, 5,749.869 s
+Dataset SHA256: dd4e00e281abe50c9a19e16c147ccbc0b5b69835fee567f00136402ef1e01d08
+Upload SHA256: 8b33a9a7fd8679fde915e1832c0e576461a990a788e466ac673978a4d3e7d11c
+
+ALL POLICY TRIALS (validation-ranked)
+r0_ensemble_target40: +69,257
+r0_ensemble_refill5: +69,151
+r0_ensemble_target20: +69,149
+r0_linear_edge15: +69,066
+a0_matched_linear: +69,053
+r0_ensemble_sizing: +69,038
+r0_ensemble_edge15: +68,966
+a0_without_edge_filter: +67,853
+r0_F4: +67,717
+r0_control: +67,717
+s1_no_size_tilt: +67,553
+s1_more_queue_slots: +67,287
+s1_skew100: +66,943
+s1_half_forecast_tilt: +66,932
+s1_linear_only: +66,890
+s1_no_regime_guard: +66,801
+s1_refill5: +66,668
+s1_no_inventory_target: +66,466
+s0_full_composite: +66,423
+s1_no_forecast: +66,099
+s1_edge25: +66,067
+s0_inventory_refill: +66,066
+s1_edge05: +65,690
+s0_ensemble_refill: +65,663
+r0_ensemble_edge35: +64,894
+s1_microprice_only: +60,832
+s0_queue_refill: +60,376
+s0_larger_reducing_quote: +57,020
+s0_control: +56,364
+s0_F2: +56,364
+s0_regime_guard: +56,008
+s0_ensemble_edge: +55,792
+s0_ensemble_sizes: +53,775
+s0_linear_sizes: +53,041
+s0_ensemble_inside: +51,726
+s0_composite_inside: +43,389
+s0_inventory_inside: +40,446

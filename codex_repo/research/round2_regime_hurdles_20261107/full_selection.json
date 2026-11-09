@@ -1,0 +1,10 @@
+{
+  "candidate": {
+    "name": "mix_60s_gate20",
+    "file": "logs\\round2_regime_hurdles\\sources\\mix_60s_gate20.py",
+    "source_sha256": "c96141d18a50b9280539a90b160f2a1b13acb00ef96cd099a8484e12b4292877",
+    "risk": "strict100"
+  },
+  "rule": "Require positive 30-60m and 60-80m increments. Prefer larger combined net gain in those windows; freeze one before full replay.",
+  "scope": "First80% previously consumed development; no fresh holdout remains for public claims."
+}

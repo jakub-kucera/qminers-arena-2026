@@ -1,0 +1,52 @@
+{
+  "created_utc": "2026-11-07T13:17:51.189732+00:00",
+  "reason": "The current public round lasts 12000s; the inspected technical rules do not guarantee that the private tape has that duration. A hard-coded wind-down could stop profitable trading for the remainder of a longer private tape.",
+  "deviation": "This is an explicitly recorded post-selection portability audit, outside the predeclared policy search. Its endpoint effect is not covered by the original 12-comparison bootstrap bound.",
+  "change": "SESSION_S=None disables scheduled wind-down; optional known horizons remain supported. The official scorer liquidates any remaining inventory at executable market prices. Forecast coefficients, quote edge, capacity accounting and all other policy settings are unchanged.",
+  "inference": "The change is behaviorally identical before the old wind-down boundary. It does not access the eventual tape length or use future data.",
+  "rule": "Use the portable file only if round1 PnL at5ms is at least the frozen timed candidate, 20/50ms later-half PnL and sample_v2 PnL deteriorate by no more than2% versus that candidate, all risk and source/runtime checks pass. Otherwise retain timed candidate and report duration assumption.",
+  "source": "outputs\\qminers-algo-arena\\strategies\\round1_metric_portable.py",
+  "sha256": "10b65baeb38b81bd2b60e2ad00b352bcf88c392a887113771326a01443cf9b43",
+  "entries": [
+    {
+      "name": "portable_d5",
+      "case": [
+        "portable_d5",
+        "outputs\\qminers-algo-arena\\strategies\\round1_metric_portable.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        5
+      ]
+    },
+    {
+      "name": "portable_d20",
+      "case": [
+        "portable_d20",
+        "outputs\\qminers-algo-arena\\strategies\\round1_metric_portable.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        20
+      ]
+    },
+    {
+      "name": "portable_d50",
+      "case": [
+        "portable_d50",
+        "outputs\\qminers-algo-arena\\strategies\\round1_metric_portable.py",
+        "outputs\\qminers-algo-arena\\data\\round1.csv",
+        {},
+        50
+      ]
+    },
+    {
+      "name": "portable_v2",
+      "case": [
+        "portable_v2",
+        "outputs\\qminers-algo-arena\\strategies\\round1_metric_portable.py",
+        "outputs\\qminers-algo-arena\\data\\sample_v2.csv",
+        {},
+        5
+      ]
+    }
+  ]
+}

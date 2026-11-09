@@ -1,0 +1,20 @@
+{
+  "train_events": 7370,
+  "test_events": 8252,
+  "correlation": 0.2511397574827356,
+  "label": "Clipped 400ms midpoint markout, not realized round-trip PnL.",
+  "buckets": {
+    "-0.1": {
+      "events": 6836,
+      "mean_markout": 0.2929344645991808
+    },
+    "0": {
+      "events": 6506,
+      "mean_markout": 0.30295112204119273
+    },
+    "0.1": {
+      "events": 5846,
+      "mean_markout": 0.329541566883339
+    }
+  }
+}

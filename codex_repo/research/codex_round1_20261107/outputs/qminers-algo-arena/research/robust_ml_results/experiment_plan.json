@@ -1,0 +1,66 @@
+{
+  "created_utc": "2026-11-07T12:51:23.445381+00:00",
+  "horizon_seconds": 0.25,
+  "feature_count": 24,
+  "training_end": 6000,
+  "linear_cv": "Expanding windows: 0-1500 -> 1500-3000; 0-3000 -> 3000-4500; 0-4500 -> 4500-6000. Targets crossing each boundary removed.",
+  "policy_validation": [
+    6000,
+    9000
+  ],
+  "blocks": [
+    6000,
+    7000,
+    8000,
+    9000
+  ],
+  "delays_ms": [
+    5,
+    20
+  ],
+  "candidates": [
+    "ridge250",
+    "elastic250",
+    "huber250",
+    "forest250",
+    "window_ensemble",
+    "guarded_ensemble",
+    "diverse_composite",
+    "calibrated_logit"
+  ],
+  "ridge": {
+    "alpha": 100
+  },
+  "elastic": {
+    "alpha": [
+      0.0001,
+      0.001,
+      0.01
+    ],
+    "l1_ratio": 0.5
+  },
+  "huber": {
+    "epsilon": 1.35,
+    "alpha": 0.01
+  },
+  "forest": {
+    "n_estimators": 64,
+    "max_depth": 4,
+    "min_samples_leaf": 128,
+    "max_features": 0.75
+  },
+  "ensemble": "Equal weight: frozen prior full-window CatBoost; new 3000-6000 rolling-window CatBoost; new full-window CatBoost with exponential 1800s recency weights. New trees: 192, depth4, lr.05, l2=10.",
+  "guard": "Shrink ensemble mean toward zero by one weighted standard deviation of model disagreement. This is not a calibrated confidence interval.",
+  "composite": "Equal weight ElasticNet, ExtraTrees, and the three-window CatBoost mean.",
+  "logit": "L2 multinomial logistic C=.1, fit 0-4800; temperature calibrated only on 4800-6000; signed classes and training class mean returns; no refit after calibration.",
+  "execution": {
+    "TARGET_ALPHA": 40,
+    "EDGE_FLOOR": 0.15,
+    "CAP": 100,
+    "SESSION_S": 12000
+  },
+  "selection": "Require positive validation excess over F4 at both delays and improvement in at least 4 of 6 paired 1000s blocks. Rank by the smaller of the two relative total improvements. Lock top two new candidates; if none pass, evaluate top two as research only.",
+  "followup": "Locked top two: full round1 at 5/20/50ms; sample_v2 stress at 5ms with SESSION_S=5750 and frozen weights. Existing F4 and CatBoost controls for both tapes.",
+  "limitation": "All of round1 and sample_v2 were inspected in prior work. Chronological exclusion from fitting is not a fresh untouched test. No guarantee of winning or statistical significance.",
+  "gpu": "Two CatBoost fits on RTX3070Ti; GPU training may be nondeterministic; exact exported parameters frozen and hashed."
+}

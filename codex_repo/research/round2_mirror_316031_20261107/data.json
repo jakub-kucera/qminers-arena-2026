@@ -1,0 +1,7 @@
+{
+  "original_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "mirrored_sha256": "68a9e271ab8f239e78e0f1f1c9ca2549535a3572293eccf29911231698aefe8f",
+  "rows": 2193064,
+  "transform": "Price=20000-original for positive prices; B/A swapped; other fields unchanged",
+  "limitation": "Synthetic transform of consumed tape, not independent holdout"
+}

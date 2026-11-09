@@ -1,0 +1,36 @@
+{
+  "frozen_reference": {
+    "name": "mix_60s_gate20",
+    "file": "logs\\round2_regime_hurdles\\sources\\mix_60s_gate20.py",
+    "source_sha256": "c96141d18a50b9280539a90b160f2a1b13acb00ef96cd099a8484e12b4292877",
+    "risk": "strict100"
+  },
+  "candidates": [
+    {
+      "name": "window60_gate15",
+      "file": "logs\\round2_hurdle_sensitivity\\sources\\window60_gate15.py",
+      "source_sha256": "56ffa4584ced7931bafe16b1ae49133a7d3d1c21017ab73d51a41e3d5116384c",
+      "risk": "strict100"
+    },
+    {
+      "name": "window60_gate25",
+      "file": "logs\\round2_hurdle_sensitivity\\sources\\window60_gate25.py",
+      "source_sha256": "d18cde33b4ea943d03c89ded177f356d9fe582b94dc8e53cb27e56bd12a5449d",
+      "risk": "strict100"
+    },
+    {
+      "name": "window45_gate20",
+      "file": "logs\\round2_hurdle_sensitivity\\sources\\window45_gate20.py",
+      "source_sha256": "7c068458de63317c40e99f2e3da59200382cfd579f13f99462294796f5ccffc1",
+      "risk": "strict100"
+    },
+    {
+      "name": "window90_gate20",
+      "file": "logs\\round2_hurdle_sensitivity\\sources\\window90_gate20.py",
+      "source_sha256": "4118206d3674fd3caa0ccc33eabcabb05a562dd39051380ed0a24ccccccd15e8",
+      "risk": "strict100"
+    }
+  ],
+  "purpose": "Sensitivity only; do not replace frozen winner or infer fresh validation.",
+  "scope": "Previously consumed first80% public prefix."
+}

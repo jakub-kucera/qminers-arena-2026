@@ -1,0 +1,11 @@
+{
+  "candidate": {
+    "name": "stop5",
+    "file": "logs\\round2_ra_selector\\sources\\stop5.py",
+    "source_sha256": "5f69e437ea77d9d494f19427162c26dab6718e76ead392bb6835cb9e19f83343",
+    "risk": "strict100"
+  },
+  "selection_rule": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "goal": 250000,
+  "scope": "Consumed public first80%; no new holdout and no server access."
+}

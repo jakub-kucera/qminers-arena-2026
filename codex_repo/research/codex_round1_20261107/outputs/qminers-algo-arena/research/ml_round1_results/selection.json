@@ -1,0 +1,14 @@
+{
+  "frozen_utc": "2026-11-07T12:32:18.842664+00:00",
+  "selected_case": "cat24_025s_t40",
+  "model": "cat24_025s",
+  "validation_pnl": 106950.0,
+  "f4_validation_pnl": 106807.0,
+  "strongest_simple_case": "f4_reference",
+  "strongest_simple_validation": 106807.0,
+  "export": "outputs\\qminers-algo-arena\\strategies\\round1_ml_candidate.py",
+  "sha256": "afcd83d1a5e77cfbdb7db8d6953cd33b51686b3639c0149dee1be58cddbafc35",
+  "bytes": 93771,
+  "promotion_gate": "ML must outperform F4 in both validation and reused final-quarter diagnostics, remain penalty-free with reserved exposure <=100, and fit source/runtime limits. Otherwise retain F4; no parameter change after this freeze.",
+  "evidence_limit": "The diagnostic quarter was inspected previously. This is not an untouched independent holdout."
+}

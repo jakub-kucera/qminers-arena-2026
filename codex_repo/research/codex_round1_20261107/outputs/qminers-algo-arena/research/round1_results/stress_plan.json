@@ -1,0 +1,30 @@
+[
+  [
+    "team_F4_delay20",
+    "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\team_F4.py",
+    "outputs\\qminers-algo-arena\\data\\round1.csv",
+    {},
+    20
+  ],
+  [
+    "team_F4_delay50",
+    "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\team_F4.py",
+    "outputs\\qminers-algo-arena\\data\\round1.csv",
+    {},
+    50
+  ],
+  [
+    "pasted_passive_delay20",
+    "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\pasted_passive.py",
+    "outputs\\qminers-algo-arena\\data\\round1.csv",
+    {},
+    20
+  ],
+  [
+    "pasted_passive_delay50",
+    "outputs\\qminers-algo-arena\\research\\round1_results\\frozen_sources\\pasted_passive.py",
+    "outputs\\qminers-algo-arena\\data\\round1.csv",
+    {},
+    50
+  ]
+]

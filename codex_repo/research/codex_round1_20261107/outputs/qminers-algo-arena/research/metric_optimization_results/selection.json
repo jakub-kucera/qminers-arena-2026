@@ -1,0 +1,341 @@
+{
+  "frozen_utc": "2026-11-07T13:14:06.555479+00:00",
+  "selected": "deplete0",
+  "raw_leader": "deplete0",
+  "passing": 2,
+  "critical_max_t": 2.255966188389085,
+  "ranking": [
+    {
+      "name": "deplete0",
+      "fold_excess": [
+        6718.0,
+        7357.0
+      ],
+      "total_excess": 14075.0,
+      "positive_blocks": 19,
+      "simultaneous_lower_total": 8714.332353049067,
+      "adjusted_p": 9.999000099990002e-05,
+      "neighbors": [],
+      "plateau": true,
+      "safe": true,
+      "gate": true
+    },
+    {
+      "name": "g1_e0",
+      "fold_excess": [
+        1179.0,
+        -721.0
+      ],
+      "total_excess": 458.0,
+      "positive_blocks": 10,
+      "simultaneous_lower_total": -2637.160513306749,
+      "adjusted_p": 0.9356064393560644,
+      "neighbors": [
+        {
+          "name": "g05_e0",
+          "fold_excess": [
+            814.0,
+            -1082.0
+          ]
+        },
+        {
+          "name": "g1_e015",
+          "fold_excess": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "name": "g15_e0",
+          "fold_excess": [
+            708.0,
+            -1185.0
+          ]
+        }
+      ],
+      "plateau": false,
+      "safe": true,
+      "gate": false
+    },
+    {
+      "name": "refill1",
+      "fold_excess": [
+        82.0,
+        275.0
+      ],
+      "total_excess": 357.0,
+      "positive_blocks": 15,
+      "simultaneous_lower_total": 30.501267975723252,
+      "adjusted_p": 0.026797320267973202,
+      "neighbors": [],
+      "plateau": true,
+      "safe": true,
+      "gate": true
+    },
+    {
+      "name": "g05_e03",
+      "fold_excess": [
+        637.0,
+        -897.0
+      ],
+      "total_excess": -260.0,
+      "positive_blocks": 9,
+      "simultaneous_lower_total": -3369.894922695046,
+      "adjusted_p": 0.9953004699530047,
+      "neighbors": [
+        {
+          "name": "g05_e015",
+          "fold_excess": [
+            814.0,
+            -1082.0
+          ]
+        },
+        {
+          "name": "g1_e03",
+          "fold_excess": [
+            -3824.0,
+            -8940.0
+          ]
+        }
+      ],
+      "plateau": false,
+      "safe": true,
+      "gate": false
+    },
+    {
+      "name": "g05_e0",
+      "fold_excess": [
+        814.0,
+        -1082.0
+      ],
+      "total_excess": -268.0,
+      "positive_blocks": 11,
+      "simultaneous_lower_total": -3550.877193106854,
+      "adjusted_p": 0.9952004799520048,
+      "neighbors": [
+        {
+          "name": "g05_e015",
+          "fold_excess": [
+            814.0,
+            -1082.0
+          ]
+        },
+        {
+          "name": "g1_e0",
+          "fold_excess": [
+            1179.0,
+            -721.0
+          ]
+        }
+      ],
+      "plateau": false,
+      "safe": true,
+      "gate": false
+    },
+    {
+      "name": "g05_e015",
+      "fold_excess": [
+        814.0,
+        -1082.0
+      ],
+      "total_excess": -268.0,
+      "positive_blocks": 11,
+      "simultaneous_lower_total": -3550.877193106854,
+      "adjusted_p": 0.9952004799520048,
+      "neighbors": [
+        {
+          "name": "g05_e0",
+          "fold_excess": [
+            814.0,
+            -1082.0
+          ]
+        },
+        {
+          "name": "g05_e03",
+          "fold_excess": [
+            637.0,
+            -897.0
+          ]
+        },
+        {
+          "name": "g1_e015",
+          "fold_excess": [
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "plateau": false,
+      "safe": true,
+      "gate": false
+    },
+    {
+      "name": "g15_e0",
+      "fold_excess": [
+        708.0,
+        -1185.0
+      ],
+      "total_excess": -477.0,
+      "positive_blocks": 11,
+      "simultaneous_lower_total": -3546.1165961953684,
+      "adjusted_p": 0.9983001699830018,
+      "neighbors": [
+        {
+          "name": "g1_e0",
+          "fold_excess": [
+            1179.0,
+            -721.0
+          ]
+        },
+        {
+          "name": "g15_e015",
+          "fold_excess": [
+            1124.0,
+            -8194.0
+          ]
+        }
+      ],
+      "plateau": false,
+      "safe": true,
+      "gate": false
+    },
+    {
+      "name": "refill25",
+      "fold_excess": [
+        -378.0,
+        -479.0
+      ],
+      "total_excess": -857.0,
+      "positive_blocks": 6,
+      "simultaneous_lower_total": -1863.273658770429,
+      "adjusted_p": 1.0,
+      "neighbors": [],
+      "plateau": true,
+      "safe": true,
+      "gate": false
+    },
+    {
+      "name": "g15_e015",
+      "fold_excess": [
+        1124.0,
+        -8194.0
+      ],
+      "total_excess": -7070.0,
+      "positive_blocks": 7,
+      "simultaneous_lower_total": -16212.637148180995,
+      "adjusted_p": 1.0,
+      "neighbors": [
+        {
+          "name": "g1_e015",
+          "fold_excess": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "name": "g15_e0",
+          "fold_excess": [
+            708.0,
+            -1185.0
+          ]
+        },
+        {
+          "name": "g15_e03",
+          "fold_excess": [
+            -17820.0,
+            -24702.0
+          ]
+        }
+      ],
+      "plateau": false,
+      "safe": true,
+      "gate": false
+    },
+    {
+      "name": "deplete40",
+      "fold_excess": [
+        -3648.0,
+        -7308.0
+      ],
+      "total_excess": -10956.0,
+      "positive_blocks": 3,
+      "simultaneous_lower_total": -16512.437322146758,
+      "adjusted_p": 1.0,
+      "neighbors": [],
+      "plateau": true,
+      "safe": true,
+      "gate": false
+    },
+    {
+      "name": "g1_e03",
+      "fold_excess": [
+        -3824.0,
+        -8940.0
+      ],
+      "total_excess": -12764.0,
+      "positive_blocks": 6,
+      "simultaneous_lower_total": -22602.253913273675,
+      "adjusted_p": 1.0,
+      "neighbors": [
+        {
+          "name": "g05_e03",
+          "fold_excess": [
+            637.0,
+            -897.0
+          ]
+        },
+        {
+          "name": "g1_e015",
+          "fold_excess": [
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "name": "g15_e03",
+          "fold_excess": [
+            -17820.0,
+            -24702.0
+          ]
+        }
+      ],
+      "plateau": false,
+      "safe": true,
+      "gate": false
+    },
+    {
+      "name": "g15_e03",
+      "fold_excess": [
+        -17820.0,
+        -24702.0
+      ],
+      "total_excess": -42522.0,
+      "positive_blocks": 1,
+      "simultaneous_lower_total": -55998.92846748484,
+      "adjusted_p": 1.0,
+      "neighbors": [
+        {
+          "name": "g1_e03",
+          "fold_excess": [
+            -3824.0,
+            -8940.0
+          ]
+        },
+        {
+          "name": "g15_e015",
+          "fold_excess": [
+            1124.0,
+            -8194.0
+          ]
+        }
+      ],
+      "plateau": false,
+      "safe": true,
+      "gate": false
+    }
+  ],
+  "followup": [
+    "deplete0"
+  ],
+  "note": "Simultaneous bounds adjust this fixed 12-change batch only. Historical reuse and new-regime uncertainty remain. No parameter updates after this record."
+}

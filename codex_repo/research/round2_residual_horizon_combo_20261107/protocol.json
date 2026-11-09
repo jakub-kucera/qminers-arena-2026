@@ -1,0 +1,54 @@
+{
+  "goal": 250000,
+  "candidates": [
+    {
+      "name": "h200_ridge5_blend0.25",
+      "file": "logs\\round2_residual_horizon_combo\\sources\\h200_ridge5_blend0.25.py",
+      "source_sha256": "7532e590b64baa8d6f55de38a8391ad8acda834f55dd363432c85006765bc22b",
+      "risk": "strict100"
+    },
+    {
+      "name": "h200_ridge5_blend0.5",
+      "file": "logs\\round2_residual_horizon_combo\\sources\\h200_ridge5_blend0.5.py",
+      "source_sha256": "312e01dfa53e5d703b7ec276caef0d0e33dc18b7840fa8252ad0442e51bac745",
+      "risk": "strict100"
+    },
+    {
+      "name": "h200_ridge5_blend0.75",
+      "file": "logs\\round2_residual_horizon_combo\\sources\\h200_ridge5_blend0.75.py",
+      "source_sha256": "a295038f665dba89b1e649502d7e378d9c61f4b880b33bdbe875b5dee190fcaa",
+      "risk": "strict100"
+    },
+    {
+      "name": "h200_ridge25_blend0.5",
+      "file": "logs\\round2_residual_horizon_combo\\sources\\h200_ridge25_blend0.5.py",
+      "source_sha256": "685f6cab73ba9f2f647017c4acee23068ff345e86d47c80c99373cd94381dafd",
+      "risk": "strict100"
+    }
+  ],
+  "native": {
+    "python": "3.13.18",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+      "main.py": "a756ef4522e50d653279ba9d1827ee10ee45c77f3b544090013662817321024d",
+      "models.py": "3c6235c90c722d141e8bccb263843cd30bf9378ad2acbb77e1a5f4783729743e",
+      "strategy.py": "12985d252fdfddd64f27796731463f546911a942c20ea950a7e38a6aa958013b"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "4e84ff1a2620a8ac855d758e9df11cb082984bef3f495d6706e8298841cc0cb3",
+      "benchmark.py": "85c23af0088c3e4a927e083e0d83a40b6c6526d1ef6655c1ecda02b5974ce517",
+      "search_passive.py": "ef9029b6cd8934eba501153cb35566b2f3fbf48d9372f66dec8884d0deafa574"
+    }
+  },
+  "scope": "Consumed public first80%; no new holdout and no server access.",
+  "hypothesis": "Combine200ms fill-label maturity with residual ridge5 blended25/50/75percent or ridge25 blended50percent. Same causal stored features and native risk. Reference222966 first80=189889,later50=150423. No assumed additive gain.",
+  "selection": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "reference": "Frozen 167412 composite remains unchanged; no automatic promotion from prefix alone."
+}

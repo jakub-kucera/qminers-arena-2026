@@ -1,0 +1,26 @@
+[
+  {
+    "name": "hgb_100ms_blend0",
+    "file": "logs\\round2_nonlinear\\sources\\hgb_100ms_blend0.py",
+    "source_sha256": "942e7307e81ad721631838bce6a0ba819a1e166c7b67b9f95c56d35866cd2f00",
+    "risk": "strict100"
+  },
+  {
+    "name": "hgb_100ms_blend50",
+    "file": "logs\\round2_nonlinear\\sources\\hgb_100ms_blend50.py",
+    "source_sha256": "94b73feecb08f4804aec73c0330b839f470334f184fea1a95f5faa8d0922f90f",
+    "risk": "strict100"
+  },
+  {
+    "name": "hgb_400ms_blend0",
+    "file": "logs\\round2_nonlinear\\sources\\hgb_400ms_blend0.py",
+    "source_sha256": "c75936add78cce2a67771ead224fc495f2ddc2a3f85220fd373749761576156f",
+    "risk": "strict100"
+  },
+  {
+    "name": "hgb_400ms_blend50",
+    "file": "logs\\round2_nonlinear\\sources\\hgb_400ms_blend50.py",
+    "source_sha256": "5940474b8794189faa5f6d21facba4b9a155293bb83a5dd7d4bf898ce1c4eff4",
+    "risk": "strict100"
+  }
+]

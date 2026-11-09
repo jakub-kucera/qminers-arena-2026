@@ -1,0 +1,38 @@
+{
+  "goal": 306715,
+  "goal_reached": true,
+  "result": {
+    "fills": 2352,
+    "traded_volume": 284784,
+    "inventory": -100,
+    "cash": 1285031.0,
+    "mark_price": 9690.0,
+    "breach_penalty": 0.0,
+    "pnl": 316031.0,
+    "pnl_se": 28195.153502756722,
+    "abs_inventory_q50": 100,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "source_sha256": "088c20f7cf726b9e1e5047e2adc8c305e5c2a9ed0f1064aced4b097042f608f6",
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "engine_sha256": "742f49cbabb0e35a3dc0f64ab2ae731f0c0e8e521ce1404b301293efc0b6fcde",
+  "last20": 62324.0,
+  "max_abs_inventory": 100,
+  "max_potential_inventory": 100,
+  "sampled_drawdown": 10880.0,
+  "native_cli_parity": true,
+  "limitations": "Repeatedly consumed public tape. No untouched holdout or competition server test.",
+  "selection": {
+    "candidate": {
+      "name": "huber6.0",
+      "file": "logs\\round2_t2_robust_shocks\\sources\\huber6.0.py",
+      "source_sha256": "088c20f7cf726b9e1e5047e2adc8c305e5c2a9ed0f1064aced4b097042f608f6",
+      "risk": "strict100"
+    },
+    "selection_rule": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+    "goal": 306715,
+    "scope": "Consumed public first80%; no new holdout and no server access."
+  }
+}

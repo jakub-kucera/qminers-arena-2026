@@ -1,0 +1,11 @@
+{
+  "candidate": {
+    "name": "rate0.01",
+    "file": "logs\\round2_calibration_dynamics\\sources\\rate0.01.py",
+    "source_sha256": "df93cf43167894a1fe00a67b459f32d655ecbc8a5d5a2e4f036f54645e05af90",
+    "risk": "strict100"
+  },
+  "selection_rule": "Require positive minutes30-60 and60-80; maximize combined gain there; freeze one before full replay. Never select by full results.",
+  "goal": 250000,
+  "scope": "Consumed public first80%; no new holdout and no server access."
+}
