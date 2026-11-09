@@ -1,19 +1,8 @@
-[package]
-name = "arena_rs"
-version = "0.1.0"
-edition = "2021"
-description = "The Rust twins of python/: the engine, arena.sim's market, the grid's statistics, the Prosperity loader and the bots, laid out as python/ is (see README.md)"
-publish = false
-
-[dependencies]
-
-# arena_sim/: the Arena's own exchange simulator (simulator/ at the repo root) and its strategies, in Rust
+# arena_sim/: the Rust port of the Arena's exchange simulator (simulator/ at the repository root) and its strategies.
+# The Rust twins of the Prosperity-era engine and bots (the crate arena_rs) are in the prep repository.
 [workspace]
-members = [".", "arena_sim"]
-
-[[bin]]
-name = "arena-rs"
-path = "src/main.rs"
+members = ["arena_sim"]
+resolver = "2"
 
 [profile.release]
 opt-level = 3

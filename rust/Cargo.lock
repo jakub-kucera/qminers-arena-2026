@@ -3,9 +3,5 @@
 version = 4
 
 [[package]]
-name = "arena_rs"
-version = "0.1.0"
-
-[[package]]
 name = "arena_sim"
 version = "0.1.0"
