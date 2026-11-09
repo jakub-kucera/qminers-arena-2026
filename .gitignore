@@ -81,3 +81,6 @@ logs/*
 !logs/.gitkeep
 *.egg-info/
 .ruff_cache/
+
+# The organisers' published tapes (validation, private, fair price, regimes): theirs, not redistributed here
+market_data/
