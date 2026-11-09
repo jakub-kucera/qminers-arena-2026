@@ -1,4 +1,5 @@
 import textwrap
+from pathlib import Path
 
 import pytest
 
@@ -9,6 +10,8 @@ from arena.scenario import Rival, Scenario, config_for, parse_scenario, plain, r
 RIVAL = "python/bots/prosperity/rivals/sniper.py"
 
 
+@pytest.mark.skipif(not (Path(__file__).parents[2] / RIVAL).exists(),
+                    reason="the Prosperity rival bots are in the prep repository")
 def test_a_scenario_changes_only_the_settings_it_names():
     s = parse_scenario(f"tight:match=worse,resting,queue=prob,power=2,fill=0.7,seed=3,vs={RIVAL}@EDGE=2,vs={RIVAL}")
     base = EngineConfig(resting=False, queue=QueueModel.BACK)

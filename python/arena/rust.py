@@ -67,8 +67,11 @@ def build() -> None:
 
 
 def twins() -> dict[str, dict]:
-    """rust/twins.json: each Python file with a Rust port, by its path from the repo root."""
-    return json.loads(TWINS.read_text())
+    """rust/twins.json: each Python file with a Rust port, by its path from the repo root.
+
+    The hackathon repository has no twins.json: the Prosperity-era Rust twins (the crate arena_rs) live in the prep
+    repository, so here no bot has a twin and every run uses the Python engine."""
+    return json.loads(TWINS.read_text()) if TWINS.exists() else {}
 
 
 @functools.lru_cache(maxsize=None)
