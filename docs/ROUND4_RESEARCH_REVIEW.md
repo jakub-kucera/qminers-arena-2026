@@ -238,7 +238,7 @@ decisions; offline markout is just a screen. Keep an unchanged baseline fallback
 If classification improves only accuracy or log loss, with no stable executable PnL,
 stop. This remains a proposal: no classifier was trained in this review.
 
-The subsequent [wiki transfer review](../references/wiki/concepts/arena-event-models.md)
+The subsequent [wiki transfer review](../docs/research/arena-event-models.md)
 connects this experiment to typed event histories and MRR sign surprise, and records
 why generic quoting, raw OFI, a new latent filter and synthetic RL are lower priority.
 It also incorporates R4-FA (main d95ab9e): the earlier section 3's fresh-placement

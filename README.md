@@ -50,18 +50,27 @@ dropped, is in [`IDEAS.md`](IDEAS.md) with its command and numbers; each round's
 
 ## Did the forecast work?
 
-On round 4's private tape, which the final had never seen, its 400-ms forecast correlates 0.50 with the move that
-followed (R² 0.22, 4.85 million book events). Binned, it sits on the diagonal until its ±2-tick cap; beyond the cap
-are the price jumps. (The tape is rebuilt from the server's logs; our Rust twin of the final makes 1,656,080 on it
-against the server's 1,659,546.)
+After the event the organisers published the private tapes, together with the generator's own hidden fair price and
+its regime labels, so the forecast can be checked against the truth. On round 4's private tape, which the final had
+never seen, its 400-ms forecast correlates 0.50 with the move that followed (R² 0.22, 4.86 million book events).
+Binned, it sits on the diagonal until its ±2-tick cap; beyond the cap are the price jumps.
 
 ![The forecast 400-ms move against the move that followed, in 20 bins: the points lie on the diagonal from -1.4 to +1.4 ticks; at the ±2-tick cap the real moves average about ±3.6 ticks.](docs/img/forecast_calibration.png)
 
 Second by second, around a typical jump. The forecast is drawn at the time it was made *for*, so where the green line
 moves before the mid, the bot saw the move coming. The jump at 0 itself came without warning; the forecast caught up
-0.3 s later, and the position below flips with it.
+0.3 s later, and the position below flips with it. The dashed line is the generator's true hidden price: our filter's
+estimate of it (violet) was on average 0.43 ticks away from it, against 0.65 for the mid.
 
-![Twenty seconds of round 4's private tape: the mid as steps, the filter's hidden price, the forecast made 0.4 s earlier tracking or leading the mid, and below it our position switching between +100 and -100.](docs/img/jump_window.png)
+![Twenty seconds of round 4's private tape: the mid as steps, the generator's true hidden price dashed, our filter's estimate of it, the forecast made 0.4 s earlier tracking or leading the mid, and below it our position switching between +100 and -100.](docs/img/jump_window.png)
+
+Where it worked, by the generator's own regimes: through the calm, turbulent, reserve and meta stretches, 98% of the
+tape, the forecast holds at 0.51-0.61, but in the short burst and thinning episodes (2% of the tape, moves of ±5.5 to
+±15 ticks against ±0.7 to ±3.8 elsewhere) it falls to 0.27, 0.10 and nothing. Knowing the true hidden price would
+have reached 0.62 overall, a ceiling we came within 0.12 of; the winners' jump bets suggest those episodes are where
+much of the rest of the money was.
+
+![The forecast's correlation with the following move by regime: 0.51 to 0.61 in no episode, the turbulent, reserve and meta regimes; 0.27 in burst A, 0.10 in burst B and zero in thinning; reference lines at 0.50 overall and 0.62 for the true hidden price.](docs/img/forecast_by_regime.png)
 
 ## The first minutes
 
@@ -85,23 +94,40 @@ Measured on one core, the final bot on round 4's public tape (2.4 million events
 | `arena_sim`, the same bot as `ridge_maker` | 21 s | 1,029,781 | 42,139 |
 
 That is the slowest case, a 39-feature ridge refitted every second; simpler strategies ran 50-90 times faster. It
-turned a round's grid search from five cells into hundreds. From round 3 on, every candidate was chosen in Rust and
+turned a round's grid search from five cells into hundreds. On the private tapes the organisers published after the
+event, the port reproduces the server's scores exactly:
+
+| Final | Private PnL, server | Our run on the published tape | Fills |
+|---|---:|---:|---:|
+| R1-C12 (their Python simulator) | 602,526.53 | 602,526.53 | 20,662 |
+| R2-L9 (`arena_sim`) | 742,470 | 742,470 | 6,979 |
+| R3-F5 (`arena_sim`) | 827,253 | 827,253 | 120,505 |
+| R4-W2 (`arena_sim`) | 1,659,546 | 1,659,546 | 94,026 |
+ From round 3 on, every candidate was chosen in Rust and
 checked once in Python before its upload ([`rust/README.md`](rust/README.md)).
 
 ## What is where
 
-| Path | What it is |
-|---|---|
-| [`RESULTS.md`](RESULTS.md) | Standings, the final bots and their lineage, every upload, what the field's curves showed |
-| `data/arena/round<N>/` | Each round: `HANDOVER.md` (the round's record), `CANDIDATES.md`, the leaderboard, the server's results for every upload and private run |
-| `data/arena/gen/` | The tape generator we recovered from the data: fitted parameters per round and its checks |
-| `python/bots/qminers/` | The bot template (`ArenaBot`), its strategy families and every round's candidates |
-| `python/experiments/day/` | The round tools: `round_start`, `family_rust`, `latent_filter`, `gen_identify`, `tape_gen`, `warm_embed`, ... ([README](python/experiments/README.md)) |
-| `python/arena/` | Our engine and command-line tools: `qgrid` on the organisers' simulator, `qsim_rust` on its Rust port, `validate` for the sandbox's rules |
-| `rust/arena_sim/` | The Rust port of the simulator and our strategies in it |
-| `codex_repo/` | Our second repository, a Codex session's, with Přemysl's research branch, imported with its history |
-| [`docs/`](docs/) | How to run the tools ([`tools.md`](docs/tools.md)), the day's playbook as used ([`day/`](docs/day/)), how the engine fits together ([`architecture.md`](docs/architecture.md)) |
-| `third_party/qminers-starter/simulator/`, `third_party/qminers-starter/explorer/`, `third_party/qminers-starter/strategies/`, `third_party/qminers-starter/README.md` | The organisers' starter: their exchange simulator, backtest explorer, examples and README |
+```
+RESULTS.md               standings, the final bots and their lineage, every upload
+IDEAS.md                 every idea tested during the event, with its command and numbers
+python/
+  bots/qminers/          the bot template (ArenaBot), its strategy families, candidates/round0..round4/
+  experiments/           the round tools by theme: rounds/ tape/ generator/ filter/ maker/ taker/ audits/
+  arena/                 our engine and command-line tools: qgrid, qsim_rust, validate
+rust/arena_sim/          the Rust port of the exchange simulator, and our strategies in it
+data/arena/
+  round1..round4/        each round's record: HANDOVER.md, CANDIDATES.md, leaderboard, the server's results
+  gen/                   the tape generator we recovered from the data: fitted parameters, checks
+  runs/                  the event's run outputs: grid tables, run summaries, the policy search
+docs/                    tools.md, postmortem.md, day/ (the playbook as used), research/, img/
+codex_repo/              our second repository, a Codex session's, with Přemysl's research branch
+third_party/
+  qminers-starter/       the organisers' starter: their simulator, explorer, examples and README
+```
+
+Start with [`RESULTS.md`](RESULTS.md), the [candidates' index](python/bots/qminers/candidates/README.md), the
+[round tools' index](python/experiments/README.md) and [`docs/tools.md`](docs/tools.md) for the commands.
 
 ## Running it
 
@@ -137,8 +163,8 @@ Team ThatsMyQuant: Jakub Kučera and Přemysl Pilař. Our code and documents are
 ([`LICENSE`](LICENSE)).
 
 The Arena, its exchange simulator, backtest explorer, sample data and round tapes are by Qminers. Their starter
-(`third_party/qminers-starter/simulator/`, `third_party/qminers-starter/explorer/`, `third_party/qminers-starter/strategies/`, `third_party/qminers-starter/README.md`, `data/sample.csv.gz`, and the copies of these in
-`codex_repo/`, with `codex_repo/docs/ORGANIZER_GUIDE.md`) is included as they distributed it to the teams and is not covered
+(`third_party/qminers-starter/`: the simulator, explorer, examples and their README; `data/sample.csv.gz`; and the
+copies of these in `codex_repo/`, with `codex_repo/docs/ORGANIZER_GUIDE.md`) is included as they distributed it to the teams and is not covered
 by our licence; the round tapes are not included. `rust/arena_sim/` is our port of their simulator. The HTML reports
 in `codex_repo/research/` embed third-party charting code under its own licence. Other teams appear as "Team N", N
 their place in the overall standings. The charts come from `python -m experiments.rounds.readme_charts`.

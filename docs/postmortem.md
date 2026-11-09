@@ -39,6 +39,24 @@ server's order (Spearman 0.974), and its fitted parameters per round are in `dat
 other teams had reverse-engineered the simpler generator of rounds 1 and 2 already. The winner of rounds 2-4 appears
 to have bet on the jumps: its round-2 curve gained about 148k in a single 25-s step where ours gained 18k.
 
+## What the published data confirmed
+
+On 9 Nov the organisers published every round's validation and private tapes, with the generator's hidden fair price
+and its regime labels. Checked against them:
+
+- **Our tooling was exact.** On the published private tapes the four finals reproduce the server's private scores to
+  the unit: R1-C12 in the organisers' simulator, R2-L9, R3-F5 and R4-W2 in our Rust port.
+- **The hidden price was real, and our filter found it.** Over round 4's private tape our filter's estimate was on
+  average 0.43 ticks from the true fair price, against 0.65 for the mid. Knowing the true price exactly would have given
+  the 400-ms forecast a correlation of 0.62 with the move; ours reached 0.50.
+- **The regimes and the jumps were as we had inferred.** The labels name a turbulent regime (a quarter of round 4's
+  private tape) and short burst episodes, and every one of the 410 bursts across the nine tapes is preceded by a
+  3-second "thinning" episode: the precursor we had measured from the book, the spread widening about 2 s before a
+  jump. Two families of episodes we never separated ("reserve" and "meta") turned out harmless: the forecast held at
+  0.55-0.57 in both.
+- **The forecast failed exactly in the bursts.** Its correlation was 0.27 and 0.10 in the two burst types and zero in
+  thinning, the 2% of the tape with the largest moves: the part of the market the winners appear to have bet on.
+
 ## Why the prep did not transfer
 
 We prepared for a month on IMC Prosperity data as a stand-in for an unknown API: several products, a market of bots

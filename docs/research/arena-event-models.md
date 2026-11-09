@@ -62,8 +62,8 @@ The raw sections were read; this is support for a generator diagnostic, not an a
 
 - **The older wiki says event types/queues may be unavailable.** Those observations
   concern Prosperity's snapshot interface. The present Arena has persistent IDs,
-  price-time priority and callbacks with snapshots and trades (`STARTER.md:32`,
-  `STARTER.md:77`). That makes event-based methods more plausible, while visible-depth
+  price-time priority and callbacks with snapshots and trades (`third_party/qminers-starter/README.md:32`,
+  `third_party/qminers-starter/README.md:77`). That makes event-based methods more plausible, while visible-depth
   censoring and unfilled market orders still limit what the live bot can reconstruct.
 - **No clustering on Prosperity is not a negative result for round 4.** The generator
   work measures consecutive F orders on the same side at about .539 on R4 versus .501
@@ -90,7 +90,7 @@ The raw sections were read; this is support for a generator diagnostic, not an a
   rejects the earlier fresh-placement change-point proposal on R4; it is not a full
   strategy-PnL result. A residual-calibration detector and a market-order sign-surprise
   test are different proposals and must not be confused with that rejected filter fix.
-  Source: IDEAS row "R4-FA", `python/experiments/day/filter_audit.py:1`.
+  Source: IDEAS row "R4-FA", `python/experiments/filter/filter_audit.py:1`.
 
 ## What it means for our code
 
@@ -103,9 +103,9 @@ such as ask cancellation followed by buying may carry different information from
 the same counts arriving in the opposite order; this is a hypothesis to test.
 
 F5 already has exponentially decayed trade flow at 500 ms and fresh-order statistics
-(`python/bots/qminers/candidates/r3_F5_jump_bar.py:38`,
-`python/bots/qminers/candidates/r3_F5_jump_bar.py:296`,
-`python/bots/qminers/candidates/r3_F5_jump_bar.py:366`). More decays alone are therefore
+(`python/bots/qminers/candidates/round3/r3_F5_jump_bar.py:38`,
+`python/bots/qminers/candidates/round3/r3_F5_jump_bar.py:296`,
+`python/bots/qminers/candidates/round3/r3_F5_jump_bar.py:366`). More decays alone are therefore
 an ablation, not a new edge. Compare (a) current features, (b) typed fast/slow histories,
 and (c) a few cross-event interactions or an order-aware short history, at equal model
 capacity. The classifier target and chronological evaluation are specified in

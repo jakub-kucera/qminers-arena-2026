@@ -1,21 +1,23 @@
-"""The README's charts: the forecast against what happened, a jump second by second, and each round's private PnL
-against the field's.
+"""The README's charts: the forecast against what happened, a jump second by second, the forecast by the generator's
+regime, and each round's private PnL against the field's.
 
 usage (from the repository's root; matplotlib comes with the analysis group):
-  # 1. the forecast's numbers, from R4-W2's Rust twin on round 4's private tape rebuilt from the server's logs
-  uv run python -m experiments.tape.tape_from_logs data/arena/round4/r4_W2_warm10k_private_res \\
-      data/arena/round4/round4_public.csv data/arena/round4/round4_private_rebuilt.csv
+  # 1. the forecast's numbers: R4-W2's Rust twin on round 4's private tape, as the organisers published it after the
+  #    event with the generator's fair price and regimes (market_data/, not in this repository). The twin makes the
+  #    server's 1,659,546 on it exactly.
   RIDGE_WARM=data/arena/round4/r4_stats.txt RIDGE_PRED_LOG=PRED.csv RIDGE_PRED_EXTRA=1 uv run python -m arena.qsim_rust \\
-      ridge_maker data/arena/round4/round4_private_rebuilt.csv <F5's --set line, experiments.rounds.family_rust.F5> \\
+      ridge_maker market_data/round4/round4_private.csv <F5's --set line, experiments.rounds.family_rust.F5> \\
       --set PRIOR_MASS=10000 --threads 1
-  uv run python -m experiments.rounds.readme_charts forecast PRED.csv        # writes docs/img/data/forecast.json
+  uv run python -m experiments.rounds.readme_charts forecast PRED.csv \\
+      --fair market_data/round4/round4_private.fair.csv --regime market_data/round4/round4_private.regime.csv
   # 2. the charts (from the committed docs/img/data/forecast.json, data/arena/field_curves.json and the private runs'
   #    pnl.csv); macOS's Avenir Next and Menlo when present, else DejaVu
   uv run --group analysis python -m experiments.rounds.readme_charts render
 
-The tapes are the organisers' and are not in the repository; step 2 needs only committed files. The prediction log has
-a row per book event: time (µs), mid, prediction (the 400-ms mid move, ticks), skew, spread, position, the latent
-filter's gap and the quote switch's speed.
+Step 2 needs only committed files. The prediction log has a row per book event: time (µs), mid, prediction (the 400-ms
+mid move, ticks), skew, spread, position, the latent filter's gap and the quote switch's speed. Without the published
+tapes, step 1 also runs on a private tape rebuilt from the server's logs (experiments.tape.tape_from_logs), within
+0.21% of the server's PnL, and without --fair / --regime.
 """
 
 from __future__ import annotations
@@ -34,7 +36,23 @@ PRIVATE = {1: "round1/r1_C12_v6_private_res", 2: "round2/r2_L9_taker_huber_priva
 FINALS = {1: "R1-C12", 2: "R2-L9", 3: "R3-F5", 4: "R4-W2"}
 
 
-def forecast(pred_log: str, out: Path, bins: int = 20) -> None:
+REGIME_NAMES = {"none": "no episode", "s3_turbulent": "turbulent", "reserve_A": "reserve A", "reserve_B": "reserve B",
+                "meta_A": "meta A", "meta_B": "meta B", "s2_burst_A": "burst A", "s2_burst_B": "burst B",
+                "s2_thinning": "thinning"}
+
+
+def _regime_labels(t, path):
+    """Each event's innermost active episode (episodes nest: bursts inside turbulent stretches), else 'none'."""
+    import csv
+    import numpy as np
+    rows = [(float(a) * 1e6, float(b) * 1e6, lab) for a, b, lab in list(csv.reader(open(path)))[1:]]
+    labels = np.full(len(t), "none", dtype=object)
+    for start, end, lab in sorted(rows, key=lambda r: r[0] - r[1]):  # longest first, the shortest painted last
+        labels[np.searchsorted(t, start, side="left"):np.searchsorted(t, end, side="left")] = lab
+    return labels
+
+
+def forecast(pred_log: str, out: Path, fair_path: str | None = None, regime_path: str | None = None, bins: int = 20) -> None:
     import numpy as np
 
     a = np.loadtxt(pred_log, delimiter=",", usecols=(0, 1, 2, 5, 6))
@@ -48,6 +66,27 @@ def forecast(pred_log: str, out: Path, bins: int = 20) -> None:
     order = np.argsort(p, kind="stable")
     groups = np.array_split(order, bins)  # equal-count bins (the cap at +-2 ties many values, so not by quantile edges)
     table = [{"pred": float(p[g].mean()), "real": float(r[g].mean()), "n": int(len(g))} for g in groups]
+    result = {"events": int(len(t)), "used": int(ok.sum()), "corr": round(corr, 4), "r2": round(r2, 4), "bins": table}
+
+    fair = None
+    if fair_path:  # the generator's own fair price, published after the event
+        f = np.loadtxt(fair_path, delimiter=",", skiprows=1)
+        fair = f[np.clip(np.searchsorted(f[:, 0] * 1e6, t, side="right") - 1, 0, len(f) - 1), 1]
+        latent = mid + gap
+        result["fair"] = {"mid_mae": round(float(np.mean(np.abs(mid - fair))), 4),
+                          "filter_mae": round(float(np.mean(np.abs(latent - fair))), 4),
+                          "oracle_corr": round(float(np.corrcoef((fair - mid)[ok], r)[0, 1]), 4)}
+    if regime_path:
+        lab = _regime_labels(t, regime_path)[ok]
+        rows = []
+        for name in REGIME_NAMES:
+            m = lab == name
+            if m.sum() < 1000:
+                continue
+            pp, rr = p[m], r[m]
+            rows.append({"regime": name, "label": REGIME_NAMES[name], "share": round(float(m.mean()), 4),
+                         "corr": round(float(np.corrcoef(pp, rr)[0, 1]), 4), "move_sd": round(float(rr.std()), 3)})
+        result["regimes"] = rows
 
     # the window: a typical jump (3+ ticks within 0.2 s, IDEAS.md's definition), the median-sized one among those after
     # 20 s without another (the kind the generator announced), from 10 s before it to 10 s after, on a 50-ms grid
@@ -72,12 +111,15 @@ def forecast(pred_log: str, out: Path, bins: int = 20) -> None:
               "forecast": [round(float(mid[i] + pred[i]), 3) for i in made],  # made 0.4 s earlier, for this time
               "latent": [round(float(mid[i] + gap[i]), 3) for i in at],
               "position": [int(x) for x in pos[at]]}
+    if fair is not None:
+        window["fair"] = [round(float(fair[i]), 3) for i in at]
+    result["window"] = window
+    result["source"] = ("R4-W2's Rust twin on round 4's private tape as the organisers published it (the server's "
+                        "1,659,546 exactly)" if fair_path else "R4-W2's Rust twin on a private tape rebuilt from the logs")
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps({"source": "R4-W2's Rust twin on round 4's private tape rebuilt from the server's logs "
-                                         "(1,656,080 there against the server's 1,659,546)",
-                               "events": int(len(t)), "used": int(ok.sum()), "corr": round(corr, 4), "r2": round(r2, 4),
-                               "bins": table, "window": window}, indent=1) + "\n")
-    print(f"{ok.sum():,} of {len(t):,} events; corr {corr:.3f}, R^2 {r2:.3f}; window at {t0 / 1e6:,.1f} s")
+    out.write_text(json.dumps(result, indent=1) + "\n")
+    print(f"{ok.sum():,} of {len(t):,} events; corr {corr:.3f}, R^2 {r2:.3f}; window at {t0 / 1e6:,.1f} s;",
+          result.get("fair"), [(x["label"], x["corr"]) for x in result.get("regimes", [])])
 
 
 def _private_pnl_at(r: int, step: int = 200) -> list[float]:
@@ -238,8 +280,8 @@ def render() -> None:
     ax.set_ylabel("the move that followed, ticks")
     _mono(ax)
     _heading(fig, "The forecast against what happened",
-             f"R4-W2 on round 4's private tape, which it had never seen: {fc['used'] / 1e6:.2f}M book events in 20 "
-             f"equal bins · correlation {fc['corr']:.2f} · R² {fc['r2']:.2f}", y=0.96)
+             f"R4-W2 on round 4's private tape, which it had never seen · {fc['used'] / 1e6:.2f}M book events in 20 bins "
+             f"· correlation {fc['corr']:.2f} · R² {fc['r2']:.2f}", y=0.96)
     fig.subplots_adjust(top=0.82, bottom=0.11, left=0.1, right=0.97)
     fig.savefig(IMG / "forecast_calibration.png", dpi=180)
     plt.close(fig)
@@ -249,6 +291,8 @@ def render() -> None:
     fig, (ax, axp) = plt.subplots(2, 1, sharex=True, figsize=(7.4, 5.2), gridspec_kw={"height_ratios": [3, 1], "hspace": 0.12})
     ax.plot(w["t_s"], w["mid"], color=STYLE["mid"], lw=1.3, drawstyle="steps-post", zorder=3)
     ax.plot(w["t_s"], w["latent"], color=STYLE["violet"], lw=1.3, alpha=0.9, zorder=2)
+    if "fair" in w:
+        ax.plot(w["t_s"], w["fair"], color=STYLE["ink"], lw=1.1, ls=(0, (2, 2)), zorder=5)
     line, = ax.plot(w["t_s"], w["forecast"], color=STYLE["us"], lw=1.9, zorder=4)
     _glow(line)
     ax.axvline(0, color=STYLE["axis"], lw=1, zorder=1)
@@ -265,11 +309,53 @@ def render() -> None:
     _heading(fig, "A typical jump, second by second",
              f"Round 4's private tape: the median-sized jump after 20 s without one ({abs(w['jump_ticks']):.0f} ticks "
              f"in 0.2 s, {w['t0_s']:.0f} s in)", y=0.965)
-    _legend(fig, [(STYLE["mid"], "the mid", 1.3), (STYLE["us"], "the forecast, made 0.4 s earlier", 1.9),
-                  (STYLE["violet"], "the filter's hidden price", 1.3)], y=0.82)
-    fig.subplots_adjust(top=0.77, bottom=0.1, left=0.11, right=0.97)
+    items = [(STYLE["mid"], "the mid", 1.3), (STYLE["us"], "the forecast, made 0.4 s earlier", 1.9),
+             (STYLE["violet"], "our filter's hidden price", 1.3)]
+    _legend(fig, items, y=0.82)
+    if "fair" in w:
+        from matplotlib.lines import Line2D
+        leg = fig.legend([Line2D([], [], color=STYLE["ink"], lw=1.1, ls=(0, (2, 2)))],
+                         ["the generator's true hidden price (published after the event)"], loc="center left",
+                         bbox_to_anchor=(0.012, 0.785), fontsize=8.5)
+        for text in leg.get_texts():
+            text.set_color(STYLE["sub"])
+    fig.subplots_adjust(top=0.74, bottom=0.1, left=0.11, right=0.97)
     fig.savefig(IMG / "jump_window.png", dpi=180)
     plt.close(fig)
+    # 5. the forecast by the generator's regime (its labels, published after the event)
+    if fc.get("regimes"):
+        rows = sorted(fc["regimes"], key=lambda r: r["corr"])
+        fig, ax = plt.subplots(figsize=(7.4, 4.6))
+        ys = np.arange(len(rows))
+        ax.barh(ys, [r["corr"] for r in rows], height=0.62, color=STYLE["us"], zorder=3)
+        ax.set_yticks(ys, [r["label"] for r in rows])
+        for y, r in zip(ys, rows):
+            ax.text(1.03, y, f"{r['corr']:5.2f}   {r['share']:5.1%}   ±{r['move_sd']:.1f}", transform=ax.get_yaxis_transform(),
+                    va="center", fontsize=8, color=STYLE["sub"], fontfamily=STYLE["mono"], clip_on=False)
+        ax.text(1.03, len(rows) - 0.45, " corr   time   move", transform=ax.get_yaxis_transform(), fontsize=7.5,
+                color=STYLE["sub"], fontfamily=STYLE["mono"], clip_on=False)
+        for x, label, ypos in ((fc["corr"], f"overall {fc['corr']:.2f}", len(rows) - 0.35),
+                               (fc["fair"]["oracle_corr"], f"the true hidden price {fc['fair']['oracle_corr']:.2f}", len(rows) - 0.35)):
+            ax.axvline(x, color=STYLE["sub"], lw=1, ls=(0, (3, 3)), zorder=2)
+        ax.text(fc["corr"] - 0.01, len(rows) - 0.45, f"overall {fc['corr']:.2f}", ha="right", fontsize=7.5, color=STYLE["sub"])
+        ax.text(fc["fair"]["oracle_corr"] + 0.008, len(rows) - 0.45, f"true price {fc['fair']['oracle_corr']:.2f}",
+                fontsize=7.5, color=STYLE["sub"])
+        ax.set_xlim(-0.05, 0.75)
+        ax.set_ylim(-0.6, len(rows) - 0.1)
+        ax.grid(True, axis="x")
+        ax.grid(False, axis="y")
+        ax.set_xlabel("correlation of the 400-ms forecast with the move that followed")
+        ax.tick_params(axis="y", labelsize=8.5, labelcolor=STYLE["ink"])
+        _mono(ax)
+        for label in ax.get_yticklabels():
+            label.set_fontfamily(STYLE["sans"])
+        _heading(fig, "Where the forecast worked",
+                 "R4-W2 on round 4's private tape, by the generator's own regime labels (published after the event)", y=0.96)
+        fig.text(0.02, 0.025, "time: the share of the tape in that regime · move: the sd of the 400-ms move that followed, ticks",
+                 fontsize=7.5, color=STYLE["sub"])
+        fig.subplots_adjust(top=0.83, bottom=0.15, left=0.15, right=0.74)
+        fig.savefig(IMG / "forecast_by_regime.png", dpi=180)
+        plt.close(fig)
     print(f"charts in {IMG.relative_to(ROOT)}/")
 
 
@@ -278,11 +364,13 @@ def main(argv=None) -> int:
     sub = parser.add_subparsers(dest="cmd", required=True)
     f = sub.add_parser("forecast", help="the forecast's numbers from a RIDGE_PRED_LOG file")
     f.add_argument("pred_log")
+    f.add_argument("--fair", help="the generator's fair price (market_data/round4/round4_private.fair.csv)")
+    f.add_argument("--regime", help="the generator's regime episodes (market_data/round4/round4_private.regime.csv)")
     f.add_argument("--out", default=str(DATA / "forecast.json"))
     sub.add_parser("render", help="the charts, from the committed data")
     args = parser.parse_args(argv)
     if args.cmd == "forecast":
-        forecast(args.pred_log, Path(args.out))
+        forecast(args.pred_log, Path(args.out), args.fair, args.regime)
     else:
         render()
     return 0
