@@ -62,14 +62,18 @@ and its regime labels. Checked against them:
 We prepared for a month on IMC Prosperity data as a stand-in for an unknown API: several products, a market of bots
 that react, market making around a fair value. The Arena was one instrument, a fixed tape that never reacted to us,
 and from round 2 on a market where volatility per lot traded made resting quotes lose (our round-1 makers lost money
-on round 2's tape, every one of them). What carried over was not the strategies but the habits: learn online from
-the tape rather than tune constants, check every change on held-out data, and record everything (the prep repository
-has that work).
+on round 2's tape, every one of them). It also cost the first hours. In the playground the session working from the
+prepared repository lost 7,598 with its first bot, while a second session given only the organisers' starter scored
++225,926, and round 1's final line came from the clean start. What carried over was not the strategies but the
+habits: learn online from the tape rather than tune constants, check every change on held-out data, and record
+everything (the prep repository has that work). [`decisions.md`](decisions.md) lists the calls Jakub made during the
+event, from his prompts.
 
 ## What we would do differently
 
-- **Identify the generator in the first hour of round 1**, not in round 3: the hidden price, its impact and its
-  regimes decide which strategies can work, and the filter that tracks the price was the biggest single gain.
+- **Identify the generator in the first hour of round 1**, not in round 3. Jakub asked for it at 15:20 in round 1,
+  but the first generator only tested candidates until round 3. The hidden price, its impact and its regimes decide
+  which strategies can work, and the filter that tracks the price was the biggest single gain.
 - **Trust structure over small numbers.** Most local gains of 10-25k on the public tape did not survive the
   validation tape (all three such uploads in round 4 lost 16-28k there); the steps that held were structural: the
   taker (round 2), the filter (round 3), the in-flight cancels with the hedge (round 1).

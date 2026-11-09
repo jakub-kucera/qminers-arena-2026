@@ -10,8 +10,8 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).parents[2]
-FRONT = ["README.md", "RESULTS.md", "IDEAS.md", "CLAUDE.md", "docs/postmortem.md", "docs/tools.md", "docs/day/README.md",
-         "python/experiments/README.md", "rust/README.md"]
+FRONT = ["README.md", "RESULTS.md", "IDEAS.md", "CLAUDE.md", "docs/postmortem.md", "docs/decisions.md", "docs/tools.md",
+         "docs/day/README.md", "python/experiments/README.md", "rust/README.md"]
 
 
 def text(name: str) -> str:

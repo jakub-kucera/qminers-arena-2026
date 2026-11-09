@@ -107,6 +107,56 @@ event, the port reproduces the server's scores exactly:
 From round 3 on, every candidate was chosen in Rust and checked once in Python before its upload
 ([`rust/README.md`](rust/README.md)).
 
+## How we played it
+
+I'm Jakub, a software engineer in Prague with an MSc in machine learning (Knowledge Engineering, FIT ČVUT). I had
+prepared for a month on IMC Prosperity data. During the event AI agents wrote most of the code: Claude Code in this
+repository, up to five at a time, and Codex in a second one. We used them as a team: we chose what they studied, what
+they built and what they checked, and decided ourselves what to upload.
+
+The prep turned out to be built for the wrong market, and in the playground it pulled us toward hand-tuned market
+makers. So we started a second agent on the organisers' bare starter and set the two against each other, each given
+the other's best score to beat. The clean one came back with an online ridge regression that learns the market as the
+tape plays, and we asked whether to rebuild everything around learning models. The measurement backed it: frozen, the
+same model made 293k on round 1's tape instead of 554k. We switched, and that family carried all four rounds.
+
+We kept sending the agents back to the data itself. In round 1 we asked them to study the whole tape and the engine,
+to work out how the tapes were made. In round 2 we had one agent do a deep statistical study of the tape. The models
+it proposed were all makers, so we gave it the server's verdict: makers were earning next to nothing on the validation
+tape, while takers made 376-486k. The taker it built next, with liquidity features, went from 490k to 772k there. In
+rounds 3 and 4 we asked for a statistical analysis within the first half hour of the new tape.
+
+The tape generator was our biggest lead, and we were slow with it. The first version, from round 1's afternoon, only
+served to test bots. After round 2 we had the agents plan its reverse-engineering properly. Its first finding, a
+hidden price that new orders gather around, became a filter worth +20% on round 3's validation tape. From then on the
+generator had a session of its own, next to the one improving the model. In hindsight it belonged in the first hour.
+
+Left alone, the agents drifted into small parameter tweaks ("all this seems like incremental changes", as I put it in
+round 3). So we looked at the results ourselves and brought them questions. After each round we had them read the
+other teams' PnL curves off the leaderboard. In round 1 everyone made steady markets and the winners had a steeper
+slope; in round 2 the winner made 148k in one step at a price jump. We pointed them at the stretches where our round-2
+taker lost and asked which family we had under-explored. The answer, quoting only in calm markets, became R2-L8. In
+the organisers' explorer we saw the spread open up before the drops and asked whether our models used it. The data
+published after the event shows the book thinning before every one of the 410 bursts.
+
+We didn't take good numbers on trust. Candidates were judged on the round's own tape only, and when a result came back
+suspiciously fast we had it re-run. Every upload was a measurement too. In round 4 we set one agent to audit the
+other's experiments. It found a feature mask that dropped the wrong columns, and a switch that silently started the
+model cold.
+
+We pushed the model as well. We asked for a pretrained network within the upload's 1 MB limit, training on generated
+tapes, a warm start, Kalman filtering, kernel methods (tried as random Fourier features) and feature selection by
+p-value. Only the warm start reached the final; nothing else beat the online ridge. The forecast was saturated, and
+the 100-lot limit was what bound our PnL. What we didn't do was bet. The winner went over the limit at jumps; our jump
+bets lost on our simulator, so we stayed inside it. The prompts behind these calls, with their times, are in
+[`docs/decisions.md`](docs/decisions.md).
+
+The organisers required a commit at least every 30 minutes, so the history shows the 24 hours as they happened: every
+candidate, every upload, every dropped idea. [`docs/day/`](docs/day/) holds the runbook and the prompts the agents
+worked from. The month of preparation is in [qminers-arena-prep](https://github.com/jakub-kucera/qminers-arena-prep).
+What the Arena's market turned out to be, and what we would do differently, is in
+[`docs/postmortem.md`](docs/postmortem.md).
+
 ## What is where
 
 ```
@@ -146,24 +196,12 @@ uv run exchange-simulator --strategy python/bots/qminers/candidates/round4/r4_W2
 uv run python -m experiments.rounds.family_rust data/arena/round4/round4_public.csv  # the round-3 bots in Rust, ~2 min
 ```
 
-## How we worked
-
-Two people and a lot of AI. Most of the code and analysis was written by Claude Code agents, up to five at a time,
-each in its own git worktree and merged back as it finished; a Codex session worked in a second repository from the
-organisers' clean starter (`codex_repo/`), where Přemysl also ran his own research branch. The organisers required a
-commit at least every 30 minutes, so the history shows the 24 hours as they happened: every candidate, every upload,
-every dropped idea. [`docs/day/`](docs/day/) holds the runbook and the prompts the agents worked from.
-
-The month of preparation before the event, built on IMC Prosperity data as a stand-in for the unknown API, is in
-[qminers-arena-prep](https://github.com/jakub-kucera/qminers-arena-prep). What the Arena's market turned out to be,
-and what we would do differently, is in [`docs/postmortem.md`](docs/postmortem.md).
-
 ## Credits and licence
 
-Team ThatsMyQuant: Jakub Kučera and Přemysl Pilař. Jakub ran the event: he set each round's direction, made all 40
-uploads of rounds 1-4 and worked rounds 3 and 4 alone. Přemysl joined for parts of rounds 1 and 2. His research
-branch in the second repository covered the round-1 models, the economics of the position penalty and a round-2
-composite, and his improved taker became round 2's final bot (R2-L9).
+Team ThatsMyQuant: me (Jakub Kučera) and Přemysl Pilař. I ran the event: I set each round's direction, made all 40
+uploads of rounds 1-4 and worked rounds 3 and 4 alone. Přemysl joined for parts of rounds 1 and 2. His research branch
+in the second repository covered the round-1 models, the economics of the position penalty and a round-2 composite,
+and his improved taker became round 2's final bot (R2-L9).
 
 Our code and documents are under the MIT licence ([`LICENSE`](LICENSE)).
 

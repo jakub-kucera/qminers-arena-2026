@@ -4,7 +4,8 @@ Team ThatsMyQuant's record of the Qminers Algo Trade Arena (7-8 Nov 2026): four 
 round, scored on a private tape. The event is over; this repository is the record, not live development.
 
 - `README.md` is the front page; `RESULTS.md` the standings, each round's final bot and every upload;
-  `docs/postmortem.md` what the market turned out to be.
+  `docs/postmortem.md` what the market turned out to be; `docs/decisions.md` Jakub's calls during the event, from his
+  prompts.
 - Bots: `python/bots/qminers/candidates/round<N>/` (indexed in its README, the finals in bold); the engine and tools:
   `python/arena/` and `python/experiments/<theme>/` (rounds, tape, generator, filter, maker, taker, audits;
   `docs/tools.md` says how to run them); the Rust port of the Arena's simulator: `rust/arena_sim/`; the organisers'
