@@ -5,7 +5,7 @@ description = "The Qminers starter (exchange simulator and backtest explorer) an
 readme = "README.md"
 requires-python = ">=3.13,<3.14"
 dependencies = [
-    # The starter's (STARTER.md), pinned as they pinned them: the evaluation sandbox has these versions.
+    # The starter's (third_party/qminers-starter/README.md), pinned as they pinned them: the evaluation sandbox has these versions.
     "pydantic>=2.8.0",
     "numpy==2.5.4",
     "pandas==3.0.6",
@@ -39,14 +39,14 @@ package = true
 requires = ["hatchling>=1.25"]
 build-backend = "hatchling.build"
 
-# The starter's packages are at the root; ours are under python/ (rust/ holds its Rust twins). The editable install
-# puts both folders on the path, so `uv run exchange-simulator ...` and `uv run python -m arena.backtest ...` both work
-# from the repository's root. Our engine still needs only the standard library.
+# The organisers' starter (their simulator and explorer packages) is under third_party/qminers-starter/, ours under
+# python/. The editable install puts both on the path, so `uv run exchange-simulator ...` and
+# `uv run python -m arena.backtest ...` both work from the repository's root. Our engine needs only the standard library.
 [tool.hatch.build]
-dev-mode-dirs = [".", "python"]
+dev-mode-dirs = [".", "python", "third_party/qminers-starter"]
 
 [tool.hatch.build.targets.wheel]
-packages = ["simulator", "explorer", "python/arena", "python/experiments"]
+packages = ["third_party/qminers-starter/simulator", "third_party/qminers-starter/explorer", "python/arena", "python/experiments"]
 
 [tool.pytest.ini_options]
 testpaths = ["python/tests"]

@@ -27,7 +27,7 @@ READ FIRST (in this order, skim the rest)
   r3_public_stats; draw / score / rank / fitstats / jumpflow / search / stats), latent_filter.py (the HMM filter of
   the latent price, with --latent for the true path), tape_character.py, tape_from_logs.py, family_rust.py, and
   python/arena/qsim_rust.py (the Rust simulator: about 10 s a tape a bot).
-- STARTER.md: the tape format, the simulator's rules, the bot API.
+- third_party/qminers-starter/README.md: the tape format, the simulator's rules, the bot API.
 
 THE DATA (absolute paths; data/ is gitignored and lives in the main checkout)
 Real tapes (order by order: Time, Operation, OrderId, Side, Volume, Price, Lifespan G/F):

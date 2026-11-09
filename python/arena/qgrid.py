@@ -1,4 +1,4 @@
-"""Grid search on the Arena's own exchange simulator (`simulator/` at the root, STARTER.md).
+"""Grid search on the Arena's own exchange simulator (`third_party/qminers-starter/simulator/`, the organisers' starter, third_party/qminers-starter/README.md).
 
     uv run python -m arena.qgrid BOT DATA.csv [DATA2.csv ...] --grid PARAMS.ASSET.make_edge=0,1,2 \
         --grid PARAMS.ASSET.make_size=5,10 [--set PATH=VALUE ...] [--jobs N] [--holdout 0.25] \

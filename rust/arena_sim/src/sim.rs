@@ -1,4 +1,4 @@
-//! `simulator/simulator.py`'s `OrderBook` and `ExchangeSimulator`, step for step (the run and CSV loggers and
+//! `third_party/qminers-starter/simulator/simulator.py`'s `OrderBook` and `ExchangeSimulator`, step for step (the run and CSV loggers and
 //! the progress bar left out: this is the `--no-logs` run). Function names follow the Python's.
 
 use std::collections::{BTreeMap, HashMap, HashSet, VecDeque};

@@ -79,7 +79,7 @@ prove which bytes the portal received.
   lots, and release unfilled IOC remainder on cancellation. Two incremental
   partial fills on each side, a new-order rejection and a late cancel rejection
   pass (`:827`). This agrees with the actual `PrivateOrderEvent` contract in
-  `simulator/models.py:185` and the simulator's activation/fill notification order.
+  `third_party/qminers-starter/simulator/models.py:185` and the simulator's activation/fill notification order.
 - The one-tick spread gate and ordinary/jump take thresholds pass focused checks.
   Static upload validation passes for F5, W2, MH3 and X1R3: allowed imports,
   self-contained source, no runtime files/network/environment, under the size cap.

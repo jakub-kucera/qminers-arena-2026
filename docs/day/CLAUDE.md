@@ -1,15 +1,15 @@
 # CLAUDE.md
 
 Prep tooling for the Qminers Algo Trade Arena, a 24-hour in-person hackathon (7–8 Nov 2026): four 5-hour
-rounds, a Python bot file submitted at the end of each. The real API is the organisers' starter (`STARTER.md`).
+rounds, a Python bot file submitted at the end of each. The real API is the organisers' starter (`third_party/qminers-starter/README.md`).
 Our engine and tools were built before it on **IMC Prosperity data as a stand-in**: their results are priors.
 
 ## The Arena path (start here)
 
-`RUNBOOK.md` (one page, the day's index) → the `ON_THE_DAY.md` sections it names → `STARTER.md` and `ON_THE_DAY.md`'s
+`RUNBOOK.md` (one page, the day's index) → the `ON_THE_DAY.md` sections it names → `third_party/qminers-starter/README.md` and `ON_THE_DAY.md`'s
 "Known so far" (7 Nov) before any PARAMS; `data/arena/round*/` holds each round's `HANDOVER.md` and `CANDIDATES.md`;
 `KICKOFF_PROMPT.md` is what the user pastes to start a session; `ARCHITECTURE.md`'s "The Arena path" says how it fits.
-- Their `simulator/`, `explorer/`, `strategies/`, `data/sample.csv.gz` at the root, as they wrote them: the engine.
+- Their `third_party/qminers-starter/simulator/`, `third_party/qminers-starter/explorer/`, `third_party/qminers-starter/strategies/`, `data/sample.csv.gz` at the root, as they wrote them: the engine.
 - `python/bots/qminers/`: `template.py` (`ArenaBot`), `families/` (five strategies in their style), `candidates/`.
 - **Rust first** (`arena.qsim_rust`, `experiments.rounds.family_rust`; Python for the upload's last check). Judge on the
   round's own tapes (public, mirror, `tape_character stitch`); earlier rounds only as extra regimes.

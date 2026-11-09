@@ -118,7 +118,7 @@ standard error 51,872.77, |position| quantiles 100 / 100 / 100 / 100.
 
 ## Fill model and mark
 The organisers' simulator as given (5 ms latency, FIFO). The PnL marks the position by walking the book
-(simulator/simulator.py:1359), not at the mid, so a blown-out spread shows as a dip.
+(third_party/qminers-starter/simulator/simulator.py:1359), not at the mid, so a blown-out spread shows as a dip.
 
 ## Units map
 Ticks and lots as in the tape; the position limit 100 (penalty 10,000/s beyond it, a continuous integral), orders refused past 1,000.

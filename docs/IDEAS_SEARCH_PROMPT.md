@@ -12,7 +12,7 @@ Repo rules: CLAUDE.md (read it first: "Rust first", where results are filed). Co
 or any AI attribution; never squash, rebase or force-push. The main session may not be able to read your messages:
 write findings to data/arena/research/ideas_handoff.txt (create it), each with its time and commit hash.
 
-THE GAME (STARTER.md, ON_THE_DAY.md "Known so far")
+THE GAME (third_party/qminers-starter/README.md, ON_THE_DAY.md "Known so far")
 One product, an order book replayed from a tape (the organisers' simulator in simulator/; our byte-identical Rust port
 in rust/arena_sim). 5 ms order latency, FIFO matching, a position limit of 100 lots with a 10,000/s penalty above it
 (a continuous integral), orders refused past 1,000. The position is marked at the end by walking the book. A bot is one

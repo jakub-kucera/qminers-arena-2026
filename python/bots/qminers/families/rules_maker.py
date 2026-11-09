@@ -1,5 +1,5 @@
 """Family 13 (7 Nov, round 1): the rules maker, family 12's signal maker at R1-F7's cell (every default reproduces R1-F7's
-+496,564 on round1) plus two knobs on the exchange's own rules (simulator/simulator.py): CANCEL_FREE, the room counted as
++496,564 on round1) plus two knobs on the exchange's own rules (third_party/qminers-starter/simulator/simulator.py): CANCEL_FREE, the room counted as
 free once our cancel (1) or also our shrinking modify (2) is sent, since the exchange applies queued requests in the order
 they become due and a cancel sent before a new order lands first (a cancel that loses the race to a fill then leaves both
 able to fill: the breach penalty measures that risk); REACT_MODIFY, re-quoting from the last snapshot as soon as one of

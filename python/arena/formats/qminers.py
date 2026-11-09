@@ -13,10 +13,10 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-PROVIDED_MODULES = {"simulator", "numpy", "pandas", "scipy", "sklearn"}  # what a submission may import besides the standard library (STARTER.md)
+PROVIDED_MODULES = {"simulator", "numpy", "pandas", "scipy", "sklearn"}  # what a submission may import besides the standard library (third_party/qminers-starter/README.md)
 REPLAY = False  # no loader here: arena.validate runs the source checks and stops (replay: run exchange-simulator)
 BASE = "BaseStrategy"  # the class a submission subclasses (simulator.strategy.BaseStrategy)
-SANDBOX = {  # what their sandbox rejects before a bot runs (STARTER.md, "Writing a strategy"; the site's info page; arena.validate.sandbox_bans)
+SANDBOX = {  # what their sandbox rejects before a bot runs (third_party/qminers-starter/README.md, "Writing a strategy"; the site's info page; arena.validate.sandbox_bans)
     "modules": {"os", "sys", "subprocess", "socket", "io", "pathlib", "threading", "importlib", "inspect", "gc"},
     "private_modules": True,  # a module name starting with an underscore
     "builtins": {"open", "getattr", "type", "eval", "exec"},

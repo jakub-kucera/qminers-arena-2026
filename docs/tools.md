@@ -13,7 +13,7 @@ What the day runs on, in the order a round uses it (since 7 Nov; everything afte
 
 | Path | What it is |
 |---|---|
-| `simulator/`, `explorer/`, `strategies/`, `data/sample.csv.gz` | The organisers' starter as they wrote it ([`STARTER.md`](../STARTER.md)): `uv run exchange-simulator --strategy BOT --backtest D/<file>.csv --log-dir logs/<run> [--no-logs]` is the engine; `uv run backtest-explorer --log-dir logs/<run>` its Dash app |
+| `third_party/qminers-starter/simulator/`, `third_party/qminers-starter/explorer/`, `third_party/qminers-starter/strategies/`, `data/sample.csv.gz` | The organisers' starter as they wrote it ([`third_party/qminers-starter/README.md`](../third_party/qminers-starter/README.md)): `uv run exchange-simulator --strategy BOT --backtest D/<file>.csv --log-dir logs/<run> [--no-logs]` is the engine; `uv run backtest-explorer --log-dir logs/<run>` its Dash app |
 | `python/bots/qminers/template.py` | `ArenaBot`, a `BaseStrategy` subclass: the template's STRATEGY and EXECUTION with an ADAPTER for their API (set `PARAMS["ASSET"]`) |
 | `python/bots/qminers/families/` | Five strategies in their style: `momentum_runner.py`, `momentum_taker.py`, `momentum_maker.py`, `protected_maker.py`, `run_fade.py` (`IDEAS.md`, "On the Arena (7 Nov on)") |
 | `python/bots/qminers/candidates/` | The files ready to submit, `r<round>_<id>_<name>.py` (M1, M2 the runners, F1 the fallback maker, A0-A6 the playground's) |
@@ -36,7 +36,7 @@ uv run --group analysis jupyter lab python/notebooks/analysis.ipynb   # optional
 ## Grid on the Arena's simulator
 
 `arena.grid` runs on the stand-in engine; `arena.qgrid` runs a grid on the Arena's own exchange simulator
-(`simulator/`, [STARTER.md](../STARTER.md)) at the rules' settings (`simulator.main`'s 5 ms accept delay,
+(`third_party/qminers-starter/simulator/`, [third_party/qminers-starter/README.md](../third_party/qminers-starter/README.md)) at the rules' settings (`simulator.main`'s 5 ms accept delay,
 position limit 100, potential-position cap 1,000, 10,000 a second over the limit):
 
 ```sh
@@ -94,7 +94,7 @@ It fails (exit code 1) on:
 - what the portal's upload form refuses: a name not ending in `.py`, an empty file, or one bigger than `--max-size` (bytes, or the dashboard's figure: `100KB`, `1.5MB`; the dashboard rounds to a tenth of a binary unit, so `100KB` is checked as 99.95 × 1,024 bytes). Without `--max-size` it prints the size.
 - a syntax error, or a missing entry point (`class Trader` with `run`)
 - imports from outside the standard library that aren't listed in `--allow`
-- what the format's sandbox rejects before a bot runs, where the plug-in lists it (`SANDBOX`; `--format qminers` has the Arena's, from their info page and `STARTER.md`: `os`, `sys`, `subprocess`, `socket`, `io`, `pathlib`, `threading`, `importlib`, `inspect`, `gc` and private modules; `open`, `getattr`, `type`, `eval`, `exec`; dunder attributes and names; `str.format`; from `simulator` only `simulator.models`' public names and `simulator.strategy.BaseStrategy`), each with its lines. `__future__` and `__init__` are allowed, as their own examples use `from __future__ import annotations` and `super().__init__()` and pass. It warns on builtins a sandbox often bans as well (`globals`, `setattr`, ...).
+- what the format's sandbox rejects before a bot runs, where the plug-in lists it (`SANDBOX`; `--format qminers` has the Arena's, from their info page and `third_party/qminers-starter/README.md`: `os`, `sys`, `subprocess`, `socket`, `io`, `pathlib`, `threading`, `importlib`, `inspect`, `gc` and private modules; `open`, `getattr`, `type`, `eval`, `exec`; dunder attributes and names; `str.format`; from `simulator` only `simulator.models`' public names and `simulator.strategy.BaseStrategy`), each with its lines. `__future__` and `__init__` are allowed, as their own examples use `from __future__ import annotations` and `super().__init__()` and pass. It warns on builtins a sandbox often bans as well (`globals`, `setattr`, ...).
 - any exception, or malformed orders (e.g. float prices)
 - orders the engine cancels for possibly breaching a position limit
 - a tick slower than `--time-limit-ms`, timed without the garbage collections that run inside the call (the backtester's objects, not the bot's work; the line says when it left some out, and the bot's own garbage is left out with them; a WARN when the figure with them is over the limit, since their clock may count them)

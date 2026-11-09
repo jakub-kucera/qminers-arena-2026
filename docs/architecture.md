@@ -9,11 +9,11 @@ conventions; `README.md` is the user's guide.
 
 ## The Arena path
 
-The organisers' starter (`STARTER.md`) is the engine; our engine below is not on the day's path.
-- **Their code, at the root, as they wrote it:** `simulator/` (`ExchangeSimulator`: the tape replayed with exact
+The organisers' starter (`third_party/qminers-starter/README.md`) is the engine; our engine below is not on the day's path.
+- **Their code, at the root, as they wrote it:** `third_party/qminers-starter/simulator/` (`ExchangeSimulator`: the tape replayed with exact
   matching, the 5 ms accept delay, position limit 100, the potential-position cap 1,000, the breach penalty;
-  `simulator.strategy.BaseStrategy` is the bot API, `simulator.models` its types), `explorer/` (the Dash app on a
-  full-logs run), `strategies/` (their examples), `data/sample.csv.gz`. Never edited.
+  `simulator.strategy.BaseStrategy` is the bot API, `simulator.models` its types), `third_party/qminers-starter/explorer/` (the Dash app on a
+  full-logs run), `third_party/qminers-starter/strategies/` (their examples), `data/sample.csv.gz`. Never edited.
 - **Our bots, `python/bots/qminers/`:** `template.py` (`ArenaBot`, a `BaseStrategy` subclass: the template's STRATEGY
   and EXECUTION with an ADAPTER for their API), `families/` (five strategies written in their style), `candidates/`
   (the files ready to submit, `r<round>_<id>_<name>.py`). One file each, loaded by their loader (the alphabetically

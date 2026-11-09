@@ -35,7 +35,7 @@ BINARY = ROOT / "rust" / "target" / "release" / "arena-sim"
 
 # Each Rust strategy and the Python file it copies.
 STRATEGIES = {
-    "trend_follower": "strategies/trend_follower.py",
+    "trend_follower": "third_party/qminers-starter/strategies/trend_follower.py",
     "fallback_maker": "python/bots/qminers/candidates/round0/r0_F1_fallback.py",
     "room_maker": "python/bots/qminers/families/room_maker.py",
     "shrink_maker": "python/bots/qminers/families/shrink_maker.py",  # room_maker.rs, with DEPL_FRAC, REACT_CANCEL, MOM_LOTS

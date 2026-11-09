@@ -1,4 +1,4 @@
-//! The Arena's exchange simulator (`simulator/simulator.py` at the repo root) in Rust, giving the same
+//! The Arena's exchange simulator (`third_party/qminers-starter/simulator/simulator.py` at the repo root) in Rust, giving the same
 //! `result.json` and `pnl.csv` to the bit, and Rust versions of Python strategies behind the `Strategy` trait.
 //! See ../README.md, "arena_sim".
 

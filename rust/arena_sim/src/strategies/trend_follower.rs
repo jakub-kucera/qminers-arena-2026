@@ -1,4 +1,4 @@
-//! strategies/trend_follower.py (`TrendFollowerStrategy`): a one-lot IOC at the touch in the direction of the
+//! third_party/qminers-starter/strategies/trend_follower.py (`TrendFollowerStrategy`): a one-lot IOC at the touch in the direction of the
 //! trades since the previous callback, one order in flight, never the same side twice in a row.
 //!
 //! Rust-only knobs (the Python file has no globals; their defaults are the file as written): `QUANTITY` (1),

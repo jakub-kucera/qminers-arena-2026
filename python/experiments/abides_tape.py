@@ -5,7 +5,7 @@ usage (from the repo root; needs references/abides-jpmc and data/abides/env, `ex
   uv run python -m experiments.abides_tape --seed 2 --start 12:00:00 --end 13:00:00
   cd references/qminers-algo-arena && uv run exchange-simulator --strategy strategies/trend_follower.py --backtest ../../data/arena/abides/abides_seed1.csv --log-dir X --no-logs
 
-The starter's tape (STARTER.md, "How the exchange works") is every order event in time order:
+The starter's tape (third_party/qminers-starter/README.md, "How the exchange works") is every order event in time order:
 `Time,Operation,OrderId,Side,Volume,Price,Lifespan`, Time in seconds from the start, an Insert matching
 as a taker first and then resting (G) or dying (F). ABIDES's order book keeps a history of what it did
 (order_book.py: LIMIT when an order rests, EXEC per match, CANCEL, CANCEL_PARTIAL, MODIFY, REPLACE),

@@ -17,7 +17,7 @@ uv sync                                        # Python 3.13 and everything else
 uv run python -m gzip -d data/sample.csv.gz    # the simulator reads plain CSV only; one file at a time, the same for each downloaded round
 ```
 
-`data/sample.csv.gz` is synthetic and its price trends: one resting order per side, and every few seconds an aggressive order takes part of the touch, after which the quotes keep moving in that direction tick by tick for a few seconds and then give part of the move back. `strategies/trend_follower.py` is a simple trend-following strategy: it sends a one-lot IOC order at the touch in the direction of the trades it has just seen. The rounds are recorded market data and look nothing like the sample.
+`data/sample.csv.gz` is synthetic and its price trends: one resting order per side, and every few seconds an aggressive order takes part of the touch, after which the quotes keep moving in that direction tick by tick for a few seconds and then give part of the move back. `third_party/qminers-starter/strategies/trend_follower.py` is a simple trend-following strategy: it sends a one-lot IOC order at the touch in the direction of the trades it has just seen. The rounds are recorded market data and look nothing like the sample.
 
 ## Writing a strategy
 
@@ -50,7 +50,7 @@ Submissions run on Python 3.13 with numpy 2.5.4, pandas 3.0.6, scipy 1.18.1 and 
 ## Running a backtest
 
 ```bash
-uv run exchange-simulator --strategy strategies/trend_follower.py --backtest data/sample.csv --log-dir logs/sample --progress
+uv run exchange-simulator --strategy third_party/qminers-starter/strategies/trend_follower.py --backtest data/sample.csv --log-dir logs/sample --progress
 ```
 
 `logs/sample/result.json` holds the outcome (`pnl`, `cash`, `inventory`, `mark_price`, `breach_penalty`, `traded_volume`, `fills`, `pnl_se`, time-weighted quantiles of `|inventory|`) and `pnl.csv` the PnL sampled every second. Without `--no-logs` the directory also gets `run.jsonl`, `events.csv`, `book_deltas.csv` and `trades.csv`, several hundred MB per full round. Use `--no-logs` when you only need the result and the PnL curve; it is much faster. `--public-depth N` (default 20) sets how many ticks of the book you see.

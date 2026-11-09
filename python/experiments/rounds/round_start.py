@@ -41,7 +41,7 @@ from experiments.rounds.family_rust import FAMILY as RIDGE_FAMILY
 
 ROOT = Path(__file__).resolve().parents[3]
 HORIZONS_S = (1, 5, 30, 60)
-REAL_ROWS = 8_800_000  # a real round's tape (STARTER.md / simulator.iter_backtest's docstring)
+REAL_ROWS = 8_800_000  # a real round's tape (third_party/qminers-starter/README.md / simulator.iter_backtest's docstring)
 FLAG_S = 240  # projected seconds here above which the sandbox's 15 minutes is at risk
 FAMILIES = ROOT / "python" / "bots" / "qminers" / "families"
 CANDIDATE_DIR = ROOT / "python" / "bots" / "qminers" / "candidates"

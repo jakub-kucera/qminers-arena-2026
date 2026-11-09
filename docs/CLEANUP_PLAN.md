@@ -5,7 +5,7 @@ merged at the root, 7 Nov), only part of it is on the day's path. This plan says
 what not to touch. The user decides when (`TODO.md`, "Decisions": "The cleanup plan"); nothing here runs during a round.
 
 ## What the Arena uses now
-- Their `simulator/`, `explorer/`, `strategies/`, `data/sample.csv.gz` (the root, as they wrote them).
+- Their `third_party/qminers-starter/simulator/`, `third_party/qminers-starter/explorer/`, `third_party/qminers-starter/strategies/`, `data/sample.csv.gz` (the root, as they wrote them).
 - `python/bots/qminers/`: `template.py` (ArenaBot), `families/` (five strategies in their style), `candidates/`.
 - `python/arena/qgrid.py`, `python/arena/qsim_rust.py`, `rust/arena_sim/` (the Rust port, byte-identical to theirs).
 - `python/experiments/rounds/round_start.py`, `python/experiments/rounds/run_review.py`.

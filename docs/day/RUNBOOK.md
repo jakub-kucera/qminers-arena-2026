@@ -1,7 +1,7 @@
 # Runbook
 
 **Start here.** This page is the day's index: each line names the `ON_THE_DAY.md` section behind it in
-brackets; read only those, when the line comes up. The market's rules: `STARTER.md` (their README) and
+brackets; read only those, when the line comes up. The market's rules: `third_party/qminers-starter/README.md` (their README) and
 "Known so far" (the 7 Nov blocks). `KICKOFF_PROMPT.md` is the prompt that starts an agent session (it points back
 here). `D` is `data/arena/round<N>/`, `F` its tape (`D/<file>.csv`), and `BOT` is `python/bots/qminers/template.py`
 (`ArenaBot`, written; it runs on their `exchange-simulator`). Our engine's tools run on Prosperity data only: priors.
@@ -16,7 +16,7 @@ here). `D` is `data/arena/round<N>/`, `F` its tape (`D/<file>.csv`), and `BOT` i
 ## Opening and workshop (09:00–10:30)
 1. One person reads the Technical Rules in full and writes each answer into "First hour", with its source;
    what they leave open, ask at the workshop ["Questions for the organisers"].
-2. Most of "First hour" is answered by `STARTER.md` (7 Nov answers under each item). Still open: the
+2. Most of "First hour" is answered by `third_party/qminers-starter/README.md` (7 Nov answers under each item). Still open: the
    submission deadline, the data files' names, whether the private data is like the public ["First hour"].
 3. If they hand out new code, it goes in unchanged, never retyped ["The format swap, step by step"].
 4. By 10:30, a fallback bot or not: the playground candidate `python/bots/qminers/candidates/round0/r0_A0_mm.py`
@@ -46,7 +46,7 @@ here). `D` is `data/arena/round<N>/`, `F` its tape (`D/<file>.csv`), and `BOT` i
 | T+1:00 | `uv run python -m arena.qgrid BOT F --grid PARAMS.ASSET.make_edge=1,2,3 --set 'PARAMS.ASSET={...}' --holdout 0.25 [--out <csv>]` (README.md, "Grid on the Arena's simulator"): take a cell good held out and in its neighbourhood, not the best cell ["Evaluation data"]. |
 | T+1:30 | Size `stop_loss` and `flatten_from` on the PnL path (`logs/<run>/pnl.csv`, qgrid's max drawdown) ["Stress the bot"]. |
 | T+2:00 | A checked bot at least as good as the last one, uploaded; its portal score against `result.json` is the engine's error `T`. Then `KICKOFF_PROMPT.md`'s improvement loop (qgrid with `--holdout`, exchange-simulator, validate's source check). |
-| deadline − 0:30 | (T+4:30; earlier if 2× the first evaluation's time is longer.) Stop changing strategy. Check the final candidate and upload it; copy it into the root `strategies/` folder and commit. |
+| deadline − 0:30 | (T+4:30; earlier if 2× the first evaluation's time is longer.) Stop changing strategy. Check the final candidate and upload it; copy it into the root `third_party/qminers-starter/strategies/` folder and commit. |
 | deadline − 0:10 | Check which submission is marked final. Write the handover note (`data/arena/round<N>/HANDOVER.md`, copied from `docs/HANDOVER_TEMPLATE.md`), then commit and push it. |
 | After | After the private run: our PRIVATE entry's results against the public run of the same file; save the leaderboard's data to `data/arena/round<N>/leaderboard.json` and run `uv run python -m experiments.rounds.leaderboard_curves --read data/arena/round<N>/leaderboard.json --team <ours>`. Both into the handover note ["The day: timeline and roles", "Is the market shared"]. |
 

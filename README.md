@@ -101,7 +101,7 @@ checked once in Python before its upload ([`rust/README.md`](rust/README.md)).
 | `rust/arena_sim/` | The Rust port of the simulator and our strategies in it |
 | `codex_repo/` | Our second repository, a Codex session's, with Přemysl's research branch, imported with its history |
 | [`docs/`](docs/) | How to run the tools ([`tools.md`](docs/tools.md)), the day's playbook as used ([`day/`](docs/day/)), how the engine fits together ([`architecture.md`](docs/architecture.md)) |
-| `simulator/`, `explorer/`, `strategies/`, `STARTER.md` | The organisers' starter: their exchange simulator, backtest explorer, examples and README |
+| `third_party/qminers-starter/simulator/`, `third_party/qminers-starter/explorer/`, `third_party/qminers-starter/strategies/`, `third_party/qminers-starter/README.md` | The organisers' starter: their exchange simulator, backtest explorer, examples and README |
 
 ## Running it
 
@@ -137,7 +137,7 @@ Team ThatsMyQuant: Jakub Kučera and Přemysl Pilař. Our code and documents are
 ([`LICENSE`](LICENSE)).
 
 The Arena, its exchange simulator, backtest explorer, sample data and round tapes are by Qminers. Their starter
-(`simulator/`, `explorer/`, `strategies/`, `STARTER.md`, `data/sample.csv.gz`, and the copies of these in
+(`third_party/qminers-starter/simulator/`, `third_party/qminers-starter/explorer/`, `third_party/qminers-starter/strategies/`, `third_party/qminers-starter/README.md`, `data/sample.csv.gz`, and the copies of these in
 `codex_repo/`, with `codex_repo/docs/ORGANIZER_GUIDE.md`) is included as they distributed it to the teams and is not covered
 by our licence; the round tapes are not included. `rust/arena_sim/` is our port of their simulator. The HTML reports
 in `codex_repo/research/` embed third-party charting code under its own licence. Other teams appear as "Team N", N
