@@ -5,9 +5,10 @@ round, scored on a private tape. The event is over; this repository is the recor
 
 - `README.md` is the front page; `RESULTS.md` the standings, each round's final bot and every upload;
   `docs/postmortem.md` what the market turned out to be.
-- Bots: `python/bots/qminers/candidates/` (every candidate, the finals named in `RESULTS.md`); the engine and tools:
-  `python/arena/`, `python/experiments/day/` (`docs/tools.md` says how to run them); the Rust port of the Arena's
-  simulator: `rust/arena_sim/`.
+- Bots: `python/bots/qminers/candidates/round<N>/` (indexed in its README, the finals in bold); the engine and tools:
+  `python/arena/` and `python/experiments/<theme>/` (rounds, tape, generator, filter, maker, taker, audits;
+  `docs/tools.md` says how to run them); the Rust port of the Arena's simulator: `rust/arena_sim/`; the organisers'
+  starter: `third_party/qminers-starter/`.
 - Each round: `data/arena/round<N>/` (`HANDOVER.md`, `CANDIDATES.md`, the server's result folders, the leaderboard);
   every tested idea: `IDEAS.md`; the day's playbook as used: `docs/day/`; the Codex session's repository and
   Přemysl's research branch: `codex_repo/`.
