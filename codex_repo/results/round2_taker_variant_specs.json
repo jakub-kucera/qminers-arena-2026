@@ -1,0 +1,42 @@
+{
+  "base_source": "strategies/round2_imported/r2_T2_take_only_safe.py",
+  "base_sha256": "13251f09475b6248d4414d7e73d6a8ded667712d27cda09db1a50047999d37f7",
+  "candidates": [
+    {
+      "name": "t2_no_quotes",
+      "file": "logs/round2/taker_variants/sources/t2_no_quotes.py",
+      "source_sha256": "6623839c5730f7e3a581399f9258773c507c8de05388a607482308e149a66f1b",
+      "risk": "strict100",
+      "archived_source": "strategies/round2_research/taker_variants/t2_no_quotes.py"
+    },
+    {
+      "name": "t2_shock100",
+      "file": "logs/round2/taker_variants/sources/t2_shock100.py",
+      "source_sha256": "c3c4fd5d5ae597ee8c77d6cd4aa9765dd0187a24b964a76971b0ab85d893cba5",
+      "risk": "strict100",
+      "archived_source": "strategies/round2_research/taker_variants/t2_shock100.py"
+    },
+    {
+      "name": "t2_big_bias",
+      "file": "logs/round2/taker_variants/sources/t2_big_bias.py",
+      "source_sha256": "e0e6d2325421e6b586617623aae01812fe8d103402cd42998f2fd91132222b91",
+      "risk": "strict100",
+      "archived_source": "strategies/round2_research/taker_variants/t2_big_bias.py"
+    },
+    {
+      "name": "t2_window_bias",
+      "file": "logs/round2/taker_variants/sources/t2_window_bias.py",
+      "source_sha256": "dea20022a6312d11b402cd412a9f6a47ff6ad1a6e063c574c091d40c80ffb56a",
+      "risk": "strict100",
+      "archived_source": "strategies/round2_research/taker_variants/t2_window_bias.py"
+    },
+    {
+      "name": "t2_liquidity_features",
+      "file": "logs/round2/taker_variants/sources/t2_liquidity_features.py",
+      "source_sha256": "154504db3b2b6919e485a406a3be52c8ecb056a7dd7d342e2b59d6487529b6a5",
+      "risk": "strict100",
+      "archived_source": "strategies/round2_research/taker_variants/t2_liquidity_features.py"
+    }
+  ],
+  "selection_scope": "Five predeclared structural variants, reused public replay and later synthetic stress. No hidden scores."
+}

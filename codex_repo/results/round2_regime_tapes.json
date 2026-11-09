@@ -1,0 +1,308 @@
+{
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "generator_sha256": "0b77cf3a2e2dc02437c8234393d710eb7e00cdd719f9e7a7d1bf6379db2b3cd9",
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "29e4442aa5ada17de2d754a64ddda3fd8c5c1f1068b5eec3b70f968b9debb179",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
+  },
+  "volatility_1s_by_1000s_segment": [
+    2.0428239833103206,
+    2.499654176081163,
+    3.831549947475564,
+    5.165678658221009,
+    3.130782010935926,
+    4.973447395921665
+  ],
+  "selected_segments": [
+    2,
+    3,
+    5
+  ],
+  "tapes": {
+    "highvol_1x": {
+      "path": "logs/round2/regime_stress/highvol_1x.csv",
+      "sha256": "0618408cdc99bc1ed9ba6f16626e340cf7be7a5318dac45ebc9dc5a58ac94200",
+      "duration_seconds": 12000.0,
+      "speed": 1.0,
+      "segments": [
+        {
+          "source_segment": 2,
+          "start_us": 0,
+          "end_us": 1000000000,
+          "price_shift": 92
+        },
+        {
+          "source_segment": 3,
+          "start_us": 1000000000,
+          "end_us": 2000000000,
+          "price_shift": 92
+        },
+        {
+          "source_segment": 5,
+          "start_us": 2000000000,
+          "end_us": 3000000000,
+          "price_shift": 148
+        },
+        {
+          "source_segment": 2,
+          "start_us": 3000000000,
+          "end_us": 4000000000,
+          "price_shift": -70
+        },
+        {
+          "source_segment": 3,
+          "start_us": 4000000000,
+          "end_us": 5000000000,
+          "price_shift": -70
+        },
+        {
+          "source_segment": 5,
+          "start_us": 5000000000,
+          "end_us": 6000000000,
+          "price_shift": -14
+        },
+        {
+          "source_segment": 2,
+          "start_us": 6000000000,
+          "end_us": 7000000000,
+          "price_shift": -232
+        },
+        {
+          "source_segment": 3,
+          "start_us": 7000000000,
+          "end_us": 8000000000,
+          "price_shift": -232
+        },
+        {
+          "source_segment": 5,
+          "start_us": 8000000000,
+          "end_us": 9000000000,
+          "price_shift": -176
+        },
+        {
+          "source_segment": 2,
+          "start_us": 9000000000,
+          "end_us": 10000000000,
+          "price_shift": -394
+        },
+        {
+          "source_segment": 3,
+          "start_us": 10000000000,
+          "end_us": 11000000000,
+          "price_shift": -394
+        },
+        {
+          "source_segment": 5,
+          "start_us": 11000000000,
+          "end_us": 12000000000,
+          "price_shift": -338
+        }
+      ],
+      "seams_us": [
+        1000000000,
+        2000000000,
+        3000000000,
+        4000000000,
+        5000000000,
+        6000000000,
+        7000000000,
+        8000000000,
+        9000000000,
+        10000000000,
+        11000000000
+      ],
+      "seam_exclusion_boundaries_us": [
+        998000000,
+        1002000000,
+        1998000000,
+        2002000000,
+        2998000000,
+        3002000000,
+        3998000000,
+        4002000000,
+        4998000000,
+        5002000000,
+        5998000000,
+        6002000000,
+        6998000000,
+        7002000000,
+        7998000000,
+        8002000000,
+        8998000000,
+        9002000000,
+        9998000000,
+        10002000000,
+        10998000000,
+        11002000000
+      ]
+    },
+    "highvol_1p25": {
+      "path": "logs/round2/regime_stress/highvol_1p25.csv",
+      "sha256": "9cbf0786789ed055f5516c30ea73976aad615f367ba225d4a1816d1b7aee115c",
+      "duration_seconds": 12000.0,
+      "speed": 1.25,
+      "segments": [
+        {
+          "source_segment": 2,
+          "start_us": 0,
+          "end_us": 800000000,
+          "price_shift": 92
+        },
+        {
+          "source_segment": 3,
+          "start_us": 800000000,
+          "end_us": 1600000000,
+          "price_shift": 92
+        },
+        {
+          "source_segment": 5,
+          "start_us": 1600000000,
+          "end_us": 2400000000,
+          "price_shift": 148
+        },
+        {
+          "source_segment": 2,
+          "start_us": 2400000000,
+          "end_us": 3200000000,
+          "price_shift": -70
+        },
+        {
+          "source_segment": 3,
+          "start_us": 3200000000,
+          "end_us": 4000000000,
+          "price_shift": -70
+        },
+        {
+          "source_segment": 5,
+          "start_us": 4000000000,
+          "end_us": 4800000000,
+          "price_shift": -14
+        },
+        {
+          "source_segment": 2,
+          "start_us": 4800000000,
+          "end_us": 5600000000,
+          "price_shift": -232
+        },
+        {
+          "source_segment": 3,
+          "start_us": 5600000000,
+          "end_us": 6400000000,
+          "price_shift": -232
+        },
+        {
+          "source_segment": 5,
+          "start_us": 6400000000,
+          "end_us": 7200000000,
+          "price_shift": -176
+        },
+        {
+          "source_segment": 2,
+          "start_us": 7200000000,
+          "end_us": 8000000000,
+          "price_shift": -394
+        },
+        {
+          "source_segment": 3,
+          "start_us": 8000000000,
+          "end_us": 8800000000,
+          "price_shift": -394
+        },
+        {
+          "source_segment": 5,
+          "start_us": 8800000000,
+          "end_us": 9600000000,
+          "price_shift": -338
+        },
+        {
+          "source_segment": 2,
+          "start_us": 9600000000,
+          "end_us": 10400000000,
+          "price_shift": -556
+        },
+        {
+          "source_segment": 3,
+          "start_us": 10400000000,
+          "end_us": 11200000000,
+          "price_shift": -556
+        },
+        {
+          "source_segment": 5,
+          "start_us": 11200000000,
+          "end_us": 12000000000,
+          "price_shift": -500
+        }
+      ],
+      "seams_us": [
+        800000000,
+        1600000000,
+        2400000000,
+        3200000000,
+        4000000000,
+        4800000000,
+        5600000000,
+        6400000000,
+        7200000000,
+        8000000000,
+        8800000000,
+        9600000000,
+        10400000000,
+        11200000000
+      ],
+      "seam_exclusion_boundaries_us": [
+        798000000,
+        802000000,
+        1598000000,
+        1602000000,
+        2398000000,
+        2402000000,
+        3198000000,
+        3202000000,
+        3998000000,
+        4002000000,
+        4798000000,
+        4802000000,
+        5598000000,
+        5602000000,
+        6398000000,
+        6402000000,
+        7198000000,
+        7202000000,
+        7998000000,
+        8002000000,
+        8798000000,
+        8802000000,
+        9598000000,
+        9602000000,
+        10398000000,
+        10402000000,
+        11198000000,
+        11202000000
+      ]
+    }
+  },
+  "limitations": [
+    "Public events reused repeatedly; volatility selection uses the entire source segment, not a causal trading signal.",
+    "No hidden tape was observed or reconstructed. Matching a few validation metrics cannot identify its distribution.",
+    "Seams reset market books, align no-trade midpoint prices within0.5tick and preserve user state; actual policy-dependent midpoints can differ.",
+    "Score both full PnL and PnL excluding2seconds before/after each seam. This does not erase state contamination.",
+    "Historical donor evidence: M3 stop improved stitched proxies but did not improve actual validation."
+  ]
+}

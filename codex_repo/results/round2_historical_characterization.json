@@ -1,0 +1,459 @@
+{
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "88bc868a6d8c6a062fe9c70ff66bcf0985c7b3066a37cf80bbe0fc6e0fd61d09",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
+  },
+  "registry_sha256": "d1c592e5438ffff916da96e3693399258903e01aeea33daaee1f126706b86412",
+  "datasets": {
+    "sample": "33dd6764c54000244f1a2e0691e6efbac226684554843147f622e0431b35e8dc",
+    "sample_v2": "dd4e00e281abe50c9a19e16c147ccbc0b5b69835fee567f00136402ef1e01d08",
+    "round1": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940"
+  },
+  "limitation": "All tapes are historical/previously inspected. These are transfer and execution checks, not round-2 validation or a candidate selection.",
+  "completed": true,
+  "results": {
+    "sample": {
+      "round2_transfer": {
+        "result": {
+          "fills": 1693,
+          "traded_volume": 57905,
+          "inventory": -29,
+          "cash": 210256.0,
+          "mark_price": 10038.0,
+          "breach_penalty": 0.0,
+          "pnl": -80846.0,
+          "pnl_se": 9412.979233780687,
+          "abs_inventory_q50": 52,
+          "abs_inventory_q68": 71,
+          "abs_inventory_q95": 100,
+          "abs_inventory_q997": 100
+        },
+        "source_sha256": "c87f92f1de5c4cab5e18f0aff1c4112a3f4cee808343ce696aea5535435527e7",
+        "max_abs_inventory": 100,
+        "max_potential_inventory_at_submission": 300,
+        "strategy_state": {
+          "_labels": 10845,
+          "_mass": 10653.706799522462
+        }
+      },
+      "round2_fast_adapt": {
+        "result": {
+          "fills": 1367,
+          "traded_volume": 42360,
+          "inventory": -50,
+          "cash": 447895.0,
+          "mark_price": 10038.0,
+          "breach_penalty": 50.01,
+          "pnl": -54055.01,
+          "pnl_se": 9375.388974906906,
+          "abs_inventory_q50": 45,
+          "abs_inventory_q68": 68,
+          "abs_inventory_q95": 100,
+          "abs_inventory_q997": 100
+        },
+        "source_sha256": "8149296827f682c3c7a939bb9e747c30522553601be18a0564daa8fb01367819",
+        "max_abs_inventory": 111,
+        "max_potential_inventory_at_submission": 300,
+        "strategy_state": {
+          "_labels": 11527,
+          "_mass": 2853.2736373795656
+        }
+      },
+      "round2_strict100": {
+        "result": {
+          "fills": 1919,
+          "traded_volume": 51939,
+          "inventory": -75,
+          "cash": 706591.0,
+          "mark_price": 10038.0,
+          "breach_penalty": 0.0,
+          "pnl": -46259.0,
+          "pnl_se": 9939.757354607931,
+          "abs_inventory_q50": 55,
+          "abs_inventory_q68": 74,
+          "abs_inventory_q95": 100,
+          "abs_inventory_q997": 100
+        },
+        "source_sha256": "877df4848527e64a6d21e5fb9bf23dc0c5b81d3e5fc28cba71cc7e883a33255c",
+        "max_abs_inventory": 100,
+        "max_potential_inventory_at_submission": 100,
+        "strategy_state": {
+          "_labels": 11035,
+          "_mass": 10840.24226665909
+        }
+      },
+      "round2_flat": {
+        "result": {
+          "fills": 0,
+          "traded_volume": 0,
+          "inventory": 0,
+          "cash": 0.0,
+          "mark_price": 10051.0,
+          "breach_penalty": 0.0,
+          "pnl": 0.0,
+          "pnl_se": 0.0,
+          "abs_inventory_q50": 0,
+          "abs_inventory_q68": 0,
+          "abs_inventory_q95": 0,
+          "abs_inventory_q997": 0
+        },
+        "source_sha256": "2e386e9f37b28e88f664fccd614f71b1f84bc11ea39be4dfe0f3a045ac00612d",
+        "max_abs_inventory": 0,
+        "max_potential_inventory_at_submission": 0,
+        "strategy_state": {}
+      },
+      "round2_guarded_trend": {
+        "result": {
+          "fills": 4287,
+          "traded_volume": 64776,
+          "inventory": 0,
+          "cash": 225487.0,
+          "mark_price": 10039.0,
+          "breach_penalty": 0.0,
+          "pnl": 225487.0,
+          "pnl_se": 8821.289201420463,
+          "abs_inventory_q50": 21,
+          "abs_inventory_q68": 54,
+          "abs_inventory_q95": 80,
+          "abs_inventory_q997": 80
+        },
+        "source_sha256": "e75344f2c049e3f30141dcca0751b1809eb15288e4fd11ad258a0ae5c2744e41",
+        "max_abs_inventory": 80,
+        "max_potential_inventory_at_submission": 80,
+        "strategy_state": {
+          "_labels": 10095,
+          "_mass": 843.2221567205885,
+          "_guard_scale": 1.0,
+          "_guard_score": 4.663636938045794
+        }
+      },
+      "round2_dual_memory": {
+        "result": {
+          "fills": 1687,
+          "traded_volume": 57669,
+          "inventory": -29,
+          "cash": 219257.0,
+          "mark_price": 10038.0,
+          "breach_penalty": 0.0,
+          "pnl": -71845.0,
+          "pnl_se": 9313.29460333657,
+          "abs_inventory_q50": 50,
+          "abs_inventory_q68": 69,
+          "abs_inventory_q95": 100,
+          "abs_inventory_q997": 100
+        },
+        "source_sha256": "9da7815ffdd95ee07f2af0768f9e2565784a910f3a2205e2d0e88bd03a6ad371",
+        "max_abs_inventory": 100,
+        "max_potential_inventory_at_submission": 300,
+        "strategy_state": {
+          "_labels": 10875,
+          "_mass": 10683.320128552688,
+          "_fast_mix": 0.22656997172096352,
+          "_fast_loss": 1.9433445324257967,
+          "_long_loss": 1.8937807334172763
+        }
+      }
+    },
+    "sample_v2": {
+      "round2_transfer": {
+        "result": {
+          "fills": 5543,
+          "traded_volume": 432603,
+          "inventory": 63,
+          "cash": -335918.0,
+          "mark_price": 10003.0,
+          "breach_penalty": 0.0,
+          "pnl": 294271.0,
+          "pnl_se": 5767.846623018565,
+          "abs_inventory_q50": 100,
+          "abs_inventory_q68": 100,
+          "abs_inventory_q95": 100,
+          "abs_inventory_q997": 100
+        },
+        "source_sha256": "c87f92f1de5c4cab5e18f0aff1c4112a3f4cee808343ce696aea5535435527e7",
+        "max_abs_inventory": 100,
+        "max_potential_inventory_at_submission": 300,
+        "strategy_state": {
+          "_labels": 248853,
+          "_mass": 241834.00543638828
+        }
+      },
+      "round2_strict100": {
+        "result": {
+          "fills": 8667,
+          "traded_volume": 432305,
+          "inventory": 63,
+          "cash": -336530.0,
+          "mark_price": 10003.0,
+          "breach_penalty": 0.0,
+          "pnl": 293659.0,
+          "pnl_se": 5788.751883057757,
+          "abs_inventory_q50": 100,
+          "abs_inventory_q68": 100,
+          "abs_inventory_q95": 100,
+          "abs_inventory_q997": 100
+        },
+        "source_sha256": "877df4848527e64a6d21e5fb9bf23dc0c5b81d3e5fc28cba71cc7e883a33255c",
+        "max_abs_inventory": 100,
+        "max_potential_inventory_at_submission": 100,
+        "strategy_state": {
+          "_labels": 248853,
+          "_mass": 241834.00543638828
+        }
+      },
+      "round2_fast_adapt": {
+        "result": {
+          "fills": 5806,
+          "traded_volume": 445534,
+          "inventory": 44,
+          "cash": -148192.0,
+          "mark_price": 10003.0,
+          "breach_penalty": 100.0,
+          "pnl": 291840.0,
+          "pnl_se": 5679.596080575004,
+          "abs_inventory_q50": 100,
+          "abs_inventory_q68": 100,
+          "abs_inventory_q95": 100,
+          "abs_inventory_q997": 100
+        },
+        "source_sha256": "8149296827f682c3c7a939bb9e747c30522553601be18a0564daa8fb01367819",
+        "max_abs_inventory": 128,
+        "max_potential_inventory_at_submission": 300,
+        "strategy_state": {
+          "_labels": 248861,
+          "_mass": 38876.576226765406
+        }
+      },
+      "round2_flat": {
+        "result": {
+          "fills": 0,
+          "traded_volume": 0,
+          "inventory": 0,
+          "cash": 0.0,
+          "mark_price": 10003.0,
+          "breach_penalty": 0.0,
+          "pnl": 0.0,
+          "pnl_se": 0.0,
+          "abs_inventory_q50": 0,
+          "abs_inventory_q68": 0,
+          "abs_inventory_q95": 0,
+          "abs_inventory_q997": 0
+        },
+        "source_sha256": "2e386e9f37b28e88f664fccd614f71b1f84bc11ea39be4dfe0f3a045ac00612d",
+        "max_abs_inventory": 0,
+        "max_potential_inventory_at_submission": 0,
+        "strategy_state": {}
+      },
+      "round2_dual_memory": {
+        "result": {
+          "fills": 5546,
+          "traded_volume": 433503,
+          "inventory": 63,
+          "cash": -335287.0,
+          "mark_price": 10003.0,
+          "breach_penalty": 0.0,
+          "pnl": 294902.0,
+          "pnl_se": 5759.944363592161,
+          "abs_inventory_q50": 100,
+          "abs_inventory_q68": 100,
+          "abs_inventory_q95": 100,
+          "abs_inventory_q997": 100
+        },
+        "source_sha256": "9da7815ffdd95ee07f2af0768f9e2565784a910f3a2205e2d0e88bd03a6ad371",
+        "max_abs_inventory": 100,
+        "max_potential_inventory_at_submission": 300,
+        "strategy_state": {
+          "_labels": 248853,
+          "_mass": 241834.00543638828,
+          "_fast_mix": 0.24213250099126898,
+          "_fast_loss": 0.05223682361795221,
+          "_long_loss": 0.05176868070509294
+        }
+      },
+      "round2_guarded_trend": {
+        "result": {
+          "fills": 0,
+          "traded_volume": 0,
+          "inventory": 0,
+          "cash": 0.0,
+          "mark_price": 10003.0,
+          "breach_penalty": 0.0,
+          "pnl": 0.0,
+          "pnl_se": 0.0,
+          "abs_inventory_q50": 0,
+          "abs_inventory_q68": 0,
+          "abs_inventory_q95": 0,
+          "abs_inventory_q997": 0
+        },
+        "source_sha256": "e75344f2c049e3f30141dcca0751b1809eb15288e4fd11ad258a0ae5c2744e41",
+        "max_abs_inventory": 0,
+        "max_potential_inventory_at_submission": 0,
+        "strategy_state": {
+          "_labels": 55761,
+          "_mass": 2909.9860706420327,
+          "_guard_scale": 0.25,
+          "_guard_score": 0.0
+        }
+      }
+    },
+    "round1": {
+      "round2_transfer": {
+        "result": {
+          "fills": 21517,
+          "traded_volume": 2120528,
+          "inventory": 100,
+          "cash": -377124.0,
+          "mark_price": 10029.0,
+          "breach_penalty": 1700.0000000000002,
+          "pnl": 624076.0,
+          "pnl_se": 11189.828899204203,
+          "abs_inventory_q50": 97,
+          "abs_inventory_q68": 100,
+          "abs_inventory_q95": 100,
+          "abs_inventory_q997": 100
+        },
+        "source_sha256": "c87f92f1de5c4cab5e18f0aff1c4112a3f4cee808343ce696aea5535435527e7",
+        "max_abs_inventory": 256,
+        "max_potential_inventory_at_submission": 303,
+        "strategy_state": {
+          "_labels": 523020,
+          "_mass": 492858.6504707653
+        }
+      },
+      "round2_strict100": {
+        "result": {
+          "fills": 35252,
+          "traded_volume": 2068636,
+          "inventory": 100,
+          "cash": -396590.0,
+          "mark_price": 10029.0,
+          "breach_penalty": 0.0,
+          "pnl": 606310.0,
+          "pnl_se": 11218.464436182177,
+          "abs_inventory_q50": 98,
+          "abs_inventory_q68": 100,
+          "abs_inventory_q95": 100,
+          "abs_inventory_q997": 100
+        },
+        "source_sha256": "877df4848527e64a6d21e5fb9bf23dc0c5b81d3e5fc28cba71cc7e883a33255c",
+        "max_abs_inventory": 100,
+        "max_potential_inventory_at_submission": 100,
+        "strategy_state": {
+          "_labels": 523020,
+          "_mass": 492858.65047042957
+        }
+      },
+      "round2_fast_adapt": {
+        "result": {
+          "fills": 20932,
+          "traded_volume": 2069588,
+          "inventory": 100,
+          "cash": -403350.0,
+          "mark_price": 10029.0,
+          "breach_penalty": 950.0,
+          "pnl": 598600.0,
+          "pnl_se": 11237.147033006504,
+          "abs_inventory_q50": 99,
+          "abs_inventory_q68": 100,
+          "abs_inventory_q95": 100,
+          "abs_inventory_q997": 100
+        },
+        "source_sha256": "8149296827f682c3c7a939bb9e747c30522553601be18a0564daa8fb01367819",
+        "max_abs_inventory": 250,
+        "max_potential_inventory_at_submission": 300,
+        "strategy_state": {
+          "_labels": 523029,
+          "_mass": 39233.28793384539
+        }
+      },
+      "round2_flat": {
+        "result": {
+          "fills": 0,
+          "traded_volume": 0,
+          "inventory": 0,
+          "cash": 0.0,
+          "mark_price": 10029.0,
+          "breach_penalty": 0.0,
+          "pnl": 0.0,
+          "pnl_se": 0.0,
+          "abs_inventory_q50": 0,
+          "abs_inventory_q68": 0,
+          "abs_inventory_q95": 0,
+          "abs_inventory_q997": 0
+        },
+        "source_sha256": "2e386e9f37b28e88f664fccd614f71b1f84bc11ea39be4dfe0f3a045ac00612d",
+        "max_abs_inventory": 0,
+        "max_potential_inventory_at_submission": 0,
+        "strategy_state": {}
+      },
+      "round2_guarded_trend": {
+        "result": {
+          "fills": 0,
+          "traded_volume": 0,
+          "inventory": 0,
+          "cash": 0.0,
+          "mark_price": 10029.0,
+          "breach_penalty": 0.0,
+          "pnl": 0.0,
+          "pnl_se": 0.0,
+          "abs_inventory_q50": 0,
+          "abs_inventory_q68": 0,
+          "abs_inventory_q95": 0,
+          "abs_inventory_q997": 0
+        },
+        "source_sha256": "e75344f2c049e3f30141dcca0751b1809eb15288e4fd11ad258a0ae5c2744e41",
+        "max_abs_inventory": 0,
+        "max_potential_inventory_at_submission": 0,
+        "strategy_state": {
+          "_labels": 116546,
+          "_mass": 2915.6933848215936,
+          "_guard_scale": 0.25,
+          "_guard_score": 0.0
+        }
+      },
+      "round2_dual_memory": {
+        "result": {
+          "fills": 21447,
+          "traded_volume": 2114232,
+          "inventory": 100,
+          "cash": -378800.0,
+          "mark_price": 10029.0,
+          "breach_penalty": 1310.0100000000002,
+          "pnl": 622789.99,
+          "pnl_se": 11196.771425857862,
+          "abs_inventory_q50": 97,
+          "abs_inventory_q68": 100,
+          "abs_inventory_q95": 100,
+          "abs_inventory_q997": 100
+        },
+        "source_sha256": "9da7815ffdd95ee07f2af0768f9e2565784a910f3a2205e2d0e88bd03a6ad371",
+        "max_abs_inventory": 256,
+        "max_potential_inventory_at_submission": 300,
+        "strategy_state": {
+          "_labels": 523020,
+          "_mass": 492858.6504707653,
+          "_fast_mix": 0.23310316082795357,
+          "_fast_loss": 0.20742511999318589,
+          "_long_loss": 0.2039584180337582
+        }
+      }
+    }
+  }
+}

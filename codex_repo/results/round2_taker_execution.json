@@ -1,0 +1,41 @@
+{
+  "source": "strategies/round2_taker_liquidity_269920.py",
+  "source_sha256": "154504db3b2b6919e485a406a3be52c8ecb056a7dd7d342e2b59d6487529b6a5",
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "unchanged_result": true,
+  "result": {
+    "fills": 117072,
+    "traded_volume": 382525,
+    "inventory": -95,
+    "cash": 1190470.0,
+    "mark_price": 9690.0,
+    "breach_penalty": 0.0,
+    "pnl": 269920.0,
+    "pnl_se": 21626.245048512224,
+    "abs_inventory_q50": 92,
+    "abs_inventory_q68": 92,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "by_order_type": {
+    "limit": {
+      "submitted_orders": 387093,
+      "submitted_lots": 387093,
+      "terminal_orders": 387080,
+      "unfilled_lots_at_terminal": 273270,
+      "terminal_without_any_fill": 273270,
+      "orders_with_a_fill": 113810,
+      "filled_lots": 113810
+    },
+    "ioc": {
+      "submitted_orders": 3346,
+      "submitted_lots": 381598,
+      "orders_with_a_fill": 3262,
+      "filled_lots": 268715,
+      "terminal_orders": 3346,
+      "unfilled_lots_at_terminal": 112883,
+      "terminal_without_any_fill": 84
+    }
+  },
+  "note": "Order request types, not inferred maker/taker fill roles. No fill miss alone establishes profitable opportunity; unfilled orders may have avoided losses."
+}

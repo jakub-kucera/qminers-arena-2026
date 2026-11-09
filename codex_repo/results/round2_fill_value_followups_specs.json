@@ -1,0 +1,51 @@
+{
+  "candidates": [
+    {
+      "name": "fill_value_margin0.1",
+      "file": "logs/round2/fill_value_followups/sources/fill_value_margin0.1.py",
+      "source_sha256": "e25a9d1813b6d80ef4f8f46ff101863f8747ad1283102224816edc047c0c071c",
+      "risk": "native"
+    },
+    {
+      "name": "fill_value_margin0.2",
+      "file": "logs/round2/fill_value_followups/sources/fill_value_margin0.2.py",
+      "source_sha256": "25f42f95891da3ca6bf9f4d7f4ee6362fc7cbd7392a45e1e968a89a532b6a5b4",
+      "risk": "native"
+    },
+    {
+      "name": "fill_value_fast_refresh",
+      "file": "logs/round2/fill_value_followups/sources/fill_value_fast_refresh.py",
+      "source_sha256": "705b0dd44a75786395cb244729b8a7792c7c9534292f5134cf34d7b0978625de",
+      "risk": "native"
+    },
+    {
+      "name": "fill_value_fresh_quote100ms",
+      "file": "logs/round2/fill_value_followups/sources/fill_value_fresh_quote100ms.py",
+      "source_sha256": "313dc6e27ffb68701e9c76cc38154a7ff42c8ce717168e2e28b91bbc34cd8d17",
+      "risk": "native"
+    }
+  ],
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "29e4442aa5ada17de2d754a64ddda3fd8c5c1f1068b5eec3b70f968b9debb179",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
+  },
+  "data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "scope": "Reused FULL PUBLIC sample tuning after the first frozen public check. Not fresh validation or private scoring. Native matching/fees unchanged."
+}

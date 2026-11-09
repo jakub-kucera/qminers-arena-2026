@@ -1,0 +1,122 @@
+{
+  "data": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/data/round3_public.csv",
+  "data_sha256": "1021586b92a3d9dfdb70096e6b0af34d460813b139f1f51f56b73871cb5a2d15",
+  "first_us": 1095,
+  "last_us": 5999994333,
+  "rows": 2412805,
+  "dataset_role": "public",
+  "competition_protocol": {
+    "source": "Organizer announcement supplied by the user on 2026-11-07",
+    "public": {
+      "downloadable": true,
+      "purpose": "training and local diagnostics",
+      "relative_size_approx": 0.5
+    },
+    "server_validation": {
+      "feedback": [
+        "pnl"
+      ],
+      "full_logs_available": false,
+      "purpose": "submission feedback and selection"
+    },
+    "private": {
+      "score_released": "after submission deadline",
+      "purpose": "competition scoring"
+    },
+    "validation_and_private_same_size": true,
+    "size_metric": "Unspecified; half size does not establish half elapsed duration or doubled expected PnL."
+  },
+  "development_cutoff_us": 3599997038,
+  "validation_cutoff_us": 4799995685,
+  "development": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/development.csv",
+  "development_sha256": "792f2dbfaadc1cf05e97d3177f6fa69f7085fbc18ef170d5c91adfca31bd42f4",
+  "development_rows": 1439836,
+  "validation_prefix": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/validation_prefix.csv",
+  "validation_prefix_sha256": "cdb4b59c9a85ecd1c2d80af581a00b70afea84597599a9f93ad43dbaf4cc3c59",
+  "validation_prefix_rows": 1926741,
+  "candidates": [
+    {
+      "name": "round2_final_317057",
+      "file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/round2_final_317057.py",
+      "original_file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round2_final_317057.py",
+      "source_sha256": "4df2b5c12142242fcff6be80e8765833f3d7c54d97893b5707589929e67aa622",
+      "risk": "strict100",
+      "intent": "User final: robust online forecast with flow-impact features; no quotes"
+    },
+    {
+      "name": "round2_taker_liquidity_pure_294098",
+      "file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/round2_taker_liquidity_pure_294098.py",
+      "original_file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round2_taker_liquidity_pure_294098.py",
+      "source_sha256": "4d46c848817325c0266377e36be4ecc6c96d5963ff4dcdda5cb0a33b73f68e22",
+      "risk": "strict100",
+      "intent": "Simpler pure liquidity forecast, without final robust/impact additions"
+    },
+    {
+      "name": "round2_taker_liquidity_269920",
+      "file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/round2_taker_liquidity_269920.py",
+      "original_file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round2_taker_liquidity_269920.py",
+      "source_sha256": "154504db3b2b6919e485a406a3be52c8ecb056a7dd7d342e2b59d6487529b6a5",
+      "risk": "strict100",
+      "intent": "Liquidity forecast with one-lot quote probes"
+    },
+    {
+      "name": "r2_M4_flow_window",
+      "file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/r2_M4_flow_window.py",
+      "original_file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round2_imported/r2_M4_flow_window.py",
+      "source_sha256": "59023a460c3511057364ef79926912e6201026ed0734c4cba3d063d0b23450ef",
+      "risk": "strict100",
+      "intent": "Independent 125ms /575lot flow follower with causal self-gate"
+    },
+    {
+      "name": "round2_distribution_ensemble_shock_180895",
+      "file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/round2_distribution_ensemble_shock_180895.py",
+      "original_file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round2_distribution_ensemble_shock_180895.py",
+      "source_sha256": "c6f6a25629cb3ba94924305f17793c8c8426dbe14b418e6607a73b5f132a3d75",
+      "risk": "native",
+      "intent": "Volatility-sized maker with round2-pretrained fill heads and shock exits"
+    },
+    {
+      "name": "round1_quote_flow_624076",
+      "file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/round1_quote_flow_624076.py",
+      "original_file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round1_quote_flow_624076.py",
+      "source_sha256": "0aaff6caee4c8708afb0f3bc54a8f1d3beaa5a641477db192be09cfeb6993b45",
+      "risk": "native",
+      "intent": "Fixed-exposure round1 maker; tests return of spread-capture opportunity"
+    },
+    {
+      "name": "round2_flat",
+      "file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/logs/round3/sources/round2_flat.py",
+      "original_file": "/Users/jakubkucera/Documents/qminers_arena_scrap/qminers-algo-arena/strategies/round2/round2_flat.py",
+      "source_sha256": "2e386e9f37b28e88f664fccd614f71b1f84bc11ea39be4dfe0f3a045ac00612d",
+      "risk": "strict100",
+      "intent": "No-trade zero-risk control"
+    }
+  ],
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "29e4442aa5ada17de2d754a64ddda3fd8c5c1f1068b5eec3b70f968b9debb179",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
+  },
+  "protocol": "Local PUBLIC 60/20/20 diagnostic; organizer server validation and private backtests are distinct datasets.",
+  "limitation": "The last public 20% is only a local chronological check, never the organizer private backtest. Freshness requires no earlier inspection.",
+  "round": 3,
+  "protocol_assumption": "Existing round2 rules and public/validation/private distinction pending any new organizer changes supplied by user.",
+  "inspection_scope": "Full-file structural validation, timestamp splits and hashes only. Head/tail rows were viewed at intake. No later40% statistical profiling or strategy replay.",
+  "initial_evaluation_scope": "First60% public development only; middle20% reserved for selection, last20% reserved for later local check."
+}

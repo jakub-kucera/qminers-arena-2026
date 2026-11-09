@@ -1,0 +1,171 @@
+{
+  "name": "width045",
+  "file": "strategies/round1_submission.py",
+  "source_sha256": "0aaff6caee4c8708afb0f3bc54a8f1d3beaa5a641477db192be09cfeb6993b45",
+  "result": {
+    "result": {
+      "fills": 21517,
+      "traded_volume": 2120528,
+      "inventory": 100,
+      "cash": -377124.0,
+      "mark_price": 10029.0,
+      "breach_penalty": 1700.0000000000002,
+      "pnl": 624076.0,
+      "pnl_se": 11189.828899204203,
+      "abs_inventory_q50": 97,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 188.2241443330422,
+    "max_abs_inventory": 256,
+    "max_potential_inventory_at_submission": 303,
+    "max_drawdown_1s": 894.0,
+    "submissions": 73142,
+    "order_status_counts": {
+      "accepted": 73142,
+      "partially_filled": 17869,
+      "canceled": 57473,
+      "filled": 15668,
+      "rejected": 130
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 600.0,
+        "pnl_increment": 27248.0
+      },
+      {
+        "start_s": 600.0,
+        "end_s": 1200.0,
+        "pnl_increment": 31336.0
+      },
+      {
+        "start_s": 1200.0,
+        "end_s": 1800.0,
+        "pnl_increment": 29042.0
+      },
+      {
+        "start_s": 1800.0,
+        "end_s": 2400.0,
+        "pnl_increment": 31401.0
+      },
+      {
+        "start_s": 2400.0,
+        "end_s": 3000.0,
+        "pnl_increment": 29195.0
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 3600.0,
+        "pnl_increment": 36128.0
+      },
+      {
+        "start_s": 3600.0,
+        "end_s": 4200.0,
+        "pnl_increment": 31975.0
+      },
+      {
+        "start_s": 4200.0,
+        "end_s": 4800.0,
+        "pnl_increment": 30881.0
+      },
+      {
+        "start_s": 4800.0,
+        "end_s": 5400.0,
+        "pnl_increment": 33409.0
+      },
+      {
+        "start_s": 5400.0,
+        "end_s": 6000.0,
+        "pnl_increment": 31848.0
+      },
+      {
+        "start_s": 6000.0,
+        "end_s": 6600.0,
+        "pnl_increment": 31681.0
+      },
+      {
+        "start_s": 6600.0,
+        "end_s": 7200.0,
+        "pnl_increment": 34387.0
+      },
+      {
+        "start_s": 7200.0,
+        "end_s": 7800.0,
+        "pnl_increment": 31328.0
+      },
+      {
+        "start_s": 7800.0,
+        "end_s": 8400.0,
+        "pnl_increment": 31810.0
+      },
+      {
+        "start_s": 8400.0,
+        "end_s": 9000.0,
+        "pnl_increment": 32503.0
+      },
+      {
+        "start_s": 9000.0,
+        "end_s": 9600.0,
+        "pnl_increment": 29685.0
+      },
+      {
+        "start_s": 9600.0,
+        "end_s": 10200.0,
+        "pnl_increment": 28307.0
+      },
+      {
+        "start_s": 10200.0,
+        "end_s": 10800.0,
+        "pnl_increment": 31468.0
+      },
+      {
+        "start_s": 10800.0,
+        "end_s": 11400.0,
+        "pnl_increment": 30953.0
+      },
+      {
+        "start_s": 11400.0,
+        "end_s": 11999.990364,
+        "pnl_increment": 29491.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "source": "logs/round1/claude_final_polish/sources/width045.py",
+    "source_sha256": "ce4f767d287aa3f8eb9e8317096fe8348d2161e2d7d199aa976c2f01def117cf",
+    "gross_pnl_before_penalty": 625776.0
+  },
+  "ast_equivalent_except_module_docstring": true,
+  "official_cli_match": true,
+  "verification": "Every result field exactly matches the unmodified organizer CLI.",
+  "limitation": "Sample tuning on previously consumed round1.csv. All native fees and latency included.",
+  "official_cli_result": "logs/round1/claude_final_polish/official_624076/result.json",
+  "data_file": "data/round1.csv",
+  "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+  "python_version": "3.13.16",
+  "engine_sha256": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+  "cli_sha256": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+  "models_sha256": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+  "base_strategy_sha256": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5",
+  "input_verified_pnl": 595441.83,
+  "improvement_vs_input": 28634.17,
+  "archive_file": "strategies/round1_quote_flow_624076.py",
+  "comparison_threshold": 650000,
+  "margin_vs_threshold": -25924.0,
+  "tests_passed": 56,
+  "local_submission_check_passed": true
+}

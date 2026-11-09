@@ -1,0 +1,62 @@
+{
+  "distribution_own_fills": {
+    "training_rows": 9479,
+    "actual_fills": 9479,
+    "source_sha256": "fbac09383938ddeb2a322ec9c4990e8eb31f6efde47cfad973f6d41efff3540c",
+    "horizon_us": 400000,
+    "clip": 5,
+    "weight_cap": 100,
+    "actual_policy_weight": 1,
+    "actual_fill_markout": {
+      "n": 9479,
+      "mean": 0.2898663116579853,
+      "sd": 1.366387128732678,
+      "quantiles": {
+        "0": -32.0,
+        ".001": -10.0,
+        ".01": -4.5,
+        ".05": -1.5,
+        ".25": 0.5,
+        ".5": 0.5,
+        ".75": 0.5,
+        ".95": 1.5,
+        ".99": 4.0,
+        ".999": 9.261000000000422,
+        "1": 14.5
+      },
+      "positive_fraction": 0.7559869184513134,
+      "negative_fraction": 0.21837746597742377,
+      "excess_kurtosis": 56.13087144817956
+    }
+  },
+  "distribution_mixed_fills": {
+    "training_rows": 42775,
+    "actual_fills": 9479,
+    "source_sha256": "08719112b81226c6eab9243f2b0f13feca9b14a261f0da65dcd9621ed26d4c7a",
+    "horizon_us": 400000,
+    "clip": 5,
+    "weight_cap": 100,
+    "actual_policy_weight": 5,
+    "actual_fill_markout": {
+      "n": 9479,
+      "mean": 0.2898663116579853,
+      "sd": 1.366387128732678,
+      "quantiles": {
+        "0": -32.0,
+        ".001": -10.0,
+        ".01": -4.5,
+        ".05": -1.5,
+        ".25": 0.5,
+        ".5": 0.5,
+        ".75": 0.5,
+        ".95": 1.5,
+        ".99": 4.0,
+        ".999": 9.261000000000422,
+        "1": 14.5
+      },
+      "positive_fraction": 0.7559869184513134,
+      "negative_fraction": 0.21837746597742377,
+      "excess_kurtosis": 56.13087144817956
+    }
+  }
+}

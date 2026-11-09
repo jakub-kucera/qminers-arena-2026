@@ -1,0 +1,97 @@
+{
+  "created_at_utc": "2026-11-07T19:34:46.060263+00:00",
+  "candidates": [
+    {
+      "name": "nonlinear_64_leaves15_mix0.5",
+      "file": "logs/round2/pretrained_alpha/sources/nonlinear_64_leaves15_mix0.5.py",
+      "source_sha256": "80554aaeebac55c27cdb48f6a3797c649f95d51dc44d88d0d6520e2e4628cf05",
+      "risk": "native",
+      "tracked_source": "strategies/round2_research/pretrained/nonlinear_64_leaves15_mix0.5.py"
+    },
+    {
+      "name": "nonlinear_64_leaves15_mix1.0",
+      "file": "logs/round2/pretrained_alpha/sources/nonlinear_64_leaves15_mix1.0.py",
+      "source_sha256": "e49335c99b04e0b4e5036d7a68d4dd10f0648ebd283a61cede716f732979386e",
+      "risk": "native",
+      "tracked_source": "strategies/round2_research/pretrained/nonlinear_64_leaves15_mix1.0.py"
+    },
+    {
+      "name": "nonlinear_128_leaves15_mix0.5",
+      "file": "logs/round2/pretrained_alpha/sources/nonlinear_128_leaves15_mix0.5.py",
+      "source_sha256": "5535a6d4ef29eec577220403df13694f0c6ff4f17235a07805ca9a91b86a5b1a",
+      "risk": "native",
+      "tracked_source": "strategies/round2_research/pretrained/nonlinear_128_leaves15_mix0.5.py"
+    },
+    {
+      "name": "nonlinear_128_leaves15_mix1.0",
+      "file": "logs/round2/pretrained_alpha/sources/nonlinear_128_leaves15_mix1.0.py",
+      "source_sha256": "b69d3587f7379fc40597d9112fa4fd0603235d75bfde17760529c24395fc0f9d",
+      "risk": "native",
+      "tracked_source": "strategies/round2_research/pretrained/nonlinear_128_leaves15_mix1.0.py"
+    }
+  ],
+  "fitting": {
+    "nonlinear_64_leaves15_mix0.5": {
+      "iterations": 64,
+      "leaves": 15,
+      "mix": 0.5,
+      "training_rows": 156344,
+      "training_data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+      "training_overlap_first60": true,
+      "no_absolute_price_time_or_ids": true,
+      "prediction_export_max_error": 0.0
+    },
+    "nonlinear_64_leaves15_mix1.0": {
+      "iterations": 64,
+      "leaves": 15,
+      "mix": 1.0,
+      "training_rows": 156344,
+      "training_data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+      "training_overlap_first60": true,
+      "no_absolute_price_time_or_ids": true,
+      "prediction_export_max_error": 0.0
+    },
+    "nonlinear_128_leaves15_mix0.5": {
+      "iterations": 128,
+      "leaves": 15,
+      "mix": 0.5,
+      "training_rows": 156344,
+      "training_data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+      "training_overlap_first60": true,
+      "no_absolute_price_time_or_ids": true,
+      "prediction_export_max_error": 0.0
+    },
+    "nonlinear_128_leaves15_mix1.0": {
+      "iterations": 128,
+      "leaves": 15,
+      "mix": 1.0,
+      "training_rows": 156344,
+      "training_data_sha256": "4be5b9521e9d57b335d0a68c54723214936cdccf5fc3db00ac95d061e838661b",
+      "training_overlap_first60": true,
+      "no_absolute_price_time_or_ids": true,
+      "prediction_export_max_error": 0.0
+    }
+  },
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "29e4442aa5ada17de2d754a64ddda3fd8c5c1f1068b5eec3b70f968b9debb179",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
+  },
+  "scope": "Full PUBLIC sample-tuning replay; first60% used for fitting, later40% already consumed by previous selection/check."
+}

@@ -1,0 +1,185 @@
+{
+  "scope": "Cold-start diagnostic on the already-consumed later40% of public data.\n\nThis is not a new holdout. Native book starts empty; unobserved orders born\nbefore the cut are not reconstructed. Time is rebased exactly in microseconds.\nIt tests dependence on first-hour online state, not hidden-data performance.\n",
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "29e4442aa5ada17de2d754a64ddda3fd8c5c1f1068b5eec3b70f968b9debb179",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
+  },
+  "data_sha256": "525d7393a82076638bba923c94bf297acfdc70987d3111ad47b152e4bcfe04b6",
+  "results": {
+    "baseline162253": {
+      "result": {
+        "fills": 5310,
+        "traded_volume": 335730,
+        "inventory": -100,
+        "cash": 1006585.0,
+        "mark_price": 9690.0,
+        "breach_penalty": 336.81,
+        "pnl": 37248.19,
+        "pnl_se": 14673.086825362123,
+        "abs_inventory_q50": 53,
+        "abs_inventory_q68": 96,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 43.52968850010075,
+      "max_abs_inventory": 184,
+      "max_potential_inventory_at_submission": 312,
+      "max_drawdown_1s": 12705.000000000004,
+      "submissions": 20204,
+      "order_status_counts": {
+        "accepted": 20204,
+        "canceled": 15952,
+        "partially_filled": 2948,
+        "filled": 4251,
+        "modified": 371,
+        "rejected": 98
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 600.0,
+          "pnl_increment": 6762.0
+        },
+        {
+          "start_s": 600.0,
+          "end_s": 1200.0,
+          "pnl_increment": 16424.19
+        },
+        {
+          "start_s": 1200.0,
+          "end_s": 1800.0,
+          "pnl_increment": 4730.0
+        },
+        {
+          "start_s": 1800.0,
+          "end_s": 2399.990324,
+          "pnl_increment": 9332.000000000004
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {},
+      "source": "strategies/round2_fill_value_162253.py",
+      "source_sha256": "1e06031145b06a67bd0b661c27af3d338b46b19b2514d29f1c9cd06046da3c49",
+      "data_sha256": "525d7393a82076638bba923c94bf297acfdc70987d3111ad47b152e4bcfe04b6",
+      "strategy_state": {
+        "_labels": 104243,
+        "_mass": 103002.65566724297
+      },
+      "rates": {
+        "observed_duration_seconds": 2399.990324,
+        "net_pnl_per_minute": 931.2085043222868,
+        "volume_per_minute": 8393.283838922678,
+        "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+      }
+    },
+    "candidate": {
+      "result": {
+        "fills": 5291,
+        "traded_volume": 325048,
+        "inventory": -100,
+        "cash": 1015421.0,
+        "mark_price": 9690.0,
+        "breach_penalty": 236.81,
+        "pnl": 46184.19,
+        "pnl_se": 10139.636347521455,
+        "abs_inventory_q50": 50,
+        "abs_inventory_q68": 95,
+        "abs_inventory_q95": 100,
+        "abs_inventory_q997": 100
+      },
+      "runtime_seconds": 60.429486540844664,
+      "max_abs_inventory": 184,
+      "max_potential_inventory_at_submission": 300,
+      "max_drawdown_1s": 6780.0,
+      "submissions": 19899,
+      "order_status_counts": {
+        "accepted": 19899,
+        "canceled": 15660,
+        "partially_filled": 2883,
+        "filled": 4238,
+        "modified": 611,
+        "rejected": 120
+      },
+      "blocks": [
+        {
+          "start_s": 0.0,
+          "end_s": 600.0,
+          "pnl_increment": 6484.0
+        },
+        {
+          "start_s": 600.0,
+          "end_s": 1200.0,
+          "pnl_increment": 16606.19
+        },
+        {
+          "start_s": 1200.0,
+          "end_s": 1800.0,
+          "pnl_increment": 12190.000000000004
+        },
+        {
+          "start_s": 1800.0,
+          "end_s": 2399.990324,
+          "pnl_increment": 10904.0
+        }
+      ],
+      "config": {
+        "order_accept_delay_ms": 5,
+        "public_depth": 20,
+        "run_log_path": null,
+        "book_delta_log_path": null,
+        "event_log_path": null,
+        "trade_log_path": null,
+        "max_position": 100,
+        "max_potential_position": 1000,
+        "position_breach_penalty_per_second": 10000.0,
+        "min_log_level": "INFO",
+        "show_progress": false,
+        "progress_fd": 2
+      },
+      "boundary_pnl": {},
+      "source": "strategies/round2_distribution_ensemble_shock_180895.py",
+      "source_sha256": "c6f6a25629cb3ba94924305f17793c8c8426dbe14b418e6607a73b5f132a3d75",
+      "data_sha256": "525d7393a82076638bba923c94bf297acfdc70987d3111ad47b152e4bcfe04b6",
+      "strategy_state": {
+        "_labels": 104242,
+        "_mass": 103001.67731507361
+      },
+      "rates": {
+        "observed_duration_seconds": 2399.990324,
+        "net_pnl_per_minute": 1154.6094050002514,
+        "volume_per_minute": 8126.232762261754,
+        "limitation": "Observed-tape diagnostics, not a projection for a larger or different dataset."
+      }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "file": "strategies/round1_best.py",
+  "source_sha256": "91d79f92cbb87590b3ecd1f4c5ab85fb89bc7aa631d56175a403ffbf76dbee92",
+  "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+  "reported_comparison_score": 430000,
+  "margin": 46052.0,
+  "deadline_user_provided": "18:00 Europe/Prague",
+  "selection": "f5_h100000_b1.0_r0.01",
+  "screened_models": 18,
+  "development_models": 5,
+  "validation_candidates": 3,
+  "development_pnl": 280322.0,
+  "selection_validation_pnl": 98121.0,
+  "final_untouched_segment_pnl": 97609.0,
+  "result": {
+    "fills": 22245,
+    "traded_volume": 2309320,
+    "inventory": 100,
+    "cash": -526848.0,
+    "mark_price": 10029.0,
+    "breach_penalty": 0.0,
+    "pnl": 476052.0,
+    "pnl_se": 10442.374467640031,
+    "abs_inventory_q50": 86,
+    "abs_inventory_q68": 100,
+    "abs_inventory_q95": 100,
+    "abs_inventory_q997": 100
+  },
+  "sampled_max_drawdown": 890.0,
+  "max_abs_inventory": 100,
+  "max_submitted_potential_inventory": 100,
+  "all_ten_minute_blocks_positive": true,
+  "tests_passed": 39,
+  "verification": "Official CLI and audited replay match in every result field; source and data SHA-256 verified.",
+  "limitations": [
+    "New model has not been evaluated by the competition server.",
+    "Independent final-segment evidence applies to this supplied file; a different hidden file can behave differently.",
+    "Maximum drawdown is measured on the one-second PnL curve."
+  ]
+}

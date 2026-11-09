@@ -1,0 +1,161 @@
+{
+  "name": "interval_20000_overlap_True_target_20",
+  "result": {
+    "result": {
+      "fills": 23779,
+      "traded_volume": 2173328,
+      "inventory": 100,
+      "cash": -458136.0,
+      "mark_price": 10029.0,
+      "breach_penalty": 0.0,
+      "pnl": 544764.0,
+      "pnl_se": 11237.89934498205,
+      "abs_inventory_q50": 97,
+      "abs_inventory_q68": 100,
+      "abs_inventory_q95": 100,
+      "abs_inventory_q997": 100
+    },
+    "runtime_seconds": 107.12268600007519,
+    "max_abs_inventory": 100,
+    "max_potential_inventory_at_submission": 100,
+    "max_drawdown_1s": 752.0,
+    "submissions": 65870,
+    "order_status_counts": {
+      "accepted": 65870,
+      "partially_filled": 18217,
+      "canceled": 46655,
+      "filled": 19214,
+      "rejected": 114
+    },
+    "blocks": [
+      {
+        "start_s": 0.0,
+        "end_s": 600.0,
+        "pnl_increment": 26171.0
+      },
+      {
+        "start_s": 600.0,
+        "end_s": 1200.0,
+        "pnl_increment": 25849.0
+      },
+      {
+        "start_s": 1200.0,
+        "end_s": 1800.0,
+        "pnl_increment": 24962.0
+      },
+      {
+        "start_s": 1800.0,
+        "end_s": 2400.0,
+        "pnl_increment": 25758.0
+      },
+      {
+        "start_s": 2400.0,
+        "end_s": 3000.0,
+        "pnl_increment": 25046.0
+      },
+      {
+        "start_s": 3000.0,
+        "end_s": 3600.0,
+        "pnl_increment": 31751.0
+      },
+      {
+        "start_s": 3600.0,
+        "end_s": 4200.0,
+        "pnl_increment": 28657.0
+      },
+      {
+        "start_s": 4200.0,
+        "end_s": 4800.0,
+        "pnl_increment": 26663.0
+      },
+      {
+        "start_s": 4800.0,
+        "end_s": 5400.0,
+        "pnl_increment": 27384.0
+      },
+      {
+        "start_s": 5400.0,
+        "end_s": 6000.0,
+        "pnl_increment": 26831.0
+      },
+      {
+        "start_s": 6000.0,
+        "end_s": 6600.0,
+        "pnl_increment": 28384.0
+      },
+      {
+        "start_s": 6600.0,
+        "end_s": 7200.0,
+        "pnl_increment": 29413.0
+      },
+      {
+        "start_s": 7200.0,
+        "end_s": 7800.0,
+        "pnl_increment": 24573.0
+      },
+      {
+        "start_s": 7800.0,
+        "end_s": 8400.0,
+        "pnl_increment": 29664.0
+      },
+      {
+        "start_s": 8400.0,
+        "end_s": 9000.0,
+        "pnl_increment": 28552.0
+      },
+      {
+        "start_s": 9000.0,
+        "end_s": 9600.0,
+        "pnl_increment": 26204.0
+      },
+      {
+        "start_s": 9600.0,
+        "end_s": 10200.0,
+        "pnl_increment": 25569.0
+      },
+      {
+        "start_s": 10200.0,
+        "end_s": 10800.0,
+        "pnl_increment": 30416.0
+      },
+      {
+        "start_s": 10800.0,
+        "end_s": 11400.0,
+        "pnl_increment": 26886.0
+      },
+      {
+        "start_s": 11400.0,
+        "end_s": 11999.990364,
+        "pnl_increment": 26031.0
+      }
+    ],
+    "config": {
+      "order_accept_delay_ms": 5,
+      "public_depth": 20,
+      "run_log_path": null,
+      "book_delta_log_path": null,
+      "event_log_path": null,
+      "trade_log_path": null,
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "min_log_level": "INFO",
+      "show_progress": false,
+      "progress_fd": 2
+    },
+    "source": "logs/round1/sampling_combine/sources/interval_20000_overlap_True_target_20.py",
+    "source_sha256": "d9efb2ff8ae9faf69c968ca563b42add973eb1ef37552f41987e583820d96e9e"
+  },
+  "parameters": {
+    "interval_us": 20000,
+    "overlap": true,
+    "response_cap": 20,
+    "source_sha256": "d9efb2ff8ae9faf69c968ca563b42add973eb1ef37552f41987e583820d96e9e"
+  },
+  "limitation": "Tuned on already evaluated round-1 data.",
+  "file": "strategies/round1_queue_545k.py",
+  "source_sha256": "d9efb2ff8ae9faf69c968ca563b42add973eb1ef37552f41987e583820d96e9e",
+  "data_file": "data/round1.csv",
+  "data_sha256": "362e8208be1eeec32ad190d097774e26448f0d5149575a8e1b1efd1db1735940",
+  "verification": "Unmodified simulator CLI matches every result field from audited replay; 43 tests and local documented-rule checks pass."
+}

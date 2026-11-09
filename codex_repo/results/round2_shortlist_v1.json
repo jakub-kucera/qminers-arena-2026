@@ -1,0 +1,68 @@
+{
+  "status": "Six source snapshots frozen before middle-public20% outcomes were observed.",
+  "public_data_sha256": "88ff641e962540c66fa1cc4a3547585d31838d0929340150690cabb4f3cfb9f4",
+  "local_experiment": "logs/round2_selection_v1",
+  "next20_previously_replayed": false,
+  "last20_previously_replayed": false,
+  "selected_on_next20": false,
+  "selection_in_progress": true,
+  "candidates": [
+    {
+      "name": "absolute_variance_tau3_risk200",
+      "file": "strategies/round2_shortlist_v1/absolute_variance_tau3_risk200.py",
+      "source_sha256": "4080cb3fc553d91a2849b6434e6dc563081b42d710b74c5bbcf2d0c4e1e62cba",
+      "development_pnl": 112379.0
+    },
+    {
+      "name": "absolute_vol_tau10_risk200_power2",
+      "file": "strategies/round2_shortlist_v1/absolute_vol_tau10_risk200_power2.py",
+      "source_sha256": "1662b4f4ac9790f2a64cdda279cbacd1927f399db029809d320d9e8333048527",
+      "development_pnl": 101646.0
+    },
+    {
+      "name": "absolute_vol_tau3_risk100",
+      "file": "strategies/round2_shortlist_v1/absolute_vol_tau3_risk100.py",
+      "source_sha256": "380e07ed21ca841323f3cddc0b2dd095d0a248608ef05ca929735aa4a4821264",
+      "development_pnl": 102121.0
+    },
+    {
+      "name": "queue25target_jump",
+      "file": "strategies/round2_shortlist_v1/queue25target_jump.py",
+      "source_sha256": "a0fa889c5e50ac1b25dd547a0b39d1e0ad7ae8edf866a53f26137eca982dd0e5",
+      "development_pnl": 38104.0
+    },
+    {
+      "name": "queue50_pause500",
+      "file": "strategies/round2_shortlist_v1/queue50_pause500.py",
+      "source_sha256": "896396932203c056ca0607556617e92c59dc837bddc511ee9ede42534f4a9cb4",
+      "development_pnl": 53397.0
+    },
+    {
+      "name": "round2_flat",
+      "file": "strategies/round2_shortlist_v1/round2_flat.py",
+      "source_sha256": "2e386e9f37b28e88f664fccd614f71b1f84bc11ea39be4dfe0f3a045ac00612d",
+      "development_pnl": 0.0
+    }
+  ],
+  "native": {
+    "python": "3.13.16",
+    "config": {
+      "max_position": 100,
+      "max_potential_position": 1000,
+      "position_breach_penalty_per_second": 10000.0,
+      "order_accept_delay_ms": 5,
+      "public_depth": 20
+    },
+    "source_hashes": {
+      "simulator.py": "c37b2262186f977df85df783b5422edf67d79d3741936c442084ca2e64e0d4c4",
+      "main.py": "8bf3f82e9d5f72c47a2d1dcf86f88a68391fccbc2e3db3ceddad005a6c5d8a14",
+      "models.py": "d66d6155376fae92285dae5d749a5c0d58b94a8f1e5dc01a37da6d0ac6974f63",
+      "strategy.py": "464830f41c07153143485f5796cda61b974ee2dc9dd0637f4acee1f8e64083f5"
+    },
+    "evaluation_sources": {
+      "round2_workbench.py": "29e4442aa5ada17de2d754a64ddda3fd8c5c1f1068b5eec3b70f968b9debb179",
+      "benchmark.py": "d876e60d5dac997a563226d84bcf7faabab86ffc500f8ea65b8733423e5d7c56",
+      "search_passive.py": "d756912eb30500e77094063417441516e0855eebfa20aec68b8a5b3d9de3bd0a"
+    }
+  }
+}

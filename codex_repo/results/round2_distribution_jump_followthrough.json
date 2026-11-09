@@ -1,0 +1,159 @@
+{
+  "scope": "Reused full-public descriptive outcomes; no executable-price/latency profitability claim",
+  "minimum_initial_jump_ticks": 2,
+  "minimum_cluster_spacing_us": 100000,
+  "groups": {
+    "all": {
+      "5000": {
+        "n": 406,
+        "mean_signed_followthrough": 0.3682266009852217,
+        "median": 0.0,
+        "reversal_fraction": 0.06157635467980296
+      },
+      "25000": {
+        "n": 406,
+        "mean_signed_followthrough": 1.7044334975369457,
+        "median": 1.0,
+        "reversal_fraction": 0.15517241379310345
+      },
+      "100000": {
+        "n": 406,
+        "mean_signed_followthrough": 2.5246305418719213,
+        "median": 1.5,
+        "reversal_fraction": 0.16502463054187191
+      },
+      "400000": {
+        "n": 406,
+        "mean_signed_followthrough": 2.836206896551724,
+        "median": 2.0,
+        "reversal_fraction": 0.2512315270935961
+      },
+      "1000000": {
+        "n": 406,
+        "mean_signed_followthrough": 2.793103448275862,
+        "median": 2.0,
+        "reversal_fraction": 0.37192118226600984
+      },
+      "2000000": {
+        "n": 406,
+        "mean_signed_followthrough": 1.769704433497537,
+        "median": 2.0,
+        "reversal_fraction": 0.3669950738916256
+      }
+    },
+    "spread_le2": {
+      "5000": {
+        "n": 75,
+        "mean_signed_followthrough": 0.04666666666666667,
+        "median": 0.0,
+        "reversal_fraction": 0.04
+      },
+      "25000": {
+        "n": 75,
+        "mean_signed_followthrough": 3.18,
+        "median": 0.0,
+        "reversal_fraction": 0.12
+      },
+      "100000": {
+        "n": 75,
+        "mean_signed_followthrough": 4.533333333333333,
+        "median": 1.0,
+        "reversal_fraction": 0.16
+      },
+      "400000": {
+        "n": 75,
+        "mean_signed_followthrough": 4.62,
+        "median": 1.5,
+        "reversal_fraction": 0.24
+      },
+      "1000000": {
+        "n": 75,
+        "mean_signed_followthrough": 3.22,
+        "median": 1.5,
+        "reversal_fraction": 0.38666666666666666
+      },
+      "2000000": {
+        "n": 75,
+        "mean_signed_followthrough": 1.52,
+        "median": 2.0,
+        "reversal_fraction": 0.4
+      }
+    },
+    "spread_gt2": {
+      "5000": {
+        "n": 331,
+        "mean_signed_followthrough": 0.44108761329305135,
+        "median": 0.0,
+        "reversal_fraction": 0.06646525679758308
+      },
+      "25000": {
+        "n": 331,
+        "mean_signed_followthrough": 1.3700906344410877,
+        "median": 1.0,
+        "reversal_fraction": 0.16314199395770393
+      },
+      "100000": {
+        "n": 331,
+        "mean_signed_followthrough": 2.069486404833837,
+        "median": 2.0,
+        "reversal_fraction": 0.1661631419939577
+      },
+      "400000": {
+        "n": 331,
+        "mean_signed_followthrough": 2.43202416918429,
+        "median": 2.0,
+        "reversal_fraction": 0.2537764350453172
+      },
+      "1000000": {
+        "n": 331,
+        "mean_signed_followthrough": 2.6963746223564953,
+        "median": 2.0,
+        "reversal_fraction": 0.3685800604229607
+      },
+      "2000000": {
+        "n": 331,
+        "mean_signed_followthrough": 1.8262839879154078,
+        "median": 2.0,
+        "reversal_fraction": 0.3595166163141994
+      }
+    },
+    "jump_ge5": {
+      "5000": {
+        "n": 40,
+        "mean_signed_followthrough": 1.0875,
+        "median": 0.0,
+        "reversal_fraction": 0.075
+      },
+      "25000": {
+        "n": 40,
+        "mean_signed_followthrough": 1.625,
+        "median": 0.0,
+        "reversal_fraction": 0.35
+      },
+      "100000": {
+        "n": 40,
+        "mean_signed_followthrough": 4.225,
+        "median": 0.5,
+        "reversal_fraction": 0.35
+      },
+      "400000": {
+        "n": 40,
+        "mean_signed_followthrough": 4.65,
+        "median": 0.75,
+        "reversal_fraction": 0.4
+      },
+      "1000000": {
+        "n": 40,
+        "mean_signed_followthrough": 4.625,
+        "median": 3.5,
+        "reversal_fraction": 0.375
+      },
+      "2000000": {
+        "n": 40,
+        "mean_signed_followthrough": 3.3875,
+        "median": 3.0,
+        "reversal_fraction": 0.4
+      }
+    }
+  }
+}
