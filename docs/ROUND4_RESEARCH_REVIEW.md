@@ -170,3 +170,77 @@ small action head are preferable experiments to another costly online ridge expa
 No 10-20% PnL gain is established here. Another knob grid has weak prospects for that
 size of advance; a meaningful gain needs better execution, better action targets, or
 new causal information at decisions where the position can actually change.
+
+## Follow-up: would a better classifier help? (09:10 CET)
+
+New evidence from main `aaa1be0`: X1R3 validation is 1,724,973, **27,812 below F5**,
+winning only 2/12 segments, with the largest losses in the last third. W2 is 1,754,574,
+only 1,789 above F5 (a tie). Use F5/W2 as the validation baseline for the next research
+step; X1R3 remains an informative public-tape comparison. Source: round4 HANDOVER,
+upload rows 3-4. This supersedes the earlier absence of an X1R3 validation result.
+
+The current core learner is a 39-feature online regression of the 400-ms mid move,
+with response clipping at 20 ticks and Huber weights with delta 6. The earlier MLP
+and HistGradientBoosting experiments were also return regressors. R4-PG did try a
+binary positive-net-return label through a linear-probability model and failed, so
+classification by itself is not an untried cure. The R3 real-trained MLP improved
+R-squared from .181 to .203 but its stacked P2 gained only 94 on F3's held-out quarter.
+
+**Recommended controlled test: a small distributional classifier with short history.**
+Start at the same 400-ms horizon, using five fixed return bins (illustrative cutpoints
+-3, -0.5, +0.5, +3 ticks, chosen before evaluation). Predict all five probabilities,
+including large moves in both directions. Estimate within-bin payoff magnitudes on
+earlier training data only, shrinking sparse tails; an open-ended tail must not be
+represented by its cutoff. Convert probabilities and conditional magnitudes into
+expected ticks, and retain tail probabilities as separately testable information.
+Do not trade on the most likely direction alone: 70% of +1 and 30% of -5 has a
+negative mean despite a 70% positive rate. Spread, executable depth and inventory
+belong in the action rule; a future-mid class is not realized trade PnL.
+
+The concrete hypothesis is that one robust mean suppresses useful distinctions
+between normal noise, continuation and a rare large move. Huber weighting reduces
+the influence of large residuals, while jump windows contain much of the PnL.
+That is motivation, not proof that the downweighted residuals are predictable.
+The later literature review found that R4-S1 already ablated Huber: turning it off
+gained only about .1k, and most alternative deltas lost (round4 stats.md, part 3).
+Do not treat removing Huber as an untested fix. Use those existing regression controls
+so any improvement can be attributed to target, history or model capacity separately.
+
+Training design matters more than making a large network:
+
+- Start with the actual F5 features and causal stored forecast, then add a small
+  history of forecast, latent gap, fresh-placement asymmetry and depth at roughly
+  50/200/1,000 ms. Compare the same model with and without history. Existing rolling
+  features do not establish that joint histories add information; measure the increment.
+- Use real round 4 first. Earlier rounds are an explicit transfer ablation, synthetic
+  draws an explicit augmentation ablation, with equal attention to tape/regime balance.
+  Do not let millions of generated rows decide the target distribution by default.
+- Keep chronological blocks and purge training labels whose future window crosses
+  the next block. Fit normalization and calibration only on earlier blocks. A mirror
+  and its original belong in the same fold. Split by episodes as well as time when
+  reporting uncertainty: many neighboring 20-ms rows can describe one jump.
+- First preserve natural class frequencies. If balancing classes or oversampling
+  events, correct for sampling probabilities and recalibrate on an earlier natural
+  frequency block. Focal loss or class weights are not automatic probability improvements.
+- Compare a multinomial linear control with a shallow boosted-tree classifier;
+  a tiny MLP on the same history is a secondary capacity check. Keep the search small.
+  Freeze the nonlinear model at inference; adapt only a small calibration layer if
+  that ablation helps. Exact tree export or a small numpy network is possible, but
+  measure runtime before relying on the 900-s server budget.
+- Separate probability quality (log loss, calibration and tail reliability) from
+  decision quality (expected ticks near the take bar, changed positions, full-engine
+  paired PnL and worst blocks). A model can improve one and lose on the other.
+
+First experiment matrix: original regression; same inputs with the distributional
+target; distributional target plus short history. Use equal data budgets and fixed
+training-only policy calibration. Full replay must include the baseline's later
+decisions; offline markout is just a screen. Keep an unchanged baseline fallback.
+If classification improves only accuracy or log loss, with no stable executable PnL,
+stop. This remains a proposal: no classifier was trained in this review.
+
+The subsequent [wiki transfer review](../references/wiki/concepts/arena-event-models.md)
+connects this experiment to typed event histories and MRR sign surprise, and records
+why generic quoting, raw OFI, a new latent filter and synthetic RL are lower priority.
+It also incorporates R4-FA (main d95ab9e): the earlier section 3's fresh-placement
+change-point proposal was rejected by the offline audit, because the contradictory
+orders lag the filter. No strategy PnL gain was established by that audit.
