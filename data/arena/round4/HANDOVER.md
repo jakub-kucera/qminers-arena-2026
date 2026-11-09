@@ -106,9 +106,15 @@ of the public tape. Mark the final before 12:00.
 
 ## Portal against local
 <!-- the validation tape against the public tape: PnL a second, fills and lots a second, as in round 3 -->
+The final, R4-W2: validation 1,754,574 over 12,000 s against 1,029,781 over 6,000 s on round4_public, **0.85x the public
+rate a second** (round 3 0.87x). Every local gain of +13k to +23k (MH3, X1R3, W3) lost 16-28k on validation.
 
 ## Private run against public
 <!-- after 12:00 -->
+**The final was R4-W2** (`r4_W2_warm10k.py`, submission ee2a564f-14b8-410e-98b7-4c4fdb9a9e72, marked final on the
+dashboard). Its private run (9d366117-7fa0-4012-bb68-ee07b758be6c, 12:01, 10 min 58 s): **+1,659,546.00**, 0.946x its
+validation score; 94,026 fills, 1,168,488 lots, end position +92 at a mark of 10,160, cash 724,826, penalty 0, PnL
+standard error 51,872.77, |position| quantiles 100 / 100 / 100 / 100.
 
 ## Fill model and mark
 The organisers' simulator as given (5 ms latency, FIFO). The PnL marks the position by walking the book
@@ -125,6 +131,14 @@ Ticks and lots as in the tape; the position limit 100 (penalty 10,000/s beyond i
 
 ## Leaderboard
 <!-- leaderboard.json saved here; experiments.day.leaderboard_curves --read verdict; our standing -->
+Published after the event, although the Info page said round 4 would get none (read 9 Nov; `leaderboard.json` here,
+the rounds 1-3 layout, no series). **17th of 52 with +1,659,546.** Every team was profitable: mean 1,474,908, sample
+sd 336,360, so **z4 = 0.549**. Team 1 2,258,468 (its third round win), Team 3 2,059,867, Team 2 1,957,127;
+10th 1,756,312. The curves per 1,000 s: `leaderboard_curves.md` here (the warm-up gap is gone; we trail the ranks
+2-16 median in all 12 segments, -158k in total).
+
+**Overall (0.8 z1 + z2 + z3 + 1.2 z4, computed from the four leaderboards): 16th of 61, 2.489**; 15th Team 15 2.508, 17th Team 17 2.193; Team 1 8.687, Team 2 6.978, Team 3 6.896 lead. The whole event:
+`RESULTS.md` at the repository root.
 
 ## Next round
 None: round 4 is the last.

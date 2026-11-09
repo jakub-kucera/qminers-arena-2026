@@ -1,5 +1,8 @@
 # Qminers Algo Trade Arena prep
 
+**The Arena is over (7–8 Nov 2026):** [`RESULTS.md`](RESULTS.md) has where we finished (16th of 61), the final bot of
+each round and every upload.
+
 This repository is our team's copy of the Qminers starter, `QminersOrg/qminers-algo-arena` (its README, as they wrote it, is
 [`STARTER.md`](STARTER.md); its `simulator/`, `explorer/`, `strategies/` and `data/sample.csv.gz` are at the root as they
 wrote them), merged with our prep for the Arena: the tools below, built before the event on IMC Prosperity data.

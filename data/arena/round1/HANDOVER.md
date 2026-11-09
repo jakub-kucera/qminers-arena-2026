@@ -4,6 +4,10 @@ The template (`docs/HANDOVER_TEMPLATE.md`): copy it to `data/arena/round<N>/HAND
 fill it in during the round and finish it by deadline − 0:10; the template itself stays as it is. Committed and pushed so the other laptop has it (ON_THE_DAY.md, "Handover note"); the private
 run's results and `leaderboard.json` go in this folder too.
 
+**Correction (9 Nov, the dashboard's submission list):** R1-C12 (v6) *was* uploaded, at 17:47 (be7ed3eb, +622,920.99),
+and it was the final; the lines below that call it "not uploaded" and C11 the final were written before that upload.
+The private run (602,526.53) is C12's, as "Private run against public" says. The whole event: `RESULTS.md`.
+
 ## Uploaded
 <!-- each upload: file, time, why; local PnL under all / worse / --resting; the metrics expected (arena.backtest --metrics) -->
 - 13:16, `python/bots/qminers/candidates/r1_F3_full_room.py` (A0: F3 with SESSION_S 1e9), round_start's best on round1.csv. Expected on the public data: pnl 425,553.00, fills 30,452, traded volume 2,645,992, end position +100, cash -577,347.00, mark price 10,029.00, breach 0, pnl_se 11,263.42, |inv| q50/68/95/99.7 98/100/100/100; exchange-simulator 26 s here.

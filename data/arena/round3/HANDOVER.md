@@ -5,7 +5,8 @@ fill it in during the round and finish it by deadline − 0:10; the template its
 run's results and `leaderboard.json` go in this folder too.
 
 ## Round 3 result (read 8 Nov 06:48 from the portal's leaderboard, Round 3, private backtest)
-- **17th of 53, +827,253 private** with R3-F3 (validation +883,559: private/validation 0.94). Winner Team 1 +1,458,005;
+- **17th of 53, +827,253 private** with R3-F5 (4b70c626, validation +888,195: private/validation 0.93; corrected 9 Nov
+  from the dashboard, this line first said R3-F3). Winner Team 1 +1,458,005;
   2nd Team 3 1,240,532; 3rd Team 2 1,198,048; 10th 929,224; median of the 52 positive teams ~745k.
 - **z3 = 0.467** (mean 694,136, sd 284,949 over the 52 positive teams). **Overall after three rounds (0.8 z1 + z2 + z3,
   z1/z2 from the organisers' deck): 15th of 61, 1.835;** 1st Team 1 5.918, 5th Team 5 3.893 (gap 2.06).

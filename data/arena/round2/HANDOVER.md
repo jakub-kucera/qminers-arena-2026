@@ -6,6 +6,10 @@ run's results and `leaderboard.json` go in this folder too.
 
 ## Round 2 results, marked (00:00)
 
+**Correction (9 Nov, the dashboard's submission list):** the final was **R2-L9** (`r2_L9_taker_huber.py`, bc0a2c50,
+uploaded 00:14, +873,719), not R2-L8: L9 came after this section was written (round 3's handover, "Update 8 Nov
+00:25"). Its private run: +742,470 (22nd of 59). The whole event: `RESULTS.md`.
+
 **The final: R2-L8** (`python/bots/qminers/candidates/r2_L8_quote_switch.py`, submission `5c00a472-759f-42cf-8cb3-e9557734f081`, **+826,778.00 on validation**): R2-L3 (the pure forecast taker, +804,018) with one-lot quotes switched on only while the 5-s price speed is below 2.5 ticks/s. +22.8k over L3 on validation, and at least L3 on every local tape (+69k on round 1's calm tape). Every file, number and command is on `data/arena/round2/CANDIDATES.md`; the server's result folders are in `data/arena/round2/*_res/` (ignored by git: result.json, metadata.json, the 1-s pnl.csv; no logs).
 
 ### (a) Every upload, on the server's validation tape (12,000 s; the public tape is 6,000 s, so "ratio" = validation / (2 x public))

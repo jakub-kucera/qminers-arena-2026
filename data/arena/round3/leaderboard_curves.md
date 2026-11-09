@@ -23,7 +23,7 @@ clipboard refused); re-read them from the page if needed. PnL in thousands.
 | Team 17 (14) | 61 | 70 | 37 | 91 | 38 | 69 | 69 | 107 | 75 | 111 | 51 | 79 | 858 |
 | Team 12 (15) | 57 | 83 | 45 | 89 | 47 | 69 | 51 | 102 | 69 | 93 | 44 | 84 | 833 |
 | Team 24 (16) | 53 | 81 | 71 | 75 | 21 | 61 | 50 | 106 | 90 | 97 | 50 | 77 | 832 |
-| **ThatsMyQuant (17, us: R3-F3)** | **37** | 60 | **35** | 84 | 46 | 65 | 76 | 113 | 90 | 102 | **35** | 85 | 827 |
+| **ThatsMyQuant (17, us: R3-F5)** | **37** | 60 | **35** | 84 | 46 | 65 | 76 | 113 | 90 | 102 | **35** | 85 | 827 |
 
 ## Findings
 - **Our first 1,000 s is the weakest of the top 17: 37k**, against 53-97k for ranks 2-16 and 136k for Team 1. By 100 s:
