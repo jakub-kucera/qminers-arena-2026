@@ -17,6 +17,14 @@ plays. [`RESULTS.md`](RESULTS.md) has the standings, each round's final bot and 
 | 3 | R3-F5: the taker + a filter of the hidden price + a jump-aware bar | 888,195 | 827,253 | 17th of 53 |
 | 4 | R4-W2: R3-F5 with its ridge warm-started from the public tape | 1,754,574 | 1,659,546 | 17th of 52 |
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/pnl_vs_field-dark.png">
+  <img alt="Four small charts, one per round, of private PnL over the 12,000-second tape: our line rises steadily and finishes above the other teams' median in every round, in round 1 above their 90th percentile, while the round's winner pulls away, in round 2 with one large step." src="docs/img/pnl_vs_field-light.png">
+</picture>
+
+Every team's PnL rose in a nearly straight line; ours finished above the field's median in every round, while the
+winners (one team took rounds 2-4) pulled steadily away, in round 2 with a single step of about 148k at a jump.
+
 ## The model, round by round
 
 - **Round 1: a market maker.** 29 order-book features (fresh quote prices, one-second flow groups, imbalance), the
@@ -31,6 +39,29 @@ plays. [`RESULTS.md`](RESULTS.md) has the standings, each round's final bot and 
 - **Round 4: a warm start.** Round 3's curves showed our first 1,000 s was the weakest of the top 17; the final
   starts its ridge from the statistics it learned on round 4's public tape.
 
+### How good the forecast was
+
+On round 4's private tape (rebuilt from the server's logs; our Rust twin of the final makes 1,656,080 on it against
+the server's 1,659,546), the final bot's forecast of the next 400 ms correlates 0.50 with the move that followed
+(R² 0.22) over 4.85 million book events, a tape it had never seen. Binned, it sits on the diagonal until its ±2-tick
+cap, beyond which are the jumps:
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/forecast_calibration-dark.png">
+  <img alt="The forecast 400-ms move against the move that followed, in 20 bins: the points lie on the diagonal from -1.4 to +1.4 ticks; at the ±2-tick cap the real moves average about ±3.6 ticks." src="docs/img/forecast_calibration-light.png">
+</picture>
+
+Second by second, around a typical jump (the median-sized one after a quiet spell). The forecast is drawn at the
+time it was made for, so where the blue line moves before the mid, it saw the move coming; the jump at 0 itself
+came without warning, and the forecast caught up 0.3 s later:
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/img/jump_window-dark.png">
+  <img alt="Twenty seconds of round 4's private tape: the mid as steps, the filter's hidden price, the forecast made 0.4 s earlier tracking or leading the mid, and below it our position switching between +100 and -100 as the takes follow the forecast." src="docs/img/jump_window-light.png">
+</picture>
+
+The charts come from `python -m experiments.day.readme_charts` (its docstring has the steps).
+
 Every candidate is in [`python/bots/qminers/candidates/`](python/bots/qminers/candidates/), each file's docstring
 holding the notes of the bots it builds on; each round's reasoning is in `data/arena/round<N>/HANDOVER.md`, and every
 idea we tested, kept or dropped, with its numbers, in [`IDEAS.md`](IDEAS.md).
@@ -39,8 +70,15 @@ idea we tested, kept or dropped, with its numbers, in [`IDEAS.md`](IDEAS.md).
 
 [`rust/arena_sim/`](rust/arena_sim/) is a port of the organisers' Python exchange simulator that gives the same
 `result.json` and `pnl.csv` byte for byte, with Rust versions of our strategies whose runs match the Python bot
-files to the unit. A ridge-taker backtest of a round's public tape took 10-13 s in Rust against 140-180 s in Python,
-and the simpler strategies ran 50-90 times faster, so a round's grid ran hundreds of cells instead of five. From
+files to the unit. Measured on 9 Nov, one core each, the final bot on round 4's public tape (2.4 million events):
+
+| Engine | Time | PnL | Fills |
+|---|---:|---:|---:|
+| The organisers' Python simulator, `r4_W2_warm10k.py` | 156 s | 1,029,781 | 42,139 |
+| `arena_sim`, R4-W2 as `ridge_maker` | 21 s | 1,029,781 | 42,139 |
+
+That is the slowest case, a 39-feature ridge refitted every second; the simpler strategies ran 50-90 times faster,
+so a round's grid ran hundreds of cells instead of five. From
 round 3 on the rule was "Rust first": every candidate chosen in Rust, then checked once in Python before its upload
 (`python -m arena.qsim_rust`, `python -m experiments.day.family_rust`; [`rust/README.md`](rust/README.md)).
 
