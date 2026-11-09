@@ -10,7 +10,7 @@ usage (from the repository's root; matplotlib comes with the analysis group):
       --set PRIOR_MASS=10000 --threads 1
   uv run python -m experiments.day.readme_charts forecast PRED.csv        # writes docs/img/data/forecast.json
   # 2. the charts (from the committed docs/img/data/forecast.json, data/arena/field_curves.json and the private runs'
-  #    pnl.csv), light and dark
+  #    pnl.csv); macOS's Avenir Next and Menlo when present, else DejaVu
   uv run --group analysis python -m experiments.day.readme_charts render
 
 The tapes are the organisers' and are not in the repository; step 2 needs only committed files. The prediction log has
@@ -80,7 +80,7 @@ def forecast(pred_log: str, out: Path, bins: int = 20) -> None:
     print(f"{ok.sum():,} of {len(t):,} events; corr {corr:.3f}, R^2 {r2:.3f}; window at {t0 / 1e6:,.1f} s")
 
 
-def _private_pnl(r: int, step: int = 200) -> list[float]:
+def _private_pnl_at(r: int, step: int = 200) -> list[float]:
     rows = (ROOT / "data" / "arena" / PRIVATE[r] / "pnl.csv").read_text().split("\n")[1:]
     pnl = {}
     for row in rows:
@@ -94,90 +94,183 @@ def _private_pnl(r: int, step: int = 200) -> list[float]:
     return out
 
 
-def render(themes: list[str]) -> None:
-    import numpy as np
-    from arena import analysis as an
+# One dark "terminal" look for every chart (a single image reads on GitHub's light and dark pages alike). The three
+# hues sit in OKLCH L 0.64-0.66 and pass the dataviz skill's validator on this surface (CVD ΔE >= 10.8, contrast >= 3:1).
+STYLE = {"bg": "#0b0f14", "ink": "#e6edf3", "sub": "#8b949e", "grid": "#1c232c", "axis": "#30363d",
+         "us": "#00ae7b", "winner": "#cb7f00", "violet": "#8d75eb", "field": "#8b949e", "mid": "#c9d1d9",
+         "sans": ["Avenir Next", "Helvetica Neue", "DejaVu Sans"], "mono": ["Menlo", "DejaVu Sans Mono"]}
 
+
+def _setup():
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    plt.rcParams.update({
+        "font.family": STYLE["sans"], "font.size": 9, "text.color": STYLE["ink"],
+        "figure.facecolor": STYLE["bg"], "axes.facecolor": STYLE["bg"], "savefig.facecolor": STYLE["bg"],
+        "axes.edgecolor": STYLE["axis"], "axes.labelcolor": STYLE["sub"], "axes.labelsize": 8.5,
+        "axes.spines.top": False, "axes.spines.right": False, "axes.spines.left": False,
+        "axes.grid": True, "axes.grid.axis": "y", "grid.color": STYLE["grid"], "grid.linewidth": 0.8,
+        "xtick.color": STYLE["axis"], "ytick.color": STYLE["axis"], "xtick.labelcolor": STYLE["sub"],
+        "ytick.labelcolor": STYLE["sub"], "xtick.labelsize": 7.5, "ytick.labelsize": 7.5, "ytick.major.size": 0,
+        "legend.frameon": False, "legend.fontsize": 8.5, "lines.solid_capstyle": "round"})
+    return plt
+
+
+def _mono(ax):
+    for label in ax.get_xticklabels() + ax.get_yticklabels():
+        label.set_fontfamily(STYLE["mono"])
+
+
+def _heading(fig, title, subtitle, y=0.955):
+    fig.text(0.02, y, title, fontsize=15, fontweight="bold", color=STYLE["ink"], va="top")
+    fig.text(0.02, y - 0.075, subtitle, fontsize=9, color=STYLE["sub"], va="top")
+
+
+def _glow(line, width=4.5):
+    import matplotlib.patheffects as pe
+    line.set_path_effects([pe.Stroke(linewidth=width, foreground=line.get_color(), alpha=0.16), pe.Normal()])
+
+
+def _money(v, _=None):
+    return "0" if v == 0 else f"{v / 1000:g}M" if abs(v) >= 1000 else f"{v:g}k"
+
+
+def _legend(fig, items, y=0.77):
+    """A legend row of line samples, the labels in the subtitle's ink: identity never by colour alone."""
+    from matplotlib.lines import Line2D
+    handles = [Line2D([], [], color=color, lw=width) for color, _, width in items]
+    leg = fig.legend(handles, [label for _, label, _ in items], loc="center left", bbox_to_anchor=(0.012, y),
+                     ncols=len(items), handlelength=1.8, handletextpad=0.6, columnspacing=1.8, fontsize=8.5)
+    for text in leg.get_texts():
+        text.set_color(STYLE["sub"])
+
+
+def _pnl_panels(plt, field, scale):
+    import numpy as np
+    from matplotlib.ticker import FuncFormatter
+    fig, axes = plt.subplots(1, 4, figsize=(10.5, 4.0))
+    xs = np.arange(0, 12001, field["step_s"])
+    for r, ax in zip((1, 2, 3, 4), axes):
+        rows = np.array(field["rounds"][str(r)], float)
+        ox, oy = _private_curve(r)
+        fx = xs
+        if scale == "log":
+            keep, okeep = xs >= 200, ox >= 100
+            fx, rows, ox, oy = xs[keep], rows[keep], ox[okeep], oy[okeep]
+        X = (lambda v: v) if scale == "log" else (lambda v: v / 1000)
+        low = np.maximum(rows[:, 0], 0.5) if scale == "log" else rows[:, 0]
+        ax.fill_between(X(fx), low, rows[:, 2], color=STYLE["field"], alpha=0.14, lw=0)
+        ax.plot(X(fx), rows[:, 1], color=STYLE["field"], lw=1.1)
+        ax.plot(X(fx), rows[:, 3], color=STYLE["winner"], lw=1.6)
+        line, = ax.plot(X(ox), oy, color=STYLE["us"], lw=2.1)
+        _glow(line)
+        if scale == "log":
+            ax.set_xscale("log")
+            ax.set_yscale("log")
+            ax.set_xlim(100, 12000)
+            ax.set_ylim(1, 3000)
+            ax.grid(True, axis="both", which="major")
+            ax.xaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:g}" if v < 1000 else f"{v / 1000:g}k"))
+            ax.set_xlabel("seconds (log)")
+        else:
+            ax.set_xticks([0, 4, 8, 12])
+            ax.set_xlabel("thousand seconds")
+        ax.yaxis.set_major_formatter(FuncFormatter(_money))
+        ax.set_title(f"Round {r}  ·  {FINALS[r]}", loc="left", fontsize=10, fontweight="bold", color=STYLE["ink"], pad=8)
+        _mono(ax)
+    return fig, axes
+
+
+def _private_curve(r):
+    import numpy as np
+    rows = (ROOT / "data" / "arena" / PRIVATE[r] / "pnl.csv").read_text().split("\n")[1:]
+    pts = sorted((int(float(a)), float(b) / 1000) for a, b in (row.split(",") for row in rows if row))
+    return np.array([p[0] for p in pts]), np.array([p[1] for p in pts])
+
+
+def render() -> None:
+    import numpy as np
+    from matplotlib.ticker import FuncFormatter
+
+    plt = _setup()
     fc = json.loads((DATA / "forecast.json").read_text())
     field = json.loads((ROOT / "data" / "arena" / "field_curves.json").read_text())
     IMG.mkdir(parents=True, exist_ok=True)
-    thousands = an.FuncFormatter(lambda v, _: "0" if v == 0 else f"{v / 1000:.1f}M" if abs(v) >= 1000 else f"{v:.0f}k")
+    legend = [(STYLE["us"], "us", 2.1), (STYLE["winner"], "the round's winner", 1.6),
+              (STYLE["field"], "the other teams' median", 1.1)]
 
-    def heading(fig, title, subtitle, top=0.97):
-        fig.text(0.02, top, title, fontsize=11.5, fontweight="bold", color=c["ink"], va="top")
-        fig.text(0.02, top - 0.065, subtitle, fontsize=8.5, color=c["secondary"], va="top")
+    # 1. private PnL against the field, linear
+    fig, axes = _pnl_panels(plt, field, "linear")
+    _heading(fig, "Private PnL through each round",
+             "Each round's 12,000-s private tape, as the leaderboard showed it; the grey band is the other teams' "
+             "10th-90th percentile")
+    _legend(fig, legend)
+    fig.subplots_adjust(top=0.64, bottom=0.13, left=0.05, right=0.985, wspace=0.3)
+    fig.savefig(IMG / "pnl_vs_field.png", dpi=180)
+    plt.close(fig)
 
-    for theme in themes:
-        an.set_theme(theme)
-        c = an._t()
-        blue, orange, aqua = c["series"][0], c["series"][1], c["series"][2]
-        with an.mpl.rc_context(an._rc_params()):
-            # 1. the forecast against what happened
-            fig = an.Chart(figsize=(7.2, 4.6))
-            ax = fig.add_subplot()
-            pred = [b["pred"] for b in fc["bins"]]
-            real = [b["real"] for b in fc["bins"]]
-            lo, hi = min(pred + real) - 0.3, max(pred + real) + 0.3
-            ax.plot([lo, hi], [lo, hi], color=c["muted"], lw=1, ls=(0, (4, 3)), zorder=1)
-            ax.text(-1.15, -0.55, "a perfect forecast", color=c["muted"], fontsize=8, rotation=35, ha="center")
-            for cap in (-2, 2):
-                ax.axvline(cap, color=c["axis"], lw=0.8, zorder=1)
-            ax.text(2.06, lo + 0.25, "the forecast is capped at\n±2 ticks; beyond it are\nthe jumps", color=c["secondary"],
-                    fontsize=8, va="bottom")
-            ax.plot(pred, real, color=blue, lw=2, marker="o", ms=6, mec=c["surface"], mew=1.5, zorder=3)
-            ax.set_xlim(lo, hi)
-            ax.set_ylim(lo, hi)
-            ax.set_xlabel("the forecast 400-ms move of the mid (ticks), each bin's mean")
-            ax.set_ylabel("the move that followed (ticks)")
-            heading(fig, "The forecast against what happened",
-                    f"R4-W2 on round 4's private tape, which it had never seen: {fc['used'] / 1e6:.2f}M book events in 20 "
-                    f"equal bins; correlation {fc['corr']:.2f}, R² {fc['r2']:.2f}")
-            fig.subplots_adjust(top=0.83, bottom=0.12, left=0.1, right=0.97)
-            fig.savefig(IMG / f"forecast_calibration-{theme}.png", dpi=200)
+    # 2. the same on log-log axes: a constant earning rate is a straight line, the first minutes become visible
+    fig, axes = _pnl_panels(plt, field, "log")
+    _heading(fig, "The same curves on log–log axes",
+             "A constant earning rate is a straight line here, and the gap between two lines is the ratio of their rates")
+    _legend(fig, legend)
+    fig.subplots_adjust(top=0.64, bottom=0.14, left=0.05, right=0.985, wspace=0.3)
+    fig.savefig(IMG / "pnl_loglog.png", dpi=180)
+    plt.close(fig)
 
-            # 2. a typical jump, second by second
-            w = fc["window"]
-            fig = an.Chart(figsize=(7.2, 4.9))
-            ax, axp = fig.subplots(2, 1, sharex=True, gridspec_kw={"height_ratios": [3, 1], "hspace": 0.1})
-            ax.plot(w["t_s"], w["mid"], color=c["ink"], lw=1.4, drawstyle="steps-post", label="the mid", zorder=3)
-            ax.plot(w["t_s"], w["latent"], color=orange, lw=1.4, label="the filter's hidden price", zorder=2)
-            ax.plot(w["t_s"], w["forecast"], color=blue, lw=1.8, label="the forecast made 0.4 s earlier", zorder=4)
-            ax.set_ylabel("price (ticks)")
-            ax.legend(loc="lower left", fontsize=8, ncols=3, bbox_to_anchor=(0, 1.0), borderaxespad=0.3)
-            axp.plot(w["t_s"], w["position"], color=aqua, lw=1.6, drawstyle="steps-post")
-            axp.axhline(0, color=c["axis"], lw=0.8)
-            axp.set_ylim(-115, 115)
-            axp.set_yticks([-100, 0, 100])
-            axp.set_ylabel("our position")
-            axp.set_xlabel("seconds from the jump")
-            heading(fig, "A typical jump, second by second",
-                    f"Round 4's private tape: the median-sized jump that came after 20 s without one "
-                    f"({abs(w['jump_ticks']):.0f} ticks in 0.2 s, {w['t0_s']:.0f} s into the tape)")
-            fig.subplots_adjust(top=0.82, bottom=0.1, left=0.1, right=0.97)
-            fig.savefig(IMG / f"jump_window-{theme}.png", dpi=200)
+    # 3. the forecast against what happened
+    fig, ax = plt.subplots(figsize=(7.4, 4.9))
+    pred = np.array([b["pred"] for b in fc["bins"]])
+    real = np.array([b["real"] for b in fc["bins"]])
+    lo, hi = -4.1, 4.1
+    ax.plot([lo, hi], [lo, hi], color=STYLE["sub"], lw=1, ls=(0, (3, 3)), zorder=1)
+    ax.text(-2.9, -3.25, "a perfect forecast", color=STYLE["sub"], fontsize=8, rotation=38, ha="center")
+    ax.axvspan(2, hi, color=STYLE["field"], alpha=0.07, lw=0)
+    ax.axvspan(lo, -2, color=STYLE["field"], alpha=0.07, lw=0)
+    ax.text(2.12, -3.85, "beyond the forecast's\n±2-tick cap: the jumps", color=STYLE["sub"], fontsize=8, va="bottom")
+    line, = ax.plot(pred, real, color=STYLE["us"], lw=2, marker="o", ms=6.5, mfc=STYLE["us"], mec=STYLE["bg"], mew=1.6, zorder=3)
+    _glow(line, 6)
+    ax.set_xlim(lo, hi)
+    ax.set_ylim(lo, hi)
+    ax.grid(True, axis="both")
+    ax.set_xlabel("the forecast 400-ms move of the mid, ticks (each bin's mean)")
+    ax.set_ylabel("the move that followed, ticks")
+    _mono(ax)
+    _heading(fig, "The forecast against what happened",
+             f"R4-W2 on round 4's private tape, which it had never seen: {fc['used'] / 1e6:.2f}M book events in 20 "
+             f"equal bins · correlation {fc['corr']:.2f} · R² {fc['r2']:.2f}", y=0.96)
+    fig.subplots_adjust(top=0.82, bottom=0.11, left=0.1, right=0.97)
+    fig.savefig(IMG / "forecast_calibration.png", dpi=180)
+    plt.close(fig)
 
-            # 3. each round's private PnL against the field's
-            fig = an.Chart(figsize=(9, 3.6))
-            axes = fig.subplots(1, 4)
-            xs = np.arange(0, 12001, field["step_s"]) / 1000
-            for r, axr in zip((1, 2, 3, 4), axes):
-                rows = np.array(field["rounds"][str(r)])
-                axr.fill_between(xs, rows[:, 0], rows[:, 2], color=c["muted"], alpha=0.2, lw=0,
-                                 label="the other teams, 10th-90th percentile")
-                axr.plot(xs, rows[:, 1], color=c["muted"], lw=1.2, label="their median")
-                axr.plot(xs, rows[:, 3], color=orange, lw=1.6, label="the round's winner")
-                axr.plot(xs, _private_pnl(r, field["step_s"]), color=blue, lw=2.2, label="us")
-                axr.set_title(f"Round {r}: {FINALS[r]}", fontsize=9.5, loc="left")
-                axr.set_xticks([0, 4, 8, 12])
-                axr.set_xlabel("thousand seconds")
-                axr.yaxis.set_major_formatter(thousands)
-            handles, labels = axes[0].get_legend_handles_labels()
-            fig.legend(handles[::-1], labels[::-1], loc="upper left", ncols=4, fontsize=8, bbox_to_anchor=(0.012, 0.87))
-            heading(fig, "Private PnL through each round: us against the field",
-                    "Each round's private tape, 12,000 s, as the leaderboard showed it", top=0.985)
-            fig.subplots_adjust(top=0.69, bottom=0.15, left=0.06, right=0.99, wspace=0.3)
-            fig.savefig(IMG / f"pnl_vs_field-{theme}.png", dpi=200)
-        print(f"{theme}: charts in {IMG.relative_to(ROOT)}/")
+    # 4. a typical jump, second by second
+    w = fc["window"]
+    fig, (ax, axp) = plt.subplots(2, 1, sharex=True, figsize=(7.4, 5.2), gridspec_kw={"height_ratios": [3, 1], "hspace": 0.12})
+    ax.plot(w["t_s"], w["mid"], color=STYLE["mid"], lw=1.3, drawstyle="steps-post", zorder=3)
+    ax.plot(w["t_s"], w["latent"], color=STYLE["violet"], lw=1.3, alpha=0.9, zorder=2)
+    line, = ax.plot(w["t_s"], w["forecast"], color=STYLE["us"], lw=1.9, zorder=4)
+    _glow(line)
+    ax.axvline(0, color=STYLE["axis"], lw=1, zorder=1)
+    ax.set_ylabel("price, ticks")
+    axp.fill_between(w["t_s"], 0, w["position"], step="post", color=STYLE["us"], alpha=0.35, lw=0)
+    axp.plot(w["t_s"], w["position"], color=STYLE["us"], lw=1.2, drawstyle="steps-post")
+    axp.axhline(0, color=STYLE["axis"], lw=0.8)
+    axp.set_ylim(-115, 115)
+    axp.set_yticks([-100, 0, 100])
+    axp.set_ylabel("position, lots")
+    axp.set_xlabel("seconds from the jump")
+    for a in (ax, axp):
+        _mono(a)
+    _heading(fig, "A typical jump, second by second",
+             f"Round 4's private tape: the median-sized jump after 20 s without one ({abs(w['jump_ticks']):.0f} ticks "
+             f"in 0.2 s, {w['t0_s']:.0f} s in)", y=0.965)
+    _legend(fig, [(STYLE["mid"], "the mid", 1.3), (STYLE["us"], "the forecast, made 0.4 s earlier", 1.9),
+                  (STYLE["violet"], "the filter's hidden price", 1.3)], y=0.82)
+    fig.subplots_adjust(top=0.77, bottom=0.1, left=0.11, right=0.97)
+    fig.savefig(IMG / "jump_window.png", dpi=180)
+    plt.close(fig)
+    print(f"charts in {IMG.relative_to(ROOT)}/")
 
 
 def main(argv=None) -> int:
@@ -186,13 +279,12 @@ def main(argv=None) -> int:
     f = sub.add_parser("forecast", help="the forecast's numbers from a RIDGE_PRED_LOG file")
     f.add_argument("pred_log")
     f.add_argument("--out", default=str(DATA / "forecast.json"))
-    r = sub.add_parser("render", help="the charts, from the committed data")
-    r.add_argument("--theme", choices=["light", "dark", "both"], default="both")
+    sub.add_parser("render", help="the charts, from the committed data")
     args = parser.parse_args(argv)
     if args.cmd == "forecast":
         forecast(args.pred_log, Path(args.out))
     else:
-        render(["light", "dark"] if args.theme == "both" else [args.theme])
+        render()
     return 0
 
 
