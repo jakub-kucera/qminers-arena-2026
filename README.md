@@ -123,10 +123,16 @@ holds the runbook and the prompts the agents ran on.
 
 The month of preparation before the event, built on IMC Prosperity data as a stand-in for the unknown API (a
 backtesting engine with a Rust twin, a zoo of bots written by different LLMs, a wiki of the market-making
-literature), is in a separate prep repository.
+literature), is in a separate repository: [qminers-arena-prep](https://github.com/jakub-kucera/qminers-arena-prep).
 
-## Credits
+## Credits and licence
 
-Team ThatsMyQuant: Jakub Kučera and Přemysl Pilař. The Arena, its exchange simulator, explorer, sample data and
-round tapes are by Qminers; their starter is included as they distributed it to the teams and is not ours to
-license. Other teams appear in this repository as "Team N", N their place in the overall standings.
+Team ThatsMyQuant: Jakub Kučera and Přemysl Pilař. Our code and documents are under the MIT licence
+([`LICENSE`](LICENSE)).
+
+The Arena, its exchange simulator, backtest explorer, sample data and round tapes are by Qminers. Their starter
+(`simulator/`, `explorer/`, `strategies/`, `STARTER.md`, `data/sample.csv.gz`, and the copies of these in
+`codex_repo/`, with `codex_repo/docs/ORGANIZER_GUIDE.md`) is included as they distributed it to the teams and is not covered
+by our licence; the round tapes are not included. `rust/arena_sim/` is our port of their simulator. The HTML reports
+in `codex_repo/research/` embed third-party charting code under its own licence. Other teams appear as "Team N", N
+their place in the overall standings.
