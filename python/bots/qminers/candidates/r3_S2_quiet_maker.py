@@ -1,6 +1,6 @@
 """R3-S2 (8 Nov, round 3): a two-sided touch maker that quotes only in quiet markets, with no forecast at all.
 
-experiments.day.r3_edges: a one-lot fill at the front of the touch earns +0.17 ticks (1 s) in round 3's calm blocks and
+experiments.taker.r3_edges: a one-lot fill at the front of the touch earns +0.17 ticks (1 s) in round 3's calm blocks and
 +0.12 in volatile blocks away from jumps, but -0.70 within 3 s before to 10 s after a jump. With no quote within 10 s
 of a 1-s mid move of 3+ ticks, a front fill at a 1-tick spread earns +0.14 / +0.23 (1 / 5 s) on round 3, +0.21 / +0.20
 on round 2 and +0.23 / +0.23 on round 1. So the bot quotes QUOTE lots at both touches while the market's spread is at

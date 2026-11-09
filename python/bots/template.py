@@ -50,11 +50,11 @@ DEFAULTS = {
     "wall_size": 15,  # sized_mid: the smallest level that counts as the market maker's quote
     "smoothing": 0.0,  # 0 uses each tick's fair as is; closer to 1 moves it more slowly
     # Take, clear and make around fair + imbalance * rho, rho = (Vb - Va)/(Vb + Va) at the best
-    # levels: the linear micro-price. 0 turns it off. Fitted per product by experiments.day.imbalance.
+    # levels: the linear micro-price. 0 turns it off. Fitted per product by experiments.tape.imbalance.
     "imbalance": 0.0,
     # A linear fair (IDEAS.md, "A `linear` fair"): add lin_rho3 x the depth imbalance over the best 3
     # levels, and lin_momentum x the fair's move over the last lin_window ticks, in an agent market
-    # where flow and momentum carry the price (experiments.day.predict). 0 turns each off.
+    # where flow and momentum carry the price (experiments.tape.predict). 0 turns each off.
     "lin_rho3": 0.0,
     "lin_momentum": 0.0,
     "lin_window": 100,
@@ -134,7 +134,7 @@ DEFAULTS = {
     # name, negative to trade against it. None turns it off. While on, it sets target instead.
     "copy": None,
     "copy_hold": None,  # ticks to hold after a signal; None: until the next one
-    # Following an informed trader without a name (experiments.day.informed; Frankfurt Hedgehogs on
+    # Following an informed trader without a name (experiments.tape.informed; Frankfurt Hedgehogs on
     # P3's Olivia): a trade of one of these sizes that buys at the day's running low of the fair, or
     # sells at its high, after copy_warmup ticks, is a signal of weight 1 its way. None: off. It
     # turns copy on alone, and adds to the named weights where both are set.

@@ -26,7 +26,7 @@ run's results and `leaderboard.json` go in this folder too.
 <!-- which of last round's choices were tested again this round, which were kept untested ("Choose the approach again each round") -->
 
 ## Leaderboard
-<!-- leaderboard.json saved here; experiments.day.leaderboard_curves --read verdict; our standing -->
+<!-- leaderboard.json saved here; experiments.rounds.leaderboard_curves --read verdict; our standing -->
 
 ## Next round
 <!-- round N+1's first candidate, and its first three actions -->

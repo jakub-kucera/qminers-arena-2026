@@ -1,4 +1,4 @@
-"""python/experiments/day/leaderboard_curves.py: the rule on curves whose case is known, the
+"""python/experiments/rounds/leaderboard_curves.py: the rule on curves whose case is known, the
 leaderboard reader, and the calibration on a small field."""
 
 import itertools
@@ -9,7 +9,7 @@ import sys
 import pytest
 
 from arena import sim
-from experiments.day import leaderboard_curves as lc
+from experiments.rounds import leaderboard_curves as lc
 
 T = 400
 

@@ -1,6 +1,6 @@
 """R3-S3 (8 Nov, round 3): a jump-catch taker, held for seconds, gated by the latent filter.
 
-experiments.day.r3_edges: after a jump's onset the mid keeps going its way for 1-2 s (from onset + 1 s, +2.1 ticks
+experiments.taker.r3_edges: after a jump's onset the mid keeps going its way for 1-2 s (from onset + 1 s, +2.1 ticks
 by + 2 s, t 5.9; then flat, no reversal at 30-120 s). On round3_public's 50-ms samples, the first 0.2-s mid move of
 3+ ticks after 2 s without one, bought at the next ask and sold at the bid 0.5 / 1 / 2 s later, makes +0.5 / +1.1 /
 +1.5 ticks a lot (327 a 6,000 s); with the filter's gap 2+ ticks the move's way and a 1-tick spread +1.7 / +2.8 / +4.1

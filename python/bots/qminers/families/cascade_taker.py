@@ -1,7 +1,7 @@
 """Family 13 (7 Nov, round 2): the cascade taker. Round 2's public tape is a random walk four times as volatile as round 1's
 (1-s moves of 3.8 ticks) whose touch clears cascade: after a touch clears and the level behind it (the new touch) is thin, the
 mid is 1.4-2.3 ticks further in the clear's direction one second later and has moved 2+ ticks in 45-53% of cases
-(experiments.day.spread_episodes on data/arena/round2/round2_public.csv; cancel-driven clears with under 100 lots behind:
+(experiments.tape.spread_episodes on data/arena/round2/round2_public.csv; cancel-driven clears with under 100 lots behind:
 +2.3 ticks, 53%). The aggressors are iid (no flow to follow), so the signal is the book's own cascade, not the trades.
 
 The bot holds nothing by default. When the market's best ask rises (the old ask touch cleared, by a sweep or by cancels) and

@@ -22,8 +22,8 @@ The organisers' starter (`STARTER.md`) is the engine; our engine below is not on
   process pool, with `arena.grid`'s neighbourhood and holdout columns; `python/arena/qsim_rust.py` gives the same
   table from `rust/arena_sim/`, the simulator ported to Rust and pinned to the same numbers to the bit
   (`python/tests/test_arena_rust.py`), for the strategies with a Rust version.
-- **The round's tools:** `python/experiments/day/round_start.py` (the tape's profile and markouts, every candidate
-  ranked, the next grids) and `python/experiments/day/run_review.py` (a full-logs run's fills against the mid).
+- **The round's tools:** `python/experiments/rounds/round_start.py` (the tape's profile and markouts, every candidate
+  ranked, the next grids) and `python/experiments/rounds/run_review.py` (a full-logs run's fills against the mid).
 - **Before an upload:** `arena.validate BOT all --format qminers` runs the source checks only, with
   `python/arena/formats/qminers.py`'s `SANDBOX` and `PROVIDED_MODULES` (`check_source`: one `BaseStrategy` subclass).
 - **The day's docs:** `RUNBOOK.md`, `ON_THE_DAY.md`'s 7 Nov blocks, `KICKOFF_PROMPT.md`, `data/arena/round*/`.

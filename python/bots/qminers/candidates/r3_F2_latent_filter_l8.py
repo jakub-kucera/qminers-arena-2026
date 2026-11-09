@@ -1,4 +1,4 @@
-"""R3-F2 (8 Nov, round 3): R2-L8 (the liquidity taker, one-lot quotes below QS_RATE) plus R3-F1's latent-price filter: three ridge features from a hidden-Markov filter of the generator's latent reference bid (experiments/day/latent_filter.py, the offline copy; r3_F1_latent_filter.py, the same code on R2-L9). FILTER = 0 is R2-L8 exactly. The notes of R2-L8 follow.
+"""R3-F2 (8 Nov, round 3): R2-L8 (the liquidity taker, one-lot quotes below QS_RATE) plus R3-F1's latent-price filter: three ridge features from a hidden-Markov filter of the generator's latent reference bid (experiments/filter/latent_filter.py, the offline copy; r3_F1_latent_filter.py, the same code on R2-L9). FILTER = 0 is R2-L8 exactly. The notes of R2-L8 follow.
 
 R2-L8 (7 Nov, round 2, 23:52): R2-L1 (the liquidity taker with one-lot quotes) with the quotes switched by regime: one lot only while the 5-s decayed |mid change| rate is below QS_RATE 2.5 ticks/s, else none (R2-L3, the pure taker). Local: round2_public 296,181, hi_vol_fast1.25 923,993, hi_vol 840,191, round1 174,109 (L3 294,098 / 922,872 / 804,815 / 105,428; L1 269,920 / 811,727 / 743,175 / 174,686). The notes of R2-L1 follow.
 

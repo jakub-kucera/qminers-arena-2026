@@ -177,7 +177,7 @@ The portal's "final" marks settle three places where the notes written during th
 - Every tested idea with its numbers: `IDEAS.md` (rows `R1-…` to `R4-…`).
 - The server's result folders for every upload and every private run (result.json, metadata.json, the 1-s
   pnl.csv): `data/arena/round<N>/*_res/`. The private runs' full logs (the book, events and trades of each private
-  tape) stay local, gitignored: `experiments.day.tape_from_logs` rebuilds a private tape from them.
+  tape) stay local, gitignored: `experiments.tape.tape_from_logs` rebuilds a private tape from them.
 - The second repository, `qminers-algo-arena` (the Codex session's, started from the clean starter), with
   Přemysl's research branch merged in: `codex_repo/`, imported on 9 Nov with its whole history (66 commits;
   each imported commit's message ends with its original hash, and its tags are `codex_repo/<tag>`). Its own

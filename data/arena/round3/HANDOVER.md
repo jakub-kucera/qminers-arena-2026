@@ -21,7 +21,7 @@ run's results and `leaderboard.json` go in this folder too.
 ridge features. **+883,559 on round 3's validation tape** (590 s of the 15-min limit), 505,212 on round3_public.csv.
 Check it is marked final on the portal before 06:00.
 
-- **Reproduce in Rust (byte-identical to the Python file):** `uv run python -m experiments.day.family_rust
+- **Reproduce in Rust (byte-identical to the Python file):** `uv run python -m experiments.rounds.family_rust
   data/arena/round3/round3_public.csv --bot B1F=B1:'--set FILTER=1'` (505,212); any knob: `uv run python -m arena.qsim_rust
   ridge_maker CSV <B1's --set line from family_rust.py> --set FILTER=1 --grid K=a,b --holdout 0.25`.
 - **How to judge on round 3:** validation played like the public tape (0.87-0.90x its PnL a second, the same fills and
@@ -75,7 +75,7 @@ Check it is marked final on the portal before 06:00.
 - **Where the PnL is:** 82% of it from 3 s before a jump to 10 s after; every kind of take earns on average (the
   riskiest states most); the losses are jumps against a full position ("Round 3's tape: where money can be made").
 - **Side results for round 4:** the Rust feature dump (`RIDGE_FEAT_LOG`, 30 s a tape); a numpy online ridge that makes
-  F3 10% faster with identical PnL (R3-P2's file with `PRE = 0`); `experiments.day.family_rust`.
+  F3 10% faster with identical PnL (R3-P2's file with `PRE = 0`); `experiments.rounds.family_rust`.
 
 ### Next (in order)
 1. Keep F3 final. (Done 02:57: plain R3-B1 made +733,790, so the filter earns +149,769 on validation.) Plain R3-B1 (`r3_B1_huber_quote_switch.py`) measures the filter's real gain on the
@@ -97,7 +97,7 @@ Check it is marked final on the portal before 06:00.
 6. **The quote switch's own refinements**: a second speed threshold for the take's bar, or quotes two-sided only when the forecast is near zero.
 7. **The stats session's absorbed-flow idea.** After a big buy, distinguish fresh sellers replenishing the ask (temporary pressure) from sellers withdrawing (continuation). First: two features (new ask lots at the touch within 250 ms after a 500+ lot buy, and ask cancels in that window), added to L3's ridge.
 8. **Warm-starting the ridge from the public tape.** Worth ~3k on round 1's maker; the taker learns fast, so expect little; cheap to try (RIDGE_DUMP / RIDGE_WARM in the Rust ridge_maker).
-9. **Rebuild round 2's private tape after the round** if its results come with full logs (`uv run python -m experiments.day.tape_from_logs RESULTS_DIR PUBLIC.csv OUT.csv`), and rank every round-2 bot on it: the best guide to what transfers.
+9. **Rebuild round 2's private tape after the round** if its results come with full logs (`uv run python -m experiments.tape.tape_from_logs RESULTS_DIR PUBLIC.csv OUT.csv`), and rank every round-2 bot on it: the best guide to what transfers.
 10. **Find what the top teams had.** Round 2's 75th percentile reached 940k (best of ~7.5 uploads each). Read the organisers' deck (the PnL curves per team, if published) and the private leaderboard when it comes; compare curve shapes with L3's (it earns most in bursts).
 
 
@@ -178,12 +178,12 @@ Round 2's whole story is in `data/arena/round2/HANDOVER.md`, "Round 2 results, m
 | Reference | `r2_M4_flow_window.py` (R2-M4) | +441,088 | the big-order follower, 125-ms window, self-gated (zero on calm tapes) |
 | Reference | `r2_V2_vol_exposure_dz18.py` (R2-V2) | +71,864 | the learned maker with speed-scaled exposure (round 1's line; ~700k on round 1's calm tape) |
 
-`uv run python -m experiments.day.round_start data/arena/round3/<file>.csv --jobs 8 --out data/arena/round3/round_start` ranks all of them (and the older families) on the new tape.
+`uv run python -m experiments.rounds.round_start data/arena/round3/<file>.csv --jobs 8 --out data/arena/round3/round_start` ranks all of them (and the older families) on the new tape.
 
 ### The 15-minute triage
-1. Move the tape to `data/arena/round3/`; `uv run python -m experiments.day.round_start <csv> --jobs 8 --out data/arena/round3/round_start` (profile: spread mix, touch depth, aggressor sizes and rates, markouts; every candidate ranked).
-2. The tape's character: `uv run python -m experiments.day.tape_character profile <csv>` (the 1-s mid sd, the one-tick share, the big-order rate), `uv run python -m experiments.day.wide_spread <csv>` (does a wide spread predict size or direction), and the price speed (the mean |mid change| in ticks/s: round 1 1.23, round 2 3.22 with 1.56-7.43 per 600 s).
-3. Build the validation-like stitched tapes from the new public tape's fast segments: `uv run python -m experiments.day.tape_character stitch <csv> --dir <dir> [--only hi_vol]` (round 2: they rated takers at ~0.9 of the server's level, flow bots at 0.62).
+1. Move the tape to `data/arena/round3/`; `uv run python -m experiments.rounds.round_start <csv> --jobs 8 --out data/arena/round3/round_start` (profile: spread mix, touch depth, aggressor sizes and rates, markouts; every candidate ranked).
+2. The tape's character: `uv run python -m experiments.tape.tape_character profile <csv>` (the 1-s mid sd, the one-tick share, the big-order rate), `uv run python -m experiments.tape.wide_spread <csv>` (does a wide spread predict size or direction), and the price speed (the mean |mid change| in ticks/s: round 1 1.23, round 2 3.22 with 1.56-7.43 per 600 s).
+3. Build the validation-like stitched tapes from the new public tape's fast segments: `uv run python -m experiments.tape.tape_character stitch <csv> --dir <dir> [--only hi_vol]` (round 2: they rated takers at ~0.9 of the server's level, flow bots at 0.62).
 4. Run L8, L3 and L1 on the public tape, its mirror (prices 20,000 - p, sides swapped) and the stitched tapes; check the run time (L1 took 7 m 47 s on the server; limit 15 min).
 
 ### Decision table
@@ -240,7 +240,7 @@ On the right base already: the FILTER settings, FILTER_JUMP, FILTER_VQS, FT_EXIT
 B1F at 505,212).
 
 **F3's order handling** (r3 public, the Python full-logs run and the Rust twin's prediction log,
-`experiments.day.quote_audit`): nothing worth fixing.
+`experiments.taker.quote_audit`): nothing worth fixing.
 - 0 orders refused, breach 0; |position| at 100 54% of the time, 90-99 28%. 243,871 orders, 191,323 cancels, 512
   cancels too late: 510 one-lot fills after our cancel was sent, -1.0k at 5 s.
 - Quotes: 47,795 one-lot fills, +0.41 a lot at the fill and +0.35 / +0.55 at 5 / 30 s (+16.7k / +26.3k). 199 filled

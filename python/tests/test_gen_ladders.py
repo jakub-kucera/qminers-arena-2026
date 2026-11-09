@@ -3,9 +3,9 @@
 import numpy as np
 import pytest
 
-from experiments.day.gen_ladders import chains, collect, exit_delays, links, load, measure
-from experiments.day.gen_ladders import fit_population
-from experiments.day.tape_gen import LadderStream, generate
+from experiments.generator.gen_ladders import chains, collect, exit_delays, links, load, measure
+from experiments.generator.gen_ladders import fit_population
+from experiments.generator.tape_gen import LadderStream, generate
 from test_gen_inventory import params
 
 

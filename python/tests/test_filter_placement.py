@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from experiments.day.filter_placement import anchor_pairs, exact_truth, fit_mixture, fit_phase, likelihood_matrix, measure
+from experiments.filter.filter_placement import anchor_pairs, exact_truth, fit_mixture, fit_phase, likelihood_matrix, measure
 
 
 @pytest.mark.parametrize('side,state', [(0, 105), (1, 95)])

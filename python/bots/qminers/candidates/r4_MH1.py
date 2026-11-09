@@ -4,7 +4,7 @@ R3-F10 (8 Nov, round 3, 05:00): R3-F5 plus Rust ridge_maker's multi-horizon opti
 
 R3-F5 (8 Nov, round 3, 03:15): R3-F3 with a state-dependent take bar: TAKE_EDGE 0.25 instead of 0.15, except for TAKE_JUMP_HOLD_MS after the mid moved TAKE_JUMP ticks or more within TAKE_JUMP_MS (a jump), when the bar is TAKE_JUMP_EDGE 0.15 (F3's). The takes between 0.15 and 0.25 over half the spread lose on round 3's and round 2's tapes away from jumps (IDEAS.md, "R3-F5"); round 1's calm tape loses with it. TAKE_JUMP = 0 with TAKE_EDGE 0.15 is R3-F3 exactly. The Rust twin: R3-B1's --set line and --set FILTER=1 --set FT_EDGE=0.25 --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set FT_JUMP_EDGE=0.15. The notes of R3-F3 follow.
 
-R3-F3 (8 Nov, round 3): R3-B1 (R2-L9 plus R2-L8's speed-switched one-lot quotes) plus R3-F1's latent-price filter: three ridge features from a hidden-Markov filter of the generator's latent reference bid (experiments/day/latent_filter.py, the offline copy; r3_F1_latent_filter.py, the same code on R2-L9). FILTER = 0 is R3-B1 exactly. The notes of R3-B1 follow.
+R3-F3 (8 Nov, round 3): R3-B1 (R2-L9 plus R2-L8's speed-switched one-lot quotes) plus R3-F1's latent-price filter: three ridge features from a hidden-Markov filter of the generator's latent reference bid (experiments/filter/latent_filter.py, the offline copy; r3_F1_latent_filter.py, the same code on R2-L9). FILTER = 0 is R3-B1 exactly. The notes of R3-B1 follow.
 
 R3-B1 (8 Nov, round 3, 00:30): R2-L9 (the Huber-robust pure taker, +873,719 on validation) plus R2-L8's speed-switched one-lot quotes: QUOTE_SIZE 1, used only while the 5-s decayed |mid change| rate is below QS_RATE 2.5 ticks/s, else none. QS_RATE 0 reproduces R2-L9 exactly (the rate is never below 0). The notes of R2-L9 follow.
 

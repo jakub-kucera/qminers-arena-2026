@@ -1,8 +1,8 @@
-"""experiments.day.round_start: the round's first look, end to end on a tiny synthetic backtest."""
+"""experiments.rounds.round_start: the round's first look, end to end on a tiny synthetic backtest."""
 
 import csv
 
-from experiments.day import round_start
+from experiments.rounds import round_start
 from test_qgrid import write_backtest
 
 

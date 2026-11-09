@@ -1,6 +1,6 @@
 """R3-S1 (8 Nov, round 3): a passive maker on the latent filter's gap, the first non-taker of round 3.
 
-experiments.day.r3_edges: at a 1-tick spread, a fill at the touch earns +0.44-0.48 ticks a lot (1 s) when the latent
+experiments.taker.r3_edges: at a 1-tick spread, a fill at the touch earns +0.44-0.48 ticks a lot (1 s) when the latent
 filter's gap (E[latent] - mid) is on the maker's side, and -0.02 to -0.83 when it is against, on rounds 1, 2 and 3. So
 the bot quotes the touch only on the favoured side: a bid at the best market bid while gap > GAP_ON (kept while
 gap > GAP_OFF, the queue place), an ask at the best market ask while gap < -GAP_ON. No take, ever. The position
@@ -8,8 +8,8 @@ moves with the gap and comes back when it turns; |position + every live order on
 being cancelled count until the cancel lands), so the 100-lot penalty never starts. Quotes come off when the
 market's spread is above MAX_SPREAD. KEEP2 keeps a quote the touch moved away from by a tick; LEVEL2 also posts
 lots a tick behind the favoured touch (a level-2 fill with the gap 0.6+ the maker's way earns +0.72 a lot at 1 s on
-round 3, against +0.35 for one at the back of the touch's queue: `experiments.day.r3_edges`). UNWIND > 0 also quotes the reducing side, at the touch, while |gap| < UNWIND
-and |position| >= UNWIND_POS. The filter is R3-F1's (candidates/r3_F1_latent_filter.py, experiments/day/latent_filter.py).
+round 3, against +0.35 for one at the back of the touch's queue: `experiments.taker.r3_edges`). UNWIND > 0 also quotes the reducing side, at the touch, while |gap| < UNWIND
+and |position| >= UNWIND_POS. The filter is R3-F1's (candidates/r3_F1_latent_filter.py, experiments/filter/latent_filter.py).
 """
 from math import isfinite
 

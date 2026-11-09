@@ -22,7 +22,7 @@ hidden fair price" and "A better state for R3-F3's latent-price filter"):
 - the best impact scale differs by tape: x2 on round2_public (+22k there), x3 on round3_public.
 
 THE FILTER (python/bots/qminers/candidates/r3_F3_latent_filter_b1.py lines 121-286; offline copy
-python/experiments/day/latent_filter.py, read its docstring; Rust twin rust/arena_sim/src/strategies/ridge_maker.rs,
+python/experiments/filter/latent_filter.py, read its docstring; Rust twin rust/arena_sim/src/strategies/ridge_maker.rs,
 knobs FILTER_* listed in rust/README.md). A probability vector over the latent reference bid lb on a grid of
 bid-8..bid+8 ticks. Its whole model is three guesses:
 1. PLACEMENT: a new resting order (G) is placed k ticks behind the latent touch (bids at lb-k, asks at lb+1+k) with

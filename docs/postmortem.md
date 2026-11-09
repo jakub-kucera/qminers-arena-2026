@@ -5,7 +5,7 @@
 The Arena's market was a replay: each round's public, validation and private tapes were fixed streams of order
 inserts and cancels, our orders matched against them by the organisers' simulator (5 ms latency, a 100-lot position
 limit with a 10,000-a-second penalty beyond it). The streams looked like a market, but by round 3 it was clear they
-came from a fairly simple generator, which we identified from the tapes themselves (`experiments.day.gen_identify`,
+came from a fairly simple generator, which we identified from the tapes themselves (`experiments.generator.gen_identify`,
 `IDEAS.md`, "The tape generator's structure"):
 
 - **A hidden price.** Every new order is placed around a latent price that the visible mid only follows (round 1:
@@ -32,7 +32,7 @@ the event: the closer the model got to the generator, the better it did.
 
 ## How far we got in reverse-engineering it
 
-A first generative model of round 1's tape existed by that afternoon (`experiments.day.tape_gen`), but only to test
+A first generative model of round 1's tape existed by that afternoon (`experiments.generator.tape_gen`), but only to test
 candidates on more draws; we set out to identify the actual generator only in round 3, where it was harder: the
 volatile regime and its jumps. By then our generator (tape_gen v2) ranked round 2's 14 validation uploads in the
 server's order (Spearman 0.974), and its fitted parameters per round are in `data/arena/gen/`. As far as we heard,

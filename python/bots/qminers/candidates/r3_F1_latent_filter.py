@@ -1,5 +1,5 @@
 """R3-F1 (8 Nov, round 3): R2-L9 (the Huber-ridge taker) plus a latent-price filter's features in the ridge. The filter
-is a hidden-Markov filter over the generator's latent reference bid lb (experiments/day/latent_filter.py, the offline
+is a hidden-Markov filter over the generator's latent reference bid lb (experiments/filter/latent_filter.py, the offline
 copy): new market bids land at lb - k and asks at lb + 1 + k (k 0/1/2 with FILTER_PI), clamped one tick off the other
 touch; lb random-walks at FILTER_RATE ticks/s each way; a market taker's filled lots move it FILTER_IMPACT x tape_gen's
 impact table. Features: gap = E[lb] + 0.5 - mid, gap*|gap|, the posterior sd. FILTER = 0 is R2-L9 exactly. The notes of

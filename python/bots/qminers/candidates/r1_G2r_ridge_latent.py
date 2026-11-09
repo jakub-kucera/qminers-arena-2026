@@ -1,5 +1,5 @@
 """Round 1 candidate R1-G2r (7 Nov, 16:30): R1-C1 (the online ridge maker) plus the latent-price signal as LAT_FEAT more
-features (experiments.day.latent_price): per side, the decayed share of new market inserts landing at or inside the
+features (experiments.tape.latent_price): per side, the decayed share of new market inserts landing at or inside the
 touch (seen as a rise in a level's market lots against the last snapshot, the touch and LAT_LEVELS-1 levels behind it,
 or a better touch price), bids minus asks, with time constants LAT_TAU1 and LAT_TAU2 seconds. LAT_FEAT 0 gives R1-C1.
 R1-C1's notes follow.

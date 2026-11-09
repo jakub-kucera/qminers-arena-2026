@@ -5,7 +5,7 @@ import json
 import numpy as np
 import pytest
 
-from experiments.day.gen_pnl_probe import balances, curve_proxy, liquidation, probe
+from experiments.generator.gen_pnl_probe import balances, curve_proxy, liquidation, probe
 
 
 def test_liquidation_sweeps_market_depth_and_marks_residual_at_last_price():

@@ -7,9 +7,9 @@ import hashlib
 import numpy as np
 import pytest
 
-from experiments.day.gen_calibrate import PRESETS, parse_opts
-from experiments.day.gen_inventory import fit_sizes, integer_us, inventory, lognormal_mass
-from experiments.day.tape_gen import SizeLawSampler, generate
+from experiments.generator.gen_calibrate import PRESETS, parse_opts
+from experiments.generator.gen_inventory import fit_sizes, integer_us, inventory, lognormal_mass
+from experiments.generator.tape_gen import SizeLawSampler, generate
 
 
 def params():

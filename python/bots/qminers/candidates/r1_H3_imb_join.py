@@ -2,7 +2,7 @@
 tick inside a 2+ tick spread on the side the touch imbalance favours, at any time (MOM_JOIN does it only for 50 ms after a
 400+ lot sweep): while the market lots at the bid touch are at least IMB_JOIN times the ask touch's, the bid ladder anchors at
 best_bid + 1 (the mirror for the ask; never both; a MOM_JOIN anchor already inside is kept and IMB_JOIN then does nothing).
-The mechanism on round1.csv (python/experiments/day/spread_episodes.py): the touch imbalance quintiles predict the mid's 1-s
+The mechanism on round1.csv (python/experiments/tape/spread_episodes.py): the touch imbalance quintiles predict the mid's 1-s
 move -0.34 / -0.11 / 0 / +0.13 / +0.33 ticks, so a bid at the mid while the bid holds many times the ask's lots is filled by
 sellers right before the price rises, and it is first in its queue when the bid side follows into the gap (71% of the 13,949
 two-tick episodes, median 20 ms); the cost is the 29% where the thin side steps back with a price-improving insert (median

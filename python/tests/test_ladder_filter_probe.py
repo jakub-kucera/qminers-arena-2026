@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from experiments.day.ladder_filter_probe import CausalClock, DelayedFilters, targets, replay, ARMS
+from experiments.filter.ladder_filter_probe import CausalClock, DelayedFilters, targets, replay, ARMS
 
 
 def test_clock_labels_current_order_only_and_rejects_nearby_or_wrong_side():

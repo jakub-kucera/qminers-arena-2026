@@ -4,13 +4,13 @@ import json
 
 import numpy as np
 
-from experiments.day.filter_process_probe import (anchor_truth, at_grid,
+from experiments.filter.filter_process_probe import (anchor_truth, at_grid,
                                                  clipped_jump_fit, fit_linear,
                                                  impulses, read_events, transient)
-from experiments.day.filter_process_probe import observable_fit
-from experiments.day.filter_process_probe import noise_diagnostics, prefix_events
-from experiments.day.filter_process_probe import cluster_ci
-from experiments.day.filter_process_probe import compare_impact_laws, fitted_prediction, size_basis
+from experiments.filter.filter_process_probe import observable_fit
+from experiments.filter.filter_process_probe import noise_diagnostics, prefix_events
+from experiments.filter.filter_process_probe import cluster_ci
+from experiments.filter.filter_process_probe import compare_impact_laws, fitted_prediction, size_basis
 
 
 def events(t=(.1, .1, .4), ordinary=(False, True, True)):

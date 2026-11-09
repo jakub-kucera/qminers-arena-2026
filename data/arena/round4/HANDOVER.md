@@ -13,31 +13,31 @@ the server (F3 - B1), and F5's higher take bar away from jumps only +4.6k (a tie
 
 ### The first 30 minutes (Rust first; commands from the repo root)
 0. Save the tape as `data/arena/round4/round4_public.csv` (unzipped). Below, `T=data/arena/round4/round4_public.csv`.
-1. **Rank the round-3 bots in Rust (2 min):** `uv run python -m experiments.day.family_rust $T --jobs 8`. This runs T2, L1,
+1. **Rank the round-3 bots in Rust (2 min):** `uv run python -m experiments.rounds.family_rust $T --jobs 8`. This runs T2, L1,
    L3, L8, L9, B1, F3, F4 and F5 and prints the first 75% and last 25%.
    - The filter's value on the new tape is F3 - B1 (round 3: +71k on its public tape, +150k on validation).
-   - Start the Python first look beside it (6+ min): `uv run python -m experiments.day.round_start $T --jobs 6 --out
+   - Start the Python first look beside it (6+ min): `uv run python -m experiments.rounds.round_start $T --jobs 6 --out
      data/arena/round4/round_start`. It gives the profile, the markouts, every candidate including R3-F5, F3, F4 and B1,
      and the next Rust grids.
 2. **The filter's impact scale, the take bar and F5's jump rule, chosen on the first 75% (5 min).** In zsh:
-   `F5=$(uv run python -c "import sys; sys.path.insert(0, 'python'); from experiments.day.family_rust import F5; print(F5)")`,
+   `F5=$(uv run python -c "import sys; sys.path.insert(0, 'python'); from experiments.rounds.family_rust import F5; print(F5)")`,
    then `uv run python -m arena.qsim_rust ridge_maker $T ${=F5} --grid FILTER_IMPACT=2,2.5,3 --grid FT_EDGE=0.15,0.2,0.25
    --grid FT_JUMP=0,3 --holdout 0.25 --threads 8 --sort holdout`. The best scale was x2 on round 2's tape (+22k) and x3 on
    round 3's.
 3. **The tape's character, for the table below (in parallel):**
-   - Speed and spread: `uv run python -m experiments.day.tape_character profile $T` (the price speed and the one-tick share).
-   - Round 3's 2-ms ladders: `uv run python -m experiments.day.gen_ladders $T --cache data/arena/gen/r4_ladders.npz --json
+   - Speed and spread: `uv run python -m experiments.tape.tape_character profile $T` (the price speed and the one-tick share).
+   - Round 3's 2-ms ladders: `uv run python -m experiments.generator.gen_ladders $T --cache data/arena/gen/r4_ladders.npz --json
      data/arena/gen/r4_ladders.json`.
-   - The over-limit jump bet (1 min): `uv run python -m experiments.day.gap_burst $T --G 4,5,6,7 --hold 0.5,2 --jumps 20
+   - The over-limit jump bet (1 min): `uv run python -m experiments.filter.gap_burst $T --G 4,5,6,7 --hold 0.5,2 --jumps 20
      --jump-cfg 4:2,5:2,6:2,7:0.5`. Build a burst only if a cell nets positive and the filter fires ahead of most 20-tick jumps.
-4. **The generator session's filter calibrator** (delivered 05:00, `python/experiments/day/filter_settings.py`, ~50 s):
-   `uv run python -m experiments.day.filter_settings $T --minutes 20 --out data/arena/round4/filter_settings.json`. It
+4. **The generator session's filter calibrator** (delivered 05:00, `python/experiments/filter/filter_settings.py`, ~50 s):
+   `uv run python -m experiments.filter.filter_settings $T --minutes 20 --out data/arena/round4/filter_settings.json`. It
    keeps round 3's filter settings unless an alternative wins its held-out forecast gate; on round 3 all eight alternatives
    lost, the placement mixture included. Add any keys it exports to F5's line and compare in step 2's grid; use them
    only if they win both halves.
 4b. **The warm start (R4-W1, round 3's private curves: our first 1,000 s was the weakest of the top 17):** save the base's
    ridge statistics on the public tape, `RIDGE_DUMP=data/arena/round4/r4_stats.txt uv run python -m arena.qsim_rust ridge_maker
-   $T ${=F5} --threads 1`, and embed them in the upload file at PRIOR_MASS 1000 (`experiments.day.warm_embed`, being ported
+   $T ${=F5} --threads 1`, and embed them in the upload file at PRIOR_MASS 1000 (`experiments.rounds.warm_embed`, being ported
    at 07:00). In Rust on r3b seeds 201-204 with round 3's statistics: +3.4k / +4.9k / +1.4k / +7.5k against F5, all in the first
    ~1,000 s (PRIOR_MASS 10000 about the same, 100000 loses).
 5. **First upload by ~07:45:**
@@ -68,7 +68,7 @@ the server (F3 - B1), and F5's higher take bar away from jumps only +4.6k (a tie
   visible touch, not the latent (held-out insert log-likelihood r3 -1.532 -> -1.451, r2 -1.063 -> -1.004; synthetic
   ~0.02-0.03). If its offline forecast test passes, put the mixture into F5's filter (Python and Rust). The filter
   sits at corr 0.40 against the true latent's 0.76 on synthetic tapes.
-- **Round 3's private results and the teams' curves** (after 06:00): `experiments.day.leaderboard_curves`, as in round 2.
+- **Round 3's private results and the teams' curves** (after 06:00): `experiments.rounds.leaderboard_curves`, as in round 2.
   The same shape as ours with a higher slope means a better forecast; a different shape means a different strategy.
 
 ### Upload discipline
@@ -130,7 +130,7 @@ Ticks and lots as in the tape; the position limit 100 (penalty 10,000/s beyond i
 <!-- which round-3 choices were tested again on round 4's tape -->
 
 ## Leaderboard
-<!-- leaderboard.json saved here; experiments.day.leaderboard_curves --read verdict; our standing -->
+<!-- leaderboard.json saved here; experiments.rounds.leaderboard_curves --read verdict; our standing -->
 Published after the event, although the Info page said round 4 would get none (read 9 Nov; `leaderboard.json` here,
 the rounds 1-3 layout, no series). **17th of 52 with +1,659,546.** Every team was profitable: mean 1,474,908, sample
 sd 336,360, so **z4 = 0.549**. Team 1 2,258,468 (its third round win), Team 3 2,059,867, Team 2 1,957,127;

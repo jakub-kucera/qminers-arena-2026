@@ -1,11 +1,11 @@
-"""experiments.day.warm_embed: a RIDGE_DUMP file into r4_W1_warm.py's WARM START block, the values bit for bit."""
+"""experiments.rounds.warm_embed: a RIDGE_DUMP file into r4_W1_warm.py's WARM START block, the values bit for bit."""
 
 import ast
 from pathlib import Path
 
 import pytest
 
-from experiments.day import warm_embed
+from experiments.rounds import warm_embed
 
 ROOT = Path(__file__).parents[2]
 BOT = ROOT / "python" / "bots" / "qminers" / "candidates" / "r4_W1_warm.py"

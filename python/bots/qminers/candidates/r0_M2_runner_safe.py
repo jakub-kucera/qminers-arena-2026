@@ -1,7 +1,7 @@
 """Playground candidate M2 (7 Nov): the momentum runner with two protections on: a 2 s flow window and no taking while
 the spread is wider than 2 ticks. Sample +305,374 (last 25% +71,955), as M1 or better; on two ABIDES tapes -45,217 and
 -43,606 against M1's -582,585 and -366,085 (entering after an order had cleared the touch). Set MAX_SPREAD to the
-round's usual spread (experiments.day.round_start prints it).
+round's usual spread (experiments.rounds.round_start prints it).
 Family 1b (7 Nov): momentum runner, the momentum taker driven by the mid's move as well as the tape's flow, with
 explicit exits. A run starts when the mid has moved MOVE_TICKS or more over the last LOOKBACK book events, or (if
 FLOW_ENTRY) on an aggressive trade of at least MIN_FLOW lots; while it lasts, IOCs at the touch (CROSS ticks through

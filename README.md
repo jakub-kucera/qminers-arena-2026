@@ -116,7 +116,7 @@ The round tapes are the organisers' and are not included. With a round's public 
 ```sh
 uv run exchange-simulator --strategy python/bots/qminers/candidates/r4_W2_warm10k.py \
     --backtest data/arena/round4/round4_public.csv --log-dir logs/w2 --no-logs    # 1,029,781
-uv run python -m experiments.day.family_rust data/arena/round4/round4_public.csv  # the round-3 bots in Rust, ~2 min
+uv run python -m experiments.rounds.family_rust data/arena/round4/round4_public.csv  # the round-3 bots in Rust, ~2 min
 ```
 
 ## How we worked
@@ -141,4 +141,4 @@ The Arena, its exchange simulator, backtest explorer, sample data and round tape
 `codex_repo/`, with `codex_repo/docs/ORGANIZER_GUIDE.md`) is included as they distributed it to the teams and is not covered
 by our licence; the round tapes are not included. `rust/arena_sim/` is our port of their simulator. The HTML reports
 in `codex_repo/research/` embed third-party charting code under its own licence. Other teams appear as "Team N", N
-their place in the overall standings. The charts come from `python -m experiments.day.readme_charts`.
+their place in the overall standings. The charts come from `python -m experiments.rounds.readme_charts`.

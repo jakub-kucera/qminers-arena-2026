@@ -5,8 +5,8 @@ import copy
 import numpy as np
 import pytest
 
-from experiments.day.gen_ladders import collect
-from experiments.day.gen_ladder_mechanics import DIMENSIONS, book_features, cancellation_models, fill_times, risk_cells
+from experiments.generator.gen_ladders import collect
+from experiments.generator.gen_ladder_mechanics import DIMENSIONS, book_features, cancellation_models, fill_times, risk_cells
 from test_gen_ladders import tape
 
 

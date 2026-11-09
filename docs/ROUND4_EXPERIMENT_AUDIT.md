@@ -19,7 +19,7 @@ belong to the other session; no candidate or Rust strategy was edited here.
    PG trials do not rule out a gate with the right feature parity. W2 has PG off.
 
 2. **The action oracle uses the wrong sampling weights for whole-pool estimates.**
-   `python/experiments/day/action_oracle.py:84` draws one row per equal time stratum;
+   `python/experiments/taker/action_oracle.py:84` draws one row per equal time stratum;
    `:246` scales the unweighted positive sum by pool/sample size. An event in a
    stratum of size N_h has inclusion probability 1/N_h, not n/N. Correct estimates
    of a pool sum use `sum_h N_h * A_h`; the corresponding mean divides by N.
@@ -43,7 +43,7 @@ belong to the other session; no candidate or Rust strategy was edited here.
    selective policy; the recorded “no action change has headroom” is too broad.
 
 3. **K1's 1-s and 5-s t-statistics treat overlapping labels as independent.**
-   `python/experiments/day/take_classes.py:25` says spacing avoids overlapping
+   `python/experiments/taker/take_classes.py:25` says spacing avoids overlapping
    labels, but defaults to 0.4 s for every horizon. The original real-R4 test has
    2,381 points / 380 F5 takes, reproduced exactly. Among its 2,380 adjacent pairs,
    0 overlap at 0.4 s, 2,010 at 1 s and 2,368 at 5 s. Its `score` uses an IID
@@ -113,11 +113,11 @@ Generate the input logs using the original K1 and action-oracle commands in
 IDEAS.md, then run:
 
 ```sh
-uv run python -m experiments.day.r4_experiment_audit --repo . --pred P/pred_r4.csv --cache P/ts_r4.npz --oracle P/a1/r4 --out data/arena/gen/r4_experiment_audit/audit.json
-uv run python -m experiments.day.r4_full_model_probe dump data/arena/round4/round4_public.csv --out data/arena/gen/r4_full_model
-uv run python -m experiments.day.r4_full_model_probe fit --out data/arena/gen/r4_full_model
-uv run python -m experiments.day.r4_full_model_probe replay data/arena/round4/round4_public.csv --out data/arena/gen/r4_full_model
-uv run python -m experiments.day.r4_queue_capacity_probe data/arena/round4/round4_public.csv --out data/arena/gen/r4_queue_capacity --jobs 3
+uv run python -m experiments.audits.r4_experiment_audit --repo . --pred P/pred_r4.csv --cache P/ts_r4.npz --oracle P/a1/r4 --out data/arena/gen/r4_experiment_audit/audit.json
+uv run python -m experiments.audits.r4_full_model_probe dump data/arena/round4/round4_public.csv --out data/arena/gen/r4_full_model
+uv run python -m experiments.audits.r4_full_model_probe fit --out data/arena/gen/r4_full_model
+uv run python -m experiments.audits.r4_full_model_probe replay data/arena/round4/round4_public.csv --out data/arena/gen/r4_full_model
+uv run python -m experiments.audits.r4_queue_capacity_probe data/arena/round4/round4_public.csv --out data/arena/gen/r4_queue_capacity --jobs 3
 ```
 
 The full-model tool needs the experiment environment's numpy/sklearn; candidate

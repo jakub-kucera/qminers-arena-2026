@@ -4,9 +4,9 @@ import math
 import numpy as np
 import pytest
 
-from experiments.day.filter_placement import likelihood_matrix
-from experiments.day.filter_settings import BASELINE, _selection, correlations, run
-from experiments.day.latent_filter import DEFAULTS, LatentFilter, ReferenceFilter, replay, settings_params
+from experiments.filter.filter_placement import likelihood_matrix
+from experiments.filter.filter_settings import BASELINE, _selection, correlations, run
+from experiments.filter.latent_filter import DEFAULTS, LatentFilter, ReferenceFilter, replay, settings_params
 
 
 @pytest.mark.parametrize('side,state', [(0, 105), (1, 95)])

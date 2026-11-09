@@ -40,7 +40,7 @@ uploaded 00:14, +873,719), not R2-L8: L9 came after this section was written (ro
 - **L3's dips on validation**: 3-4-s jumps against the full position (-7.8k to -11.6k) and 30-270-s whipsaw grinds (-7k to -19k); every rule that targets them lowers the mean.
 
 ### (c) What round 2 taught
-- **The validation tape was the public tape's high-volatility half, about 1.25x faster** (`experiments.day.tape_character`: a maker's segment PnL correlates -0.91 with the 1-s mid sd; E2's validation footprint matches the stitched high-vol tape). The property that matters is price movement per lot of order flow, not trend or direction (the mirrored tape gives the same results).
+- **The validation tape was the public tape's high-volatility half, about 1.25x faster** (`experiments.tape.tape_character`: a maker's segment PnL correlates -0.91 with the 1-s mid sd; E2's validation footprint matches the stitched high-vol tape). The property that matters is price movement per lot of order flow, not trend or direction (the mirrored tape gives the same results).
 - **Makers with size die where volatility per lot is high**: E2 -41k, V2 0.21 of its public rate; FT1 at 100 lots was predicted -450k to -700k there.
 - **The forecast take wins**: the same 29-feature ridge used to TAKE (an IOC within the 100-lot limit when the 400-ms forecast beats half the spread by 0.15, only at a 1-tick spread) went from T1 +485k to L3 +804k as features and sizing improved.
 - **Quotes cost in bursts and pay in calm**: L3 (no quotes) beat L1 by +111k on the fast stitched tape and +32k on validation, but lost 69k on calm round 1; L8 switches them on only below 2.5 ticks/s of 5-s price speed and beat both on validation (+826,778, +22.8k over L3).
@@ -56,7 +56,7 @@ uploaded 00:14, +873,719), not R2-L8: L9 came after this section was written (ro
 
 **The field over time** (the organisers' deck, best validation per team): 20:31 20 teams, median 55k, p75 387k; 21:37 48 teams, median 123k, p75 525k; 22:53 58 teams / 287 uploads, median 288k, p75 860k; 23:41 59 teams / 443 uploads, median 347k, p25 74k, p75 940k.
 
-## Round 2's public tape against round 1's (19:20, `data/arena/round2/round2_public.csv`, ignored by git; `uv run python -m experiments.day.round_start data/arena/round2/round2_public.csv --jobs 8 --out data/arena/round2/round_start`)
+## Round 2's public tape against round 1's (19:20, `data/arena/round2/round2_public.csv`, ignored by git; `uv run python -m experiments.rounds.round_start data/arena/round2/round2_public.csv --jobs 8 --out data/arena/round2/round_start`)
 - **The same order flow:** 6,000 s (half of round 1's 12,000), 2,193,064 rows; G inserts 178/s (round 1 180), F (IOC) 8.9/s (8.0), F sizes median / p90 / p99 61 / 367 / 1,543 (61 / 360 / 1,543), G sizes 14 / 143 (the same); touch depth median 878 lots (1,065).
 - **A different price process:** the mid changes 4.85 times a second (round 1: 2.57); the spread is 1 tick 83.9%, 2 ticks 11.6%, 3+ 4.4% (93 / 7 / 0); the price wanders about 550 ticks (10,000 -> 9,850 -> 10,000 at 3,000 s -> 9,480 at 4,200-4,500 s -> 9,765 -> 9,689 at the end; round 1's whole range was 107 ticks). Moves persist: after a trade the mid moves +0.44 ticks its way at 1 s and +0.39 at 60 s (trades over 58 lots +0.69 / +0.97); after a 1-tick move with no trade +0.60 at 1 s, +0.95 at 5 s, +1.47 at 60 s.
 - **Every round-1 bot loses on it** (round_start, the files at their defaults, full / first 75% / last 25%): R1-C1 -219,331; R1-C5 -247,210; R1-C11 -263,201 (breach 6,999); R1-F8 -86,391; R1-F3 -216,175; the momentum runner -3.4M; pmaker -3,110, A0 -14,584, F1 -22,272 (barely trading). In Rust: R1-C12 -261,847, R2-FT1 (C12 + the forecast take) -88,432.
@@ -98,15 +98,15 @@ uploaded 00:14, +873,719), not R2-L8: L9 came after this section was written (ro
 <!-- which of last round's choices were tested again this round, which were kept untested ("Choose the approach again each round") -->
 
 ## Leaderboard
-<!-- leaderboard.json saved here; experiments.day.leaderboard_curves --read verdict; our standing -->
+<!-- leaderboard.json saved here; experiments.rounds.leaderboard_curves --read verdict; our standing -->
 
 ## Next round
 <!-- round N+1's first candidate, and its first three actions -->
-- Round 3 starts from `data/arena/round3/HANDOVER.md`, "Start here": R2-L8 / R2-L3 as the base on the new tape, the first look with `experiments.day.round_start`, then the ranked "Ideas to try in round 3".
+- Round 3 starts from `data/arena/round3/HANDOVER.md`, "Start here": R2-L8 / R2-L3 as the base on the new tape, the first look with `experiments.rounds.round_start`, then the ranked "Ideas to try in round 3".
 
 ## Start here (18:25, from round 1)
 - **Upload first:** `python/bots/qminers/candidates/r2_base_v5.py` (R1-C11, every constant at the top of the class) once round_start has run it on the new tape; then `r2_safe_v5.py` (no breach possible) as the second, different upload. Their two portal (private-tape) scores against their local ones are the first out-of-sample check.
-- **What round 1's private tape said** (rebuilt from the portal's log, `uv run python -m experiments.day.tape_from_logs RESULTS_DIR PUBLIC.csv OUT.csv`; C12 reproduced within 0.07%): every ridge candidate kept 94-98% of its public PnL, F8 93%. The steps that generalised: C1 -> C5 (the in-flight cancels, the hedge, the 400-ms horizon; +41k public, +56k private) and the flow groups (C5 -> C9, +10k / +17k). The knob steps under ~10k (the cap, the quote features) moved the private PnL by noise. So on round 2: trust structural changes and the learned weights, distrust public gains under ~10k from constants.
+- **What round 1's private tape said** (rebuilt from the portal's log, `uv run python -m experiments.tape.tape_from_logs RESULTS_DIR PUBLIC.csv OUT.csv`; C12 reproduced within 0.07%): every ridge candidate kept 94-98% of its public PnL, F8 93%. The steps that generalised: C1 -> C5 (the in-flight cancels, the hedge, the 400-ms horizon; +41k public, +56k private) and the flow groups (C5 -> C9, +10k / +17k). The knob steps under ~10k (the cap, the quote features) moved the private PnL by noise. So on round 2: trust structural changes and the learned weights, distrust public gains under ~10k from constants.
 - **Fast tuning:** `arena.qsim_rust ridge_maker D <R1-C11's --set line, round_start prints it> --grid ...` (~3 s a run, byte-identical to the Python files).
 - **Which family** if the tape differs: the table "If the tape looks like X" at the end of this file (thin touch, big sweeps or informed flow: R1-F8 beside the ridge; 2-tick-heavy, deep, trending or weak impact: the ridge).
 - **After each upload's portal log:** rebuild that private tape with `tape_from_logs` and rank the round's candidates on it.
@@ -121,9 +121,9 @@ Round 2 is generated differently, so round 1's settings are priors, not answers.
 - A Rust pick becomes a Python file that matches Rust to the cent (`uv run exchange-simulator --strategy FILE --backtest D --log-dir logs/X --no-logs`), then `uv run python -m arena.validate FILE all --format qminers`, run time well under 900 s. Upload a safe candidate in the first hour; the final by T-15 min.
 
 ### Triage (the first 15 minutes)
-1. `uv run python -m experiments.day.round_start D --jobs 6`: the spread mix (1 vs 2+ ticks), touch depth, aggressor sizes and rate, markouts after trades, the file's length; every candidate ranked.
+1. `uv run python -m experiments.rounds.round_start D --jobs 6`: the spread mix (1 vs 2+ ticks), touch depth, aggressor sizes and rate, markouts after trades, the file's length; every candidate ranked.
 2. Side by side on D: R1-C9 (`r1_C9_codex_v4_flow_groups.py`), R1-C5, R1-F8b, and the no-learning control (`C5 --set MIN_LABELS=1000000000`). The gap C5 minus control says what learning is worth on this tape.
-3. `uv run python -m experiments.day.latent_price D`, `uv run python -m experiments.day.spread_episodes D`, `uv run python -m experiments.day.tape_gen --fit D --params-out logs/r2_params.json`: is there still a hidden price the inserts lead, how long 2-tick episodes last, the arrival rates.
+3. `uv run python -m experiments.tape.latent_price D`, `uv run python -m experiments.tape.spread_episodes D`, `uv run python -m experiments.generator.tape_gen --fit D --params-out logs/r2_params.json`: is there still a hidden price the inserts lead, how long 2-tick episodes last, the arrival rates.
 4. Check the rules: the limit, the penalty, the latency and the acceptance wall (the hedge and EXPOSURE depend on them).
 
 | If the tape shows | Start from |
@@ -159,14 +159,14 @@ Round 2 is generated differently, so round 1's settings are priors, not answers.
 | 18 | 3 | A Kalman latent price from insert placements (Das 2005; the generator's latent mid) | new feature: filtered price from where inserts land, minus the mid | the hidden fair value | the bar |
 | 19 | 3 | A logistic next-change classifier (Gould & Bonart) | exp. 8 with LABEL_MODE 2, or a separate logistic model blended | direction target | the bar |
 | 20 | 3 | Hand-built line on the new tape | `uv run python -m arena.qsim_rust python/bots/qminers/candidates/r1_F8_take_join.py D --grid SIZE_NARROW=60,115,200 --grid DEPLETE_LOTS=50,100,200 --grid DEPL_FRAC=0.06,0.12,0.25 --threads 6 --holdout 0.25` | the fallback if learning fails | beats the ridge line |
-| 21 | 3 | Generator check | `uv run python -m experiments.day.tape_eval --params logs/r2_params.json --real D --seeds 1-30` | can generated tapes rank candidates on this round | F7-vs-F6-type pairs rank as on the real tape |
-| 22 | 3 | Ceilings on the best candidate | `uv run python -m experiments.day.ceilings logs/<best full-logs run>` | where the remaining money is (queue place, room, taking) | guides the next idea |
+| 21 | 3 | Generator check | `uv run python -m experiments.generator.tape_eval --params logs/r2_params.json --real D --seeds 1-30` | can generated tapes rank candidates on this round | F7-vs-F6-type pairs rank as on the real tape |
+| 22 | 3 | Ceilings on the best candidate | `uv run python -m experiments.maker.ceilings logs/<best full-logs run>` | where the remaining money is (queue place, room, taking) | guides the next idea |
 | 23 | 4 | Takers, only if triage shows fast moves | `families/momentum_taker.py`, `families/burst_taker.py` grids (IDEAS rows) | a trending or impact-heavy tape | the bar |
 | 24 | 4 | A nonlinear model (sklearn is allowed), if the run time allows | small online tree / kNN on the 23 features, blended | nonlinearity | the bar and run time < 300 s |
 
 ## If the tape looks like X
 From `IDEAS.md`, "Which round-1 strategy survives which change of tape" (6 draws a regime of round 1's fitted generator,
-`experiments.day.tape_regimes`). The draws tie C5, C1 and F8 on the unaltered model (real round 1: C5 > C1 > F8), so
+`experiments.generator.tape_regimes`). The draws tie C5, C1 and F8 on the unaltered model (real round 1: C5 > C1 > F8), so
 read these as which family to start from, then choose the knobs on round 2's own tape. Learning paid in every regime
 (C5 +65-396k over its never-learning control) and the hedge's breach penalty stayed small (C5's 16k at worst).
 

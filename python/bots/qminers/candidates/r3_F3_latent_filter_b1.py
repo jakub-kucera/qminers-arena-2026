@@ -1,4 +1,4 @@
-"""R3-F3 (8 Nov, round 3): R3-B1 (R2-L9 plus R2-L8's speed-switched one-lot quotes) plus R3-F1's latent-price filter: three ridge features from a hidden-Markov filter of the generator's latent reference bid (experiments/day/latent_filter.py, the offline copy; r3_F1_latent_filter.py, the same code on R2-L9). FILTER = 0 is R3-B1 exactly. The notes of R3-B1 follow.
+"""R3-F3 (8 Nov, round 3): R3-B1 (R2-L9 plus R2-L8's speed-switched one-lot quotes) plus R3-F1's latent-price filter: three ridge features from a hidden-Markov filter of the generator's latent reference bid (experiments/filter/latent_filter.py, the offline copy; r3_F1_latent_filter.py, the same code on R2-L9). FILTER = 0 is R3-B1 exactly. The notes of R3-B1 follow.
 
 R3-B1 (8 Nov, round 3, 00:30): R2-L9 (the Huber-robust pure taker, +873,719 on validation) plus R2-L8's speed-switched one-lot quotes: QUOTE_SIZE 1, used only while the 5-s decayed |mid change| rate is below QS_RATE 2.5 ticks/s, else none. QS_RATE 0 reproduces R2-L9 exactly (the rate is never below 0). The notes of R2-L9 follow.
 

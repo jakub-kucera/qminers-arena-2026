@@ -33,7 +33,7 @@ touch or a touch moving during the order's latency.
 New audit, F5's existing full-log run on real round4_public:
 
 ```sh
-uv run python -m experiments.day.take_completion_probe data/arena/round4/py_f5_full --out data/arena/gen/r4_research/take_completion_f5.json
+uv run python -m experiments.taker.take_completion_probe data/arena/round4/py_f5_full --out data/arena/gen/r4_research/take_completion_f5.json
 ```
 
 | Completion | Orders | Requested lots | Filled lots | Unfilled lots |
@@ -103,7 +103,7 @@ is useful headroom, learn where it is using current inventory, executable depth,
 forecast margin, time since a causally detected move, and recent filter evidence.
 Train where actions can differ; a global R-squared improvement is insufficient.
 
-**Result (R4-A1, 8 Nov 10:15, `experiments.day.action_oracle`):** no headroom in the restricted
+**Result (R4-A1, 8 Nov 10:15, `experiments.taker.action_oracle`):** no headroom in the restricted
 actions on round4_public. Exact Rust branches from F5's own decisions (WAIT, TAKE_NOW, REDUCE,
 flip stopped at flat, COMPLETE), valued at +300 s against F5's continuation: every action's mean
 is at or below zero, no state cell reaches t 2 and holds across the 1,000-s blocks, and 41-61% of
@@ -141,7 +141,7 @@ large displacement onto an edge. Require corroborating fresh evidence, especiall
 unclamped orders, before a large change. Pass surprise/disagreement to a small action
 model only if they add value beyond the existing mean, nonlinear gap and sd.
 
-**Audited 8 Nov 09:30 (IDEAS.md, "R4-FA"; `experiments.day.filter_audit`): no such failure.** The fresh orders that
+**Audited 8 Nov 09:30 (IDEAS.md, "R4-FA"; `experiments.filter.filter_audit`): no such failure.** The fresh orders that
 contradict F5's filter lag it on r4 and r3. After 3+ aggressive surprises within 0.5 s (112/h on r4), the mid moves
 3.2 / 7.4 ticks against them at 0.4 / 1 s, the way the filter's gap already points. Nudging the forecast towards them
 drops better takes than it adds. Re-entries never reach the filter. The proposal is dropped.

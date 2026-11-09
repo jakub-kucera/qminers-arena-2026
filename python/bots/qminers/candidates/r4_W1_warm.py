@@ -1,8 +1,8 @@
-"""R4-W1 (8 Nov, round 4): R3-F5 with a warm start. With PRIOR_MASS > 0 the ridge starts from statistics saved on a public tape (WARM_XX, WARM_XY, WARM_MASS: Rust ridge_maker's RIDGE_DUMP file, embedded by `experiments.day.warm_embed`) scaled to PRIOR_MASS labels, its label count set to MIN_LABELS, so it fits on its first book and forecasts (and takes) from the start. PRIOR_MASS = 0 is R3-F5 exactly. The Rust twin: R3-F5's --set line, --set PRIOR_MASS=1000 and the env var RIDGE_WARM naming the same stats file. The notes of R3-F5 follow.
+"""R4-W1 (8 Nov, round 4): R3-F5 with a warm start. With PRIOR_MASS > 0 the ridge starts from statistics saved on a public tape (WARM_XX, WARM_XY, WARM_MASS: Rust ridge_maker's RIDGE_DUMP file, embedded by `experiments.rounds.warm_embed`) scaled to PRIOR_MASS labels, its label count set to MIN_LABELS, so it fits on its first book and forecasts (and takes) from the start. PRIOR_MASS = 0 is R3-F5 exactly. The Rust twin: R3-F5's --set line, --set PRIOR_MASS=1000 and the env var RIDGE_WARM naming the same stats file. The notes of R3-F5 follow.
 
 R3-F5 (8 Nov, round 3, 03:15): R3-F3 with a state-dependent take bar: TAKE_EDGE 0.25 instead of 0.15, except for TAKE_JUMP_HOLD_MS after the mid moved TAKE_JUMP ticks or more within TAKE_JUMP_MS (a jump), when the bar is TAKE_JUMP_EDGE 0.15 (F3's). The takes between 0.15 and 0.25 over half the spread lose on round 3's and round 2's tapes away from jumps (IDEAS.md, "R3-F5"); round 1's calm tape loses with it. TAKE_JUMP = 0 with TAKE_EDGE 0.15 is R3-F3 exactly. The Rust twin: R3-B1's --set line and --set FILTER=1 --set FT_EDGE=0.25 --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set FT_JUMP_EDGE=0.15. The notes of R3-F3 follow.
 
-R3-F3 (8 Nov, round 3): R3-B1 (R2-L9 plus R2-L8's speed-switched one-lot quotes) plus R3-F1's latent-price filter: three ridge features from a hidden-Markov filter of the generator's latent reference bid (experiments/day/latent_filter.py, the offline copy; r3_F1_latent_filter.py, the same code on R2-L9). FILTER = 0 is R3-B1 exactly. The notes of R3-B1 follow.
+R3-F3 (8 Nov, round 3): R3-B1 (R2-L9 plus R2-L8's speed-switched one-lot quotes) plus R3-F1's latent-price filter: three ridge features from a hidden-Markov filter of the generator's latent reference bid (experiments/filter/latent_filter.py, the offline copy; r3_F1_latent_filter.py, the same code on R2-L9). FILTER = 0 is R3-B1 exactly. The notes of R3-B1 follow.
 
 R3-B1 (8 Nov, round 3, 00:30): R2-L9 (the Huber-robust pure taker, +873,719 on validation) plus R2-L8's speed-switched one-lot quotes: QUOTE_SIZE 1, used only while the 5-s decayed |mid change| rate is below QS_RATE 2.5 ticks/s, else none. QS_RATE 0 reproduces R2-L9 exactly (the rate is never below 0). The notes of R2-L9 follow.
 
@@ -34,7 +34,7 @@ TAKE_JUMP = 3.0  # R3-F5: a jump is the mid TAKE_JUMP ticks or more from the old
 TAKE_JUMP_MS = 200
 TAKE_JUMP_HOLD_MS = 5000  # for this long after a jump, the take's bar is TAKE_JUMP_EDGE (if lower than TAKE_EDGE)
 TAKE_JUMP_EDGE = 0.15
-# R4-W1: the warm start (0: off, R3-F5 exactly). `experiments.day.warm_embed` rewrites the lines between the markers.
+# R4-W1: the warm start (0: off, R3-F5 exactly). `experiments.rounds.warm_embed` rewrites the lines between the markers.
 # WARM START BEGIN
 PRIOR_MASS = 0.0
 WARM_MASS = 0.0

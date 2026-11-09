@@ -41,14 +41,14 @@ here). `D` is `data/arena/round<N>/`, `F` its tape (`D/<file>.csv`), and `BOT` i
 | When | Do |
 |---|---|
 | T+0:00 | Reload the dashboard; download the data (its link goes with the round) and the rules; note the submission deadline (it may come before the end). Write what changed into "Rule changes" and "Products". Unzip the tape. |
-| T+0:15 | `uv run python -m experiments.day.round_start F --out results/r<N>` (profile, markouts, every candidate ranked, next grids); last round's bot (round 1: A0) on the new tape: `uv run exchange-simulator --strategy BOT --backtest F --log-dir logs/<run> --no-logs`, then a full-logs run into `backtest-explorer`; source-check it with `arena.validate`: the first candidate. |
+| T+0:15 | `uv run python -m experiments.rounds.round_start F --out results/r<N>` (profile, markouts, every candidate ranked, next grids); last round's bot (round 1: A0) on the new tape: `uv run exchange-simulator --strategy BOT --backtest F --log-dir logs/<run> --no-logs`, then a full-logs run into `backtest-explorer`; source-check it with `arena.validate`: the first candidate. |
 | T+0:30 | Rounds 2–4: by T+1:00, one alternative to last round's approach against it, and every setting gridded again; last round's choices are priors, not defaults ["Choose the approach again each round"]. |
 | T+1:00 | `uv run python -m arena.qgrid BOT F --grid PARAMS.ASSET.make_edge=1,2,3 --set 'PARAMS.ASSET={...}' --holdout 0.25 [--out <csv>]` (README.md, "Grid on the Arena's simulator"): take a cell good held out and in its neighbourhood, not the best cell ["Evaluation data"]. |
 | T+1:30 | Size `stop_loss` and `flatten_from` on the PnL path (`logs/<run>/pnl.csv`, qgrid's max drawdown) ["Stress the bot"]. |
 | T+2:00 | A checked bot at least as good as the last one, uploaded; its portal score against `result.json` is the engine's error `T`. Then `KICKOFF_PROMPT.md`'s improvement loop (qgrid with `--holdout`, exchange-simulator, validate's source check). |
 | deadline − 0:30 | (T+4:30; earlier if 2× the first evaluation's time is longer.) Stop changing strategy. Check the final candidate and upload it; copy it into the root `strategies/` folder and commit. |
 | deadline − 0:10 | Check which submission is marked final. Write the handover note (`data/arena/round<N>/HANDOVER.md`, copied from `docs/HANDOVER_TEMPLATE.md`), then commit and push it. |
-| After | After the private run: our PRIVATE entry's results against the public run of the same file; save the leaderboard's data to `data/arena/round<N>/leaderboard.json` and run `uv run python -m experiments.day.leaderboard_curves --read data/arena/round<N>/leaderboard.json --team <ours>`. Both into the handover note ["The day: timeline and roles", "Is the market shared"]. |
+| After | After the private run: our PRIVATE entry's results against the public run of the same file; save the leaderboard's data to `data/arena/round<N>/leaderboard.json` and run `uv run python -m experiments.rounds.leaderboard_curves --read data/arena/round<N>/leaderboard.json --team <ours>`. Both into the handover note ["The day: timeline and roles", "Is the market shared"]. |
 
 ## Rules that hold all day
 - Never upload code whose source check and full `exchange-simulator` run haven't passed, and never spend a

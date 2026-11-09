@@ -3,7 +3,7 @@ side's dying touch (TAKE_LOTS, 0 = off; only while the spread is 1 tick, that to
 side wants to quote and has room, and no such order went out on that side in the last TAKE_MS). A BUY at the best ask takes
 what is left there and its residual rests at that price, in front of the market's bid touch and first in the queue; it is
 exempt from CANCEL_ALONE for TAKE_MS, or until the market's bid joins its price (symmetric: a SELL at the best bid while the bid
-touch is dying). Mechanism on round 1's tape (experiments.day.spread_episodes): after a touch clears and the spread opens to
+touch is dying). Mechanism on round 1's tape (experiments.tape.spread_episodes): after a touch clears and the spread opens to
 2 ticks, the other side follows into the gap in 71% of 13,949 episodes at a median 20 ms, so the lots bought at the dying ask
 are marked half a tick higher and the residual holds the front of the new bid queue; in the 29% the asks step back, a
 price-improving insert (median 14 lots) fills the bid resting inside. The order's full quantity counts against the side's

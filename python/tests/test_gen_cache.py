@@ -6,7 +6,7 @@ import json
 
 import pytest
 
-from experiments.day import gen_calibrate as calibration
+from experiments.generator import gen_calibrate as calibration
 from test_gen_inventory import params
 
 

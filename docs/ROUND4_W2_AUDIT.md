@@ -95,8 +95,8 @@ prove which bytes the portal received.
 With the repository environment and downloaded round-4 artifacts:
 
 ```sh
-uv run python -m experiments.day.r4_warm_audit --repo . --out data/arena/gen/w2_audit/audit.json
-uv run python -m experiments.day.r4_warm_audit --repo . --out data/arena/gen/w2_audit/audit.json --replay
+uv run python -m experiments.audits.r4_warm_audit --repo . --out data/arena/gen/w2_audit/audit.json
+uv run python -m experiments.audits.r4_warm_audit --repo . --out data/arena/gen/w2_audit/audit.json --replay
 uv run python -m arena.validate python/bots/qminers/candidates/r4_W2_warm10k.py all --format qminers --max-size 1MiB
 ```
 

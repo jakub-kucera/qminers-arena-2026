@@ -8,7 +8,7 @@ the public tape's tuning put R2-E2 at +47k locally and -41k on validation, becau
 volatile regime. What we can learn about the generator is worth more than any single strategy tweak, because it
 transfers to every tape of every remaining round.
 
-## What we already know (round 1's fit, `python/experiments/day/tape_gen.py`; round 2's diagnosis, `tape_character.py`)
+## What we already know (round 1's fit, `python/experiments/generator/tape_gen.py`; round 2's diagnosis, `tape_character.py`)
 
 - **Hidden fair price.** New limit orders are placed around a latent price that the mid only follows: at a 1-tick
   spread a bid lands at the touch 80% of the time when the mid is up 0.5 s later, 23% when it is down; the past move
@@ -93,7 +93,7 @@ Each item is a measurable hypothesis; the replay is `tape_book` (no strategy), t
   by 03:30 it is dropped for this round, and its findings move to round 4.
 - **Legitimacy:** modelling the public data and our own validation results is ordinary research; the rules allow it.
 
-## Phase 1 findings (8 Nov, 01:30; `python/experiments/day/gen_identify.py`, IDEAS.md "The tape generator's structure")
+## Phase 1 findings (8 Nov, 01:30; `python/experiments/generator/gen_identify.py`, IDEAS.md "The tape generator's structure")
 
 Five tapes, one replay each: round 1 public (r1), round 1's private rebuild (r1p), round 2 public (r2) and its mirror
 (r2m: every number mirrored, a check of the code), round 3 public (r3). The latent estimate is the mean price of the
@@ -222,10 +222,10 @@ new bid inserts plus that of the new ask inserts, halved, over 0.1 s; its noise 
   at the onset (needs event-level timing, not the 0.1-s grid).
 
 Commands (each tape about 10 s once its replay is cached):
-`uv run python -m experiments.day.gen_identify data/arena/round3/round3_public.csv --cache R3.npz --json R3.json`, then
-`uv run python -m experiments.day.gen_identify --compare R1.json R2.json R3.json`.
+`uv run python -m experiments.generator.gen_identify data/arena/round3/round3_public.csv --cache R3.npz --json R3.json`, then
+`uv run python -m experiments.generator.gen_identify --compare R1.json R2.json R3.json`.
 
-## Phase 2 results (8 Nov, 02:25; `python/experiments/day/gen_calibrate.py`, IDEAS.md "Calibrating the generator to round 2's validation scoreboard")
+## Phase 2 results (8 Nov, 02:25; `python/experiments/generator/gen_calibrate.py`, IDEAS.md "Calibrating the generator to round 2's validation scoreboard")
 
 **tape_gen v2.** Phase 1's structure, as latent options that are all off by default (a draw without them is the same
 bytes as before):
@@ -281,8 +281,8 @@ Shared draws (data/ is ignored; each folder has a README.txt with the command an
 ## Using the generator in round 4
 
 The first hour of round 4, beside round_start:
-1. **Fit and profile the new public tape:** `uv run python -m experiments.day.tape_gen --fit D --params-out P.json`;
-   `uv run python -m experiments.day.gen_calibrate stats D` (the price sd over 1-300 s, spreads, impact by size, a big
+1. **Fit and profile the new public tape:** `uv run python -m experiments.generator.tape_gen --fit D --params-out P.json`;
+   `uv run python -m experiments.generator.gen_calibrate stats D` (the price sd over 1-300 s, spreads, impact by size, a big
    order's move curve, the touch-landing test, 3+ tick jumps per 1,000 s) and `gen_calibrate jumpflow D`. Compare with round 2's
    and round 3's rows in IDEAS.md.
 2. **Choose the starting preset:**
@@ -290,14 +290,14 @@ The first hour of round 4, beside round_start:
    - volatile: start from `r3_public_after`. Its volatile share is set by `jx_rate_on` / `jx_dwell_on`, and c by
      `impact_sqrt`, which Phase 1's `gen_identify` estimates per tape.
 3. **Fit to the public scores of 6+ Rust bases** (5 minutes on 4 cores): put their public scores in a JSON file, then
-   `uv run python -m experiments.day.gen_calibrate search --params P.json --scoreboard S.json --bots ... --seconds 6000
+   `uv run python -m experiments.generator.gen_calibrate search --params P.json --scoreboard S.json --bots ... --seconds 6000
    --scale 1 --seeds 1 --around PRESET --spread 0.35 --vary impact_sqrt,jx_rate_on,jx_median,jx_after_extra,jx_diff_sd
    --trials 15 --jobs 4 --out F.jsonl`.
-4. **Check before trusting it:** `uv run python -m experiments.day.gen_calibrate rank --opts BEST --seeds 2-6
+4. **Check before trusting it:** `uv run python -m experiments.generator.gen_calibrate rank --opts BEST --seeds 2-6
    --seconds 6000 --real D --bots ...`. Trust a ranking only between bots whose gap on the draws is well beyond their
    pairwise se and whose order the check reproduces. Each validation score that lands is one more point:
    `--scoreboard` with `--seconds 12000`.
-5. **Share the draws:** `uv run python -m experiments.day.gen_calibrate write --opts BEST --seeds 1-20 --dir
+5. **Share the draws:** `uv run python -m experiments.generator.gen_calibrate write --opts BEST --seeds 1-20 --dir
    data/arena/gen/r4 --latent-seeds 1-3`.
 
 What it gets wrong, so far:
@@ -321,7 +321,7 @@ From round 3 on, the generator work moves to its own Claude session; its prompt 
 half-tape fits, and observed lifetime/size dependence. Reproduce the table from the repository root:
 
 ```sh
-uv run python -m experiments.day.gen_inventory r1=data/arena/round1/round1.csv r2=data/arena/round2/round2_public.csv r3=data/arena/round3/round3_public.csv sample1=data/sample.csv sample2=data/arena/playground/sample_v2.csv r1_private=data/arena/round1/private_reconstructed.csv --reconstructed r1_private --out data/arena/gen/gen_v3_inventory.json --summary-out docs/GENERATOR_COMPONENTS.json
+uv run python -m experiments.generator.gen_inventory r1=data/arena/round1/round1.csv r2=data/arena/round2/round2_public.csv r3=data/arena/round3/round3_public.csv sample1=data/sample.csv sample2=data/arena/playground/sample_v2.csv r1_private=data/arena/round1/private_reconstructed.csv --reconstructed r1_private --out data/arena/gen/gen_v3_inventory.json --summary-out docs/GENERATOR_COMPONENTS.json
 ```
 
 - Public rounds 1-3: every insert increments the shared OrderId by exactly one, across both G and F orders.
@@ -364,7 +364,7 @@ The proposed direct recovery of a signed 1-s mid path from PnL alone does **not*
 accounting error**, and measures the approximation against the actual market book from that run:
 
 ```sh
-uv run python -m experiments.day.gen_pnl_probe logs/r3_F1_full logs/r2_L3_full --curves data/arena/round3/r3_F1_latent_filter_res data/arena/round3/r3_F3_latent_filter_b1_res data/arena/round2/r2_L3_taker_pure_res --out data/arena/gen/gen_v3_pnl_probe.json
+uv run python -m experiments.generator.gen_pnl_probe logs/r3_F1_full logs/r2_L3_full --curves data/arena/round3/r3_F1_latent_filter_res data/arena/round3/r3_F3_latent_filter_b1_res data/arena/round2/r2_L3_taker_pure_res --out data/arena/gen/gen_v3_pnl_probe.json
 ```
 
 If the local logs are absent, generate them with `exchange-simulator` and the corresponding committed candidate
@@ -427,10 +427,10 @@ Reproduce from the root (build `arena-sim` first if absent). `PRESET:JSON` is no
 
 ```sh
 cargo build --release -p arena_sim --manifest-path rust/Cargo.toml
-uv run python -m experiments.day.tape_gen --fit data/arena/round3/round3_public.csv --params-out data/arena/gen/v3_r3_params.json
-uv run python -m experiments.day.gen_calibrate rank --params data/arena/gen/v3_r3_params.json --opts r3_public_after --bots L8,L3,L9,B1,L8F,B1F --seeds 301-303 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_check/baseline --out data/arena/gen/v3_check/baseline_scores.json
-uv run python -m experiments.day.gen_calibrate rank --params data/arena/gen/v3_r3_params.json --opts 'r3_public_after:{"impact_traded":true}' --bots L8,L3,L9,B1,L8F,B1F --seeds 301-303 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_check/traded --out data/arena/gen/v3_check/traded_scores.json
-uv run python -m experiments.day.gen_calibrate stats data/arena/round3/round3_public.csv data/arena/gen/v3_check/baseline/rank_6000s_301.csv data/arena/gen/v3_check/traded/rank_6000s_301.csv --jobs 2
+uv run python -m experiments.generator.tape_gen --fit data/arena/round3/round3_public.csv --params-out data/arena/gen/v3_r3_params.json
+uv run python -m experiments.generator.gen_calibrate rank --params data/arena/gen/v3_r3_params.json --opts r3_public_after --bots L8,L3,L9,B1,L8F,B1F --seeds 301-303 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_check/baseline --out data/arena/gen/v3_check/baseline_scores.json
+uv run python -m experiments.generator.gen_calibrate rank --params data/arena/gen/v3_r3_params.json --opts 'r3_public_after:{"impact_traded":true}' --bots L8,L3,L9,B1,L8F,B1F --seeds 301-303 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_check/traded --out data/arena/gen/v3_check/traded_scores.json
+uv run python -m experiments.generator.gen_calibrate stats data/arena/round3/round3_public.csv data/arena/gen/v3_check/baseline/rank_6000s_301.csv data/arena/gen/v3_check/traded/rank_6000s_301.csv --jobs 2
 ```
 
 The existing generated files and score JSONs are in `data/arena/gen/v3_check/`. Use a fresh output directory for
@@ -445,8 +445,8 @@ It replays the market book once and records placement, preexisting depth, schedu
 and the touch timeline. Cached input metadata and a source SHA256 guard against mixing tapes.
 
 ```sh
-uv run python -m experiments.day.gen_ladders data/arena/round3/round3_public.csv --cache data/arena/gen/gen_v3_r3_ladders.npz --json data/arena/gen/gen_v3_r3_ladders.json
-uv run python -m experiments.day.gen_ladders data/arena/round2/round2_public.csv --cache data/arena/gen/gen_v3_r2_ladders.npz --json data/arena/gen/gen_v3_r2_ladders.json
+uv run python -m experiments.generator.gen_ladders data/arena/round3/round3_public.csv --cache data/arena/gen/gen_v3_r3_ladders.npz --json data/arena/gen/gen_v3_r3_ladders.json
+uv run python -m experiments.generator.gen_ladders data/arena/round2/round2_public.csv --cache data/arena/gen/gen_v3_r2_ladders.npz --json data/arena/gen/gen_v3_r2_ladders.json
 ```
 
 - R3 has **44,941 exact 2-ms links**, versus 19/23 at nearby 1/3-ms lags; r2 has only **8** in the same band.
@@ -486,9 +486,9 @@ with market state. Empirical lifetime marks are not a causal policy on a differe
 dependencies need separate identification; a match to the timing fingerprint alone cannot justify a new preset.
 
 ```sh
-uv run python -m experiments.day.gen_ladders data/arena/round3/round3_public.csv --cache data/arena/gen/gen_v3_r3_ladders.npz --json data/arena/gen/gen_v3_r3_ladders_fit.json --params data/arena/gen/r3_params.json --params-out data/arena/gen/gen_v3_r3_batch_params.json
-uv run python -m experiments.day.gen_calibrate rank --params data/arena/gen/r3_params.json --opts r3_public_after --bots L8,L3,L9,B1,L8F,B1F --seeds 304-306 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_ladders/baseline --out data/arena/gen/v3_ladders/baseline_scores.json
-uv run python -m experiments.day.gen_calibrate rank --params data/arena/gen/gen_v3_r3_batch_params.json --opts r3_public_after --bots L8,L3,L9,B1,L8F,B1F --seeds 304-306 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_ladders/mixture --out data/arena/gen/v3_ladders/mixture_scores.json
+uv run python -m experiments.generator.gen_ladders data/arena/round3/round3_public.csv --cache data/arena/gen/gen_v3_r3_ladders.npz --json data/arena/gen/gen_v3_r3_ladders_fit.json --params data/arena/gen/r3_params.json --params-out data/arena/gen/gen_v3_r3_batch_params.json
+uv run python -m experiments.generator.gen_calibrate rank --params data/arena/gen/r3_params.json --opts r3_public_after --bots L8,L3,L9,B1,L8F,B1F --seeds 304-306 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_ladders/baseline --out data/arena/gen/v3_ladders/baseline_scores.json
+uv run python -m experiments.generator.gen_calibrate rank --params data/arena/gen/gen_v3_r3_batch_params.json --opts r3_public_after --bots L8,L3,L9,B1,L8F,B1F --seeds 304-306 --seconds 6000 --jobs 2 --keep --dir data/arena/gen/v3_ladders/mixture --out data/arena/gen/v3_ladders/mixture_scores.json
 ```
 
 Use a fresh output directory when parameters change. All six bots' settings and the original preset stay fixed.
@@ -521,7 +521,7 @@ the 5-s move after a large IOC: **2.64 -> 3.37 ticks**, real **2.05**. These are
 Reproduce the structural comparisons with `gen_ladders` on each arm's `rank_6000s_304.csv` and:
 
 ```sh
-uv run python -m experiments.day.gen_calibrate stats data/arena/round3/round3_public.csv data/arena/gen/v3_ladders/baseline/rank_6000s_304.csv data/arena/gen/v3_ladders/mixture/rank_6000s_304.csv --jobs 2
+uv run python -m experiments.generator.gen_calibrate stats data/arena/round3/round3_public.csv data/arena/gen/v3_ladders/baseline/rank_6000s_304.csv data/arena/gen/v3_ladders/mixture/rank_6000s_304.csv --jobs 2
 ```
 
 Shared artifacts: `data/arena/gen/v3_ladders/` contains both arms' tapes, score JSONs, first-seed ladder
@@ -551,7 +551,7 @@ a latent path, then an identical cached rerun under `data/arena/gen/v3_cache_smo
 
 ```sh
 uv run pytest python/tests/test_gen_cache.py python/tests/test_gen_ladders.py python/tests/test_gen_inventory.py python/tests/test_gen_pnl_probe.py python/tests/test_docs.py -q
-uv run python -m experiments.day.gen_calibrate write --params data/arena/gen/gen_v3_r3_batch_params.json --opts r3_public_after --seeds 71-72 --seconds 40 --jobs 2 --latent-seeds 71 --dir data/arena/gen/v3_cache_smoke
+uv run python -m experiments.generator.gen_calibrate write --params data/arena/gen/gen_v3_r3_batch_params.json --opts r3_public_after --seeds 71-72 --seconds 40 --jobs 2 --latent-seeds 71 --dir data/arena/gen/v3_cache_smoke
 ```
 
 ## Activity and cancellation holdout (8 Nov, focused continuation)
@@ -561,7 +561,7 @@ population and hypotheses were previously discovered using the full tape; this i
 check, not a wholly independent discovery sample. Predictors use strictly prior book history.
 
 ```sh
-uv run python -m experiments.day.gen_ladder_mechanics data/arena/round3/round3_public.csv --cache data/arena/gen/gen_v3_r3_ladders.npz --fills-cache data/arena/gen/ladder_mechanics/r3_fills.npz --out data/arena/gen/ladder_mechanics/r3_mechanics.json
+uv run python -m experiments.generator.gen_ladder_mechanics data/arena/round3/round3_public.csv --cache data/arena/gen/gen_v3_r3_ladders.npz --fills-cache data/arena/gen/ladder_mechanics/r3_fills.npz --out data/arena/gen/ladder_mechanics/r3_mechanics.json
 ```
 
 A Poisson intensity model from prior1/5/30-s mid-change activity,5-s absolute moves and spread predicts
@@ -598,8 +598,8 @@ market book in every arm, samples50ms, fits frozen first-half forecast regressio
 and scores second-half0.4/1-s moves. This is an offline forecast test, not the full bot's adaptive ridge or PnL.
 
 ```sh
-uv run python -m experiments.day.ladder_filter_probe data/arena/round3/round3_public.csv --ladder-cache data/arena/gen/gen_v3_r3_ladders.npz --out data/arena/gen/ladder_mechanics/filter_r3_delayed.json --rows-out data/arena/gen/ladder_mechanics/filter_r3_delayed_rows.npz
-uv run python -m experiments.day.ladder_filter_probe data/arena/round2/round2_public.csv --ladder-cache data/arena/gen/gen_v3_r2_ladders.npz --out data/arena/gen/ladder_mechanics/filter_r2_delayed.json --rows-out data/arena/gen/ladder_mechanics/filter_r2_delayed_rows.npz
+uv run python -m experiments.filter.ladder_filter_probe data/arena/round3/round3_public.csv --ladder-cache data/arena/gen/gen_v3_r3_ladders.npz --out data/arena/gen/ladder_mechanics/filter_r3_delayed.json --rows-out data/arena/gen/ladder_mechanics/filter_r3_delayed_rows.npz
+uv run python -m experiments.filter.ladder_filter_probe data/arena/round2/round2_public.csv --ladder-cache data/arena/gen/gen_v3_r2_ladders.npz --out data/arena/gen/ladder_mechanics/filter_r2_delayed.json --rows-out data/arena/gen/ladder_mechanics/filter_r2_delayed_rows.npz
 ```
 
 | R3 holdout |0.4s|1s|
@@ -669,10 +669,10 @@ identical book events. F anchors identify offline parameters only; no filter get
 online observation. Existing candidate bots and Rust implementations are unchanged.
 
 ```sh
-uv run python -m experiments.day.filter_settings data/arena/round3/round3_public.csv --full --cache data/arena/gen/filter_placement/r3_events.npz --out data/arena/gen/filter_settings/r3.json --rows-out data/arena/gen/filter_settings/r3_rows.npz
-uv run python -m experiments.day.filter_settings data/arena/round2/round2_public.csv --full --out data/arena/gen/filter_settings/r2_full.json
-uv run python -m experiments.day.filter_settings NEW_TAPE.csv --minutes 20 --out settings.json
-uv run python -m experiments.day.latent_filter NEW_TAPE.csv --settings settings.json
+uv run python -m experiments.filter.filter_settings data/arena/round3/round3_public.csv --full --cache data/arena/gen/filter_placement/r3_events.npz --out data/arena/gen/filter_settings/r3.json --rows-out data/arena/gen/filter_settings/r3_rows.npz
+uv run python -m experiments.filter.filter_settings data/arena/round2/round2_public.csv --full --out data/arena/gen/filter_settings/r2_full.json
+uv run python -m experiments.filter.filter_settings NEW_TAPE.csv --minutes 20 --out settings.json
+uv run python -m experiments.filter.latent_filter NEW_TAPE.csv --settings settings.json
 ```
 
 R3 results below reproduce the requested sample-count75%/25% convention. The report additionally uses the
@@ -860,10 +860,10 @@ negative simulated markouts are penalized rather than silently omitted.
 Reproduce from the main checkout after merging the source (single worker per command):
 
 ```sh
-uv run python -m experiments.day.tape_gen --fit data/arena/round4/round4_public.csv --params-out data/arena/gen/r4_params.json
-uv run python -m experiments.day.gen_round_fit data/arena/round4/round4_public.csv --flow-only --dir data/arena/gen/r4_fit --out data/arena/gen/r4_fit/r4_flow.json
-uv run python -m experiments.day.gen_round_fit data/arena/round3/round3_public.csv --flow-only --dir data/arena/gen/r4_fit_r3 --out data/arena/gen/r4_fit/r3_flow.json
-uv run python -m experiments.day.gen_round_fit data/arena/round4/round4_public.csv --params data/arena/gen/r4_params.json --dir data/arena/gen/r4_fit --case 'base={"informed":0.0}' --case 'informed50={"informed":0.5}' --case 'drift3={"informed":0.3,"drift_sd":3.0,"drift_tau":3.0}' --seeds 501 --family data/arena/round4/family_rust.txt --binary rust/target/release/arena-sim --score --check-real
+uv run python -m experiments.generator.tape_gen --fit data/arena/round4/round4_public.csv --params-out data/arena/gen/r4_params.json
+uv run python -m experiments.generator.gen_round_fit data/arena/round4/round4_public.csv --flow-only --dir data/arena/gen/r4_fit --out data/arena/gen/r4_fit/r4_flow.json
+uv run python -m experiments.generator.gen_round_fit data/arena/round3/round3_public.csv --flow-only --dir data/arena/gen/r4_fit_r3 --out data/arena/gen/r4_fit/r3_flow.json
+uv run python -m experiments.generator.gen_round_fit data/arena/round4/round4_public.csv --params data/arena/gen/r4_params.json --dir data/arena/gen/r4_fit --case 'base={"informed":0.0}' --case 'informed50={"informed":0.5}' --case 'drift3={"informed":0.3,"drift_sd":3.0,"drift_tau":3.0}' --seeds 501 --family data/arena/round4/family_rust.txt --binary rust/target/release/arena-sim --score --check-real
 ```
 
 `--check-real` requires the executable/parameter sets to reproduce all six real family scores
@@ -914,7 +914,7 @@ provenance. The earlier r4_fit draws were produced before the drift-gate extensi
 compatibility is demonstrated above, but their source-bound cache must still not be bypassed.
 
 ```sh
-uv run python -m experiments.day.gen_round_fit data/arena/round4/round4_public.csv --params data/arena/gen/r4_params.json --dir data/arena/gen/r4_gated --cases docs/GENERATOR_ROUND4.json --select wide6 --seeds 511-513 --score --latent --family data/arena/round4/family_rust.txt --binary rust/target/release/arena-sim --out data/arena/gen/r4_gated/fresh_wide6.json
+uv run python -m experiments.generator.gen_round_fit data/arena/round4/round4_public.csv --params data/arena/gen/r4_params.json --dir data/arena/gen/r4_gated --cases docs/GENERATOR_ROUND4.json --select wide6 --seeds 511-513 --score --latent --family data/arena/round4/family_rust.txt --binary rust/target/release/arena-sim --out data/arena/gen/r4_gated/fresh_wide6.json
 ```
 
 A positive informed-flow share is the strongest common-switch hypothesis. It alone fails:

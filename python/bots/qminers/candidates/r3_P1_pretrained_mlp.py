@@ -1,5 +1,5 @@
 """R3-P1 (8 Nov, round 3): R3-F1 plus a PRETRAINED forecast of the 400-ms mid move, a small tanh MLP fitted offline on
-real and tape_gen v2 tapes (`python/experiments/day/pretrain_forecast.py`; its weights embedded below by `pretrain_forecast
+real and tape_gen v2 tapes (`python/experiments/taker/pretrain_forecast.py`; its weights embedded below by `pretrain_forecast
 embed`). PRE = 1: stacked, the frozen forecast is the ridge's 40th feature, so the online ridge re-weights it per tape;
 PRE = 2: it replaces the ridge's forecast (the ridge is not fitted); PRE = 3: a fixed blend PRE_BLEND x the ridge's +
 (1 - PRE_BLEND) x the frozen one; PRE = 0: R3-F1 exactly. The MLP's inputs: F1's 39 ridge features and 14 cheap extras
@@ -12,7 +12,7 @@ Result (IDEAS.md, "A pretrained forecaster of the 400-ms move"): round3_public 5
 round. The notes of R3-F1 follow.
 
 R3-F1 (8 Nov, round 3): R2-L9 (the Huber-ridge taker) plus a latent-price filter's features in the ridge. The filter
-is a hidden-Markov filter over the generator's latent reference bid lb (experiments/day/latent_filter.py, the offline
+is a hidden-Markov filter over the generator's latent reference bid lb (experiments/filter/latent_filter.py, the offline
 copy): new market bids land at lb - k and asks at lb + 1 + k (k 0/1/2 with FILTER_PI), clamped one tick off the other
 touch; lb random-walks at FILTER_RATE ticks/s each way; a market taker's filled lots move it FILTER_IMPACT x tape_gen's
 impact table. Features: gap = E[lb] + 0.5 - mid, gap*|gap|, the posterior sd. FILTER = 0 is R2-L9 exactly. The notes of
@@ -47,7 +47,7 @@ PRE_BLEND = 0.5  # PRE = 3: the ridge's weight
 PRE_GATE = 0.3  # re-evaluate the frozen forecast at an event when the forecast is within this of the take threshold
 PRE_CLIP = 3.0  # the frozen forecast's clip (ticks)
 NUMPY_RIDGE = 1  # the online ridge's sums and solve in numpy (the same sums to the bit, LAPACK's solve; F3 146 s against 162 s on round3_public, the same PnL); 0: the pure-Python loops
-# BEGIN PRETRAINED WEIGHTS (written by `uv run python -m experiments.day.pretrain_forecast embed`)
+# BEGIN PRETRAINED WEIGHTS (written by `uv run python -m experiments.taker.pretrain_forecast embed`)
 PRE_SHAPES = ()
 PRE_BLOB = ""
 # END PRETRAINED WEIGHTS
@@ -57,7 +57,7 @@ FILTER_TABLE = ((10, 0.097), (30, 0.111), (60, 0.161), (120, 0.254), (250, 0.349
 
 class PreExtras:
     """The frozen model's 14 extra inputs' running state, updated on every valid book event before the forecast (the
-    same code as experiments/day/pretrain_dump_bot.py's AExtras, which made the training rows)."""
+    same code as experiments/taker/pretrain_dump_bot.py's AExtras, which made the training rows)."""
 
     def __init__(self):
         self.t = None

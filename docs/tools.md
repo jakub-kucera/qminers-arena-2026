@@ -17,10 +17,10 @@ What the day runs on, in the order a round uses it (since 7 Nov; everything afte
 | `python/bots/qminers/template.py` | `ArenaBot`, a `BaseStrategy` subclass: the template's STRATEGY and EXECUTION with an ADAPTER for their API (set `PARAMS["ASSET"]`) |
 | `python/bots/qminers/families/` | Five strategies in their style: `momentum_runner.py`, `momentum_taker.py`, `momentum_maker.py`, `protected_maker.py`, `run_fade.py` (`IDEAS.md`, "On the Arena (7 Nov on)") |
 | `python/bots/qminers/candidates/` | The files ready to submit, `r<round>_<id>_<name>.py` (M1, M2 the runners, F1 the fallback maker, A0-A6 the playground's) |
-| `python -m experiments.day.round_start DATA.csv[.gz]` | A round's first look: the tape's profile and markouts, every candidate ranked on it, the next grids |
+| `python -m experiments.rounds.round_start DATA.csv[.gz]` | A round's first look: the tape's profile and markouts, every candidate ranked on it, the next grids |
 | `python -m arena.qgrid BOT DATA` | A parameter grid on their simulator ([below](#grid-on-the-arenas-simulator)) |
 | `python -m arena.qsim_rust STRATEGY DATA` | The same grid on `rust/arena_sim`, their simulator ported to Rust: the same numbers to the bit, 50-100 times faster |
-| `python -m experiments.day.run_review LOG_DIR` | A full-logs run (ours or the portal's results folder): our fills' edge and the mid's move after them |
+| `python -m experiments.rounds.run_review LOG_DIR` | A full-logs run (ours or the portal's results folder): our fills' edge and the mid's move after them |
 | `python -m arena.validate BOT all --format qminers` | The source checks before an upload, no `--data`, no replay ([below](#validate-before-submitting)) |
 | [`RUNBOOK.md`](day/RUNBOOK.md), `data/arena/round*/` | The day's one page, and each round's `HANDOVER.md` and `CANDIDATES.md` |
 

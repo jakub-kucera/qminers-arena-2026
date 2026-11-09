@@ -22,7 +22,7 @@ so a compacted or restarted session, or the other laptop, picks up where it was.
 ## Ready before the tape (00:00, from round 2)
 - Base: `python/bots/qminers/candidates/r2_L8_quote_switch.py` (R2-L8: quotes only below 2.5 ticks/s of price speed; **+826,778 on round 2's validation, the round-2 final**), with `r2_L3_taker_pure.py` (R2-L3, +804,018) beside it. First experiment: QS_RATE on the new tape.
 - References: `r2_L1_taker_liquidity.py` (+771,770), `r2_H1_flow_bias.py` (+567,740), `r2_M4_flow_window.py` (+441,088), `r2_V2_vol_exposure_dz18.py` (+71,864 on round 2's volatile tape, ~700k on round 1's calm one).
-- `experiments.day.round_start` runs all of them (R2_L8, R2_L3, R2_L1, R2_H1, R2_T2, R2_M4, R2_V2); the triage, the decision table and the ranked ideas: `data/arena/round3/HANDOVER.md`, "Start here".
+- `experiments.rounds.round_start` runs all of them (R2_L8, R2_L3, R2_L1, R2_H1, R2_T2, R2_M4, R2_V2); the triage, the decision table and the ranked ideas: `data/arena/round3/HANDOVER.md`, "Start here".
 
 ## Board
 At most six live candidates; each must differ in kind from the others (the loop's step 2). Every number comes from a
@@ -52,7 +52,7 @@ Trials so far: 0 experiments, 0 cells.
 - The quotes pay on calm tapes and cost on the fastest one, more than they did on L1/L8: on a fast round-3 tape start from L9; on a calmer one from B1; grid QS_RATE (1.0-3.0) on the new tape first.
 
 ### R3-F1 (8 Nov 01:25): the latent-price filter in L9's ridge (`python/bots/qminers/candidates/r3_F1_latent_filter.py`)
-- R2-L9 plus three ridge features from a hidden-Markov filter of the generator's latent reference bid: gap = E[lb] + 0.5 - mid, gap*|gap|/3, and the posterior sd. New market orders say where lb is (bids at lb - k, asks at lb + 1 + k, k 0/1/2, clamped one tick off the other touch), and market takers' fills move it by 3x tape_gen's impact table. FEATURE_COUNT 39. FILTER = 0 is L9 to the unit. validate OK, ~36 KB. The offline copy is `python/experiments/day/latent_filter.py`; the measurements are in IDEAS.md's R3-F1 row.
+- R2-L9 plus three ridge features from a hidden-Markov filter of the generator's latent reference bid: gap = E[lb] + 0.5 - mid, gap*|gap|/3, and the posterior sd. New market orders say where lb is (bids at lb - k, asks at lb + 1 + k, k 0/1/2, clamped one tick off the other touch), and market takers' fills move it by 3x tape_gen's impact table. FEATURE_COUNT 39. FILTER = 0 is L9 to the unit. validate OK, ~36 KB. The offline copy is `python/experiments/filter/latent_filter.py`; the measurements are in IDEAS.md's R3-F1 row.
 - F1 / L9 (pnl; breach 0 everywhere): **round3_public 480,469 / 424,730** (+55.7k; 500-s segments won 7/11, t +1.57; first 75% +46.2k, last 25% +9.5k); round2_public 303,720 / 317,057 (-4.2%); round 2's hi_vol_fast1.25 1,012,787 / 1,020,848 (-0.8%); round1 152,188 / 134,626 (+13%).
 - Local run time on r3 205 s vs 187 s (+10%), about 360 s on the server. It trades more: 572k lots vs 460k on r3.
 - Next: round 3's stitched tapes (running), TAKE_EDGE 0.3 on F1 and L9 (running), the Rust port behind a FILTER knob, then the sqrt-impact variant.

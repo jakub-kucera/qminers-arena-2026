@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from experiments.day.gen_round_fit import BOT_NAMES, STAT_KEYS, distance, family_scores, flow_stats, load_cases, summarize
+from experiments.generator.gen_round_fit import BOT_NAMES, STAT_KEYS, distance, family_scores, flow_stats, load_cases, summarize
 
 
 def events():
@@ -78,7 +78,7 @@ def test_quote_contrasts_use_paired_seeds_and_reject_duplicates():
 
 
 def test_drift_gate_suppresses_calm_motion_and_permits_active_motion(tmp_path):
-    from experiments.day.tape_gen import generate
+    from experiments.generator.tape_gen import generate
     from test_gen_inventory import params
     p = params()
     p['f_rate'] = 0.
@@ -100,7 +100,7 @@ def test_drift_gate_suppresses_calm_motion_and_permits_active_motion(tmp_path):
 
 
 def test_score_rejects_binary_replaced_during_batch(tmp_path, monkeypatch):
-    from experiments.day import gen_round_fit as fit
+    from experiments.generator import gen_round_fit as fit
     binary = tmp_path / 'simulator'
     binary.write_bytes(b'old executable')
     def changed(*args, **kwargs):

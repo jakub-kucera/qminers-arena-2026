@@ -2,7 +2,7 @@
 FLICKER_MS keeps an order one tick behind the touch for that many ms (its queue place survives a flicker); REACT_CANCEL 1 re-quotes from the last snapshot as soon as a cancel lands (the freed room is posted 5 ms after the
 cancel lands instead of after the next market event); RESERVE lots of room are kept unposted while we hold an order
 at the touch, so a newly formed touch is joined at once (its order lands 5 ms after the new price shows, not after
-the old order's cancel lands). experiments/day/queue_place.py measured F3's queue places. Family 7's notes follow.
+the old order's cancel lands). experiments/maker/queue_place.py measured F3's queue places. Family 7's notes follow.
 
 Family 7 (7 Nov): the room maker, candidate F3 (the ladder maker at one level, all the limit's room quoted at the
 touch) with knobs whose defaults reproduce F3 exactly (+263,282 on sample_v2.csv): SIZE_NARROW, the lots at the touch

@@ -27,9 +27,9 @@ OUR BEST BOT: R3-F5 (python/bots/qminers/candidates/r3_F5_jump_bar.py), +888,195
   (forecast - skew) >= 0.25 + half the spread, or 0.15 for 5 s after a 3-tick jump, and only at a 1-tick spread.
 - One-lot quotes run in slow markets.
 - Its Rust twin is ridge_maker: `uv run python -c "import sys; sys.path.insert(0,'python'); from
-  experiments.day.family_rust import F5; print(F5)"` prints the --set line (515,670 on data/arena/round3/round3_public.csv).
+  experiments.rounds.family_rust import F5; print(F5)"` prints the --set line (515,670 on data/arena/round3/round3_public.csv).
 - Grid any knob in ~12 s a run: `uv run python -m arena.qsim_rust ridge_maker TAPE <F5 line> --grid K=a,b --holdout 0.25
-  --threads 4`, or several tapes and bots at once with `uv run python -m experiments.day.family_rust TAPES...
+  --threads 4`, or several tapes and bots at once with `uv run python -m experiments.rounds.family_rust TAPES...
   --bot NAME=F5:'--set ...' --jobs 4`.
 
 WHERE F5'S MONEY GOES (round3_public, against the mid; IDEAS.md row "R3-F5's PnL against the mid")
@@ -79,7 +79,7 @@ WHERE TO LOOK (ideas the record has not covered; pick by expected size, test the
    lines 182-190); that is still unexplained.
 3. What the top teams do: in round 2 places 2-21 had our curve's shape with a higher slope (a better forecast, the
    same family). After 06:00, round 3's private leaderboard and curves may be published (data/arena/round3/; the
-   tool experiments.day.leaderboard_curves). Read them for clues.
+   tool experiments.rounds.leaderboard_curves). Read them for clues.
 4. Anything else structural you find in the tapes (tape_book.py replays the book) or in the organisers' simulator rules
    that we have not exploited.
 

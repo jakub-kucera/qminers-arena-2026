@@ -8,7 +8,7 @@ what not to touch. The user decides when (`TODO.md`, "Decisions": "The cleanup p
 - Their `simulator/`, `explorer/`, `strategies/`, `data/sample.csv.gz` (the root, as they wrote them).
 - `python/bots/qminers/`: `template.py` (ArenaBot), `families/` (five strategies in their style), `candidates/`.
 - `python/arena/qgrid.py`, `python/arena/qsim_rust.py`, `rust/arena_sim/` (the Rust port, byte-identical to theirs).
-- `python/experiments/day/round_start.py`, `python/experiments/day/run_review.py`.
+- `python/experiments/rounds/round_start.py`, `python/experiments/rounds/run_review.py`.
 - `python/arena/validate.py`'s source checks with `python/arena/formats/qminers.py`'s `SANDBOX` (its loader half is unused).
 - The day's docs: RUNBOOK, ON_THE_DAY's 7 Nov blocks, KICKOFF's prompts, `data/arena/round*/`.
 

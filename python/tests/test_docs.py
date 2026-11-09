@@ -37,7 +37,7 @@ def test_relative_links_and_doc_paths_exist(name):
 
 
 def _mentions() -> list[tuple[str, str]]:
-    files = [ROOT / name for name in FRONT] + sorted((ROOT / "python" / "experiments" / "day").glob("*.py"))
+    files = [ROOT / name for name in FRONT] + sorted((ROOT / "python" / "experiments").glob("*/*.py"))
     index = re.compile(r"<!-- ideas-index:start -->.*?<!-- ideas-index:end -->", re.S)  # its lines are cut short
     return [(str(f.relative_to(ROOT)), m) for f in files
             for m in re.findall(r"\bexperiments\.([a-z_]+(?:\.[a-z_]+)?)\b", index.sub("", f.read_text(encoding="utf-8")))]
@@ -57,6 +57,7 @@ def test_every_experiment_named_exists():
 def test_the_experiments_readme_lists_every_module_once():
     readme = text("python/experiments/README.md")
     base = ROOT / "python" / "experiments"
-    modules = [p.stem for folder in (base, base / "day", base / "study", base / "prosperity") for p in folder.glob("*.py")]
+    folders = [base] + [base / g for g in ("rounds", "tape", "generator", "filter", "maker", "taker", "audits", "study", "prosperity")]
+    modules = [p.stem for folder in folders for p in folder.glob("*.py")]
     rows = re.findall(r"^\| `([a-z_0-9]+)/?` \|", readme, re.M)
     assert sorted(modules) == sorted(rows), "python/experiments/README.md's tables"

@@ -4,12 +4,12 @@ Tapes: `round4_public.csv` (r4) against `round3_public.csv` (r3); the partial R^
 the synthetic `gen/r3b/seed201.csv` (s201). Commands from the repo root; P is a scratch directory.
 
 ```sh
-uv run python -m experiments.day.tape_stats $T --cache P/ts.npz --json P/ts.json                   # part 1, ~1 min
-uv run python -m experiments.day.gen_identify $T --cache P/id.npz --json P/id.json                 # the generator's parameters
-uv run python -m experiments.day.gen_ladders $T --cache P/lad.npz --json P/lad.json
+uv run python -m experiments.tape.tape_stats $T --cache P/ts.npz --json P/ts.json                   # part 1, ~1 min
+uv run python -m experiments.generator.gen_identify $T --cache P/id.npz --json P/id.json                 # the generator's parameters
+uv run python -m experiments.generator.gen_ladders $T --cache P/lad.npz --json P/lad.json
 RIDGE_PRED_LOG=P/pred.csv RIDGE_PRED_EXTRA=1 uv run python -m arena.qsim_rust ridge_maker $T ${=F5} --threads 1
-uv run python -m experiments.day.forecast_gaps $T --pred P/pred.csv --cache P/ts.npz --json P/fg.json   # part 3
-uv run python -m experiments.day.f5_anatomy data/arena/round4/py_f5_full --pred P/pred.csv          # part 2 (full-logs run)
+uv run python -m experiments.taker.forecast_gaps $T --pred P/pred.csv --cache P/ts.npz --json P/fg.json   # part 3
+uv run python -m experiments.taker.f5_anatomy data/arena/round4/py_f5_full --pred P/pred.csv          # part 2 (full-logs run)
 ```
 
 ## 1. The tape's structure (r4 / r3)
@@ -180,7 +180,7 @@ the final.** The ranking is by evidence for the next tape, not by gain here.
 2. **GASYM_US and GAPMEAN_US, the two r4-only signals, as ridge features** (built: `ridge_maker` knobs, off by default;
    F5 1,029,443 / 515,670 unchanged at 0). Evidence: partial R^2 1.41% / 1.04% at 0.4 s on r4, ~0 elsewhere; the Rust
    features correlate 0.92 / 0.94 with the Python ones and still add 1.4% / 2.4% beyond the ridge's own stored forecast
-   on its matured labels. **Backtest** (`experiments.day.paired_rust` on six tapes, 1,000-s segments), against F5:
+   on its matured labels. **Backtest** (`experiments.rounds.paired_rust` on six tapes, 1,000-s segments), against F5:
 
    | bot | r4 (first 75% / last 25%) | r4 segments | r3 | r2 | seed201 | seed202 | seed203 |
    |---|---|---|---|---|---|---|---|

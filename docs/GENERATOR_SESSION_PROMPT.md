@@ -22,7 +22,7 @@ READ FIRST (in this order, skim the rest)
 - IDEAS.md rows (find them with grep): "The tape generator's structure", "Calibrating the generator to round 2's
   validation scoreboard", "A filter of the generator's hidden fair price", "Round 3's first look", "Burst sizing on
   R2-L9", "Round 3's tape: where money can be made".
-- The tools' docstrings: python/experiments/day/tape_book.py (the price-time book replay), tape_gen.py (generator v2
+- The tools' docstrings: python/experiments/tape/tape_book.py (the price-time book replay), tape_gen.py (generator v2
   and its options), gen_identify.py (Phase 1's measurements), gen_calibrate.py (presets r2_validation and
   r3_public_stats; draw / score / rank / fitstats / jumpflow / search / stats), latent_filter.py (the HMM filter of
   the latent price, with --latent for the true path), tape_character.py, tape_from_logs.py, family_rust.py, and
@@ -44,7 +44,7 @@ metadata.json):
 - Round 2 validation (12,000 s): every data/arena/round2/*_res/ folder, and the 14-bot scoreboard in
   data/arena/round2/CANDIDATES.md and HANDOVER.md, "Round 2 results, marked" (E2 -41k ... L9 +873,719). The bots
   are in python/bots/qminers/candidates/ (r2_*.py); the Rust twins and their --set lines are in rust/README.md and
-  python/experiments/day/family_rust.py.
+  python/experiments/rounds/family_rust.py.
 - Round 3 validation (12,000 s): data/arena/round3/r3_F1_latent_filter_res/ (+862,764) and
   r3_F3_latent_filter_b1_res/ (+883,559); more arrive as the user uploads (data/arena/round3/CANDIDATES.md,
   "Uploads").

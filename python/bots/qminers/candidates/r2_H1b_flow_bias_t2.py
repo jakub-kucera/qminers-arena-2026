@@ -21,7 +21,7 @@ BIAS_AGREE=0.15,0.3,0.6,9 --grid BIAS_AGAINST=0,0.3,9`, on the first 75%; T1 191
 single runs 0.2 / 0 227,828, 0.45 / 0 196,721; AGREE_MAXSPREAD 99 at 9 / 0.6 124,147; FEAT_BIG 1 with no bias 181,858.
 This file, per tape (H1 / T2 / T1 / RA; `uv run exchange-simulator --strategy FILE --backtest CSV --log-dir logs/x
 --no-logs`): round2_public 223,773 / 194,391 / 191,984 / 165,459; its mirror 223,586 / 192,774 / 187,246 / 165,459;
-round1 171,176 / 171,802 / 164,194 / -527; the stitched 12,000-s tapes of `experiments.day.tape_character stitch`
+round1 171,176 / 171,802 / 164,194 / -527; the stitched 12,000-s tapes of `experiments.tape.tape_character stitch`
 (IDEAS.md, "Why R2-E2 lost"): high-vol half x4 569,111 / 495,028 / 514,873 / 510,494, public twice 466,113 / 423,096 /
 421,081 / 338,278, high-vol half 1.25x faster 608,688 / 550,352 / 547,196 / 562,176. Breach 0 on every tape. Ahead of
 T1, T2 and RA on every round-2 tape; round 1 626 under T2 (the gate opens briefly there). The T1 base with only the

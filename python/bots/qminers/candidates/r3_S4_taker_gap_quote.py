@@ -4,11 +4,11 @@ gap > GAP_OFF; the ask the mirror image), at a 1-tick spread, sharing the taker'
 REDUCE_ONLY 1 the quote only reduces the position (never past flat): a passive, gap-timed exit for the taker's lots.
 REDUCE_ONLY 0 (both sides, QUOTE_SIZE 50) made 341,739 on round3_public against R3-F1's 480,469: the quote's fills
 took the taker's room. R3-S1 alone
-made +41k on round3_public with a per-second PnL correlation of 0.04 with R2-L8 (experiments.day.pnl_corr). The
+made +41k on round3_public with a per-second PnL correlation of 0.04 with R2-L8 (experiments.rounds.pnl_corr). The
 notes of R3-F1 follow.
 
 R3-F1 (8 Nov, round 3): R2-L9 (the Huber-ridge taker) plus a latent-price filter's features in the ridge. The filter
-is a hidden-Markov filter over the generator's latent reference bid lb (experiments/day/latent_filter.py, the offline
+is a hidden-Markov filter over the generator's latent reference bid lb (experiments/filter/latent_filter.py, the offline
 copy): new market bids land at lb - k and asks at lb + 1 + k (k 0/1/2 with FILTER_PI), clamped one tick off the other
 touch; lb random-walks at FILTER_RATE ticks/s each way; a market taker's filled lots move it FILTER_IMPACT x tape_gen's
 impact table. Features: gap = E[lb] + 0.5 - mid, gap*|gap|, the posterior sd. FILTER = 0 is R2-L9 exactly. The notes of

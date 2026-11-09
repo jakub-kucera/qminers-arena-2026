@@ -84,7 +84,7 @@ the copy whose inserts' log-likelihood (decayed over `FILTER_LL_N` inserts, 1000
 `FILTER_LL_MARGIN` nats (0). `FILTER_XGAP` 1 / 2 (0: off) adds the first copy's gap as features instead; `FILTER_CLIP`
 (5.0) is the gap's clip. `FILTER_VRATE` / `FILTER_VIMPACT` (0: off) are the walk's rate and the impact scale while
 FILTER_VQS's speed switch is on. `FILTER_LADDER` (0: off) leaves out of the filter's update a new market order 2-7 ticks behind its
-touch that comes 2 ms after a same-side one 2-7 ticks behind (round 3's ladders, `experiments.day.gen_ladders`). All off by default (F3 505212.00 unchanged); none beat F3 on round 3 (IDEAS.md, "A better
+touch that comes 2 ms after a same-side one 2-7 ticks behind (round 3's ladders, `experiments.generator.gen_ladders`). All off by default (F3 505212.00 unchanged); none beat F3 on round 3 (IDEAS.md, "A better
 state for R3-F3's latent-price filter").
 
 R3-G1's early exit (8 Nov, Rust only, off by default: `FT_EXIT` 99.0, `FT_EXIT_SZ` 0, `FT_EXIT_WIDE` 0, `FT_EXIT_KEEP`
@@ -103,12 +103,12 @@ bar by that much; `FT_EDGE_CALM` (-1.0: off) the base bar while L8's rate is und
 (`r3_F5_jump_bar.py`) is `$B1 --set FILTER=1 --set FT_EDGE=0.25 --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set
 FT_JUMP_EDGE=0.15`: round3_public 515670.00 and round2_public 330980.00, the Python file's result.json and pnl.csv byte
 for byte on round3_public (`test_ridge_maker_round2_takers` keeps F3 and F5 on round2_public). Grids with
-`uv run python -m experiments.day.paired_rust TAPE ... --bot F3=B1:'--set FILTER=1' --bot X=B1:'--set FILTER=1 --set ...'`.
+`uv run python -m experiments.rounds.paired_rust TAPE ... --bot F3=B1:'--set FILTER=1' --bot X=B1:'--set FILTER=1 --set ...'`.
 
 R3-P1's two more take-bar states (8 Nov, Rust only, off by default: `FT_EDGE_FLIP` -1.0; `FT_SD` 99.0 with `FT_SD_EDGE`
 0.15): FT_EDGE_FLIP is the base bar of a take against the position (a reduce or a flip), FT_SD_EDGE caps the bar while the
 latent filter's posterior sd is FT_SD+; the jump and gap rules lower either further. F3 505212.00 and F5 515670.00
-unchanged with them off. `experiments.day.policy_search` tunes them with the rest of the policy (IDEAS.md, "R3-P1").
+unchanged with them off. `experiments.rounds.policy_search` tunes them with the rest of the policy (IDEAS.md, "R3-P1").
 
 R4-E1's online ensemble selector (8 Nov, Rust only, off by default: `ENS` 0; F5 515670.00 unchanged with it off) runs
 up to five more ridges beside the first model (`ENS_H1` / `ENS_H2` / `ENS_H3` at other horizons, `ENS_NOFILT` without the
@@ -120,7 +120,7 @@ each run's switches and leaders' time shares. Results in IDEAS.md, "R4-E1".
 The round-3 audit's quote knobs (8 Nov, Rust only, off by default: `QS_PULL` 0, `QUOTE_GAP` 99.0) withdraw the
 quotes while QS_RATE's switch is off, or on the side the latent filter's gap is against; both lose on R3-F3 (IDEAS.md,
 "Round 3 audit"). `RIDGE_PRED_EXTRA` (an environment variable, with `RIDGE_PRED_LOG`) adds the filter's gap and
-QS_RATE's speed to the prediction log, for `experiments.day.quote_audit`.
+QS_RATE's speed to the prediction log, for `experiments.taker.quote_audit`.
 
 **Speed** (the sample, 53,758 rows, one core, measured 7 Nov): trend_follower 151 ms a run in Python, 1.7 ms in
 Rust (90x); F1 274 ms, 3.9 ms (70x); parsing the CSV once is 5 ms more. On 4 threads, F1's 16-cell grid

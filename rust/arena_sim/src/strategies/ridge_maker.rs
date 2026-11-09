@@ -91,7 +91,7 @@
 //! (`FT_MODE` 0), only the position against it (1: reduce, if at least `FT_INV` 0 lots) or only when not against it
 //! (2: open). `RIDGE_PRED_LOG` (an environment variable, a path) writes each book event's time, mid, prediction,
 //! skew, spread and inventory, for measuring the forecast; with `RIDGE_PRED_EXTRA` set too, the latent filter's gap
-//! and QS_RATE's speed as two more columns (experiments/day/quote_audit.py).
+//! and QS_RATE's speed as two more columns (experiments/taker/quote_audit.py).
 //!   FT1 (r2_FT1_forecast_take.py, 688311.10, 23,522): C12's and --set FT_EDGE=0.25 --set FT_SZ=200 --set FT_GAP_MS=50
 //! Queue preservation (R2-Q, 7 Nov), off by default: an accepted order resting at the market's touch that the
 //! quoting would cancel (its price no longer the desired one) keeps its queue place: whole while the market lots
@@ -156,8 +156,8 @@
 //!       so L9 with L8's switch is L9's and --set QUOTE_SIZE=1 --set QS_RATE=2.5)
 //! `RIDGE_FEAT_LOG` (an environment variable, a path; off by default, runs without it unchanged) writes each matured
 //! first-model label as little-endian f64s: the observation's time (s), its mid, the label, the stored forecast,
-//! inventory, the n features, then the 14 extras of `python/experiments/day/pretrain_dump_bot.py` (FeatExtras): the
-//! rows `experiments.day.pretrain_forecast rdump` trains on, the same bits as the Python dump (R3-F1's settings).
+//! inventory, the n features, then the 14 extras of `python/experiments/taker/pretrain_dump_bot.py` (FeatExtras): the
+//! rows `experiments.taker.pretrain_forecast rdump` trains on, the same bits as the Python dump (R3-F1's settings).
 //! Burst sizing over the 100-lot limit (R3-J1, 8 Nov; Rust only, off by default: L9's 317057.00 and its pnl.csv and
 //! result.json unchanged): the penalty is flat (10,000 a second while |position| > 100), so a burst is short and
 //! big. Its trigger: the forecast take's signal at least `BURST_TH` (0.0: off) ticks, while the spread is at least
@@ -197,14 +197,14 @@
 //! gap's clip; `FILTER_VRATE` / `FILTER_VIMPACT` (0.0: off) the walk's rate and the impact scale while FILTER_VQS's
 //! switch is on. None beat F3 on round3_public. `FILTER_LADDER` (0: off): a new market order 2-7 ticks behind its
 //! cached touch that comes 2 ms (+-1 us) after a same-side one that was 2-7 ticks behind is not observed (round 3's
-//! scheduled ladders' children, experiments/day/gen_ladders.py); on R3-F5 +2.5k on round3_public but -3.4k in its
+//! scheduled ladders' children, experiments/generator/gen_ladders.py); on R3-F5 +2.5k on round3_public but -3.4k in its
 //! first 75%, so no file.
 //!   F1  (r3_F1_latent_filter.py, round3_public 480469.00, round2_public 303720.00): L9's and --set FILTER=1
 //! The forecast take's early exit (R3-G1, 8 Nov), off by default: `FT_EXIT` (99.0: off). When the forecast take does
 //! not fire (the signal within its need) and the signal against the position is more than FT_EXIT plus half the
 //! spread, an IOC FT_THRU ticks through the touch on the reducing side for at most `FT_EXIT_SZ` (0: all) of the
 //! position net of the live orders on that side, never past flat; it shares the take's FT_GAP_MS and spread cap
-//! (python/experiments/day/loss_anatomy.py: on round3_public R3-F3 held 100 lots for about 550 s while its forecast
+//! (python/experiments/taker/loss_anatomy.py: on round3_public R3-F3 held 100 lots for about 550 s while its forecast
 //! was 0.3-0.65 against, the position's mark-to-market -168 ticks over the next 5 s there). `FT_EXIT_WIDE` (0: off):
 //! at a spread of at least that many ticks, the same reduce-only IOC at the touch, unless the signal is with the
 //! position by at least `FT_EXIT_KEEP` (99.0: never kept), at most once a FT_GAP_MS (loss_anatomy: the position's
@@ -220,7 +220,7 @@
 //!   F5  (r3_F5_jump_bar.py, round3_public 515670.00, round2_public 330980.00): F3's and --set FT_EDGE=0.25
 //!       --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set FT_JUMP_EDGE=0.15
 //! The take bar's two more states (R3-P1, 8 Nov; Rust only, off by default: F3 and F5 unchanged), searched with the
-//! rest by `experiments.day.policy_search`: `FT_EDGE_FLIP` (-1.0: off), the base bar (FT_EDGE's place) of a take
+//! rest by `experiments.rounds.policy_search`: `FT_EDGE_FLIP` (-1.0: off), the base bar (FT_EDGE's place) of a take
 //! against the position, a reduce or a flip; `FT_SD` (99.0: off; needs FILTER) with `FT_SD_EDGE` (0.15), the bar at
 //! most FT_SD_EDGE while the latent filter's posterior sd is at least FT_SD (loss_anatomy: takes at sd 0.5-1 earn
 //! +1.34-1.39 a lot at 5 s, under 0.3 +0.41). The jump and gap rules lower either further.
@@ -269,7 +269,7 @@
 //! the rest. No cell clears r4 in both halves, and the draw alone moves r3 by 22k (IDEAS.md, "R4-RFF1").
 //! R4-A1 (8 Nov; Rust only, off by default: F5 1029443.00 on round4_public unchanged, FA_LOG on or off): one forced
 //! action at the first decision at or after `FA_T` (us), then the policy unchanged, for
-//! `experiments.day.action_oracle`: `FA_ACT` 1 WAIT (the take skipped, its cooldown started), 2 TAKE_NOW (the
+//! `experiments.taker.action_oracle`: `FA_ACT` 1 WAIT (the take skipped, its cooldown started), 2 TAKE_NOW (the
 //! forecast's way under the bar), 3 REDUCE (an IOC to flat in place of the decision), 4 COMPLETE (the first take
 //! cancelled partly filled at or after FA_T: its rest at the next book). `FA_LOG` (an environment variable, a path)
 //! writes the takes, the near-bar decisions and the partly filled takes. The WAIT rule `FT_CONFIRM` (0: off) defers a
@@ -769,7 +769,7 @@ pub struct RidgeMaker {
     lf_p: Vec<f64>,
     lf_base: i64,
     lf_t: Option<f64>,
-    /// RIDGE_FEAT_LOG (env var, a path; experiments/day/pretrain_forecast.py): each matured first-model label as
+    /// RIDGE_FEAT_LOG (env var, a path; experiments/taker/pretrain_forecast.py): each matured first-model label as
     /// little-endian f64s: t (s), the observation's mid, the label, the stored forecast, inventory, the n features,
     /// then the 14 extras of pretrain_dump_bot.py's AExtras (fx) at the observation
     feat_log: Option<std::io::BufWriter<std::fs::File>>,
@@ -819,7 +819,7 @@ pub struct RidgeMaker {
     lf_vimpact: f64,
     /// FILTER_LADDER (0: off; R3-F7): a new market order 2-7 ticks behind its own (cached) touch that comes 2 ms
     /// (+-1 us) after a same-side one that was 2-7 ticks behind its touch is not observed (round 3's scheduled ladders,
-    /// experiments/day/gen_ladders.py); lf_recent holds each side's recent new orders (time, in the band)
+    /// experiments/generator/gen_ladders.py); lf_recent holds each side's recent new orders (time, in the band)
     lf_ladder: i64,
     lf_recent: [VecDeque<(i64, bool)>; 2],
     lf_skip: HashSet<u64>,

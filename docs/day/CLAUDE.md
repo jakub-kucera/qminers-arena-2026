@@ -11,16 +11,16 @@ Our engine and tools were built before it on **IMC Prosperity data as a stand-in
 `KICKOFF_PROMPT.md` is what the user pastes to start a session; `ARCHITECTURE.md`'s "The Arena path" says how it fits.
 - Their `simulator/`, `explorer/`, `strategies/`, `data/sample.csv.gz` at the root, as they wrote them: the engine.
 - `python/bots/qminers/`: `template.py` (`ArenaBot`), `families/` (five strategies in their style), `candidates/`.
-- **Rust first** (`arena.qsim_rust`, `experiments.day.family_rust`; Python for the upload's last check). Judge on the
+- **Rust first** (`arena.qsim_rust`, `experiments.rounds.family_rust`; Python for the upload's last check). Judge on the
   round's own tapes (public, mirror, `tape_character stitch`); earlier rounds only as extra regimes.
 
 ```sh
 uv run exchange-simulator --strategy BOT --backtest D/<file>.csv --log-dir logs/<run> [--no-logs]   # their simulator (unzip first)
 uv run backtest-explorer --log-dir logs/<run>                        # their Dash app on a full-logs run
-uv run python -m experiments.day.round_start data/round1.csv.gz [--jobs N] [--out DIR]   # the round's first look: tape profile, markouts, every candidate ranked, next grids
+uv run python -m experiments.rounds.round_start data/round1.csv.gz [--jobs N] [--out DIR]   # the round's first look: tape profile, markouts, every candidate ranked, next grids
 uv run python -m arena.qgrid python/bots/qminers/template.py data/sample.csv.gz --set 'PARAMS.ASSET={"fair": "mid"}' --grid PARAMS.ASSET.make_edge=0,1,2 [--holdout 0.25] [--out results/qgrid.csv]
 uv run python -m arena.qsim_rust fallback_maker data/sample.csv.gz --grid QUOTE=2,5 --threads 4   # the same, its Rust port (rust/arena_sim)
-uv run python -m experiments.day.run_review logs/<run>               # our fills against the mid, from a full-logs run
+uv run python -m experiments.rounds.run_review logs/<run>               # our fills against the mid, from a full-logs run
 uv run python -m arena.validate BOT all --format qminers             # the sandbox's source checks; exit 1 on FAIL
 ```
 

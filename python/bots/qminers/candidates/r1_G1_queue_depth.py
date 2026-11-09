@@ -1,5 +1,5 @@
 """Round 1 candidate R1-G1 (7 Nov, 16:10): R1-F8 plus four ways to a better queue place, built from the ceilings
-(experiments.day.ceilings on R1-F8's full-logs run: at 30,564 touch aggressors our ~59 lots rested behind the market's
+(experiments.maker.ceilings on R1-F8's full-logs run: at 30,564 touch aggressors our ~59 lots rested behind the market's
 queue and were never reached, where a front-of-queue 50-lot maker makes +324k at 1 s; a front-of-queue maker within +-100
 makes +790k with 50 lots a side and no foresight, a taker with perfect 1 s foresight only +441k). The knobs: DEEP2 (lots on
 levels 2+ behind, with LEVELS 3), DEEP_FIRST (free room to the deepest level first), QUEUE_MAX (no new touch order behind
@@ -11,7 +11,7 @@ Round 1 candidate R1-F8 (7 Nov, 15:05): R1-F7 plus three additions chosen togeth
    market lots under TAKE_DEPLETE and under DEPL_FRAC of their peak since it became the touch), the spread is 1 tick and OUR
    side's touch holds at least TAKE_OWN lots, one limit order at the dying price takes its last lots and rests the remainder
    there, first in the queue of the level the followers form (the ladder's own orders untouched; exempt from the alone-cancel
-   for TAKE_MS). Mechanism (experiments.day.spread_episodes): after a touch clears, the other side follows into the gap in
+   for TAKE_MS). Mechanism (experiments.tape.spread_episodes): after a touch clears, the other side follows into the gap in
    71% of 13,949 episodes at a median 20 ms, 79% when the follower's touch holds 2,000+ lots, 35% under 100 lots.
 2. ALLOC_K -0.5 (family 12's alloc maker, R1-F6b): the touch cap x (1 + ALLOC_K * imbalance) on the bid, (1 - ...) on the ask,
    the lots taken off a touch going to the level behind: fewer lots at the back of the thick side's queue.
@@ -24,7 +24,7 @@ side's dying touch (TAKE_LOTS, 0 = off; only while the spread is 1 tick, that to
 side wants to quote and has room, and no such order went out on that side in the last TAKE_MS). A BUY at the best ask takes
 what is left there and its residual rests at that price, in front of the market's bid touch and first in the queue; it is
 exempt from CANCEL_ALONE for TAKE_MS, or until the market's bid joins its price (symmetric: a SELL at the best bid while the bid
-touch is dying). Mechanism on round 1's tape (experiments.day.spread_episodes): after a touch clears and the spread opens to
+touch is dying). Mechanism on round 1's tape (experiments.tape.spread_episodes): after a touch clears and the spread opens to
 2 ticks, the other side follows into the gap in 71% of 13,949 episodes at a median 20 ms, so the lots bought at the dying ask
 are marked half a tick higher and the residual holds the front of the new bid queue; in the 29% the asks step back, a
 price-improving insert (median 14 lots) fills the bid resting inside. The order's full quantity counts against the side's
