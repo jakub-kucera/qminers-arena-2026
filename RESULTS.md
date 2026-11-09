@@ -50,9 +50,9 @@ From round 2 on, where prices moved more per lot traded, it used the same foreca
   inside-spread edge 0.3). Replacement orders go out while cancels are still in flight, and an IOC order hedges
   the position back whenever it passes the 100-lot limit.
 - **Lineage:** the codex session's online ridge maker (R1-C1, 554,347) → C1b (in-flight cancels plus the hedge, +17k)
-  → C5 (400-ms horizon, +24k) → C9 (flow groups) → C11 (v5, 29 features) → C12 (v6). It started in the second
-  repository (`qminers_arena_scrap/qminers-algo-arena`, commit f660acf); the hand-built queue ladder (R1-F8b, 523k)
-  was the fallback.
+  → C5 (400-ms horizon, +24k) → C9 (flow groups) → C11 (v5, 29 features) → C12 (v6). The line was built in the
+  second repository, now under `codex_repo/` (C12 is `codex_repo/strategies/round1_quote_flow_622921.py`, tag
+  `codex_repo/round1-622920.99`). The hand-built queue ladder (R1-F8b, 523k) was the fallback.
 - **Private run:** 602,527 (0.967 of public), 20,662 fills, a 1,173 breach penalty from the hedge's brief excursions,
   |position| median 99.
 
@@ -64,8 +64,11 @@ From round 2 on, where prices moved more per lot traded, it used the same foreca
   half the spread by 0.15 ticks and the spread is one tick, it sends an IOC sized within the 100-lot limit, counting
   every live order. It never rests quotes.
 - **Lineage:** T1 / T2 (the ridge used to take, 486k / 490k) → L1 (liquidity features, 772k) → L3 (no quotes, 804k)
-  → L8 (quotes only in calm markets, 827k); L9 = L3 + Huber fit + impact features, uploaded at the 00:14 deadline,
-  873,719. L1, L3 and L9 also started in the second repository (its 269,920 / 294,098 / 317,057 public-tape scores).
+  → L8 (quotes only in calm markets, 827k). L1 and L3 came from the second repository's main (269,920 / 294,098 on
+  the public tape). **L9 is Přemysl's improvement of L3**: in his research branch he took it to 296,715, then
+  316,031 (Huber fit, δ 6), then 317,057 ("robust_depth": a signed 500-ms flow feature scaled by the opposing top
+  depth, 36 features). That file, `codex_repo/strategies/round2/round2_local_317057.py` (his commit of 8 Nov 00:07),
+  is byte-identical to `r2_L9_taker_huber.py`, uploaded at the 00:14 deadline: 873,719.
 - **Private run:** 742,470 (0.85 of validation, our largest drop).
 
 ### Round 3: R3-F5, the taker plus a hidden-price filter
@@ -98,11 +101,11 @@ The submission ID is the first 8 characters; the handovers have the full IDs.
 
 | Round | Time | ID | Bot | Score |
 |---|---|---|---|---:|
-| Playground | 11:52 | cf0494bc | the final of 11 completed uploads (one by a teammate; 7 more failed static analysis) | 283,959 (private 292,469) |
+| Playground | 11:52 | cf0494bc | the final of 11 completed uploads (one by Přemysl; 7 more failed static analysis) | 283,959 (private 292,469) |
 | 1 | 13:16 | 1403dba9 | R1-F3 `r1_F3_full_room.py` (all 200 lots at the touch) | 425,553 |
-| 1 | 14:10 | 538fcb50 | the second repo's `strategies/round1_depth_524k.py` (5-feature online maker) | 523,999 |
+| 1 | 14:10 | 538fcb50 | `codex_repo/strategies/round1_depth_524k.py` (5-feature online maker) | 523,999 |
 | 1 | 15:00 | fa0b258b | R1-C1 `r1_C1_codex_ridge.py` (15-feature ridge maker) | 554,347 |
-| 1 | 16:20 | 10893f27 | the second repo's `strategies/round1_size_555389.py` | 555,389 |
+| 1 | 16:20 | 10893f27 | `codex_repo/strategies/round1_size_555389.py` | 555,389 |
 | 1 | 16:48 | 0d6b3d45 | R1-C1b `r1_C1b_codex_pipelined.py` | 571,237 |
 | 1 | 17:09 | 4efc29ea | R1-C5 `r1_C5_long_horizon.py` | 595,442 |
 | 1 | 17:31 | c7d8fbb4 | R1-C9 `r1_C9_codex_v4_flow_groups.py` | 605,753 |
@@ -114,7 +117,7 @@ The submission ID is the first 8 characters; the handovers have the full IDs.
 | 2 | 20:40 | 9f1d18b6 | R2-M3 (M2 + stop) | 366,342 |
 | 2 | 21:09 | 3565b31f | R2-T1 (forecast taker) | 485,667 |
 | 2 | 21:19 | 1dfb680a | R2-RA (flow window) | 467,703 |
-| 2 | 21:35 | e1827f34 | a colleague's `round2_composite_local.py` | 247,165 |
+| 2 | 21:35 | e1827f34 | Přemysl's `round2_composite_local.py` (`codex_repo/strategies/`) | 247,165 |
 | 2 | 21:43 | 2d72ef32 | R2-T2 (T1 without breaches) | 490,359 |
 | 2 | 22:00 | 9cd32a00 | R2-M4 (125-ms window) | 441,088 |
 | 2 | 22:10 | 8f29efb0 | R2-H1 (T1 + big-flow bias) | 567,740 |
@@ -122,7 +125,7 @@ The submission ID is the first 8 characters; the handovers have the full IDs.
 | 2 | 22:58 | d319b090 | R2-L3 (L1 without quotes) | 804,018 |
 | 2 | 23:18 | a631c405 | R2-L6 (L3 + flow bias) | 798,269 |
 | 2 | 23:53 | 5c00a472 | R2-L8 (quotes below 2.5 ticks/s) | 826,778 |
-| 2 | 00:14 | **bc0a2c50** | **R2-L9 `r2_L9_taker_huber.py` (final)** | **873,719** |
+| 2 | 00:14 | **bc0a2c50** | **R2-L9 `r2_L9_taker_huber.py` (final; Přemysl's)** | **873,719** |
 | 3 | 01:24 | afc885d6 | R3-F1 (L9 + filter) | 862,764 |
 | 3 | 01:46 | 1dbf4142 | R3-F3 (B1 + filter) | 883,559 |
 | 3 | 02:57 | e4100a46 | R3-B1 (F3 without the filter) | 733,790 |
@@ -172,5 +175,7 @@ The portal's "final" marks settle three places where the notes written during th
 - Each round's story, every candidate and the reasoning: `data/arena/round<N>/HANDOVER.md` and `CANDIDATES.md`.
 - Every tested idea with its numbers: `IDEAS.md` (rows `R1-…` to `R4-…`).
 - The server's result folders (result.json, pnl.csv): `data/arena/round<N>/*_res/` (ignored by git).
-- The second repository (`~/Documents/qminers_arena_scrap/qminers-algo-arena`), where the codex session built the round-1
-  maker line and the round-2 takers' first versions: see its own history until it is merged here.
+- The second repository, `qminers-algo-arena` (the Codex session's, started from the clean starter), with
+  Přemysl's research branch merged in: `codex_repo/`, imported on 9 Nov with its whole history (66 commits;
+  each imported commit's message ends with its original hash, and its tags are `codex_repo/<tag>`). Its own
+  `README.md` and `HANDOFF.md` are the way in; its `AGENTS.md` is that session's instructions, now historical.
