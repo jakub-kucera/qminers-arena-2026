@@ -103,8 +103,9 @@ event, the port reproduces the server's scores exactly:
 | R2-L9 (`arena_sim`) | 742,470 | 742,470 | 6,979 |
 | R3-F5 (`arena_sim`) | 827,253 | 827,253 | 120,505 |
 | R4-W2 (`arena_sim`) | 1,659,546 | 1,659,546 | 94,026 |
- From round 3 on, every candidate was chosen in Rust and
-checked once in Python before its upload ([`rust/README.md`](rust/README.md)).
+
+From round 3 on, every candidate was chosen in Rust and checked once in Python before its upload
+([`rust/README.md`](rust/README.md)).
 
 ## What is where
 
@@ -159,8 +160,12 @@ and what we would do differently, is in [`docs/postmortem.md`](docs/postmortem.m
 
 ## Credits and licence
 
-Team ThatsMyQuant: Jakub Kučera and Přemysl Pilař. Our code and documents are under the MIT licence
-([`LICENSE`](LICENSE)).
+Team ThatsMyQuant: Jakub Kučera and Přemysl Pilař. Jakub ran the event: he set each round's direction, made all 40
+uploads of rounds 1-4 and worked rounds 3 and 4 alone. Přemysl joined for parts of rounds 1 and 2. His research
+branch in the second repository covered the round-1 models, the economics of the position penalty and a round-2
+composite, and his improved taker became round 2's final bot (R2-L9).
+
+Our code and documents are under the MIT licence ([`LICENSE`](LICENSE)).
 
 The Arena, its exchange simulator, backtest explorer, sample data and round tapes are by Qminers. Their starter
 (`third_party/qminers-starter/`: the simulator, explorer, examples and their README; `data/sample.csv.gz`; and the
