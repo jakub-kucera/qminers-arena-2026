@@ -4,6 +4,7 @@ The Arena ran 7–8 Nov 2026 in Prague: a playground, then four 5-hour rounds, e
 private tape that nobody saw before the deadline. This page records where we finished, the bot behind each round
 and what the field's curves showed. Sources: the portal's leaderboards (`data/arena/round<N>/leaderboard.json`, all four
 checked against the live site on 9 Nov), the dashboard's submission list, and each round's `HANDOVER.md`.
+Other teams appear as "Team N", N their place in the overall standings computed below (Team 1 won).
 
 ## Where we finished
 
