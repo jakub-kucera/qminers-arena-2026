@@ -34,12 +34,12 @@ CAND = ROOT / "python" / "bots" / "qminers" / "candidates"
 FAM = ROOT / "python" / "bots" / "qminers" / "families"
 # id -> (candidate file, Rust strategy or None for the Python simulator, extra overrides)
 CANDIDATES = {
-    "F3": (CAND / "r1_F3_full_room.py", "room_maker", {}),
-    "F5": (CAND / "r1_F5_shrink_react.py", "shrink_maker", {}),
-    "F6": (CAND / "r1_F6_two_levels.py", "shrink_maker", {}),
-    "F7": (CAND / "r1_F7_signal.py", "signal_maker", {}),
-    "F1": (CAND / "r0_F1_fallback.py", "fallback_maker", {"SESSION_S": 1_000_000_000}),
-    "M2": (CAND / "r0_M2_runner_safe.py", None, {"SESSION_S": 1_000_000_000}),
+    "F3": (CAND / "round1" / "r1_F3_full_room.py", "room_maker", {}),
+    "F5": (CAND / "round1" / "r1_F5_shrink_react.py", "shrink_maker", {}),
+    "F6": (CAND / "round1" / "r1_F6_two_levels.py", "shrink_maker", {}),
+    "F7": (CAND / "round1" / "r1_F7_signal.py", "signal_maker", {}),
+    "F1": (CAND / "round0" / "r0_F1_fallback.py", "fallback_maker", {"SESSION_S": 1_000_000_000}),
+    "M2": (CAND / "round0" / "r0_M2_runner_safe.py", None, {"SESSION_S": 1_000_000_000}),
 }
 
 

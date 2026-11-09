@@ -16,7 +16,7 @@ run's results and `leaderboard.json` go in this folder too.
 
 ## Start here (8 Nov 02:55; round 3 closes 06:00, round 4 runs 07:00-12:00)
 
-**The best file, and the one to keep as final: R3-F3** (`python/bots/qminers/candidates/r3_F3_latent_filter_b1.py`): R3-B1
+**The best file, and the one to keep as final: R3-F3** (`python/bots/qminers/candidates/round3/r3_F3_latent_filter_b1.py`): R3-B1
 (R2-L9's Huber-ridge forecast taker plus R2-L8's one-lot quotes only in slow markets) with the latent-price filter's three
 ridge features. **+883,559 on round 3's validation tape** (590 s of the 15-min limit), 505,212 on round3_public.csv.
 Check it is marked final on the portal before 06:00.
@@ -88,7 +88,7 @@ Check it is marked final on the portal before 06:00.
    paired base.
 
 ## Ideas to try in round 3 (ranked; each with its first experiment)
-0. **Tune L8's quote switch on the new tape first** (it won round 2: +826,778): QS_RATE 1.5 / 2.5 / 3.5 ticks/s (`uv run python -m arena.qgrid python/bots/qminers/candidates/r2_L8_quote_switch.py <csv> --grid QS_RATE=1.5,2.0,2.5,3.0,3.5 --holdout 0.25`), chosen on the public tape's first 75%, checked on calm and fast segments separately and on the stitched tapes; then the 5-s window.
+0. **Tune L8's quote switch on the new tape first** (it won round 2: +826,778): QS_RATE 1.5 / 2.5 / 3.5 ticks/s (`uv run python -m arena.qgrid python/bots/qminers/candidates/round2/r2_L8_quote_switch.py <csv> --grid QS_RATE=1.5,2.0,2.5,3.0,3.5 --holdout 0.25`), chosen on the public tape's first 75%, checked on calm and fast segments separately and on the stitched tapes; then the 5-s window.
 1. **A non-linear forecast for the taker.** Everything so far used a linear ridge. First: an online gradient-boosted or tree model (sklearn is allowed in the sandbox) on L3's 33 features, refit every N seconds on the matured labels, or trees pre-fitted on the public tape's first 75% and continued online; compare the take PnL on public / mirror / stitched tapes. Watch the run time (the server is ~1.75x slower).
 2. **A profit-after-execution target.** The ridge predicts the mid's 400-ms move; the take decides on profit after paying half the spread and the 5-ms delay. First: label each sampled moment with the net PnL a 100-lot IOC at the far touch would have made 400 ms later (spread and latency included), fit the ridge on that, take when the predicted net PnL > 0.
 3. **Separate entry and exit models.** The taker holds until the opposite take fires. First: a second ridge at a 2-5 s horizon that decides hold / close (flatten when it turns against the position while the entry model is silent); the jump exit (a crude stand-in) lost, so test against L3 on all tapes.
@@ -153,7 +153,7 @@ First candidate R3-F3; its three first actions are in "Start here", "Next" item 
 ## History (written before and early in round 3)
 
 ## Update 8 Nov 00:25: R2-L9 is the new base
-- R2-L9 (`python/bots/qminers/candidates/r2_L9_taker_huber.py`, the stats session's last taker) made **+873,719 on round 2's validation tape** (submission bc0a2c50-d4bd-46ae-bc23-ee556d21ffe5, uploaded at the 00:14 deadline): +46.9k over R2-L8, +69.7k over R2-L3. It is L3's pure taker with a **Huber-robust fit** (HUBER_DELTA 6) and impact features at 500 ms (36 features).
+- R2-L9 (`python/bots/qminers/candidates/round2/r2_L9_taker_huber.py`, the stats session's last taker) made **+873,719 on round 2's validation tape** (submission bc0a2c50-d4bd-46ae-bc23-ee556d21ffe5, uploaded at the 00:14 deadline): +46.9k over R2-L8, +69.7k over R2-L3. It is L3's pure taker with a **Huber-robust fit** (HUBER_DELTA 6) and impact features at 500 ms (36 features).
 - So round 3 starts from L9 (and L8's regime-switched quotes on top of it is the first combination to try), and a better learner (robust losses, then non-linear models) ranks above execution tweaks: every execution tweak tried on L3 lost or tied, while the robust fit gained +70k on validation.
 
 ## Update 8 Nov 00:45: the takers in Rust (fast grids)

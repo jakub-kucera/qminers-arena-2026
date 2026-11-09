@@ -4,7 +4,7 @@ on the bid and 1 - ALLOC_K * I on the ask (ALLOC_K < 0: fewer lots at the back o
 only from big sweeps, and more on the thin side, where our order is near the front); lots taken off a touch go to the
 level behind (ALLOC_DEEP 1), the cap may rise up to ALLOC_HI times (ALLOC_UP 1); nothing is cancelled for it. With
 ALLOC_K 0 (the default) the bot is R1-F7 exactly. Chosen on round1's first 75% with
-`uv run python -m arena.qgrid python/bots/qminers/candidates/r1_H5_alloc.py data/arena/round1/round1.csv --grid ALLOC_K=-0.25,-0.5,-0.75 --holdout 0.25`.
+`uv run python -m arena.qgrid python/bots/qminers/candidates/round1/r1_H5_alloc.py data/arena/round1/round1.csv --grid ALLOC_K=-0.25,-0.5,-0.75 --holdout 0.25`.
 Round 1 candidate R1-F7 (7 Nov, 14:25): R1-F6 with a dying touch's room one tick back (DYING_DEEP 80, DEPL_FRAC 0.12) and, for 50 ms
 after a 400+ lot sweep, joining one tick inside on the flow's side (MOM_JOIN 1, MOM_BLOCK 0); chosen on round1's first 75% (368,589):
 full +496,564, the last 25% +127,975, ahead of F6 in 11 of 12 segments; sample_v2 228,893 (-7,950 against F6: no momentum there).

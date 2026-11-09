@@ -25,7 +25,7 @@ Subcommands:
   (a) as fitted, (b) rescaled by one linear fit on round3_public before 4,500 s, (c) (b) stacked under the online ridge.
 - `export --dir DIR --gen GLOB --out W.json`: the MLP fitted on every training tape (round 3 only before 4,500 s),
   its weights as JSON lists; `embed --weights W.json --bot FILE` writes them into the candidate's PRE_BLOB block
-  (`python/bots/qminers/candidates/r3_P1_pretrained_mlp.py`).
+  (`python/bots/qminers/candidates/round3/r3_P1_pretrained_mlp.py`).
 
     uv run python -m experiments.generator.tape_gen --fit data/arena/round3/round3_public.csv --params-out P3.json
     uv run python -m experiments.taker.pretrain_forecast gen --params P3.json --opts r3_public_stats --seeds 1-12 --dir G

@@ -19,7 +19,7 @@ from pathlib import Path
 
 from arena import qgrid
 
-BOT = "python/bots/qminers/candidates/r1_F8_take_join.py"
+BOT = "python/bots/qminers/candidates/round1/r1_F8_take_join.py"
 SPACE = {
     "TAKE_LOTS": [40, 60, 80, 100],
     "TAKE_DEPLETE": [100, 150, 200],

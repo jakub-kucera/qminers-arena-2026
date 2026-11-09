@@ -224,7 +224,7 @@ def replay_checks(repo, out):
         assert cold["pnl"] == 1029443 and warm["pnl"] == 1029781
         print("Replaying the unmodified W2 Python upload on the full public tape.", flush=True)
         subprocess.run([sys.executable, "-m", "simulator.main", "--strategy",
-            str(repo / "python/bots/qminers/candidates/r4_W2_warm10k.py"), "--backtest", str(tape),
+            str(repo / "python/bots/qminers/candidates/round4/r4_W2_warm10k.py"), "--backtest", str(tape),
             "--log-dir", str(out / "python_w2"), "--no-logs"], cwd=repo, check=True)
         python = json.loads((out / "python_w2/result.json").read_text())
         keys = ("pnl", "fills", "traded_volume", "inventory", "breach_penalty", "pnl_se")

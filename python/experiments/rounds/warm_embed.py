@@ -1,7 +1,7 @@
 """The ridge's warm start (R4-W1) embedded in a bot file: reads a stats file the Rust ridge_maker wrote (env var
 RIDGE_DUMP) and writes a copy of BOT.py with model 0's statistics as module constants (WARM_MASS, WARM_XX, WARM_XY)
 and PRIOR_MASS, between BOT.py's `# WARM START BEGIN` / `# WARM START END` lines
-(python/bots/qminers/candidates/r4_W1_warm.py has them). The numbers keep the file's text (Rust's shortest round-trip
+(python/bots/qminers/candidates/round4/r4_W1_warm.py has them). The numbers keep the file's text (Rust's shortest round-trip
 repr of each f64), so the bot reads the values ridge_maker's RIDGE_WARM reads, and the bot scales them as load_warm
 does: X'X and X'y times PRIOR_MASS / WARM_MASS, the mass PRIOR_MASS, the label count MIN_LABELS (it fits on its first
 book). Standard library only.
@@ -12,7 +12,7 @@ Round 4: once the round's public tape is saved (F5's line from
 `uv run python -c "import sys; sys.path.insert(0,'python'); from experiments.rounds.family_rust import F5; print(F5)"`):
 
     RIDGE_DUMP=data/arena/round4/r4_stats.txt uv run python -m arena.qsim_rust ridge_maker data/arena/round4/round4_public.csv <F5 line> --threads 1
-    uv run python -m experiments.rounds.warm_embed data/arena/round4/r4_stats.txt python/bots/qminers/candidates/r4_W1_warm.py OUT.py --prior-mass 1000
+    uv run python -m experiments.rounds.warm_embed data/arena/round4/r4_stats.txt python/bots/qminers/candidates/round4/r4_W1_warm.py OUT.py --prior-mass 1000
 
 and the Rust twin of OUT.py on any tape: `RIDGE_WARM=data/arena/round4/r4_stats.txt uv run python -m arena.qsim_rust
 ridge_maker TAPE <F5 line> --set PRIOR_MASS=1000 --threads 1` (the same PnL to the unit; IDEAS.md, "R4-W1").

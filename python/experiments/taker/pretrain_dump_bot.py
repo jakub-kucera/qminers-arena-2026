@@ -15,7 +15,7 @@ from math import exp, log1p
 from pathlib import Path
 
 _BASE = os.environ.get("PRETRAIN_BASE") or str(
-    Path(__file__).resolve().parents[2] / "bots" / "qminers" / "candidates" / "r3_F1_latent_filter.py")
+    Path(__file__).resolve().parents[2] / "bots" / "qminers" / "candidates" / "round3" / "r3_F1_latent_filter.py")
 _spec = importlib.util.spec_from_file_location("pretrain_base_bot", _BASE)
 _base = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_base)

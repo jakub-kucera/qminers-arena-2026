@@ -105,10 +105,10 @@ BOTS = {
     "L3": ("rust", L3), "L8": ("rust", L8), "L9": ("rust", L9), "B1": ("rust", B1),
     "L3F": ("rust", {**L3, **FILTER}), "L8F": ("rust", {**L8, **FILTER}), "L9F": ("rust", {**L9, **FILTER}),
     "B1F": ("rust", {**B1, **FILTER}),
-    "M2": ("py", CAND / "r2_M2_flow_trend.py"), "M3": ("py", CAND / "r2_M3_flow_stop_gated.py"),
-    "M4": ("py", CAND / "r2_M4_flow_window.py"), "RA": ("py", CAND / "r2_RA_flow_window.py"),
-    "H1": ("py", CAND / "r2_H1_flow_bias.py"), "L6": ("py", CAND / "r2_L6_pure_flowbias.py"),
-    "F1": ("py", CAND / "r3_F1_latent_filter.py"),  # R3-F1: L9 + the latent filter's features (+862,764 on r3 validation)
+    "M2": ("py", CAND / "round2" / "r2_M2_flow_trend.py"), "M3": ("py", CAND / "round2" / "r2_M3_flow_stop_gated.py"),
+    "M4": ("py", CAND / "round2" / "r2_M4_flow_window.py"), "RA": ("py", CAND / "round2" / "r2_RA_flow_window.py"),
+    "H1": ("py", CAND / "round2" / "r2_H1_flow_bias.py"), "L6": ("py", CAND / "round2" / "r2_L6_pure_flowbias.py"),
+    "F1": ("py", CAND / "round3" / "r3_F1_latent_filter.py"),  # R3-F1: L9 + the latent filter's features (+862,764 on r3 validation)
 }
 # Round 3's validation tape (12,000 s): the server's scores so far
 SCOREBOARD_R3 = {"F1": 862_764}

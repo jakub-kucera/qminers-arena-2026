@@ -30,7 +30,7 @@ from experiments.taker.pretrain_forecast import fit_mlp
 
 
 ROOT = Path(__file__).resolve().parents[3]
-BOT = ROOT / "python/bots/qminers/candidates/r3_F5_jump_bar.py"
+BOT = ROOT / "python/bots/qminers/candidates/round3/r3_F5_jump_bar.py"
 
 
 def file_hash(path):

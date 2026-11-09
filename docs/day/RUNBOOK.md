@@ -19,7 +19,7 @@ here). `D` is `data/arena/round<N>/`, `F` its tape (`D/<file>.csv`), and `BOT` i
 2. Most of "First hour" is answered by `STARTER.md` (7 Nov answers under each item). Still open: the
    submission deadline, the data files' names, whether the private data is like the public ["First hour"].
 3. If they hand out new code, it goes in unchanged, never retyped ["The format swap, step by step"].
-4. By 10:30, a fallback bot or not: the playground candidate `python/bots/qminers/candidates/r0_A0_mm.py`
+4. By 10:30, a fallback bot or not: the playground candidate `python/bots/qminers/candidates/round0/r0_A0_mm.py`
    is one already ["Spend the round's submissions", "A fallback first?"].
 
 ## Playground (10:30–12:00): three tracks at once ["Splitting the first hour"]

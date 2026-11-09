@@ -20,7 +20,7 @@ Python file (numpy/pandas/scipy/sklearn allowed), at most 15 minutes of server t
 generator: a hidden latent price moved by sqrt-impact of market orders, calm and volatile regimes, jumps, resting orders
 placed around the latent (docs/GENERATOR_PLAN.md).
 
-OUR BEST BOT: R3-F5 (python/bots/qminers/candidates/r3_F5_jump_bar.py), +888,195 on round 3's validation tape.
+OUR BEST BOT: R3-F5 (python/bots/qminers/candidates/round3/r3_F5_jump_bar.py), +888,195 on round 3's validation tape.
 - An online ridge (39 features, Huber-weighted, infinite memory) forecasts the 400-ms mid move.
 - Three of the features come from a hidden-Markov filter of the latent price (worth +150k on the server).
 - A take is an IOC at the far touch for the room under the limit (flips are 200 lots). It fires when

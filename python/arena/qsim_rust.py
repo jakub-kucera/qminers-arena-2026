@@ -36,13 +36,13 @@ BINARY = ROOT / "rust" / "target" / "release" / "arena-sim"
 # Each Rust strategy and the Python file it copies.
 STRATEGIES = {
     "trend_follower": "strategies/trend_follower.py",
-    "fallback_maker": "python/bots/qminers/candidates/r0_F1_fallback.py",
+    "fallback_maker": "python/bots/qminers/candidates/round0/r0_F1_fallback.py",
     "room_maker": "python/bots/qminers/families/room_maker.py",
     "shrink_maker": "python/bots/qminers/families/shrink_maker.py",  # room_maker.rs, with DEPL_FRAC, REACT_CANCEL, MOM_LOTS
     "alloc_maker": "python/bots/qminers/families/alloc_maker.py",  # room_maker.rs at R1-F6's defaults, with ALLOC_K ... ADV_SCOPE
     "signal_maker": "python/bots/qminers/families/signal_maker.py",  # room_maker.rs at R1-F6's defaults, with MOM_SIZE ... SKEW_TRIM
-    "take_maker": "python/bots/qminers/candidates/r1_F8_take_join.py",  # room_maker.rs at R1-F8's defaults, with TAKE_LOTS ... TAKE_MS, JOIN_*, ANY_CLEAR
-    "ridge_maker": "python/bots/qminers/candidates/r1_C1_codex_ridge.py",  # R1-C1, with INSIDE_TH ... PRED_MIX (ridge_maker.rs)
+    "take_maker": "python/bots/qminers/candidates/round1/r1_F8_take_join.py",  # room_maker.rs at R1-F8's defaults, with TAKE_LOTS ... TAKE_MS, JOIN_*, ANY_CLEAR
+    "ridge_maker": "python/bots/qminers/candidates/round1/r1_C1_codex_ridge.py",  # R1-C1, with INSIDE_TH ... PRED_MIX (ridge_maker.rs)
     "probe": "python/tests/fixtures/qsim_probe.py",
 }
 

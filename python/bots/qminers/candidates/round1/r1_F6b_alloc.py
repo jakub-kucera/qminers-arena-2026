@@ -1,7 +1,7 @@
 """Round 1 candidate R1-F6b (7 Nov, 14:25): R1-F6 with ALLOC_K -0.5 (fewer lots at the back of a long queue, more on the short side's
 touch; nothing cancelled for it), chosen on round1's first 75% (362,752): full +489,844, the last 25% +127,092, ahead of F6 in 11 of 12
 segments, sample_v2 +238,426 (+1,583 against F6).
-Family 12 (7 Nov, round 1): R1-F6 (candidates/r1_F6_two_levels.py) with three ways to place its lots without
+Family 12 (7 Nov, round 1): R1-F6 (candidates/round1/r1_F6_two_levels.py) with three ways to place its lots without
 cancelling anything for them, every knob defaulting to F6 exactly. ALLOC_K: the touch imbalance I = (bid - ask) /
 (bid + ask) moves lots between a side's touch and its deep level (the touch cap times 1 + ALLOC_K * I on the bid,
 1 - ALLOC_K * I on the ask; lots taken off the touch go to the level behind, so the total stays what the limit allows).

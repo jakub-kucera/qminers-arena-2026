@@ -55,7 +55,7 @@ belong to the other session; no candidate or Rust strategy was edited here.
    mismatch is not the main issue in this test.
 
 4. **W3's documented switches do not restore the claimed controls.**
-   `python/bots/qminers/candidates/r4_W3_flow_depth.py:27` says `FLOW2=0` restores
+   `python/bots/qminers/candidates/round4/r4_W3_flow_depth.py:27` says `FLOW2=0` restores
    W2. In fact FEATURE_COUNT becomes 39 while WARM_XY still has 41 entries, so the
    guard at line 163 silently skips the prior. Disabling FLOW2 and TAKE_DEPTH_K
    together starts mass=0, labels=0; W2 starts mass=10,000, labels=200. Likewise,

@@ -8,7 +8,7 @@ import pytest
 from experiments.rounds import warm_embed
 
 ROOT = Path(__file__).parents[2]
-BOT = ROOT / "python" / "bots" / "qminers" / "candidates" / "r4_W1_warm.py"
+BOT = ROOT / "python" / "bots" / "qminers" / "candidates" / "round4" / "r4_W1_warm.py"
 STATS = "M 0 2 254787.78489259825 263452\n1e-7 -0.1\n-0.1 1e16\n0.30000000000000004 -0.0\nM 1 1 3.0 3\n2.0\n5.0\n"
 
 

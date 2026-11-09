@@ -97,7 +97,7 @@ def settings_params(settings):
 
 
 class LatentFilter:
-    """The bot's copy lives in candidates/r3_F1_latent_filter.py (kept identical by hand)."""
+    """The bot's copy lives in candidates/round3/r3_F1_latent_filter.py (kept identical by hand)."""
 
     def __init__(self, W=8, rate=2.0, eps=0.01, pi0=0.55, pi1=0.39, pi2=0.06, pi3=0.0, impact_scale=1.0, depth=99, sqrt_c=0.0, use_size=0,
                  jump=0.0, jump_med=6.66, jump_sd=0.79, sweep=-1, sweep_eps=0.01, linear_c=0.0, informed=0.0):

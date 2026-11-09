@@ -1,6 +1,4 @@
-"""R2-H3 (7 Nov, round 2, 22:20): R2-H1 (the uploaded +567,739.71 file) plus the shock follow-through term on the take's signal: SHOCK_W x the side of a 2+ tick mid jump in one book update at a spread of at most 2, for 100 ms. SHOCK_W 0 is R2-H1 exactly. The notes of R2-H1 follow.
-
-R2-H1 (7 Nov, round 2): R2-T1 (r2_T1_take_only.py, the online ridge's forecast take) biased by R2-RA's big-flow
+"""R2-H1 (7 Nov, round 2): R2-T1 (r2_T1_take_only.py, the online ridge's forecast take) biased by R2-RA's big-flow
 signal (r2_RA_flow_window.py). RA's state is kept beside the ridge exactly as RA keeps it: the side of the last window
 of FLOW_MS ms whose net market-taker lots reached MIN_LOTS (the window cleared when it fires), a one-lot shadow
 holding that side whose PnL since the start must be above GATE_TICKS (the self-gate, which stays shut on calm tapes),
@@ -14,7 +12,7 @@ gate is shut, so the fit is T1's there). ROOM_RESERVED 1 nets the side's resting
 room, so a one-lot quote filling beside a full take no longer puts |position| at 101 (T1's breach: 8.8k on the public
 tape, 22k on the validation tape).
 Set: BIAS_AGREE 0.3, BIAS_AGAINST 0, ROOM_RESERVED 1. Round 2's public tape (`uv run python -m arena.qgrid
-python/bots/qminers/candidates/r2_H1_flow_bias.py data/arena/round2/round2_public.csv --set ROOM_RESERVED=0
+python/bots/qminers/candidates/round2/r2_H1_flow_bias.py data/arena/round2/round2_public.csv --set ROOM_RESERVED=0
 --grid BIAS_AGREE=0.15,0.3,0.6,9 --grid BIAS_AGAINST=0,0.3,9`, chosen on the first 75%; T1 191,984, in 135,839 /
 out 56,145): 0.3 / 0 207,065 (157,308 / 49,757), 0.15 / 0 211,585 (154,798 / 56,788), 0.3 / 0.3 203,398, 0.6 / 0
 181,116, 9 / 9 (RA's hold inside T1) 181,855, 9 / 0 146,540; single runs 0.2 / 0 227,828, 0.45 / 0 196,721;
@@ -55,9 +53,6 @@ from simulator.models import OrderRequest, OrderStatus, OrderType, Side
 from simulator.strategy import BaseStrategy
 
 TAKE_MAXSPREAD = 1  # the forecast take fires only while the spread is at most this many ticks (99: no limit)
-SHOCK_W = 0.0  # R2-H3: plus SHOCK_W x the side of a mid jump of SHOCK_TICKS+ in one book update at a spread of at most 2, for SHOCK_MS; 0: R2-H1 exactly
-SHOCK_TICKS = 2.0
-SHOCK_MS = 100
 BIAS_AGREE = 0.3  # ticks off the take's threshold toward the gated big-flow signal
 BIAS_AGAINST = 0  # ticks onto the take's threshold against it
 AGREE_MAXSPREAD = 1  # while the signal is on, the take toward it fires up to this spread (T1's gate: TAKE_MAXSPREAD)
@@ -98,9 +93,6 @@ class PassiveStrategy(BaseStrategy):
 
     def __init__(self):
         super().__init__()
-        self._shock_mid = None
-        self._shock = 0
-        self._shock_until = 0
         self.FEATURE_COUNT = 30 if FEAT_BIG else 29
         self.inventory = 0
         self.cash = 0
@@ -549,15 +541,9 @@ class PassiveStrategy(BaseStrategy):
             buy = None
         if flow > self.FLOW_CUT or self.inventory <= -self.EXPOSURE:
             sell = None
-        if SHOCK_W:
-            if self._shock_mid is not None and spread <= 2 and abs(mid-self._shock_mid) >= SHOCK_TICKS:
-                self._shock = 1 if mid > self._shock_mid else -1
-                self._shock_until = now + SHOCK_MS*1000
-            self._shock_mid = mid
         if (self.TAKE_SZ > 0 and self._labels >= self.MIN_LABELS
                 and (self._take_last is None or now-self._take_last >= self.TAKE_GAP_MS*1000)):
-            shock = self._shock if now < self._shock_until else 0
-            self._take(now,prediction-skew+SHOCK_W*shock,spread,bid,ask)
+            self._take(now,prediction-skew,spread,bid,ask)
         self._cached_bid,self._cached_ask,self._cached_time = bid,ask,now
         self._hedge(now)
         self._desired_buy,self._desired_sell,self._desired_time = buy,sell,now

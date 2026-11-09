@@ -1,4 +1,4 @@
-//! python/bots/qminers/candidates/r1_C1_codex_ridge.py (`PassiveStrategy`, round 1's candidate R1-C1), line for
+//! python/bots/qminers/candidates/round1/r1_C1_codex_ridge.py (`PassiveStrategy`, round 1's candidate R1-C1), line for
 //! line: an online ridge regression of the mid HORIZON_US ahead on 15 features (trade flow, the 500 ms / 2 s mid
 //! EWMA gap, touch and near-touch imbalances, order counts, capped lots, signed squares), an observation every
 //! OBSERVATION_INTERVAL_US, labels decayed over MODEL_MEMORY_US, refit by Gauss-Jordan once a second; quotes at
@@ -16,7 +16,7 @@
 //! `REPLENISH_US` (5000, how long after a quote a landed cancel re-quotes), `PRED_MIX` (1.0, the model's weight in
 //! fair).
 //!
-//! Rust-only additions from R1-F8 (python/bots/qminers/candidates/r1_F8_take_join.py, `take_maker`), off by
+//! Rust-only additions from R1-F8 (python/bots/qminers/candidates/round1/r1_F8_take_join.py, `take_maker`), off by
 //! default, so the defaults are R1-C1 as written: the depletion guard, `DEPLETE_LOTS` (0: off) and `DEPL_FRAC`
 //! (0.12): when the market's lots at its touch are under DEPLETE_LOTS and under DEPL_FRAC of their peak since that
 //! price became the touch (DEPL_FRAC 0: the lots alone), a quote of ours at that touch moves a tick back (ours there
@@ -60,7 +60,7 @@
 //! `UNWIND_SAFE` (0): when |inv| >= UNWIND_AT and the forecast is against the position by more than UNWIND_TH
 //! spreads, an IOC UNWIND_THRU ticks through the touch for min(UNWIND_LOTS, |inv|), one at a time and one per
 //! UNWIND_US; SAFE 1 caps it so every lot on that side fits EXPOSURE, 2 cancels that side first, 3 cancels that
-//! side's newest orders until they and the IOC fit (R2-U1, python/bots/qminers/candidates/r2_U1_unwind.py:
+//! side's newest orders until they and the IOC fit (R2-U1, python/bots/qminers/candidates/round2/r2_U1_unwind.py:
 //! C12's and --set UNWIND_LOTS=100 --set UNWIND_SAFE=3 --set UNWIND_TH=0.7 --set UNWIND_AT=50 --set UNWIND_US=500000).
 //! `RIDGE_DEBUG` in the environment prints, at the end, the maker lots' edge against the mid at the fill, the IOC
 //! lots' edge, the time-weighted mean |inventory| and the 25-s PnL steps' mean and sd.

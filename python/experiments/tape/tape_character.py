@@ -43,7 +43,7 @@ from experiments.generator import tape_gen
 from experiments.tape.tape_book import Book
 
 ROOT = Path(__file__).resolve().parents[3]
-M2_FILE = ROOT / "python/bots/qminers/candidates/r2_M2_flow_trend.py"
+M2_FILE = ROOT / "python/bots/qminers/candidates/round2/r2_M2_flow_trend.py"
 E2 = {"POSITION_LIMIT": 1000, "CANCEL_FREE": 1.0, "HEDGE": 1, "MODEL_MEMORY_US": 100_000_000_000, "HORIZON_US": 400_000,
       "QUOTEFEAT": 1, "FLOWGRP": 2, "FLOWGRP_CAP": 20, "FLOWGRP_US": 1_000_000, "FT_SZ": 200, "FT_GAP_MS": 50,
       "SKEW_K": 0.025, "FT_EDGE": 0.25, "QUOTE_SIZE": 200, "EXPOSURE": 30, "DEAD_ZONE": 0.18, "KEEP_LOTS": 20, "KEEP_TH": 0.3}

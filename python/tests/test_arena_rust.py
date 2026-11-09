@@ -8,7 +8,7 @@ sample_v2.csv and round 1's tape present (data/arena/, or ARENA_SIM_DATA), F3 an
 byte (about 30 s a Python run). The shrink maker (python/bots/qminers/families/shrink_maker.py, the same Rust struct
 with DEPL_FRAC, REACT_CANCEL and MOM_LOTS) the same two ways, and family 12's alloc_maker.py and signal_maker.py
 (the same struct at R1-F6's defaults, with their knobs; R1-F6b and R1-F7 among the real-tape cases), and R1-F8
-(candidates/r1_F8_take_join.py, the same struct at its own defaults, as `take_maker`). The ridge maker at R1-C1,
+(candidates/round1/r1_F8_take_join.py, the same struct at its own defaults, as `take_maker`). The ridge maker at R1-C1,
 the codex candidates on round 1 and round 2's forecast takers (R2-T2, L1, L3, L8, L9) on round2_public.csv. Skipped
 without cargo."""
 
@@ -182,7 +182,7 @@ SIGNAL = [
     {"SIZE_SKEW": 0.6},
     {"SIZE_SKEW": 0.6, "SKEW_TRIM": 1},
 ]
-# R1-F8 (candidates/r1_F8_take_join.py, the same struct at its own defaults): the take, the join, ANY_CLEAR, the
+# R1-F8 (candidates/round1/r1_F8_take_join.py, the same struct at its own defaults): the take, the join, ANY_CLEAR, the
 # follower-depth gates and SIZE_SKEW after ALLOC_K; the synthetic tape's touches hold 5-60 lots, so the gates come down.
 TAKE = [
     {},
@@ -224,12 +224,12 @@ FULL = [  # (strategy, file, overrides, pnl, fills): F3 and knob settings on the
     ("room_maker", "round1/round1.csv", {"SESSION_S": 1000000000, "DEPLETE_LOTS": 20}, "399672.00", 26527),
     ("room_maker", "round1/round1.csv", {"SESSION_S": 1000000000, "BACK_POS": 95}, "425216.00", 29646),
     ("room_maker", "round1/round1.csv", {"SESSION_S": 5700, "FLAT_S": 30, "WIND_DOWN_S": 10}, "184793.35", 14353),
-    # the shrink maker: R1-F5's settings (python/bots/qminers/candidates/r1_F5_shrink_react.py), then two others
+    # the shrink maker: R1-F5's settings (python/bots/qminers/candidates/round1/r1_F5_shrink_react.py), then two others
     ("shrink_maker", "round1/round1.csv", {"SESSION_S": 1000000000, "DEPLETE_LOTS": 100, "DEPL_FRAC": 0.06, "REACT_CANCEL": 1}, "455822.00", 37847),
     ("shrink_maker", "round1/round1.csv", {"SESSION_S": 1000000000, "DEPLETE_LOTS": 60, "DEPL_FRAC": 0.2, "DEPLETE_SIZE": 30}, "437654.00", 32131),
     ("shrink_maker", "round1/round1.csv", {"SESSION_S": 1000000000, "REACT_CANCEL": 1, "SIZE_NARROW": 150, "SHRINK_NARROW": 1, "BACK_POS": 95},
      "393824.00", 53530),
-    # family 12 at R1-F6's defaults: R1-F6b (candidates/r1_F6b_alloc.py) and R1-F7 (candidates/r1_F7_signal.py), two others each
+    # family 12 at R1-F6's defaults: R1-F6b (candidates/round1/r1_F6b_alloc.py) and R1-F7 (candidates/round1/r1_F7_signal.py), two others each
     ("alloc_maker", "round1/round1.csv", {"ALLOC_K": -0.5}, "489844.00", 60487),
     ("alloc_maker", "round1/round1.csv", {"INV_K": 0.5, "ALLOC_K": -0.3, "ALLOC_UP": 0}, "486179.00", 54344),
     ("alloc_maker", "round1/round1.csv", {"ADV_TH": 0.0, "ADV_MIN": 200, "ADV_SCOPE": 2}, "482413.00", 49097),
@@ -238,10 +238,10 @@ FULL = [  # (strategy, file, overrides, pnl, fills): F3 and knob settings on the
     ("signal_maker", "round1/round1.csv", {"MOM_LOTS": 300, "MOM_MS": 100, "MOM_SIZE": 20, "MOM_BLOCK": 0}, "473635.00", 53169),
     ("signal_maker", "round1/round1.csv", {"MOM_LOTS": 400, "MOM_MS": 200, "MOM_BLOCK": 1, "IMB_TRIM": 0.2, "IMB_SIZE": 10, "SIZE_SKEW": 0.5,
                                            "SKEW_TRIM": 1}, "378914.00", 57080),
-    # R1-F8 (candidates/r1_F8_take_join.py) as written
+    # R1-F8 (candidates/round1/r1_F8_take_join.py) as written
     ("take_maker", "round1/round1.csv", {}, "519027.00", 66371),
     ("take_maker", "playground/sample_v2.csv", {}, "234661.00", 28134),
-    # R1-C1 (candidates/r1_C1_codex_ridge.py) as written: ridge_maker.rs
+    # R1-C1 (candidates/round1/r1_C1_codex_ridge.py) as written: ridge_maker.rs
     ("ridge_maker", "round1/round1.csv", {}, "554347.00", 37087),
 ]
 
@@ -361,7 +361,7 @@ def test_ridge_maker_round2_takers(tmp_path, bot, knobs, pnl, fills):
     if os.environ.get("ARENA_SIM_FULL") != "1":
         return
     theirs = subprocess.run([sys.executable, "-m", "simulator.main", "--strategy",
-                             str(ROOT / "python" / "bots" / "qminers" / "candidates" / bot), "--backtest", str(data),
+                             str(ROOT / "python" / "bots" / "qminers" / "candidates" / f"round{bot[1]}" / bot), "--backtest", str(data),
                              "--log-dir", str(tmp_path / "py"), "--no-logs"], capture_output=True, text=True, check=True, cwd=ROOT)
     assert [line for line in theirs.stdout.splitlines() if not line.startswith("log_dir=")] == lines
     for name in ("result.json", "pnl.csv"):

@@ -9,7 +9,7 @@ being cancelled count until the cancel lands), so the 100-lot penalty never star
 market's spread is above MAX_SPREAD. KEEP2 keeps a quote the touch moved away from by a tick; LEVEL2 also posts
 lots a tick behind the favoured touch (a level-2 fill with the gap 0.6+ the maker's way earns +0.72 a lot at 1 s on
 round 3, against +0.35 for one at the back of the touch's queue: `experiments.taker.r3_edges`). UNWIND > 0 also quotes the reducing side, at the touch, while |gap| < UNWIND
-and |position| >= UNWIND_POS. The filter is R3-F1's (candidates/r3_F1_latent_filter.py, experiments/filter/latent_filter.py).
+and |position| >= UNWIND_POS. The filter is R3-F1's (candidates/round3/r3_F1_latent_filter.py, experiments/filter/latent_filter.py).
 """
 from math import isfinite
 

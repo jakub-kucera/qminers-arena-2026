@@ -114,7 +114,7 @@ The round tapes are the organisers' and are not included. With a round's public 
 `data/arena/round4/round4_public.csv`:
 
 ```sh
-uv run exchange-simulator --strategy python/bots/qminers/candidates/r4_W2_warm10k.py \
+uv run exchange-simulator --strategy python/bots/qminers/candidates/round4/r4_W2_warm10k.py \
     --backtest data/arena/round4/round4_public.csv --log-dir logs/w2 --no-logs    # 1,029,781
 uv run python -m experiments.rounds.family_rust data/arena/round4/round4_public.csv  # the round-3 bots in Rust, ~2 min
 ```

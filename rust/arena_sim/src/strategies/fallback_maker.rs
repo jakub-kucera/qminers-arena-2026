@@ -1,4 +1,4 @@
-//! python/bots/qminers/candidates/r0_F1_fallback.py (`FallbackMakerStrategy`): QUOTE lots a side at, or a tick
+//! python/bots/qminers/candidates/round0/r0_F1_fallback.py (`FallbackMakerStrategy`): QUOTE lots a side at, or a tick
 //! inside, the market's touch; a quote kept while its price is wanted; every order that can still fill counted
 //! against LIMIT; only the reducing side quoted in the last WIND_DOWN_S of SESSION_S.
 //!

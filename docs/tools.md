@@ -74,7 +74,7 @@ and the baseline with every number above and the per-file PnL. A cell whose bot 
 **The same grid in Rust**, for a strategy with a Rust version (`trend_follower`, `fallback_maker`, the F1
 candidate, `room_maker`, family 7, whose defaults are F3, `shrink_maker`, family 10, the same with `DEPL_FRAC`,
 `REACT_CANCEL` and `MOM_LOTS`, and family 12's `alloc_maker` and `signal_maker` at R1-F6's defaults with their knobs,
-so R1-F6b and R1-F7 are a `--set` away, and `take_maker`, R1-F8's file `candidates/r1_F8_take_join.py` at its own
+so R1-F6b and R1-F7 are a `--set` away, and `take_maker`, R1-F8's file `candidates/round1/r1_F8_take_join.py` at its own
 defaults with its `TAKE_*`, `JOIN_*` and `ANY_CLEAR` knobs): `uv run python -m arena.qsim_rust fallback_maker
 data/sample.csv.gz --grid QUOTE=2,3,5 --grid LIMIT=30,50 --threads 4` prints this table from `rust/arena_sim`, the
 simulator ported to give the same numbers to the bit, 50-90 times faster a run ([rust/README.md](../rust/README.md),
@@ -103,7 +103,7 @@ It fails (exit code 1) on:
 - errors or breaches when the first day is replayed with every order a step late (`--late 1`, the default while the run's own `--delay` is 0; `--late 0` where the rules say orders arrive at once): a bot that doesn't count what it sent and can't see listed yet re-posts it into the caps and its limits, as both 2026-10-30 rehearsal bots did after passing. The template passes once its `DELAY` (and `ORDERS_REST`) are set; race ticks are printed, not failed
 
 **The Arena bot** (`--format qminers`) needs no `--data`: `uv run python -m arena.validate
-python/bots/qminers/candidates/r0_M2_runner_safe.py all --format qminers [--max-size 1MiB]` runs the file and source
+python/bots/qminers/candidates/round0/r0_M2_runner_safe.py all --format qminers [--max-size 1MiB]` runs the file and source
 checks only (the size; exactly one `BaseStrategy` subclass, 0 or 2+ FAIL; imports; the sandbox; the environment; a
 gray-area mark), prints `replay: run exchange-simulator` and exits 0 on a clean file. The format has no loader here
 (`REPLAY = False` in `python/arena/formats/qminers.py`; `--data`, if given, is not read): the replay is a full

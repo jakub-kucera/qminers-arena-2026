@@ -1,4 +1,4 @@
-"""Family 12 (7 Nov, round 1): R1-F6 (candidates/r1_F6_two_levels.py) with three ways to place its lots without
+"""Family 12 (7 Nov, round 1): R1-F6 (candidates/round1/r1_F6_two_levels.py) with three ways to place its lots without
 cancelling anything for them, every knob defaulting to F6 exactly. ALLOC_K: the touch imbalance I = (bid - ask) /
 (bid + ask) moves lots between a side's touch and its deep level (the touch cap times 1 + ALLOC_K * I on the bid,
 1 - ALLOC_K * I on the ask; lots taken off the touch go to the level behind, so the total stays what the limit allows).

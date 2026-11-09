@@ -2,7 +2,7 @@
 //! (LEVELS price levels a side from the touch, queue places kept within KEEP_DEPTH ticks, a limit counting every
 //! order able to fill, TOPUP behind our touch order, SKEW / UNWIND / WIND_DOWN_S inventory rules) with the room
 //! maker's knobs (SIZE_NARROW / SHRINK_NARROW, DEPLETE_LOTS / DEPLETE_SIZE, BACK_POS, FLAT_S). Its defaults are
-//! candidate F3 (python/bots/qminers/candidates/r0_F3_full_room.py). The same struct is
+//! candidate F3 (python/bots/qminers/candidates/round0/r0_F3_full_room.py). The same struct is
 //! python/bots/qminers/families/shrink_maker.py (family 10, the strategy name `shrink_maker`), line for line too: its
 //! two knobs, `DEPL_FRAC` (the depletion guard fires only on a touch shrunk below that share of its peak since it
 //! became the touch) and `REACT_CANCEL` (re-run the quoting from the last snapshot when one of our cancels lands),
@@ -18,7 +18,7 @@
 //! the shrink maker's keys and `MOM_SIZE` (-1), `IMB_TRIM` (0.0), `IMB_SIZE` (0), `MOM_BLOCK` (1), `MOM_JOIN` (0),
 //! `DYING_DEEP` (0), `SIZE_SKEW` (0.0), `SKEW_TRIM` (0). A key outside the file's globals is an error.
 //!
-//! `take_maker` is python/bots/qminers/candidates/r1_F8_take_join.py (R1-F8), line for line, at its own defaults
+//! `take_maker` is python/bots/qminers/candidates/round1/r1_F8_take_join.py (R1-F8), line for line, at its own defaults
 //! (every global of the file): signal_maker's keys at R1-F7's values, `ALLOC_K` (-0.5), `ALLOC_UP`, `ALLOC_HI`,
 //! `ALLOC_DEEP` (alloc_maker's, applied before SIZE_SKEW as the file does), and its own: `TAKE_LOTS` (60),
 //! `TAKE_MAX` (1000), `ANY_CLEAR` (0), `JOIN_LOTS` (0), `JOIN_MS` (200), `JOIN_OWN` (400), `TAKE_OWN` (800),

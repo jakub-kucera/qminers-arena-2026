@@ -8,7 +8,7 @@ the actual market mid change. Oracle inventory is evaluation data, never an inpu
 available from a hidden pnl.csv. Final mark_price is a liquidation VWAP, not a mid.
 
 Existing full logs suffice; otherwise first run:
-    uv run exchange-simulator --strategy python/bots/qminers/candidates/r3_F1_latent_filter.py \
+    uv run exchange-simulator --strategy python/bots/qminers/candidates/round3/r3_F1_latent_filter.py \
         --backtest data/arena/round3/round3_public.csv --log-dir logs/r3_F1_full
     uv run python -m experiments.generator.gen_pnl_probe logs/r3_F1_full --out data/arena/gen/pnl_probe_r3.json
 

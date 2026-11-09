@@ -1,7 +1,7 @@
 # Round 4: W2 and the leading candidate audit
 
 2026-11-08. Main source reviewed at `130022f`, merged into `gen-v3` at
-`474e574`. Primary candidate: `python/bots/qminers/candidates/r4_W2_warm10k.py`.
+`474e574`. Primary candidate: `python/bots/qminers/candidates/round4/r4_W2_warm10k.py`.
 Comparison: F5 / W1 at mass zero, MH3, X1R3. No candidate or strategy code changed.
 
 No blocking implementation defect was found in W2. Its warm initialization is
@@ -97,7 +97,7 @@ With the repository environment and downloaded round-4 artifacts:
 ```sh
 uv run python -m experiments.audits.r4_warm_audit --repo . --out data/arena/gen/w2_audit/audit.json
 uv run python -m experiments.audits.r4_warm_audit --repo . --out data/arena/gen/w2_audit/audit.json --replay
-uv run python -m arena.validate python/bots/qminers/candidates/r4_W2_warm10k.py all --format qminers --max-size 1MiB
+uv run python -m arena.validate python/bots/qminers/candidates/round4/r4_W2_warm10k.py all --format qminers --max-size 1MiB
 ```
 
 The first command checks source identity, prior values, independent solving,

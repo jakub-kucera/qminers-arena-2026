@@ -20,7 +20,7 @@ so a compacted or restarted session, or the other laptop, picks up where it was.
   under the gate; between candidates within T of each other, the better stress worst, then the fewer changed settings>.
 
 ## Ready before the tape (00:00, from round 2)
-- Base: `python/bots/qminers/candidates/r2_L8_quote_switch.py` (R2-L8: quotes only below 2.5 ticks/s of price speed; **+826,778 on round 2's validation, the round-2 final**), with `r2_L3_taker_pure.py` (R2-L3, +804,018) beside it. First experiment: QS_RATE on the new tape.
+- Base: `python/bots/qminers/candidates/round2/r2_L8_quote_switch.py` (R2-L8: quotes only below 2.5 ticks/s of price speed; **+826,778 on round 2's validation, the round-2 final**), with `r2_L3_taker_pure.py` (R2-L3, +804,018) beside it. First experiment: QS_RATE on the new tape.
 - References: `r2_L1_taker_liquidity.py` (+771,770), `r2_H1_flow_bias.py` (+567,740), `r2_M4_flow_window.py` (+441,088), `r2_V2_vol_exposure_dz18.py` (+71,864 on round 2's volatile tape, ~700k on round 1's calm one).
 - `experiments.rounds.round_start` runs all of them (R2_L8, R2_L3, R2_L1, R2_H1, R2_T2, R2_M4, R2_V2); the triage, the decision table and the ranked ideas: `data/arena/round3/HANDOVER.md`, "Start here".
 
@@ -46,12 +46,12 @@ Trials so far: 0 experiments, 0 cells.
 ## Verifier verdicts
 <!-- each verifier's report, verbatim, under the candidate's id and the time -->
 
-### Ready before the tape (8 Nov 00:50): R3-B1 (`python/bots/qminers/candidates/r3_B1_huber_quote_switch.py`)
+### Ready before the tape (8 Nov 00:50): R3-B1 (`python/bots/qminers/candidates/round3/r3_B1_huber_quote_switch.py`)
 - R2-L9 (the Huber-robust pure taker, +873,719 on round 2's validation) plus R2-L8's one-lot quotes switched on only while the 5-s |mid change| rate is below QS_RATE 2.5 ticks/s; QS_RATE 0 is L9 exactly. validate OK, 29.9 KB.
 - L9 / B1 (pnl; breach 0 everywhere; local run time): round2_public 317,057 / 318,954 (150 / 179 s); the mirror the same; round1 134,626 / **206,648** (+72k); hi_vol_fast1.25 1,020,848 / **999,473** (-21k); hi_vol 867,369 / 876,974 (+10k).
 - The quotes pay on calm tapes and cost on the fastest one, more than they did on L1/L8: on a fast round-3 tape start from L9; on a calmer one from B1; grid QS_RATE (1.0-3.0) on the new tape first.
 
-### R3-F1 (8 Nov 01:25): the latent-price filter in L9's ridge (`python/bots/qminers/candidates/r3_F1_latent_filter.py`)
+### R3-F1 (8 Nov 01:25): the latent-price filter in L9's ridge (`python/bots/qminers/candidates/round3/r3_F1_latent_filter.py`)
 - R2-L9 plus three ridge features from a hidden-Markov filter of the generator's latent reference bid: gap = E[lb] + 0.5 - mid, gap*|gap|/3, and the posterior sd. New market orders say where lb is (bids at lb - k, asks at lb + 1 + k, k 0/1/2, clamped one tick off the other touch), and market takers' fills move it by 3x tape_gen's impact table. FEATURE_COUNT 39. FILTER = 0 is L9 to the unit. validate OK, ~36 KB. The offline copy is `python/experiments/filter/latent_filter.py`; the measurements are in IDEAS.md's R3-F1 row.
 - F1 / L9 (pnl; breach 0 everywhere): **round3_public 480,469 / 424,730** (+55.7k; 500-s segments won 7/11, t +1.57; first 75% +46.2k, last 25% +9.5k); round2_public 303,720 / 317,057 (-4.2%); round 2's hi_vol_fast1.25 1,012,787 / 1,020,848 (-0.8%); round1 152,188 / 134,626 (+13%).
 - Local run time on r3 205 s vs 187 s (+10%), about 360 s on the server. It trades more: 572k lots vs 460k on r3.
@@ -67,21 +67,21 @@ Trials so far: 0 experiments, 0 cells.
 - None of them beats the taker, and none adds to it on one inventory. S3 is the strongest standalone (17-25% of R2-L8 on round 3's tapes). S1 is the only one that never pays the spread.
 - Synthetic seed 101 / 102 (secondary; makers unvalidated there): S1 -117,637 / -17,770; S2 -5,496 / +4,292; S3 GAP_MIN 2 18,723 / 11,075, GAP_MIN 1 13,424 / 57,669; R2-L8 850,972 / 1,140,765.
 
-### R3-F2 (8 Nov 01:40): R2-L8 plus the filter (`python/bots/qminers/candidates/r3_F2_latent_filter_l8.py`)
+### R3-F2 (8 Nov 01:40): R2-L8 plus the filter (`python/bots/qminers/candidates/round3/r3_F2_latent_filter_l8.py`)
 - L8 (L1's one-lot quotes below QS_RATE 2.5, the plain ridge, POSITION_LIMIT 1000 / EXPOSURE 100) plus R3-F1's filter code and three features (FEATURE_COUNT 36). FILTER = 0 is L8. validate OK. Rust: 484,057 on r3 public, 1,349,326 on hi_vol_fast1.25. The Python parity run is next.
 
-### R3-F3 (8 Nov 01:45): R3-B1 plus the filter (`python/bots/qminers/candidates/r3_F3_latent_filter_b1.py`)
+### R3-F3 (8 Nov 01:45): R3-B1 plus the filter (`python/bots/qminers/candidates/round3/r3_F3_latent_filter_b1.py`)
 - R3-B1 (L9 plus L8's speed-switched one-lot quotes) plus R3-F1's filter code and three features (FEATURE_COUNT 39). FILTER = 0 is B1. validate OK. Rust (`B1's --set line --set FILTER=1`): **505,212 on r3 public** (the best FILTER base there), 1,323,666 hi_vol_fast1.25, 1,107,567 hi_vol, 1,008,798 pub+mirror. The Python parity run and its run time are next.
 - 02:20: Python F3 = Rust 505,212 byte for byte; side by side F1 171 s, F3 181 s, F2 172 s. Validation: **F3 +883,559** (F1 +862,764; 590 s of server time). The filter's own settings on B1F (r3 public, Rust, by holdout) are at their top in every grid: FT_EDGE x FILTER_IMPACT (impact 3, FT_EDGE 0.15-0.35 a plateau), FILTER_W x FILTER_DEPTH (flat), FILTER_RATE x FILTER_EPS (rate 2, eps 0.01), FILTER_PI (round 1's), FILTER_JUMP (-10k to -30k everywhere). No F4. The oracle on tape_gen's draws: the true gap correlates 0.76 with the 0.4-s move against the filter's 0.40; jumps lift the filter to 0.53 there but lose on the real tape (IDEAS.md's R3-F1 row).
 
-### R3-F5 (8 Nov 03:15): F3 with a higher take bar except just after jumps (`python/bots/qminers/candidates/r3_F5_jump_bar.py`)
+### R3-F5 (8 Nov 03:15): F3 with a higher take bar except just after jumps (`python/bots/qminers/candidates/round3/r3_F5_jump_bar.py`)
 - F3 with TAKE_EDGE 0.25 (F3 0.15), back to 0.15 for 5 s after the mid moves 3+ ticks within 200 ms (TAKE_JUMP, TAKE_JUMP_MS, TAKE_JUMP_HOLD_MS, TAKE_JUMP_EDGE). TAKE_JUMP = 0 with TAKE_EDGE 0.15 is F3. validate OK, 37.1 KB. Rust: `$B1 --set FILTER=1 --set FT_EDGE=0.25 --set FT_JUMP=3 --set FT_JUMP_HOLD_MS=5000 --set FT_JUMP_EDGE=0.15`; the Python file gives its result.json and pnl.csv byte for byte on round3_public (515,670.00, 53,233 fills).
 - Against F3 (paired 500-s segments; IDEAS.md "R3-F5"): round3_public **515,670** (+10.5k; first 75% +4.0k, last 25% +6.4k; 10 of 12, t 1.75); round2_public 330,980 (+15.6k: +8.2k / +7.4k; 11 of 12, t 4.56); r3b seeds 201 / 202 / 203 +3.4k / +5.2k / +9.9k (every half positive). **Round 1 loses: 196,324 (-24.8k, t -4.2)**: on the calm tape the takes at 0.15-0.25 over half the spread earn; a calm-market bar (FT_EDGE_CALM) fixes round 1 but undoes the round-3 gain.
 - Its one-knob neighbours on round3_public are a plateau (-0.9k to +1.1k; FT_JUMP 2 -3.2k); on round2_public FT_EDGE 0.225 / 0.275 cost 4-5k.
 - Six more r3b seeds (204-209): +3.2k / +0.6k / +8.8k / +5.8k / -3.5k / -0.2k; over nine seeds +33.2k, 7 of 9 positive, but only about +0.35% there against +2.1% on round3_public.
 - Side by side with F3 on round3_public (Python, same load): 174.9 s against 172.9 s (+1%), so about 600 s of the server's 900.
 - Upload as a paired test against F3 (+883,559): expected about +10k to +20k on the 12,000-s validation tape if it plays like round3_public; a calmer tape like round 1 would cost.
-### R3-S5 (8 Nov 04:40): F5 plus a passive pre-entry at the near touch (`python/bots/qminers/candidates/r3_S5_pre_entry.py`). Dropped, not for upload
+### R3-S5 (8 Nov 04:40): F5 plus a passive pre-entry at the near touch (`python/bots/qminers/candidates/round3/r3_S5_pre_entry.py`). Dropped, not for upload
 - One order at the bid (ask) while the forecast is between PRE_TH + half the spread and the take's bar, sized for the room, cancelled when the forecast fades or the take's bar is crossed. PRE = 0 is F5 to the byte. validate OK.
 - Every cell loses round3_public's first 75%; the closest, PRE_TH 0.2 PRE_SZ 50, 512,950 (-2.5k / -0.2k against F5's 382,385 / 133,285); PRE_SZ 100 506,780 (-10.1k / +1.2k), round2_public 328,714 (-2.3k). It fills 533 of 77,509 lots posted; the room it holds delays the takes. IDEAS.md "R3-S5".
 ## Uploads (validation tape, 12,000 s; results folders in data/arena/round3/<file>_res/)
