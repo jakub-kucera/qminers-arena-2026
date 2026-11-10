@@ -64,11 +64,11 @@ estimate of it (violet) was on average 0.43 ticks away from it, against 0.65 for
 
 ![Twenty seconds of round 4's private tape: the mid as steps, the generator's true hidden price dashed, our filter's estimate of it, the forecast made 0.4 s earlier tracking or leading the mid, and below it our position switching between +100 and -100.](docs/img/jump_window.png)
 
-Where it worked, by the generator's own regimes: through the calm, turbulent, reserve and meta stretches, 98% of the
-tape, the forecast holds at 0.51-0.61, but in the short burst and thinning episodes (2% of the tape, moves of ±5.5 to
-±15 ticks against ±0.7 to ±3.8 elsewhere) it falls to 0.27, 0.10 and nothing. Knowing the true hidden price would
-have reached 0.62 overall, a ceiling we came within 0.12 of; the winners' jump bets suggest those episodes are where
-much of the rest of the money was.
+Where it worked, by the generator's own regimes: through the calm, turbulent, reserve and meta stretches (the last two
+are round 4's icebergs and TWAP metaorders), 98% of the tape, the forecast holds at 0.51-0.61, but in the short burst
+and thinning episodes (2% of the tape, moves of ±5.5 to ±15 ticks against ±0.7 to ±3.8 elsewhere) it falls to 0.27,
+0.10 and nothing. Knowing the true hidden price would have reached 0.62 overall, a ceiling we came within 0.12 of; the
+winners' jump bets suggest those episodes are where much of the rest of the money was.
 
 ![The forecast's correlation with the following move by regime: 0.51 to 0.61 in no episode, the turbulent, reserve and meta regimes; 0.27 in burst A, 0.10 in burst B and zero in thinning; reference lines at 0.50 overall and 0.62 for the true hidden price.](docs/img/forecast_by_regime.png)
 
@@ -109,47 +109,23 @@ From round 3 on, every candidate was chosen in Rust and checked once in Python b
 
 ## How we played it
 
-I'm Jakub, a software engineer in Prague with an MSc in machine learning (Knowledge Engineering, FIT ČVUT). I had
+I'm Jakub, a software engineer in Prague with an MSc in machine learning (Knowledge Engineering, FIT ČVUT), and I had
 prepared for a month on IMC Prosperity data. During the event AI agents wrote most of the code: Claude Code in this
-repository, up to five at a time, and Codex in a second one. We used them as a team: we chose what they studied, what
-they built and what they checked, and decided ourselves what to upload.
+repository, up to five at a time, and Codex in a second one. What helped most was how we asked.
 
-The prep turned out to be built for the wrong market, and in the playground it pulled us toward hand-tuned market
-makers. So we started a second agent on the organisers' bare starter and set the two against each other, each given
-the other's best score to beat. The clean one came back with an online ridge regression that learns the market as the
-tape plays, and we asked whether to rebuild everything around learning models. The measurement backed it: frozen, the
-same model made 293k on round 1's tape instead of 554k. We switched, and that family carried all four rounds.
+We didn't start a round by asking for a better bot. On each new tape we first had the agents study the data: its
+distributions, its regimes, how the price moved after large orders, and how it differed from the last round's tape.
+The bots were built from what those studies found. When an idea failed on the server, we passed the agents the
+server's numbers rather than a new prompt. In round 2 a study's market makers, told they earned next to nothing on the
+validation tape, came back as a taker with liquidity features that went from 490k to 772k there.
 
-We kept sending the agents back to the data itself. In round 1 we asked them to study the whole tape and the engine,
-to work out how the tapes were made. In round 2 we had one agent do a deep statistical study of the tape. The models
-it proposed were all makers, so we gave it the server's verdict: makers were earning next to nothing on the validation
-tape, while takers made 376-486k. The taker it built next, with liquidity features, went from 490k to 772k there. In
-rounds 3 and 4 we asked for a statistical analysis within the first half hour of the new tape.
-
-The tape generator was our biggest lead, and we were slow with it. The first version, from round 1's afternoon, only
-served to test bots. After round 2 we had the agents plan its reverse-engineering properly. Its first finding, a
-hidden price that new orders gather around, became a filter worth +20% on round 3's validation tape. From then on the
-generator had a session of its own, next to the one improving the model. In hindsight it belonged in the first hour.
-
-Left alone, the agents drifted into small parameter tweaks ("all this seems like incremental changes", as I put it in
-round 3). So we looked at the results ourselves and brought them questions. After each round we had them read the
-other teams' PnL curves off the leaderboard. In round 1 everyone made steady markets and the winners had a steeper
-slope; in round 2 the winner made 148k in one step at a price jump. We pointed them at the stretches where our round-2
-taker lost and asked which family we had under-explored. The answer, quoting only in calm markets, became R2-L8. In
-the organisers' explorer we saw the spread open up before the drops and asked whether our models used it. The data
-published after the event shows the book thinning before every one of the 410 bursts.
-
-We didn't take good numbers on trust. Candidates were judged on the round's own tape only, and when a result came back
-suspiciously fast we had it re-run. Every upload was a measurement too. In round 4 we set one agent to audit the
-other's experiments. It found a feature mask that dropped the wrong columns, and a switch that silently started the
-model cold.
-
-We pushed the model as well. We asked for a pretrained network within the upload's 1 MB limit, training on generated
-tapes, a warm start, Kalman filtering, kernel methods (tried as random Fourier features) and feature selection by
-p-value. Only the warm start reached the final; nothing else beat the online ridge. The forecast was saturated, and
-the 100-lot limit was what bound our PnL. What we didn't do was bet. The winner went over the limit at jumps; our jump
-bets lost on our simulator, so we stayed inside it. The prompts behind these calls, with their times, are in
-[`docs/decisions.md`](docs/decisions.md).
+The month of prep had been built for a different market, so we ran a second agent from the organisers' bare starter
+next to the prepared one, each given the other's best score to beat. The clean one found the online ridge regression
+that carried all four rounds. Because the tapes were generated, we also had the agents reverse-engineer the generator;
+its first finding, a hidden price that new orders gather around, became a filter worth +20% on round 3's validation
+tape. After each round's results we had them read the other teams' PnL curves off the leaderboard, to see what the
+winners did differently. In round 4 one agent audited the other's experiments, which caught a feature mask dropping
+the wrong columns. The prompts behind these calls, with their times, are in [`docs/decisions.md`](docs/decisions.md).
 
 The organisers required a commit at least every 30 minutes, so the history shows the 24 hours as they happened: every
 candidate, every upload, every dropped idea. [`docs/day/`](docs/day/) holds the runbook and the prompts the agents
